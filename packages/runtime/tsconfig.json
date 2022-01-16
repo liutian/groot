@@ -1,0 +1,18 @@
+{
+  "extends": "../../base.tsconfig.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "lib": [
+      "ES2021",
+      "DOM",
+      "WebWorker"
+    ],
+    "jsx": "react-jsx"
+  },
+  "include": [
+    "src"
+  ],
+  "files": [
+    "index.ts"
+  ]
+}
