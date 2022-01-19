@@ -36,7 +36,7 @@ export const PageManager: IPageManager<{ path: string }> = ({ path }) => {
     );
   }
 
-  if (!instance.project) {
+  if (!instance.project && instance.projectLoading !== true) {
     loadProject().then(refresh);
   }
 
@@ -46,6 +46,10 @@ export const PageManager: IPageManager<{ path: string }> = ({ path }) => {
 
   const page = instance.project.getPage(path);
   if (page) {
+    page.addEventListener('refresh', function temp() {
+      refresh();
+      page.removeEventListener('refresh', temp);
+    });
     return React.createElement(page.module.default);
   }
 

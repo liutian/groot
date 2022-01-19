@@ -2,17 +2,18 @@ import { CodeMetadata } from '@groot/core';
 import { AMDOptions } from './amd';
 import { Project } from './project';
 
-export type InputMessage = {
+export type WebWorkerInputMessage = {
   type: 'transformCode';
   path: string;
   metadata: CodeMetadata;
 };
 
-export type OutputMessage = {
+export type WebWorkerOutputMessage = {
   type: 'emitCode';
   path: string;
   code: string;
 };
+
 
 export type Options = AMDOptions & {
   server: string;

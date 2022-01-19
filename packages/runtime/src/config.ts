@@ -5,6 +5,9 @@ import { debugInfo, errorInfo } from './util';
 
 const options: Options = {} as any;
 const instance: GrootInstance = {} as any;
+const iframeNamePrefix = 'groot::';
+
+const studioMode = window.self !== window.top && window.self.name.startsWith(iframeNamePrefix);
 
 export function configBootstrap(customOptions: Options): GrootInstance {
   Object.assign(options, customOptions);
@@ -66,9 +69,9 @@ export function loadProject(): Promise<void> {
   return Promise.resolve({
     /** todo - 请求项目信息 */
   }).then(() => {
-    instance.project = Project.create({});
     instance.projectLoading = false;
+    instance.project = Project.create({ studioMode });
   });
 }
 
-export { options, instance };
+export { options, instance, iframeNamePrefix };

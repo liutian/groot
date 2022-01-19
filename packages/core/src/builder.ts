@@ -6,7 +6,7 @@ export function emitCode(metadata: any): string {
     
     function Page() {
       return <>
-        <Button onClick={() => alert('world')}>${metadata.moduleName}</Button>
+        <Button onClick={() => alert('${metadata.data?.text}')}>${metadata.data?.text}</Button>
       </>;
     }
       
@@ -17,7 +17,7 @@ export function emitCode(metadata: any): string {
     import { Input } from 'antd';
     
     function Page() {
-      return <><Input value={'${metadata.moduleName}'}/></>;
+      return <><Input value={'${metadata.data?.text}'}/></>;
     }
       
     export default Page;
