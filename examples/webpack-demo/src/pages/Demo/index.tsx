@@ -1,24 +1,25 @@
 import { Button, Input, Select } from 'antd';
-import { PageManager } from '@groot/runtime';
+import { UIManager } from '@groot/runtime';
 import { useLocation } from 'react-router';
 import react from 'react';
 import * as tslib from 'tslib';
 import * as jsxRuntime from 'react/jsx-runtime';
 
-PageManager.config({
+UIManager.init({
   server: 'demo',
-  // lazyLoadWorker: false,
   debug: true,
-  modules: {
-    react,
-    antd: {
-      Button,
-      Input,
-      Select,
+  amd: {
+    modules: {
+      react,
+      antd: {
+        Button,
+        Input,
+        Select,
+      },
+      tslib,
+      ['react/jsx-runtime']: jsxRuntime,
     },
-    tslib,
-    ['react/jsx-runtime']: jsxRuntime,
-  },
+  }
 });
 
 function Demo() {
@@ -26,7 +27,7 @@ function Demo() {
 
   return (
     <>
-      <PageManager path={location.pathname.replace(/^\/admin/, '')} />
+      <UIManager path={location.pathname.replace(/^\/admin/, '')} />
     </>
   );
 }
