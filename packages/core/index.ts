@@ -1,2 +1,2 @@
 export * from './src/transform';
-export * from './src/codeMetadata';
+export * from './src/CodeMetadata';

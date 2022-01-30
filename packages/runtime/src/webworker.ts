@@ -1,14 +1,11 @@
 import { transform } from '@groot/core';
-import { InputMessage, OutputMessage } from './types';
+import { WebWorkerInputMessage, WebWorkerOutputMessage, WebWorkerType } from './types';
 
-const defaultOptions: optionsType = {
-  tsWorkerUrl:
-    'https://typescript.azureedge.net/cdn/4.3.4/monaco/min/vs/language/typescript/tsWorker.js',
-};
+const defaultOptions: WebWorkerType = {
+} as any;
 
-const options: optionsType = Object.assign(
-  {},
-  defaultOptions,
+const options: WebWorkerType = Object.assign(
+  { ...defaultOptions },
   JSON.parse((self as any).name)
 );
 
@@ -16,6 +13,7 @@ const options: optionsType = Object.assign(
 (self as any).define = function () {
   // console.log('')
 };
+
 (self as any).importScripts(options.tsWorkerUrl);
 
 const transpileModule = (self as any).ts.transpileModule;
@@ -23,10 +21,10 @@ const transpileModule = (self as any).ts.transpileModule;
 (self as any).postMessage('ok');
 
 self.addEventListener('message', (event) => {
-  const { type, metadata, path } = event.data as InputMessage;
+  const { type, metadata, path } = event.data as WebWorkerInputMessage;
   if (type === 'transformCode') {
-    const code = transform(metadata, { transpileModule });
-    const message: OutputMessage = {
+    const code = transform(metadata, transpileModule);
+    const message: WebWorkerOutputMessage = {
       type: 'emitCode',
       path,
       code,
@@ -36,6 +34,4 @@ self.addEventListener('message', (event) => {
   }
 });
 
-type optionsType = {
-  tsWorkerUrl: string;
-};
+

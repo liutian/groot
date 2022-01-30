@@ -1,4 +1,4 @@
-const defaultConfig = {
+const defaultOption = {
   module: 2, // tsplaceholder ModuleKind.AMD,
   jsx: 4, // tsplaceholder JsxEmit.ReactJSX,
   target: 2, // tsplaceholder ScriptTarget.ES2015
@@ -8,4 +8,4 @@ const defaultConfig = {
   inlineSources: true,
 };
 
-export default defaultConfig;
+export default defaultOption;

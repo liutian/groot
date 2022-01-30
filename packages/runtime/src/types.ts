@@ -1,5 +1,6 @@
 import { CodeMetadata } from '@groot/core';
-import { AMDOptions } from './amd';
+import { AMDModuleOption } from './amd';
+import { Page } from './page';
 import { Project } from './project';
 
 export type WebWorkerInputMessage = {
@@ -14,17 +15,41 @@ export type WebWorkerOutputMessage = {
   code: string;
 };
 
-
-export type Options = AMDOptions & {
+/**
+ * 配置项
+ */
+export type UIManagerOption = {
+  /**
+   * 拉取代码元数据的服务器地址
+   */
   server: string;
-  lazyLoadWorker?: boolean | Promise<void>;
+  /**
+   * 是否立即加载WebWorker
+   */
+  loadWebWorkerOnInit?: boolean;
+  /**
+   * 懒加载项目信息
+   */
   lazyLoadProject?: boolean | Promise<void>;
+  amd: AMDModuleOption;
+  webWorker?: WebWorkerType;
   debug?: boolean;
+  internalPages?: Page[];
 };
 
-export type GrootInstance = {
-  worker: Worker;
+export type UIManagerInstance = {
+  worker?: Worker;
   workerOk: boolean;
-  project: Project;
+  project?: Project;
   projectLoading: boolean;
+};
+
+export type ProjectDataType = {
+  name: string,
+  key: string,
+  pages: Page[]
+}
+
+export type WebWorkerType = {
+  tsWorkerUrl: string;
 };

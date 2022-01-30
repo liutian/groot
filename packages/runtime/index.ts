@@ -1,2 +1,2 @@
-export * from './src/PageManager';
+export * from './src/UIManager';
 export * from './src/config';

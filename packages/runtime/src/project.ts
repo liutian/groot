@@ -1,73 +1,82 @@
 import { CodeMetadata } from '@groot/core';
-import { instance, loadWebWorker, iframeNamePrefix } from './config';
-import { WebWorkerInputMessage, WebWorkerOutputMessage } from './types';
-import { errorInfo } from './util';
+import { loadWebWorker } from './config';
+import { Page } from './page';
+import { ProjectDataType, UIManagerInstance, WebWorkerOutputMessage } from './types';
+import { errorInfo, iframeNamePrefix, studioMode } from './util';
 
+let manager: UIManagerInstance;
 export class Project {
   private allPageMap = new Map<string, Page>();
   private loadedPageMap = new Map<string, Page>();
-  private hostHandlePage!: Page;
+  private studioPage?: Page;
+  private activePage?: Page;
+  private hostMetadataResove?: (metadata: CodeMetadata) => void;
 
-  private constructor(public name: string, public key: string, public studioMode: boolean) {
+  private constructor(public name: string, public key: string) {
+    // 工作台模式
     if (studioMode) {
+      // 初始化从name中获取页面信息
       const pageInfo = JSON.parse(window.self.name.replace(new RegExp('^' + iframeNamePrefix), ''));
-      this.hostHandlePage = new Page(pageInfo.path, pageInfo.title);
-      this.hostHandlePage.loadFromHost = true;
-      this.hostHandlePage.hostMetadataPromise = new Promise((resolve) => {
-        this.hostHandlePage.hostMetadataResove = resolve;
-      })
+      this.studioPage = new Page(pageInfo.path, pageInfo.name, manager);
+      this.studioPage.hostMetadataPromise = new Promise((resolve) => {
+        this.hostMetadataResove = resolve;
+      });
+      this.allPageMap.set(this.studioPage.path, this.studioPage);
+
       window.parent!.postMessage('ok', '*');
       window.addEventListener('message', (event: any) => {
         if (event.data.type === 'refresh') {
-          this.hostHandlePage.metadata = event.data.metadata;
-          if (!this.hostHandlePage.loadFromHostOver) {
-            this.hostHandlePage.hostMetadataResove();
-            this.hostHandlePage.loadFromHostOver = true;
-          } else {
-            this.hostHandlePage.loadModuleFromMetadata();
+          const refreshPage = this.allPageMap.get(event.data.path);
+
+          if (!refreshPage) {
+            errorInfo('refresh page not found', 'project');
+            return;
+          }
+
+          if (refreshPage !== this.studioPage) {
+            throw new Error('refreshPage is not studioPage');
+          }
+
+          // 父级窗口管理的页面是当前项目
+          if (this.activePage === refreshPage) {
+            if (refreshPage.loadFromHostFirst === false) {
+              this.hostMetadataResove!(event.data.metadata);
+              refreshPage.loadFromHostFirst = true;
+            } else {
+              refreshPage.useWorkerForCreateModule(event.data.metadata);
+            }
           }
         }
       })
     }
   }
 
-  static create(data: any): Project {
-    const project = new Project(data.name, data.key, data.studioMode);
-
-    /** mock */
-    const page1 = new Page('/groot/page1', '');
-    // page1.resourceUrl = 'http://192.168.31.37:5000/page1.js';
-    project.allPageMap.set('/groot/page1', page1);
-    const page2 = new Page('/groot/page2', '');
-    // page2.resourceUrl = 'http://192.168.31.37:5000/page2.js';
-    project.allPageMap.set('/groot/page2', page2);
-    const page3 = new Page('/groot/page3', '');
-    // page3.resourceUrl = 'http://192.168.31.37:5000/page3.js';
-    project.allPageMap.set('/groot/page3', page3);
-
-    if (data.studioMode) {
-      project.allPageMap.set(project.hostHandlePage.path, project.hostHandlePage);
-    }
-
+  static create(data: ProjectDataType, managerInstance: UIManagerInstance): Project {
+    manager = managerInstance;
+    const project = new Project(data.name, data.key);
+    data.pages.forEach((item) => {
+      project.allPageMap.set(item.path, item);
+    })
     return project;
   }
 
   hasPage(path: string): boolean {
-    return this.loadedPageMap.has(path);
+    return this.allPageMap.has(path);
   }
 
-  getPage(path: string): Page {
-    return this.loadedPageMap.get(path)!;
-  }
-
-  loadPage(path: string): Promise<Page> {
+  loadPage(path: string): Promise<Page> | Page {
     const page = this.allPageMap.get(path);
+    this.activePage = page;
+
+    if (this.loadedPageMap.has(path)) {
+      return this.loadedPageMap.get(path)!;
+    }
 
     if (!page) {
       return Promise.reject(new Error('not found page'));
     }
 
-    if (!page.resourceUrl && !instance.worker) {
+    if (!page.resourceUrl && !manager.worker) {
       this.initWorker();
     }
 
@@ -77,10 +86,13 @@ export class Project {
     });
   }
 
+  /**
+   * 初始化
+   */
   private initWorker() {
     loadWebWorker();
 
-    instance.worker.addEventListener(
+    manager.worker!.addEventListener(
       'message',
       ({ data: { type, code, path } }: { data: WebWorkerOutputMessage }) => {
         if (type === 'emitCode') {
@@ -92,98 +104,4 @@ export class Project {
   }
 }
 
-export class Page extends EventTarget {
-  resourceUrl!: string;
-  resolveCallback!: () => void;
-  module: any;
-  metadata: any;
-  compile = false;
-  hostMetadataPromise!: Promise<void>;
-  metadataPromise!: Promise<void>;
-  hostMetadataResove!: () => void;
-  loadFromHost = false;
-  loadFromHostOver = false;
-  private resourcePromise!: Promise<void>;
 
-  constructor(public path: string, public title: string) {
-    super();
-  }
-
-  loadModule(): Promise<void> {
-    if (this.resourceUrl) {
-      if (!this.resourcePromise) {
-        this.resourcePromise = this.loadModuleFromResource();
-      }
-
-      return this.resourcePromise;
-    } else {
-      if (!this.metadataPromise) {
-        this.metadataPromise = this.loadModuleFromMetadata();
-      }
-
-      return this.metadataPromise;
-    }
-  }
-
-  loadModuleFromMetadata(): Promise<void> {
-    return new Promise<CodeMetadata>((resolve) => {
-      if (this.loadFromHost) {
-        if (!this.loadFromHostOver) {
-          this.hostMetadataPromise.then(() => {
-            resolve(this.metadata);
-          })
-        } else {
-          resolve(this.metadata);
-        }
-      } else {
-        /** todo - 请求页面metadata */
-        setTimeout(() => {
-          const data: CodeMetadata = {
-            moduleName: this.path,
-            type: 'page',
-            data: null,
-          };
-          resolve(data);
-        }, 1000);
-      }
-    }).then((metadata) => {
-      this.metadata = metadata;
-      const messageData: WebWorkerInputMessage = {
-        type: 'transformCode',
-        metadata,
-        path: this.path,
-      };
-
-      return new Promise((resolve) => {
-        this.resolveCallback = resolve;
-        (instance.worker as Worker).postMessage(messageData);
-      });
-    });
-  }
-
-  loadModuleFromResource(): Promise<void> {
-    return new Promise((resolve) => {
-      this.resolveCallback = resolve;
-      fetch(this.resourceUrl)
-        .then((res) => res.text())
-        .then((code) => {
-          this?.execCode(code);
-        });
-    });
-  }
-
-  execCode(code: string): void {
-    window._moduleCallback = (module) => {
-      this.module = module;
-      this.compile = true;
-      this.resolveCallback();
-      this.dispatchEvent(new Event('refresh'));
-    };
-
-    try {
-      window.Function(code)();
-    } catch (err) {
-      errorInfo('page code execute fail ==> ' + err, 'project');
-    }
-  }
-}
