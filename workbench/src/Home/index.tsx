@@ -3,7 +3,7 @@ import { useRef, useState } from 'react';
 import styles from './index.module.less';
 
 function Home() {
-  const [pageUrl] = useState('http://172.19.15.102:8888/admin/groot/page1');
+  const [pageUrl] = useState('http://localhost:8888/admin/groot/page1');
   const [pageName] = useState('groot::{"path": "/groot/page1","title":"demo"}');
   const iframeRef = useRef({} as any);
   const [pageData, setPageData] = useState('{"text": "qqq"}');
