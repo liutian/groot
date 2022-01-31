@@ -8,47 +8,12 @@ let manager: UIManagerInstance;
 export class Project {
   private allPageMap = new Map<string, Page>();
   private loadedPageMap = new Map<string, Page>();
-  private studioPage?: Page;
+  studioPage?: Page;
   private activePage?: Page;
   private hostMetadataResove?: (metadata: CodeMetadata) => void;
 
   private constructor(public name: string, public key: string) {
-    // 工作台模式
-    if (studioMode) {
-      // 初始化从name中获取页面信息
-      const pageInfo = JSON.parse(window.self.name.replace(new RegExp('^' + iframeNamePrefix), ''));
-      this.studioPage = new Page(pageInfo.path, pageInfo.name, manager);
-      this.studioPage.hostMetadataPromise = new Promise((resolve) => {
-        this.hostMetadataResove = resolve;
-      });
-      this.allPageMap.set(this.studioPage.path, this.studioPage);
 
-      window.parent!.postMessage('ok', '*');
-      window.addEventListener('message', (event: any) => {
-        if (event.data.type === 'refresh') {
-          const refreshPage = this.allPageMap.get(event.data.path);
-
-          if (!refreshPage) {
-            errorInfo('refresh page not found', 'project');
-            return;
-          }
-
-          if (refreshPage !== this.studioPage) {
-            throw new Error('refreshPage is not studioPage');
-          }
-
-          // 父级窗口管理的页面是当前项目
-          if (this.activePage === refreshPage) {
-            if (refreshPage.loadFromHostFirst === false) {
-              this.hostMetadataResove!(event.data.metadata);
-              refreshPage.loadFromHostFirst = true;
-            } else {
-              refreshPage.useWorkerForCreateModule(event.data.metadata);
-            }
-          }
-        }
-      })
-    }
   }
 
   static create(data: ProjectDataType, managerInstance: UIManagerInstance): Project {
@@ -57,6 +22,44 @@ export class Project {
     data.pages.forEach((item) => {
       project.allPageMap.set(item.path, item);
     })
+
+    // 工作台模式
+    if (studioMode) {
+      // 初始化从name中获取页面信息
+      const pageInfo = JSON.parse(window.self.name.replace(new RegExp('^' + iframeNamePrefix), ''));
+      project.studioPage = new Page(pageInfo.name, pageInfo.path, manager);
+      project.studioPage.hostMetadataPromise = new Promise((resolve) => {
+        project.hostMetadataResove = resolve;
+      });
+      project.allPageMap.set(project.studioPage.path, project.studioPage);
+
+      window.parent!.postMessage('ok', '*');
+      window.addEventListener('message', (event: any) => {
+        if (event.data.type === 'refresh') {
+          const refreshPage = project.allPageMap.get(event.data.path);
+
+          if (!refreshPage) {
+            errorInfo('refresh page not found', 'project');
+            return;
+          }
+
+          if (refreshPage !== project.studioPage) {
+            throw new Error('refreshPage is not studioPage');
+          }
+
+          // 父级窗口管理的页面是当前项目
+          if (project.activePage === refreshPage) {
+            if (refreshPage.loadFromHostFirst === false) {
+              project.hostMetadataResove!(event.data.metadata);
+              refreshPage.loadFromHostFirst = true;
+            } else {
+              refreshPage.useWorkerForCreateModule(event.data.metadata);
+            }
+          }
+        }
+      })
+    }
+
     return project;
   }
 
