@@ -53,7 +53,7 @@ export class Project {
               project.hostMetadataResove!(event.data.metadata);
               refreshPage.loadFromHostFirst = true;
             } else {
-              refreshPage.useWorkerForCreateModule(event.data.metadata);
+              refreshPage.createModuleByWorker(event.data.metadata);
             }
           }
         }

@@ -77,11 +77,11 @@ export class Page extends EventTarget {
         }, 1000);
       }
     }).then((metadata) => {
-      return this.useWorkerForCreateModule(metadata);
+      return this.createModuleByWorker(metadata);
     });
   }
 
-  useWorkerForCreateModule(metadata: CodeMetadata): Promise<void> {
+  createModuleByWorker(metadata: CodeMetadata): Promise<void> {
     this.metadata = metadata;
     const messageData: WebWorkerInputMessage = {
       type: 'transformCode',
