@@ -10,8 +10,21 @@ let instanceReady = false;
 let managerInstance: UIManagerInstance;
 const loadingPages: Set<string> = new Set();
 
+let refresh: Function;
+
+let refreshListenerMap = new Map<string, { page: Page, listener: Function }>();
+
+function watchRefreshOnlyOne(page: Page, listener: Function) {
+  if (refreshListenerMap.has(page.path)) {
+    const oldListener = refreshListenerMap.get(page.path)?.listener;
+    page.removeEventListener('refresh', oldListener as any);
+  }
+  page.addEventListener('refresh', listener as any);
+  refreshListenerMap.set(page.path, { page, listener });
+}
+
 export const UIManager: IUIManager<{ path: string }> = ({ path }) => {
-  const refresh = useRefresh();
+  refresh = useRefresh();
 
   // 确保首先执行 UIManager.init
   if (instanceReady === false) {
@@ -41,9 +54,8 @@ export const UIManager: IUIManager<{ path: string }> = ({ path }) => {
   const loadPageResult = managerInstance.project!.loadPage(path);
   if (loadPageResult instanceof Page) {
     // 热更新
-    loadPageResult.addEventListener('refresh', function pageRefreshTemp() {
+    watchRefreshOnlyOne(loadPageResult, () => {
       refresh();
-      loadPageResult.removeEventListener('refresh', pageRefreshTemp);
     });
     // 渲染页面组件
     return React.createElement(loadPageResult.module.default);
