@@ -1,5 +1,5 @@
 {
-  "name": "@groot/core",
+  "name": "@groot-elf/core",
   "version": "0.0.1",
   "description": "",
   "main": "dist/index.js",
