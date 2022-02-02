@@ -20,7 +20,7 @@ export type CodeMetadata = {
    * page: 页面组件代码
    * component: 页面局部UI组件代码，例如模态层组件
    */
-  type: 'page' | 'component';
+  type?: 'page' | 'component';
   /**
    * 组件属性配置
    */
@@ -63,7 +63,7 @@ export type PropType = {
   /**
    * 属性类型
    */
-  valueType: BaseValueType,
+  valueType?: BaseValueType,
   /**
    * 默认值
    */
@@ -71,7 +71,7 @@ export type PropType = {
   /**
    * 属性值关联状态
    */
-  statRelative: boolean
+  statRelative?: boolean
 }
 
 /**

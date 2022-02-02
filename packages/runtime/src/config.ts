@@ -2,7 +2,7 @@ import { CodeMetadata } from '@groot/core';
 import { initAMDModules } from './amd';
 import { Page } from './page';
 import { Project } from './project';
-import { UIManagerOption, UIManagerInstance } from './types';
+import { UIManagerOption, UIManagerInstance, ProjectDataType } from './types';
 import { debugInfo, errorInfo } from './util';
 
 const defaultOption: UIManagerOption = {} as any;
@@ -77,22 +77,26 @@ export function loadProject(): Promise<void> {
   }
 
   managerInstance.projectLoading = true;
-  return Promise.resolve({
-    /** mock - 请求项目信息 */
-    name: 'mockName',
-    key: 'mockKey',
-    pages: [
-      {
-        name: 'demo1',
-        path: '/groot/page1',
-        metadata: {
-          moduleName: 'Button_text',
-          packageName: 'antd',
-          componentName: 'Button',
-          props: [{ key: 'children', defaultValue: 'hello world!' }]
-        }
-      }
-    ]
+  return new Promise<ProjectDataType>((resolve) => {
+    setTimeout(() => {
+      resolve({
+        /** mock - 请求项目信息 */
+        name: 'mockName',
+        key: 'mockKey',
+        pages: [
+          {
+            name: 'demo1',
+            path: '/groot/page1',
+            metadata: {
+              moduleName: 'Button_text',
+              packageName: 'antd',
+              componentName: 'Button',
+              props: [{ key: 'children', defaultValue: 'hello world!' }]
+            }
+          }
+        ]
+      } as ProjectDataType)
+    })
   }).then((projectData) => {
     managerInstance.projectLoading = false;
     const pages = projectData.pages.map((orignPage) => {

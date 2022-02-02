@@ -35,7 +35,7 @@ export function emitCode(metadata: CodeMetadata): string {
       statArr.push({
         key: item.key,
         defaultValue: item.defaultValue,
-        valueType: item.valueType
+        valueType: item.valueType!
       });
       return propLiteral;
     } else {
