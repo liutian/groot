@@ -4,8 +4,7 @@
     "outDir": "dist",
     "lib": [
       "ES2021",
-      "DOM",
-      "WebWorker"
+      "DOM"
     ],
     "jsx": "react-jsx"
   },

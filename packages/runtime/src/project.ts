@@ -1,4 +1,4 @@
-import { CodeMetadata } from '@groot/core';
+import { CodeMetadata } from '@groot-elf/core';
 import { loadWebWorker } from './config';
 import { Page } from './page';
 import { ProjectDataType, UIManagerInstance, WebWorkerOutputMessage } from './types';

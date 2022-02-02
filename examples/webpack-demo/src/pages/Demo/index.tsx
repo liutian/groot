@@ -1,5 +1,5 @@
 import { Button, Input, Select } from 'antd';
-import { UIManager } from '@groot/runtime';
+import { UIManager } from '@groot-elf/runtime';
 import { useLocation } from 'react-router';
 import react from 'react';
 import * as tslib from 'tslib';

@@ -1,4 +1,4 @@
-import { CodeMetadata } from '@groot/core';
+import { CodeMetadata } from '@groot-elf/core';
 import { AMDModuleOption } from './amd';
 import { Page } from './page';
 import { Project } from './project';
