@@ -10,7 +10,8 @@
     ],
     "jsx": "react-jsx",
     "sourceMap": true,
-    "paths": {}
+    "paths": {},
+    "resolveJsonModule": true
   },
   "include": [
     "./src"
