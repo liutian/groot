@@ -4,6 +4,8 @@ const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyPlugin = require("copy-webpack-plugin");
+const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
+
 
 module.exports = (env, args) => {
 	return {
@@ -17,7 +19,7 @@ module.exports = (env, args) => {
 			extensions: ['.tsx', '.ts', '.less', '.js'],
 			plugins: [
 				new TsconfigPathsPlugin({
-				
+
 				})
 			]
 		},
@@ -43,6 +45,14 @@ module.exports = (env, args) => {
 		},
 		module: {
 			rules: [
+				{
+					test: /\.css$/,
+					use: ['style-loader', 'css-loader']
+				},
+				{
+					test: /\.ttf$/,
+					use: ['file-loader']
+				},
 				{
 					test: /\.(tsx|ts)$/i,
 					loader: 'ts-loader',
@@ -106,12 +116,14 @@ module.exports = (env, args) => {
 			new webpack.DefinePlugin({
 				'process.env.APP': JSON.stringify('dev'),
 			}),
-			
+
 			new CopyPlugin({
 				patterns: [
-					{from: "public/**/*.*"}
+					{ from: "public/**/*.*" }
 				],
-			})
+			}),
+
+			new MonacoWebpackPlugin()
 		]
 	}
 }

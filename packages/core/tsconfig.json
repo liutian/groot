@@ -6,7 +6,8 @@
     "lib": [
       "ES2021",
       "DOM"
-    ]
+    ],
+    "resolveJsonModule": true
   },
   "include": [
     "src"

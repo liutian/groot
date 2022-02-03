@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://groot.dev/metadata.schema.json",
+  "title": "metadata",
+  "type": "object",
+  "required": [
+    "key",
+    "defaultValue"
+  ],
+  "properties": {
+    "key": {
+      "type": "string",
+      "description": "属性名"
+    },
+    "valueType": {
+      "enum": [
+        "string",
+        "number",
+        "boolean",
+        "array",
+        "object",
+        "function"
+      ],
+      "description": "属性类型"
+    },
+    "defaultValue": {
+      "type": "string",
+      "description": "默认值"
+    },
+    "statRelative": {
+      "type": "boolean",
+      "description": "属性值关联状态"
+    }
+  }
+}
