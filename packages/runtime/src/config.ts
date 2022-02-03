@@ -49,7 +49,7 @@ export function loadWebWorker(): void {
 
   const workerOptions = JSON.stringify({
     tsWorkerUrl:
-      'https://typescript.azureedge.net/cdn/4.3.4/monaco/min/vs/language/typescript/tsWorker.js',
+      'https://typescript.azureedge.net/cdn/4.4.4/monaco/min/vs/language/typescript/tsWorker.js',
   });
 
 
