@@ -62,7 +62,11 @@ function Home() {
     });
 
     editorRef.current = monaco.editor.create(codeEditorContainerRef.current, {
-      model
+      model,
+      formatOnPaste: true,
+      minimap: {
+        enabled: false
+      }
     });
 
     editorSubscriptionRef.current = editorRef.current.onDidChangeModelContent(() => {
@@ -82,8 +86,6 @@ function Home() {
       }
     }
   }, []);
-
-
 
   return <div className={styles.main}>
     <iframe ref={iframeRef} name={pageName} className={styles.page} src={pageUrl}></iframe>
