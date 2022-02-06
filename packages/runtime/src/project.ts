@@ -31,6 +31,7 @@ export class Project {
       project.studioPage.hostMetadataPromise = new Promise((resolve) => {
         project.hostMetadataResove = resolve;
       });
+      delete project.studioPage.resourceUrl;
       project.allPageMap.set(project.studioPage.path, project.studioPage);
 
       window.parent!.postMessage('ok', '*');

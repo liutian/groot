@@ -81,9 +81,14 @@ export function loadProject(): Promise<void> {
     managerInstance.projectLoading = false;
     const pages = projectData.pages.map((orignPage) => {
       const page = new Page(orignPage.name, orignPage.path, managerInstance);
-      if (orignPage.metadata) {
+      if (orignPage.resourceUrl) {
+        page.resourceUrl = orignPage.resourceUrl;
+      } else if (orignPage.metadata) {
         page.metadata = orignPage.metadata as CodeMetadata;
+      } else {
+        errorInfo('resourceUrl and metadata can not be empty');
       }
+
       return page;
     })
     managerInstance.project = Project.create({ ...projectData, pages }, managerInstance);

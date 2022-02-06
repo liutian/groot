@@ -71,10 +71,7 @@ export class Page extends EventTarget {
           resolve(this.metadata!);
         }
       } else {
-        /** mock - 请求页面metadata */
-        setTimeout(() => {
-          resolve(this.metadata!);
-        }, 1000);
+        resolve(this.metadata!);
       }
     }).then((metadata) => {
       return this.createModuleByWorker(metadata);
