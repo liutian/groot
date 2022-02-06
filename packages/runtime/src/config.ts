@@ -77,27 +77,7 @@ export function loadProject(): Promise<void> {
   }
 
   managerInstance.projectLoading = true;
-  return new Promise<ProjectDataType>((resolve) => {
-    setTimeout(() => {
-      resolve({
-        /** mock - 请求项目信息 */
-        name: 'mockName',
-        key: 'mockKey',
-        pages: [
-          {
-            name: 'demo1',
-            path: '/groot/page1',
-            metadata: {
-              moduleName: 'Button_text',
-              packageName: 'antd',
-              componentName: 'Button',
-              props: [{ key: 'children', defaultValue: 'hello world!' }]
-            }
-          }
-        ]
-      } as ProjectDataType)
-    })
-  }).then((projectData) => {
+  return getProjectInfo().then((projectData: ProjectDataType) => {
     managerInstance.projectLoading = false;
     const pages = projectData.pages.map((orignPage) => {
       const page = new Page(orignPage.name, orignPage.path, managerInstance);
@@ -108,6 +88,16 @@ export function loadProject(): Promise<void> {
     })
     managerInstance.project = Project.create({ ...projectData, pages }, managerInstance);
   });
+}
+
+function getProjectInfo() {
+  if (bootstrapOptions.cloudServer && bootstrapOptions.projectKey) {
+    return window.fetch(bootstrapOptions.cloudServer + '/project/detail/' + bootstrapOptions.projectKey).then(response => response.json());
+  } else if (window._grootProjectInfo) {
+    return Promise.resolve(window._grootProjectInfo);
+  } else {
+    return Promise.reject(new Error('no project info'));
+  }
 }
 
 export { bootstrapOptions };

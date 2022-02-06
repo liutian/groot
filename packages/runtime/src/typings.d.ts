@@ -1,3 +1,4 @@
+
 interface Window {
   define: (
     moduleName: string,
@@ -5,4 +6,8 @@ interface Window {
     wrapper: (...defaultModule: any) => void
   ) => void;
   _moduleCallback: (module: any) => void;
+
+  _grootProjectInfo: any;
 }
+
+

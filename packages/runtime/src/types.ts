@@ -22,7 +22,11 @@ export type UIManagerOption = {
   /**
    * 拉取代码元数据的服务器地址
    */
-  server: string;
+  cloudServer?: string;
+  /**
+   * 项目key
+   */
+  projectKey?: string;
   /**
    * 是否立即加载WebWorker
    */
