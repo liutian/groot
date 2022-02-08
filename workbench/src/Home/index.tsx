@@ -40,6 +40,9 @@ function Home() {
         })
       }
     });
+  }, []);
+
+  useEffect(() => {
 
     const jsonCode = '[{ "key": "children", "defaultValue": "hello world!" }]';
     let modelUri = monaco.Uri.parse('groot://index.json');
@@ -69,10 +72,6 @@ function Home() {
       }
     });
 
-    editorSubscriptionRef.current = editorRef.current.onDidChangeModelContent(() => {
-      refresh();
-    })
-
     return () => {
       if (editorRef.current) {
         editorRef.current.dispose();
@@ -85,6 +84,30 @@ function Home() {
         }
       }
     }
+  }, []);
+
+  useEffect(() => {
+    const action = editorRef.current.getAction('editor.action.formatDocument');
+
+    setTimeout(() => {
+      action.run();
+    }, 100);
+  }, []);
+
+  useEffect(() => {
+    let keyDown = false;
+    editorRef.current.onKeyDown(() => {
+      keyDown = true;
+      setTimeout(() => {
+        keyDown = false;
+      });
+    })
+
+    editorSubscriptionRef.current = editorRef.current.onDidChangeModelContent(() => {
+      if (keyDown) {
+        refresh();
+      }
+    });
   }, []);
 
   return <div className={styles.main}>
