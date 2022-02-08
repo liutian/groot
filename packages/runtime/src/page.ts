@@ -19,6 +19,7 @@ export class Page extends EventTarget {
    * 页面加载完成的回调函数
    */
   private resolveCallbackForLoad!: () => void;
+  private resolveCallbackForWorker?: () => void;
   /**
    * 通过url加载页面代码的回调
    */
@@ -29,6 +30,7 @@ export class Page extends EventTarget {
   private metadataPromise!: Promise<void>;
   hostMetadataPromise!: Promise<CodeMetadata>;
   loadFromHostFirst = false;
+  transformQueue: WebWorkerInputMessage[] = [];
 
   constructor(public name: string, public path: string, private manager: UIManagerInstance) {
     super();
@@ -74,7 +76,17 @@ export class Page extends EventTarget {
         resolve(this.metadata!);
       }
     }).then((metadata) => {
-      return this.createModuleByWorker(metadata);
+      this.metadata = metadata;
+      const messageData: WebWorkerInputMessage = {
+        type: 'transformCode',
+        metadata,
+        path: this.path,
+      };
+      this.postMessageByQueue(messageData);
+
+      return new Promise((resolve) => {
+        this.resolveCallbackForLoad = resolve;
+      });
     });
   }
 
@@ -85,10 +97,10 @@ export class Page extends EventTarget {
       metadata,
       path: this.path,
     };
+    this.postMessageByQueue(messageData);
 
     return new Promise((resolve) => {
-      this.resolveCallbackForLoad = resolve;
-      (this.manager.worker as Worker).postMessage(messageData);
+      this.resolveCallbackForWorker = resolve;
     });
   }
 
@@ -113,6 +125,9 @@ export class Page extends EventTarget {
     window._moduleCallback = (module) => {
       this.module = module;
       this.resolveCallbackForLoad();
+      if (this.resolveCallbackForWorker) {
+        this.resolveCallbackForWorker();
+      }
       // 触发强制刷新UI的事件
       this.dispatchEvent(new Event('refresh'));
     };
@@ -121,6 +136,23 @@ export class Page extends EventTarget {
       window.Function(code)();
     } catch (err) {
       errorInfo('page code execute fail ==> ' + err, 'project');
+    } finally {
+      this.postMessageByQueue();
+    }
+  }
+
+  // 防止热更新触发频率高导致转移任务无法迅速完成
+  private postMessageByQueue(message?: WebWorkerInputMessage) {
+    if (message) {
+      if (this.transformQueue.length === 0) {
+        (this.manager.worker as Worker).postMessage(message);
+      } else {
+        this.transformQueue.push(message);
+      }
+    } else {
+      if (this.transformQueue.length) {
+        (this.manager.worker as Worker).postMessage(this.transformQueue.shift());
+      }
     }
   }
 }
