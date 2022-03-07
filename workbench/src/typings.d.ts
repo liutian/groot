@@ -1,3 +1,4 @@
+
 declare module '*.less';
 
 declare namespace NodeJS {
@@ -14,4 +15,28 @@ interface Window {
     wrapper: (...defaultModule: any) => void
   ) => void;
   _moduleCallback: (module: any) => void;
+}
+
+
+type CodeMetaStudioType = {
+  name: string;
+  propGroups: CodeMetaPropGroup[]
+}
+
+type CodeMetaPropGroup = {
+  title: string,
+  propBlocks: CodeMetaPropBlock[]
+}
+
+type CodeMetaPropBlock = {
+  title: string,
+  propItems: CodeMetaPropItem[],
+  formInstanceRef: { current: any }
+}
+
+type CodeMetaPropItem = {
+  key: string,
+  label: string,
+  value?: any,
+  type: 'input' | 'date-picker'
 }
