@@ -3,6 +3,9 @@ import { useState } from "react";
 import StudioForm from "../StudioForm";
 import { SettingOutlined, VerticalAlignTopOutlined, FolderAddOutlined, EditOutlined, VerticalAlignBottomOutlined, DeleteOutlined, CaretRightOutlined } from '@ant-design/icons';
 import React from "react";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
+import DraggableTabNode from "../DraggableTabNode";
 // import styles from './index.module.less';
 
 function Studio() {
@@ -167,30 +170,58 @@ function Studio() {
     </Popover>
   }
 
+  const moveTabNode = (dragKey: number, hoverKey: number) => {
+    dragKey = +dragKey;
+    hoverKey = +hoverKey;
+    if (dragKey === hoverKey) {
+      return;
+    }
+
+    const drag = codeMetaStudioData.propGroups[dragKey]!;
+    codeMetaStudioData.propGroups.splice(hoverKey, 0, drag);
+    if (hoverKey < dragKey) {
+      codeMetaStudioData.propGroups.splice(dragKey + 1, 1);
+    } else {
+      codeMetaStudioData.propGroups.splice(dragKey, 1);
+    }
+    setCodeMetaStudioData({ ...codeMetaStudioData });
+  }
+
+  const renderTabBar = (props: any, DefaultTabBar: React.ElementType) => (
+    <DefaultTabBar {...props}>
+      {(node: React.ReactElement) => (
+        <DraggableTabNode key={node.key} index={node.key as number} moveNode={moveTabNode}>
+          {node as any}
+        </DraggableTabNode>
+      )}
+    </DefaultTabBar>
+  );
+
   /////////////////////////////////////////////////////////////////////////////
   return <>
     <Button type="primary" onClick={() => getData()}>保存</Button>
-    <Tabs type="card" size="small" className="studio-tabs" tabBarExtraContent={viewGroupSetting()}>
-      {
-        codeMetaStudioData.propGroups.map((group, groupIndex) => {
-          return (<Tabs.TabPane tab={group.title} key={groupIndex}>
-            <div style={{ textAlign: 'center' }} hidden={!settingMode}>
-              <Button type="link" icon={<FolderAddOutlined />} onClick={() => {
-                group.propBlocks.push({
-                  title: '区块' + group.propBlocks.length,
-                  propItems: [],
-                  formInstanceRef: { current: null }
-                });
-                setCodeMetaStudioData({ ...codeMetaStudioData });
-              }}>添加</Button>
-            </div>
+    <DndProvider backend={HTML5Backend}>
+      <Tabs type="card" size="small" className="studio-tabs" renderTabBar={renderTabBar} tabBarExtraContent={viewGroupSetting()}>
+        {
+          codeMetaStudioData.propGroups.map((group, groupIndex) => {
+            return (<Tabs.TabPane tab={group.title} key={groupIndex}>
+              <div style={{ textAlign: 'center' }} hidden={!settingMode}>
+                <Button type="link" icon={<FolderAddOutlined />} onClick={() => {
+                  group.propBlocks.push({
+                    title: '区块' + group.propBlocks.length,
+                    propItems: [],
+                    formInstanceRef: { current: null }
+                  });
+                  setCodeMetaStudioData({ ...codeMetaStudioData });
+                }}>添加</Button>
+              </div>
 
-            {viewBlocks(group)}
-          </Tabs.TabPane>)
-        })
-      }
-    </Tabs>
-
+              {viewBlocks(group)}
+            </Tabs.TabPane>)
+          })
+        }
+      </Tabs>
+    </DndProvider>
   </>
 }
 
