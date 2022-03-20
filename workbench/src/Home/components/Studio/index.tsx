@@ -1,16 +1,19 @@
 import { Button, Col, Collapse, Input, Popover, Row, Space, Tabs, Typography } from "antd";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import StudioForm from "../StudioForm";
 import { SettingOutlined, VerticalAlignTopOutlined, FolderAddOutlined, EditOutlined, VerticalAlignBottomOutlined, DeleteOutlined, CaretRightOutlined } from '@ant-design/icons';
 import React from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import DraggableTabNode from "../DraggableTabNode";
+import { useRefresh } from "util/hooks";
 // import styles from './index.module.less';
 
 function Studio() {
+  const refresh = useRefresh();
   const [settingMode,] = useState(true);
-  const [codeMetaStudioData, setCodeMetaStudioData] = useState(initData as CodeMetaStudioType);
+  const [codeMetaStudioData] = useState(initData as CodeMetaStudioType);
+  const tabActiveRef = useRef(0);
 
   const getData = () => {
     codeMetaStudioData.propGroups.forEach((group) => {
@@ -24,7 +27,7 @@ function Studio() {
   const viewBlocks = (group: CodeMetaPropGroup) => {
     const delBlock = (groupIndex: number) => {
       group.propBlocks.splice(groupIndex, 1);
-      setCodeMetaStudioData({ ...codeMetaStudioData });
+      refresh();
     }
 
     const moveBlock = (originIndex: number, up: boolean) => {
@@ -34,7 +37,7 @@ function Studio() {
       } else {
         group.propBlocks.splice(originIndex + 1, 0, moveBlock!);
       }
-      setCodeMetaStudioData({ ...codeMetaStudioData });
+      refresh();
     }
 
     const viewBlockSetting = (index: number) => {
@@ -70,12 +73,12 @@ function Studio() {
         <Input maxLength={20} hidden={!editMode} ref={inputRef} style={{ width: '15em' }} size="small" value={block.title}
           onBlur={() => {
             (block as any)._editMode = false;
-            setCodeMetaStudioData({ ...codeMetaStudioData });
+            refresh();
           }}
           onClick={(e) => e.stopPropagation()}
           onChange={(e) => {
             block.title = e.target.value;
-            setCodeMetaStudioData({ ...codeMetaStudioData });
+            refresh();
           }} />
 
         <Space hidden={editMode}>
@@ -83,7 +86,7 @@ function Studio() {
           <a hidden={!settingMode} onClick={(e) => {
             e.stopPropagation();
             (block as any)._editMode = true;
-            setCodeMetaStudioData({ ...codeMetaStudioData });
+            refresh();
             const inputEle = inputRef.current as any;
             setTimeout(() => {
               if (inputEle) {
@@ -113,7 +116,7 @@ function Studio() {
 
     const delGroup = (groupIndex: number) => {
       codeMetaStudioData.propGroups.splice(groupIndex, 1);
-      setCodeMetaStudioData({ ...codeMetaStudioData });
+      refresh();
     }
 
     const moveGroup = (originIndex: number, up: boolean) => {
@@ -123,7 +126,7 @@ function Studio() {
       } else {
         codeMetaStudioData.propGroups.splice(originIndex + 1, 0, moveGroup!);
       }
-      setCodeMetaStudioData({ ...codeMetaStudioData });
+      refresh();
     }
 
     const viewContent = <>
@@ -134,7 +137,7 @@ function Studio() {
               <Col span={16}>
                 <Input maxLength={10} value={group.title} onChange={(e) => {
                   group.title = e.target.value;
-                  setCodeMetaStudioData({ ...codeMetaStudioData });
+                  refresh();
                 }} size="small" />
               </Col>
               <Col span={8} style={{ textAlign: 'right' }}>
@@ -160,7 +163,7 @@ function Studio() {
             title: '分组' + codeMetaStudioData.propGroups.length,
             propBlocks: []
           });
-          setCodeMetaStudioData({ ...codeMetaStudioData });
+          refresh();
         }}>添加</Button>
       </div>
     </>
@@ -179,12 +182,23 @@ function Studio() {
 
     const drag = codeMetaStudioData.propGroups[dragKey]!;
     codeMetaStudioData.propGroups.splice(hoverKey, 0, drag);
+
     if (hoverKey < dragKey) {
       codeMetaStudioData.propGroups.splice(dragKey + 1, 1);
+      if (tabActiveRef.current >= hoverKey && tabActiveRef.current < dragKey) {
+        tabActiveRef.current += 1;
+      } else if (tabActiveRef.current === dragKey) {
+        tabActiveRef.current = hoverKey;
+      }
     } else {
+      if (tabActiveRef.current === dragKey && tabActiveRef.current < hoverKey) {
+        tabActiveRef.current -= 1;
+      } else if (tabActiveRef.current === dragKey) {
+        tabActiveRef.current = hoverKey - 1;
+      }
       codeMetaStudioData.propGroups.splice(dragKey, 1);
     }
-    setCodeMetaStudioData({ ...codeMetaStudioData });
+    refresh();
   }
 
   const renderTabBar = (props: any, DefaultTabBar: React.ElementType) => (
@@ -196,12 +210,15 @@ function Studio() {
       )}
     </DefaultTabBar>
   );
-
   /////////////////////////////////////////////////////////////////////////////
   return <>
     <Button type="primary" onClick={() => getData()}>保存</Button>
     <DndProvider backend={HTML5Backend}>
-      <Tabs type="card" size="small" className="studio-tabs" renderTabBar={renderTabBar} tabBarExtraContent={viewGroupSetting()}>
+      <Tabs type="card" size="small" className="studio-tabs" activeKey={tabActiveRef.current + ''}
+        onChange={activeKey => {
+          tabActiveRef.current = +activeKey;
+          refresh();
+        }} renderTabBar={renderTabBar} tabBarExtraContent={viewGroupSetting()}>
         {
           codeMetaStudioData.propGroups.map((group, groupIndex) => {
             return (<Tabs.TabPane tab={group.title} key={groupIndex}>
@@ -212,7 +229,7 @@ function Studio() {
                     propItems: [],
                     formInstanceRef: { current: null }
                   });
-                  setCodeMetaStudioData({ ...codeMetaStudioData });
+                  refresh();
                 }}>添加</Button>
               </div>
 
