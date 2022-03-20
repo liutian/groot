@@ -1,4 +1,4 @@
-import { Button, Col, Collapse, Input, Popover, Row, Space, Tabs, Typography } from "antd";
+import { Button, Col, Collapse, Dropdown, Input, Menu, Popover, Row, Space, Tabs, Typography } from "antd";
 import { useRef, useState } from "react";
 import StudioForm from "../StudioForm";
 import { SettingOutlined, VerticalAlignTopOutlined, FolderAddOutlined, EditOutlined, VerticalAlignBottomOutlined, DeleteOutlined, CaretRightOutlined } from '@ant-design/icons';
@@ -210,6 +210,25 @@ function Studio() {
       )}
     </DefaultTabBar>
   );
+
+  const renderTabBarItem = (group: CodeMetaPropGroup, groupIndex: number) => {
+    const delGroup = (index: number) => {
+      codeMetaStudioData.propGroups.splice(index, 1);
+      refresh();
+    }
+
+    const menus = (
+      <Menu>
+        <Menu.Item onClick={() => delGroup(groupIndex)}>删除</Menu.Item>
+        <Menu.Item>复制</Menu.Item>
+        <Menu.Item>配置</Menu.Item>
+      </Menu>
+    );
+
+    return <Dropdown overlayStyle={{ minWidth: '5em' }} overlay={menus} trigger={['contextMenu']}>
+      <div>{group.title}</div>
+    </Dropdown>
+  }
   /////////////////////////////////////////////////////////////////////////////
   return <>
     <Button type="primary" onClick={() => getData()}>保存</Button>
@@ -221,7 +240,7 @@ function Studio() {
         }} renderTabBar={renderTabBar} tabBarExtraContent={viewGroupSetting()}>
         {
           codeMetaStudioData.propGroups.map((group, groupIndex) => {
-            return (<Tabs.TabPane tab={group.title} key={groupIndex}>
+            return (<Tabs.TabPane tab={renderTabBarItem(group, groupIndex)} key={groupIndex}>
               <div style={{ textAlign: 'center' }} hidden={!settingMode}>
                 <Button type="link" icon={<FolderAddOutlined />} onClick={() => {
                   group.propBlocks.push({
