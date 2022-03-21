@@ -7,13 +7,14 @@ import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import DraggableTabNode from "../DraggableTabNode";
 import { useRefresh } from "util/hooks";
+import { uuid } from "util/utils";
 // import styles from './index.module.less';
 
 function Studio() {
   const refresh = useRefresh();
   const [settingMode,] = useState(true);
   const [codeMetaStudioData] = useState(initData as CodeMetaStudioType);
-  const tabActiveRef = useRef(0);
+  const tabActiveRef = useRef('');
 
   const getData = () => {
     codeMetaStudioData.propGroups.forEach((group) => {
@@ -160,6 +161,7 @@ function Studio() {
       <div style={{ textAlign: 'center', marginBottom: '-5px' }}>
         <Button type="link" onClick={() => {
           codeMetaStudioData.propGroups.push({
+            key: uuid(),
             title: '分组' + codeMetaStudioData.propGroups.length,
             propBlocks: []
           });
@@ -173,30 +175,35 @@ function Studio() {
     </Popover>
   }
 
-  const moveTabNode = (dragKey: number, hoverKey: number) => {
-    dragKey = +dragKey;
-    hoverKey = +hoverKey;
+  const moveTabNode = (dragKey: string, hoverKey: string) => {
     if (dragKey === hoverKey) {
       return;
     }
 
-    const drag = codeMetaStudioData.propGroups[dragKey]!;
-    codeMetaStudioData.propGroups.splice(hoverKey, 0, drag);
+    const groups = codeMetaStudioData.propGroups;
 
-    if (hoverKey < dragKey) {
-      codeMetaStudioData.propGroups.splice(dragKey + 1, 1);
-      if (tabActiveRef.current >= hoverKey && tabActiveRef.current < dragKey) {
-        tabActiveRef.current += 1;
-      } else if (tabActiveRef.current === dragKey) {
+    const drag = groups.find(g => g.key === dragKey)!;
+    const hoverIndex = groups.findIndex(g => g.key === hoverKey);
+    const dragIndex = groups.findIndex(g => g.key === dragKey);
+    const currentIndex = groups.findIndex(g => g.key === tabActiveRef.current);
+
+    groups.splice(hoverIndex, 0, drag);
+
+    if (hoverIndex < dragIndex) {
+
+      groups.splice(dragIndex + 1, 1);
+      if (currentIndex >= hoverIndex && currentIndex < dragIndex) {
+        tabActiveRef.current = groups[currentIndex + 1]?.key!;
+      } else if (currentIndex === dragIndex) {
         tabActiveRef.current = hoverKey;
       }
     } else {
-      if (tabActiveRef.current === dragKey && tabActiveRef.current < hoverKey) {
-        tabActiveRef.current -= 1;
-      } else if (tabActiveRef.current === dragKey) {
-        tabActiveRef.current = hoverKey - 1;
+      if (currentIndex === dragIndex && currentIndex < hoverIndex) {
+        tabActiveRef.current = groups[currentIndex - 1]?.key!;
+      } else if (currentIndex === dragIndex) {
+        tabActiveRef.current = groups[hoverIndex - 1]?.key!;
       }
-      codeMetaStudioData.propGroups.splice(dragKey, 1);
+      groups.splice(dragIndex, 1);
     }
     refresh();
   }
@@ -204,22 +211,23 @@ function Studio() {
   const renderTabBar = (props: any, DefaultTabBar: React.ElementType) => (
     <DefaultTabBar {...props}>
       {(node: React.ReactElement) => (
-        <DraggableTabNode key={node.key} index={node.key as number} moveNode={moveTabNode}>
+        <DraggableTabNode key={node.key} nodeKey={node.key as string} moveNode={moveTabNode}>
           {node as any}
         </DraggableTabNode>
       )}
     </DefaultTabBar>
   );
 
-  const renderTabBarItem = (group: CodeMetaPropGroup, groupIndex: number) => {
-    const delGroup = (index: number) => {
+  const renderTabBarItem = (group: CodeMetaPropGroup) => {
+    const delGroup = () => {
+      const index = codeMetaStudioData.propGroups.findIndex(g => g.key === group.key);
       codeMetaStudioData.propGroups.splice(index, 1);
       refresh();
     }
 
     const menus = (
       <Menu>
-        <Menu.Item onClick={() => delGroup(groupIndex)}>删除</Menu.Item>
+        <Menu.Item onClick={() => delGroup()}>删除</Menu.Item>
         <Menu.Item>复制</Menu.Item>
         <Menu.Item>配置</Menu.Item>
       </Menu>
@@ -235,15 +243,16 @@ function Studio() {
     <DndProvider backend={HTML5Backend}>
       <Tabs type="card" size="small" className="studio-tabs" activeKey={tabActiveRef.current + ''}
         onChange={activeKey => {
-          tabActiveRef.current = +activeKey;
+          tabActiveRef.current = activeKey;
           refresh();
         }} renderTabBar={renderTabBar} tabBarExtraContent={viewGroupSetting()}>
         {
-          codeMetaStudioData.propGroups.map((group, groupIndex) => {
-            return (<Tabs.TabPane tab={renderTabBarItem(group, groupIndex)} key={groupIndex}>
+          codeMetaStudioData.propGroups.map((group) => {
+            return (<Tabs.TabPane tab={renderTabBarItem(group)} key={group.key}>
               <div style={{ textAlign: 'center' }} hidden={!settingMode}>
                 <Button type="link" icon={<FolderAddOutlined />} onClick={() => {
                   group.propBlocks.push({
+                    key: uuid(),
                     title: '区块' + group.propBlocks.length,
                     propItems: [],
                     formInstanceRef: { current: null }
@@ -264,9 +273,11 @@ function Studio() {
 const initData = {
   name: '测试',
   propGroups: [{
+    key: 'aaa',
     title: '测试',
     propBlocks: [
       {
+        key: '111',
         title: '测试',
         formInstanceRef: { current: null },
         propItems: [{
@@ -276,6 +287,7 @@ const initData = {
           type: 'input'
         }]
       }, {
+        key: '222',
         title: '测试',
         formInstanceRef: { current: null },
         propItems: [{

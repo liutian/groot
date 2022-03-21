@@ -5,18 +5,18 @@ import './index.less'
 const type = 'DraggableTabNode';
 
 type PramsType = {
-  index: number,
+  nodeKey: string,
   children: ReactChildren,
-  moveNode: (dragKey: number, hoverKey: number) => void
+  moveNode: (dragKey: string, hoverKey: string) => void
 }
 
-const DraggableTabNode: React.FC<PramsType> = ({ index, children, moveNode }) => {
+const DraggableTabNode: React.FC<PramsType> = ({ nodeKey, children, moveNode }) => {
   const ref = useRef({} as any);
   const [{ isOver, dropClassName }, drop] = useDrop({
     accept: type,
     collect: monitor => {
-      const { index: dragIndex }: any = monitor.getItem() || {};
-      if (dragIndex === index) {
+      const { nodeKey: dragKey }: any = monitor.getItem() || {};
+      if (dragKey === nodeKey) {
         return {};
       }
       return {
@@ -25,12 +25,12 @@ const DraggableTabNode: React.FC<PramsType> = ({ index, children, moveNode }) =>
       };
     },
     drop: (item: any) => {
-      moveNode(item.index, index);
+      moveNode(item.nodeKey, nodeKey);
     },
   });
   const [, drag] = useDrag({
     type,
-    item: { index },
+    item: { nodeKey },
     collect: monitor => ({
       isDragging: monitor.isDragging(),
     }),

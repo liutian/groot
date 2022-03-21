@@ -25,11 +25,13 @@ type CodeMetaStudioType = {
 
 type CodeMetaPropGroup = {
   title: string,
+  key: string,
   propBlocks: CodeMetaPropBlock[]
 }
 
 type CodeMetaPropBlock = {
   title: string,
+  key: string,
   propItems: CodeMetaPropItem[],
   formInstanceRef: { current: any }
 }
