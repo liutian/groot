@@ -222,12 +222,15 @@ function Studio() {
     const delGroup = () => {
       const index = codeMetaStudioData.propGroups.findIndex(g => g.key === group.key);
       codeMetaStudioData.propGroups.splice(index, 1);
+      if (tabActiveRef.current === group.key) {
+        tabActiveRef.current = codeMetaStudioData.propGroups[0]!.key;
+      }
       refresh();
     }
 
     const menus = (
       <Menu>
-        <Menu.Item onClick={() => delGroup()}>删除</Menu.Item>
+        <Menu.Item disabled={codeMetaStudioData.propGroups.length === 0} onClick={() => delGroup()}>删除</Menu.Item>
         <Menu.Item>复制</Menu.Item>
         <Menu.Item>配置</Menu.Item>
       </Menu>
@@ -241,10 +244,13 @@ function Studio() {
   return <>
     <Button type="primary" onClick={() => getData()}>保存</Button>
     <DndProvider backend={HTML5Backend}>
-      <Tabs type="card" size="small" className="studio-tabs" activeKey={tabActiveRef.current + ''}
+      <Tabs type="card" size="small" className="studio-tabs" activeKey={tabActiveRef.current}
         onChange={activeKey => {
-          tabActiveRef.current = activeKey;
-          refresh();
+          const activeItem = codeMetaStudioData.propGroups.find(g => g.key === activeKey);
+          if (activeItem) {
+            tabActiveRef.current = activeKey;
+            refresh();
+          }
         }} renderTabBar={renderTabBar} tabBarExtraContent={viewGroupSetting()}>
         {
           codeMetaStudioData.propGroups.map((group) => {
