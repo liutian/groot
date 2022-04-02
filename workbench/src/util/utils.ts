@@ -1,7 +1,7 @@
 export const uuid = (() => {
-  let id = 1;
+  let id = 0xaaaaaaaa;
 
   return () => {
-    return (++id).toString();
+    return (++id).toString(16);
   }
 })();

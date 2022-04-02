@@ -1,13 +1,14 @@
-import { Button, Col, Collapse, Dropdown, Input, Menu, Popover, Row, Space, Tabs, Typography } from "antd";
+import { Button, Collapse, Dropdown, Input, Menu, Space, Tabs, Typography } from "antd";
 import { useRef, useState } from "react";
 import StudioForm from "../StudioForm";
-import { SettingOutlined, VerticalAlignTopOutlined, FolderAddOutlined, EditOutlined, VerticalAlignBottomOutlined, DeleteOutlined, CaretRightOutlined } from '@ant-design/icons';
+import { VerticalAlignTopOutlined, FolderAddOutlined, EditOutlined, VerticalAlignBottomOutlined, DeleteOutlined, CaretRightOutlined, PlusOutlined } from '@ant-design/icons';
 import React from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import DraggableTabNode from "../DraggableTabNode";
 import { useRefresh } from "util/hooks";
 import { uuid } from "util/utils";
+import GroupSetting, { GroupSettingDataType } from "../GroupSetting";
 // import styles from './index.module.less';
 
 function Studio() {
@@ -15,6 +16,7 @@ function Studio() {
   const [settingMode,] = useState(true);
   const [codeMetaStudioData] = useState(initData as CodeMetaStudioType);
   const tabActiveRef = useRef('');
+  const [currGroupSetting, setCurrGroupSetting] = useState<GroupSettingDataType | null>(null);
 
   const getData = () => {
     codeMetaStudioData.propGroups.forEach((group) => {
@@ -25,7 +27,7 @@ function Studio() {
     })
   }
 
-  const viewBlocks = (group: CodeMetaPropGroup) => {
+  const renderBlocks = (group: CodeMetaPropGroup) => {
     const delBlock = (groupIndex: number) => {
       group.propBlocks.splice(groupIndex, 1);
       refresh();
@@ -41,7 +43,7 @@ function Studio() {
       refresh();
     }
 
-    const viewBlockSetting = (index: number) => {
+    const renderBlockSetting = (index: number) => {
       if (!settingMode) return null;
 
       return (<Space size="small">
@@ -66,7 +68,7 @@ function Studio() {
       </Space>)
     }
 
-    const viewBlockTitle = (block: CodeMetaPropBlock) => {
+    const renderBlockTitle = (block: CodeMetaPropBlock) => {
       const editMode = (block as any)._editMode;
       const inputRef = { current: null };
 
@@ -102,7 +104,7 @@ function Studio() {
     return (<Collapse bordered={false} expandIconPosition="right" expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}>
       {
         group.propBlocks.map((block, blockIndex) => {
-          return (<Collapse.Panel header={viewBlockTitle(block)} key={blockIndex} extra={viewBlockSetting(blockIndex)}>
+          return (<Collapse.Panel header={renderBlockTitle(block)} key={blockIndex} extra={renderBlockSetting(blockIndex)}>
             <StudioForm settingMode={settingMode} items={block.propItems} ref={block.formInstanceRef} />
           </Collapse.Panel>)
         })
@@ -110,69 +112,17 @@ function Studio() {
     </Collapse>)
   }
 
-  const viewGroupSetting = () => {
-    if (!settingMode) {
-      return null;
-    }
-
-    const delGroup = (groupIndex: number) => {
-      codeMetaStudioData.propGroups.splice(groupIndex, 1);
-      refresh();
-    }
-
-    const moveGroup = (originIndex: number, up: boolean) => {
-      const [moveGroup] = codeMetaStudioData.propGroups.splice(originIndex, 1);
-      if (up) {
-        codeMetaStudioData.propGroups.splice(originIndex - 1, 0, moveGroup!);
+  const renderGroupSettingModal = () => {
+    const onFinish = (result: GroupSettingDataType) => {
+      if (result.type === 'add') {
+        codeMetaStudioData.propGroups.push({ ...result.group });
       } else {
-        codeMetaStudioData.propGroups.splice(originIndex + 1, 0, moveGroup!);
+        codeMetaStudioData.propGroups.splice(result.index!, 1, { ...result.group });
       }
-      refresh();
+      setCurrGroupSetting(null);
     }
 
-    const viewContent = <>
-      <Row gutter={[0, 10]}>
-        {
-          codeMetaStudioData.propGroups.map((group, index) => {
-            return (<React.Fragment key={index}>
-              <Col span={16}>
-                <Input maxLength={10} value={group.title} onChange={(e) => {
-                  group.title = e.target.value;
-                  refresh();
-                }} size="small" />
-              </Col>
-              <Col span={8} style={{ textAlign: 'right' }}>
-                <Space size="small">
-                  <Typography.Link disabled={index === 0} onClick={() => moveGroup(index, true)}>
-                    <VerticalAlignTopOutlined />
-                  </Typography.Link>
-                  <Typography.Link disabled={index === codeMetaStudioData.propGroups.length - 1} onClick={() => moveGroup(index, false)}>
-                    <VerticalAlignBottomOutlined />
-                  </Typography.Link>
-                  <Typography.Link onClick={() => delGroup(index)} disabled={index === 0 && codeMetaStudioData.propGroups.length === 1}>
-                    <DeleteOutlined />
-                  </Typography.Link>
-                </Space>
-              </Col>
-            </React.Fragment>)
-          })
-        }
-      </Row>
-      <div style={{ textAlign: 'center', marginBottom: '-5px' }}>
-        <Button type="link" onClick={() => {
-          codeMetaStudioData.propGroups.push({
-            key: uuid(),
-            title: '分组' + codeMetaStudioData.propGroups.length,
-            propBlocks: []
-          });
-          refresh();
-        }}>添加</Button>
-      </div>
-    </>
-
-    return <Popover trigger="click" placement="bottomRight" overlayInnerStyle={{ width: '300px' }} content={viewContent}>
-      <Button type="link" icon={<SettingOutlined />} style={{ marginRight: '5px' }}></Button>
-    </Popover>
+    return (<GroupSetting data={currGroupSetting} finish={onFinish} />)
   }
 
   const moveTabNode = (dragKey: string, hoverKey: string) => {
@@ -218,7 +168,7 @@ function Studio() {
     </DefaultTabBar>
   );
 
-  const renderTabBarItem = (group: CodeMetaPropGroup) => {
+  const renderTabBarItem = (group: CodeMetaPropGroup, groupIndex: number) => {
     const delGroup = () => {
       const index = codeMetaStudioData.propGroups.findIndex(g => g.key === group.key);
       codeMetaStudioData.propGroups.splice(index, 1);
@@ -232,7 +182,14 @@ function Studio() {
       <Menu>
         <Menu.Item disabled={codeMetaStudioData.propGroups.length === 0} onClick={() => delGroup()}>删除</Menu.Item>
         <Menu.Item>复制</Menu.Item>
-        <Menu.Item>配置</Menu.Item>
+        <Menu.Item onClick={(e) => {
+          setCurrGroupSetting({
+            type: 'edit',
+            group: JSON.parse(JSON.stringify(group)),
+            index: groupIndex
+          });
+          e.domEvent.stopPropagation();
+        }}>配置</Menu.Item>
       </Menu>
     );
 
@@ -240,39 +197,51 @@ function Studio() {
       <div>{group.title}</div>
     </Dropdown>
   }
+
   /////////////////////////////////////////////////////////////////////////////
   return <>
     <Button type="primary" onClick={() => getData()}>保存</Button>
     <DndProvider backend={HTML5Backend}>
       <Tabs type="card" size="small" className="studio-tabs" activeKey={tabActiveRef.current}
         onChange={activeKey => {
+          if (activeKey === '__add') {
+            setCurrGroupSetting({ type: 'add', group: { title: 'www', key: uuid(), propBlocks: [] } as CodeMetaPropGroup });
+            return;
+          }
+
           const activeItem = codeMetaStudioData.propGroups.find(g => g.key === activeKey);
           if (activeItem) {
             tabActiveRef.current = activeKey;
             refresh();
           }
-        }} renderTabBar={renderTabBar} tabBarExtraContent={viewGroupSetting()}>
+        }}
+        renderTabBar={renderTabBar} >
         {
-          codeMetaStudioData.propGroups.map((group) => {
-            return (<Tabs.TabPane tab={renderTabBarItem(group)} key={group.key}>
-              <div style={{ textAlign: 'center' }} hidden={!settingMode}>
-                <Button type="link" icon={<FolderAddOutlined />} onClick={() => {
-                  group.propBlocks.push({
-                    key: uuid(),
-                    title: '区块' + group.propBlocks.length,
-                    propItems: [],
-                    formInstanceRef: { current: null }
-                  });
-                  refresh();
-                }}>添加</Button>
-              </div>
+          [...codeMetaStudioData.propGroups, ({ key: '__add' } as CodeMetaPropGroup)].map((group, groupIndex) => {
+            if (group.key === '__add') {
+              return (<Tabs.TabPane key={group.key} tab={<PlusOutlined />}></Tabs.TabPane>)
+            } else {
+              return (<Tabs.TabPane closable={false} tab={renderTabBarItem(group, groupIndex)} key={group.key}>
+                <div style={{ textAlign: 'center' }} hidden={!settingMode}>
+                  <Button type="link" icon={<FolderAddOutlined />} onClick={() => {
+                    group.propBlocks.push({
+                      key: uuid(),
+                      title: '区块' + group.propBlocks.length,
+                      propItems: [],
+                      formInstanceRef: { current: null }
+                    });
+                    refresh();
+                  }}>添加</Button>
+                </div>
 
-              {viewBlocks(group)}
-            </Tabs.TabPane>)
+                {renderBlocks(group)}
+              </Tabs.TabPane>)
+            }
           })
         }
       </Tabs>
     </DndProvider>
+    {renderGroupSettingModal()}
   </>
 }
 
