@@ -11,7 +11,14 @@
     ],
     "jsx": "react-jsx",
     "sourceMap": true,
-    "paths": {}
+    "paths": {
+      "@model/*": [
+        "model/*"
+      ],
+      "@util/*": [
+        "util/*"
+      ]
+    }
   },
   "include": [
     "./src"
