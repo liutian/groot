@@ -44,27 +44,35 @@ function Editor({ onContentChange, defaultContent }: propsType) {
     });
 
     return () => {
-      if (editorRef.current) {
-        editorRef.current.dispose();
-        const model = editorRef.current.getModel();
-        if (model) {
-          model.dispose();
-        }
-        if (editorSubscriptionRef.current) {
-          editorSubscriptionRef.current.dispose();
-        }
+      if (!editorRef.current) {
+        return
+      }
+
+      editorRef.current.dispose();
+      const model = editorRef.current.getModel();
+      if (model) {
+        model.dispose();
+      }
+      if (editorSubscriptionRef.current) {
+        editorSubscriptionRef.current.dispose();
       }
     }
   }, []);
 
+  // 初始化默认你执行一次文档格式化
   useEffect(() => {
     const action = editorRef.current.getAction('editor.action.formatDocument');
 
-    setTimeout(() => {
+    const initRunTimeout = setTimeout(() => {
       action.run();
     }, 100);
+
+    return () => {
+      clearTimeout(initRunTimeout);
+    }
   }, []);
 
+  // 绑定键盘事件，自动触发更新
   useEffect(() => {
     let keyDown = false;
     editorRef.current.onKeyDown(() => {

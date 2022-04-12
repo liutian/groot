@@ -12,6 +12,8 @@ type PramsType = {
 
 const DraggableTabNode: React.FC<PramsType> = ({ nodeKey, children, moveNode }) => {
   const ref = useRef({} as any);
+
+  // 实在理解不动，拖拽这种强UI交互的逻辑代码用hook方式写
   const [{ isOver, dropClassName }, drop] = useDrop({
     accept: type,
     collect: monitor => {
@@ -28,6 +30,7 @@ const DraggableTabNode: React.FC<PramsType> = ({ nodeKey, children, moveNode }) 
       moveNode(item.nodeKey, nodeKey);
     },
   });
+
   const [, drag] = useDrag({
     type,
     item: { nodeKey },
@@ -36,6 +39,7 @@ const DraggableTabNode: React.FC<PramsType> = ({ nodeKey, children, moveNode }) 
     }),
   });
   drop(drag(ref));
+
   return (
     <div ref={ref} className={isOver ? dropClassName : ''}>
       {children}
