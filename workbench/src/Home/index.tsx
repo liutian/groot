@@ -1,4 +1,3 @@
-import { Button } from 'antd';
 import { useEffect } from 'react';
 import { useRef, useState } from 'react';
 import Editor from './components/Editor';
@@ -25,9 +24,9 @@ const Home = () => {
     // 加载页面组件配置器数据
     fetchPageComponentStudioData().then((data) => {
       pageComponentStudioRef.current = data;
+      model.init(data.codeMetaStudio!);
       // todo
       setPageName(`groot::{"path": "${data.path}","name":"${data.name}"}`);
-      model.init(data.codeMetaStudio!);
     });
 
     // 监听iframe页面，进行通信
@@ -66,10 +65,10 @@ const Home = () => {
       return null;
     }
 
-    if (model.settingMode) {
-      return <Studio />;
-    } else {
+    if (model.manualMode) {
       return <Editor onContentChange={notifyIframe} defaultContent={pageComponentStudioRef.current.codeMetadata!} />;
+    } else {
+      return <Studio />;
     }
   }
 
@@ -79,9 +78,6 @@ const Home = () => {
 
     <div className={styles.sidePanel}>
       <div className={styles.sideEdge}></div>
-      <div>
-        <Button type="primary" onClick={() => updateAction(() => model.settingMode = !model.settingMode)}>切换</Button>
-      </div>
       {renderSetting()}
     </div>
   </div>

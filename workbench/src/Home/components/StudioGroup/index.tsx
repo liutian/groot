@@ -69,6 +69,16 @@ const StudioGroup: React.FC<{ group: CodeMetaStudioPropGroup }> = ({ group }) =>
 
 
   return (<>
+    <Collapse defaultActiveKey={group.propBlocks.map(b => b.id!)} bordered={false} expandIconPosition="right" expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}>
+      {
+        group.propBlocks.map((block, blockIndex) => {
+          return (<Collapse.Panel header={block.title} key={block.id!} extra={renderBlockSetting(block, blockIndex)}>
+            <StudioBlock group={group} block={block} />
+          </Collapse.Panel>)
+        })
+      }
+    </Collapse>
+
     <div style={{ textAlign: 'center' }} hidden={!model.settingMode}>
       <Button type="link" icon={<FolderAddOutlined />} onClick={() => {
         updateAction(() => {
@@ -80,16 +90,6 @@ const StudioGroup: React.FC<{ group: CodeMetaStudioPropGroup }> = ({ group }) =>
         })
       }}>添加配置块</Button>
     </div>
-
-    <Collapse bordered={false} expandIconPosition="right" expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}>
-      {
-        group.propBlocks.map((block, blockIndex) => {
-          return (<Collapse.Panel header={block.title} key={block.id!} extra={renderBlockSetting(block, blockIndex)}>
-            <StudioBlock group={group} block={block} />
-          </Collapse.Panel>)
-        })
-      }
-    </Collapse>
   </>)
 };
 

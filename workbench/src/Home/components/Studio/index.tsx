@@ -1,5 +1,5 @@
 import { Button, Dropdown, Menu, Tabs } from "antd";
-import { PlusOutlined } from '@ant-design/icons';
+import { EditFilled, EditOutlined, PlusOutlined, SettingFilled, SettingOutlined } from '@ant-design/icons';
 import React from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -64,6 +64,20 @@ function Studio() {
     model.switchActiveGroup(activeKey);
   }
 
+  // tab右上角模式切换按钮
+  const renderSettingSwitchBtn = () => {
+    return <>
+      <Button type="link" icon={model.manualMode ? <EditFilled /> : <EditOutlined />} onClick={() => {
+        model.switchManualMode();
+      }}>
+      </Button>
+      <Button type="link" icon={model.settingMode ? <SettingFilled /> : <SettingOutlined />} onClick={() => {
+        model.switchSettingMode();
+      }}>
+      </Button>
+    </>
+  }
+
   const renderTabContent = () => {
     const list = model.codeMetaStudio.propGroups.map((group) => {
       return (<Tabs.TabPane key={group.id} tab={renderTabBarItem(group)} >
@@ -73,14 +87,13 @@ function Studio() {
 
     return <>
       {list}
-      <Tabs.TabPane key="__add" tab={<PlusOutlined />}></Tabs.TabPane>
+      {model.settingMode ? <Tabs.TabPane key="__add" tab={<PlusOutlined />}></Tabs.TabPane> : null}
     </>
   }
   /////////////////////////////////////////////////////////////////////////////
   return <>
-    <Button type="primary" onClick={() => model.productStudioData()}>保存</Button>
     <DndProvider backend={HTML5Backend}>
-      <Tabs type="card" size="small" className="studio-tabs" activeKey={model.activeGroupId}
+      <Tabs type="card" size="small" className="studio-tabs" tabBarExtraContent={renderSettingSwitchBtn()} activeKey={model.activeGroupId}
         onChange={tabOnChange}
         renderTabBar={renderTabBar} >
         {renderTabContent()}

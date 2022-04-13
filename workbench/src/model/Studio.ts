@@ -2,7 +2,6 @@ import { uuid } from "@util/utils";
 import { FormInstance } from "antd";
 
 export default class Studio {
-  test = 0;
   /**
    * tab激活的分组
    */
@@ -24,6 +23,7 @@ export default class Studio {
 
   public codeMetaStudio = {} as CodeMetaStudio;
   public settingMode = false;
+  public manualMode = false;
 
   public blockFormInstanceMap = new Map<string, FormInstance>();
 
@@ -162,4 +162,19 @@ export default class Studio {
     }
   }
 
+  public switchSettingMode = () => {
+    if (this.settingMode) {
+      this.settingMode = false;
+    } else {
+      this.settingMode = true;
+    }
+  }
+
+  public switchManualMode = () => {
+    if (this.manualMode) {
+      this.manualMode = false;
+    } else {
+      this.manualMode = true;
+    }
+  }
 }

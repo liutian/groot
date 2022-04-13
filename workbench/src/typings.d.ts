@@ -55,8 +55,10 @@ type CodeMetaStudioPropItem = {
   value?: any,
   defaultValue?: any,
   span?: number,
-  type: 'input' | 'date-picker'
+  type: CodeMetaStudioPropItemType
 }
+
+type CodeMetaStudioPropItemType = 'input' | 'date-picker' | 'boolean';
 
 /**
  * 组件配置类型

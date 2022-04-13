@@ -1,4 +1,4 @@
-import { Col, DatePicker, Form, Input, Row, Space, Typography } from "antd";
+import { Col, DatePicker, Form, Input, Row, Select, Space, Switch, Typography } from "antd";
 import { VerticalAlignTopOutlined, DeleteOutlined, VerticalAlignBottomOutlined, SettingOutlined } from '@ant-design/icons';
 import { useModel } from "@util/robot";
 import StudioModel from '@model/Studio';
@@ -74,6 +74,10 @@ function StudioBlock({ block, group }: PropType) {
       return <Input />;
     } else if (item.type === 'date-picker') {
       return <DatePicker />;
+    } else if (item.type === 'boolean') {
+      return <Switch />
+    } else if (item.type === 'select') {
+      return <Select />
     }
 
     return <>not found item</>
