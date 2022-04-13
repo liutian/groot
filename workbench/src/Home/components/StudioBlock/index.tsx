@@ -1,5 +1,5 @@
 import { Col, DatePicker, Form, Input, Row, Select, Space, Switch, Typography } from "antd";
-import { VerticalAlignTopOutlined, DeleteOutlined, VerticalAlignBottomOutlined, SettingOutlined } from '@ant-design/icons';
+import { VerticalAlignTopOutlined, DeleteOutlined, VerticalAlignBottomOutlined, SettingOutlined, PlusOutlined } from '@ant-design/icons';
 import { useModel } from "@util/robot";
 import StudioModel from '@model/Studio';
 
@@ -32,6 +32,21 @@ function StudioBlock({ block, group }: PropType) {
       if (!model.settingMode) return null;
 
       return (<Space size="small">
+        <Typography.Link onClick={(e) => {
+          e.stopPropagation();
+          updateAction(() => {
+            model.currSettingStudioItem = {
+              type: 'input',
+              label: '属性' + block.propItems.length,
+              propKey: 'prop' + block.propItems.length,
+              span: 24
+            }
+            model.currBlockOfSettingStudioItem = block;
+            model.currSettingIndex = block.propItems.findIndex(item => item.id === studioItem.id);
+          })
+        }}>
+          <PlusOutlined />
+        </Typography.Link>
         <Typography.Link disabled={itemIndex === 0} onClick={(e) => {
           e.stopPropagation();
           model.moveStudioItem(block, itemIndex, true);

@@ -21,6 +21,8 @@ export default class Studio {
   public currSettingStudioItem: CodeMetaStudioPropItem | null = null;
   public currBlockOfSettingStudioItem: CodeMetaStudioPropBlock | null = null;
 
+  public currSettingIndex = 0;
+
   public codeMetaStudio = {} as CodeMetaStudio;
   public settingMode = false;
   public manualMode = false;
@@ -121,7 +123,7 @@ export default class Studio {
 
     if (!this.currSettingStudioBlock!.id) {
       const id = uuid();
-      this.currGroupOfSettingStudioBlock?.propBlocks.push({ ...newBlock, id });
+      this.currGroupOfSettingStudioBlock?.propBlocks.splice(this.currSettingIndex + 1, 0, { ...newBlock, id });
     } else {
       const groupIndex = this.currGroupOfSettingStudioBlock?.propBlocks.findIndex(b => b.id === newBlock.id);
       this.currGroupOfSettingStudioBlock?.propBlocks.splice(groupIndex!, 1, { ...newBlock });
@@ -135,16 +137,18 @@ export default class Studio {
 
     if (!this.currSettingStudioItem?.id) {
       const id = uuid();
-      this.currBlockOfSettingStudioItem?.propItems.push({ ...newItem, id });
+      this.currBlockOfSettingStudioItem?.propItems.splice(this.currSettingIndex + 1, 0, { ...newItem, id });
     } else {
       const groupIndex = this.currBlockOfSettingStudioItem?.propItems.findIndex(item => item.id === newItem.id);
       this.currBlockOfSettingStudioItem?.propItems.splice(groupIndex!, 1, { ...newItem });
     }
+
+    this.currBlockOfSettingStudioItem = null;
+    this.currSettingStudioItem = null;
+
     setTimeout(() => {
       this.productStudioData!();
     }, 100)
-    this.currBlockOfSettingStudioItem = null;
-    this.currSettingStudioItem = null;
   }
 
   public delGroup = (groupId: string) => {

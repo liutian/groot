@@ -13,6 +13,7 @@ import StudioGroup from "../StudioGroup";
 import StudioGroupSetting from "../StudioGroupSetting";
 import StudioItemSetting from "../StudioItemSetting";
 import StudioBlockSetting from "../StudioBlockSetting";
+import { uuid } from "@util/utils";
 
 function Studio() {
 
@@ -55,7 +56,20 @@ function Studio() {
     if (activeKey === '__add') {
       updateAction(() => {
         // 显示分组弹框
-        model.currSettingStudioGroup = { title: '分组' + model.codeMetaStudio.propGroups.length, propBlocks: [] };
+        model.currSettingStudioGroup = {
+          title: '分组' + model.codeMetaStudio.propGroups.length,
+          propBlocks: [{
+            id: uuid(),
+            title: '区块1',
+            propItems: [{
+              id: uuid(),
+              type: 'input',
+              label: '属性1',
+              propKey: 'prop1',
+              span: 24
+            }],
+          }]
+        };
       })
       return;
     }

@@ -1,8 +1,9 @@
 import { useModel } from "@util/robot";
 import StudioModel from '@model/Studio';
-import { Button, Collapse, Space, Typography } from "antd";
-import { CaretRightOutlined, DeleteOutlined, FolderAddOutlined, PlusOutlined, SettingOutlined, VerticalAlignBottomOutlined, VerticalAlignTopOutlined } from "@ant-design/icons";
+import { Collapse, Space, Typography } from "antd";
+import { CaretRightOutlined, DeleteOutlined, PlusOutlined, SettingOutlined, VerticalAlignBottomOutlined, VerticalAlignTopOutlined } from "@ant-design/icons";
 import StudioBlock from "../StudioBlock";
+import { uuid } from "@util/utils";
 
 const StudioGroup: React.FC<{ group: CodeMetaStudioPropGroup }> = ({ group }) => {
   const [model, updateAction] = useModel<StudioModel>('studio');
@@ -18,25 +19,26 @@ const StudioGroup: React.FC<{ group: CodeMetaStudioPropGroup }> = ({ group }) =>
     })
   }
 
-  // 添加配置项
-  const addStudioItem = (block: CodeMetaStudioPropBlock) => {
-    updateAction(() => {
-      model.currSettingStudioItem = {
-        type: 'input',
-        label: '属性' + block.propItems.length,
-        propKey: 'prop' + block.propItems.length,
-      }
-      model.currBlockOfSettingStudioItem = block;
-    })
-  }
-
   const renderBlockSetting = (block: CodeMetaStudioPropBlock, blockIndex: number) => {
     if (!model.settingMode) return null;
 
     return (<Space size="small">
       <Typography.Link onClick={(e) => {
         e.stopPropagation();
-        addStudioItem(block);
+        updateAction(() => {
+          model.currSettingStudioBlock = {
+            title: '区块' + group.propBlocks.length,
+            propItems: [{
+              id: uuid(),
+              type: 'input',
+              label: '属性1',
+              propKey: 'prop1',
+              span: 24
+            }],
+          };
+          model.currGroupOfSettingStudioBlock = group;
+          model.currSettingIndex = group.propBlocks.findIndex(b => b.id === block.id);
+        })
       }}>
         <PlusOutlined />
       </Typography.Link>
@@ -78,18 +80,6 @@ const StudioGroup: React.FC<{ group: CodeMetaStudioPropGroup }> = ({ group }) =>
         })
       }
     </Collapse>
-
-    <div style={{ textAlign: 'center' }} hidden={!model.settingMode}>
-      <Button type="link" icon={<FolderAddOutlined />} onClick={() => {
-        updateAction(() => {
-          model.currSettingStudioBlock = {
-            title: '区块' + group.propBlocks.length,
-            propItems: [],
-          };
-          model.currGroupOfSettingStudioBlock = group;
-        })
-      }}>添加配置块</Button>
-    </div>
   </>)
 };
 
