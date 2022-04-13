@@ -165,6 +165,15 @@ export default class Studio {
   public switchSettingMode = () => {
     if (this.settingMode) {
       this.settingMode = false;
+      this.codeMetaStudio.propGroups.forEach((group) => {
+        group.propBlocks.forEach((block) => {
+          const values = this.blockFormInstanceMap.get(`${group.id}-${block.id}`)?.getFieldsValue();
+          block.propItems.forEach((item) => {
+            item.defaultValue = values[item.propKey];
+            item.value = null;
+          });
+        })
+      })
     } else {
       this.settingMode = true;
     }
