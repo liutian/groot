@@ -1,0 +1,26 @@
+.clearfix() {
+  zoom: 1;
+
+  &::before,
+  &::after {
+    display: table;
+    content: ' ';
+  }
+
+  &::after {
+    clear: both;
+    height: 0;
+    font-size: 0;
+    visibility: hidden;
+  }
+}
+
+// 常用类样式
+// ------------------------
+.pull-left {
+  float: left;
+}
+
+.pull-right {
+  float: right;
+}

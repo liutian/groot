@@ -55,7 +55,11 @@ type CodeMetaStudioPropItem = {
   value?: any,
   defaultValue?: any,
   span?: number,
-  type: CodeMetaStudioPropItemType
+  type: CodeMetaStudioPropItemType,
+  options?: [{
+    label: string,
+    value: string
+  }]
 }
 
 type CodeMetaStudioPropItemType = 'input' | 'date-picker' | 'boolean';

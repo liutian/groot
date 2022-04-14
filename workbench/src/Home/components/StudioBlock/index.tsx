@@ -25,6 +25,7 @@ function StudioBlock({ block, group }: PropType) {
       updateAction(() => {
         model.currSettingStudioItem = JSON.parse(JSON.stringify(studioItem));
         model.currBlockOfSettingStudioItem = block;
+        model.currGroupOfSettingStudioBlock = group;
       })
     }
 
@@ -33,7 +34,7 @@ function StudioBlock({ block, group }: PropType) {
 
       return (<Space size="small">
         <Typography.Link onClick={(e) => {
-          e.stopPropagation();
+          e.preventDefault();
           updateAction(() => {
             model.currSettingStudioItem = {
               type: 'input',
@@ -48,25 +49,25 @@ function StudioBlock({ block, group }: PropType) {
           <PlusOutlined />
         </Typography.Link>
         <Typography.Link disabled={itemIndex === 0} onClick={(e) => {
-          e.stopPropagation();
+          e.preventDefault();
           model.moveStudioItem(block, itemIndex, true);
         }}>
           <VerticalAlignTopOutlined />
         </Typography.Link>
         <Typography.Link disabled={itemIndex === block.propItems.length - 1} onClick={(e) => {
-          e.stopPropagation();
+          e.preventDefault();
           model.moveStudioItem(block, itemIndex, true);
         }}>
           <VerticalAlignBottomOutlined />
         </Typography.Link>
         <Typography.Link disabled={itemIndex === 0 && block.propItems.length === 1} onClick={(e) => {
-          e.stopPropagation();
+          e.preventDefault();
           delStudioItem(itemIndex);
         }} >
           <DeleteOutlined />
         </Typography.Link>
         <Typography.Link onClick={(e) => {
-          e.stopPropagation();
+          e.preventDefault();
           editStudioItem();
         }}>
           <SettingOutlined />
@@ -74,14 +75,14 @@ function StudioBlock({ block, group }: PropType) {
       </Space>)
     }
 
-    return <Row>
-      <Col span={12}>
+    return <div className="clearfix">
+      <div className="pull-left">
         {studioItem.label}
-      </Col>
-      <Col span={12} style={{ textAlign: 'right' }}>
+      </div>
+      <div className="pull-right">
         {renderItemSetting()}
-      </Col>
-    </Row>
+      </div>
+    </div>
   }
 
   const renderFormItem = (item: CodeMetaStudioPropItem) => {
@@ -92,7 +93,7 @@ function StudioBlock({ block, group }: PropType) {
     } else if (item.type === 'boolean') {
       return <Switch />
     } else if (item.type === 'select') {
-      return <Select />
+      return <Select options={item.options} />
     }
 
     return <>not found item</>
@@ -104,7 +105,8 @@ function StudioBlock({ block, group }: PropType) {
         {
           block.propItems.map((item, index) => {
             return <Col span={item.span} key={item.id} >
-              <Form.Item label={renderItemLabel(item, index)} name={item.propKey} initialValue={item.value || item.defaultValue}>
+              <Form.Item label={renderItemLabel(item, index)} name={item.propKey} preserve={false}
+                valuePropName={item.type === 'boolean' ? 'checked' : 'value'} initialValue={item.value || item.defaultValue}>
                 {renderFormItem(item)}
               </Form.Item>
             </Col>

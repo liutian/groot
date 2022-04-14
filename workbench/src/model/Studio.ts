@@ -143,6 +143,8 @@ export default class Studio {
       this.currBlockOfSettingStudioItem?.propItems.splice(groupIndex!, 1, { ...newItem });
     }
 
+    this.blockFormInstanceMap.get(`${this.currGroupOfSettingStudioBlock?.id}-${this.currBlockOfSettingStudioItem?.id}`)?.resetFields();
+
     this.currBlockOfSettingStudioItem = null;
     this.currSettingStudioItem = null;
 
