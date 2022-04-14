@@ -1,4 +1,4 @@
-import { Col, DatePicker, Form, Input, Row, Select, Space, Switch, Typography } from "antd";
+import { Checkbox, Col, DatePicker, Form, Input, Radio, Row, Select, Space, Switch, Typography } from "antd";
 import { VerticalAlignTopOutlined, DeleteOutlined, VerticalAlignBottomOutlined, SettingOutlined, PlusOutlined } from '@ant-design/icons';
 import { useModel } from "@util/robot";
 import StudioModel from '@model/Studio';
@@ -90,10 +90,14 @@ function StudioBlock({ block, group }: PropType) {
       return <Input />;
     } else if (item.type === 'date-picker') {
       return <DatePicker />;
-    } else if (item.type === 'boolean') {
+    } else if (item.type === 'switch') {
       return <Switch />
     } else if (item.type === 'select') {
       return <Select options={item.options} />
+    } else if (item.type === 'radio') {
+      return <Radio.Group options={item.options} />
+    } else if (item.type === 'checkbox') {
+      return <Checkbox.Group options={item.options} />
     }
 
     return <>not found item</>
@@ -106,7 +110,7 @@ function StudioBlock({ block, group }: PropType) {
           block.propItems.map((item, index) => {
             return <Col span={item.span} key={item.id} >
               <Form.Item label={renderItemLabel(item, index)} name={item.propKey} preserve={false}
-                valuePropName={item.type === 'boolean' ? 'checked' : 'value'} initialValue={item.value || item.defaultValue}>
+                valuePropName={item.type === 'switch' ? 'checked' : 'value'} initialValue={item.value || item.defaultValue}>
                 {renderFormItem(item)}
               </Form.Item>
             </Col>

@@ -62,7 +62,7 @@ type CodeMetaStudioPropItem = {
   }]
 }
 
-type CodeMetaStudioPropItemType = 'input' | 'date-picker' | 'boolean';
+type CodeMetaStudioPropItemType = 'input' | 'date-picker' | 'switch' | 'select' | 'radio';
 
 /**
  * 组件配置类型

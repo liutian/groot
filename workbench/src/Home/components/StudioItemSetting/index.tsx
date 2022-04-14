@@ -35,11 +35,11 @@ const StudioItemSetting: React.FC = () => {
             return <>
               {fields.map(({ key, name, ...restField }, index) => {
                 return <Space key={key} align="baseline">
-                  <Form.Item {...restField} name={[name, 'label']} rules={[{ required: true }]}>
+                  <Form.Item name={[name, 'label']} {...restField} rules={[{ required: true }]}>
                     <Input placeholder="请输入标签" />
                   </Form.Item>
                   :
-                  <Form.Item {...restField} name={[name, 'value']} rules={[{ required: true }]}>
+                  <Form.Item name={[name, 'value']} {...restField} rules={[{ required: true }]}>
                     <Input placeholder="请输入数据" />
                   </Form.Item>
                   <Typography.Link onClick={() => add({ label: '', value: '' }, index + 1)}>
@@ -66,8 +66,10 @@ const StudioItemSetting: React.FC = () => {
         <Select options={[
           { label: '文本', value: 'input' },
           { label: '日期', value: 'date-picker' },
-          { label: '布尔', value: 'boolean' },
-          { label: '下拉框', value: 'select' }
+          { label: '开关', value: 'switch' },
+          { label: '下拉框', value: 'select' },
+          { label: '多选', value: 'checkbox' },
+          { label: '单选', value: 'radio' }
         ]} />
       </Form.Item>
       <Form.Item label="属性映射" rules={[{ required: true }]} name="propKey">
@@ -83,7 +85,7 @@ const StudioItemSetting: React.FC = () => {
       <Form.Item dependencies={['type']} noStyle>
         {() => {
           const type = form.getFieldValue('type');
-          return type === 'select' ? renderSelectFormItem() : null
+          return ['select', 'radio', 'checkbox'].includes(type) ? renderSelectFormItem() : null
         }}
       </Form.Item>
     </Form>
