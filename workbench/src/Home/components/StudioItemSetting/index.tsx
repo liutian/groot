@@ -29,8 +29,8 @@ const StudioItemSetting: React.FC = () => {
 
   const renderSelectFormItem = () => {
     return (
-      <Form.Item label="选项">
-        <Form.List name="options" initialValue={[{}]}>
+      <Form.Item label="选项" >
+        <Form.List name="options" initialValue={[{}]} >
           {(fields, { add, remove }) => {
             return <>
               {fields.map(({ key, name, ...restField }, index) => {
@@ -58,7 +58,7 @@ const StudioItemSetting: React.FC = () => {
   }
 
   return (<Modal mask={false} width={450} title="配置项" visible={!!model.currSettingStudioItem} onOk={handleOk} onCancel={handleCancel}>
-    <Form form={form} labelAlign="right" labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
+    <Form form={form} labelAlign="right" labelCol={{ span: 6 }} wrapperCol={{ span: 18 }} >
       <Form.Item name="label" label="名称" rules={[{ required: true }]}>
         <Input />
       </Form.Item>
@@ -82,9 +82,9 @@ const StudioItemSetting: React.FC = () => {
         </Radio.Group>
       </Form.Item>
 
-      <Form.Item dependencies={['type']} noStyle>
-        {() => {
-          const type = form.getFieldValue('type');
+      <Form.Item dependencies={['type']} noStyle >
+        {({ getFieldValue }) => {
+          const type = getFieldValue('type');
           return ['select', 'radio', 'checkbox'].includes(type) ? renderSelectFormItem() : null
         }}
       </Form.Item>
