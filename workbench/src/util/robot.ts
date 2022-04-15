@@ -51,7 +51,7 @@ export const useModel = <T>(key: string, isRoot = false): [T, Function] => {
 }
 
 
-function wrapper(key: string, target: any): any {
+function wrapper(modelKey: string, target: any): any {
   return new Proxy(target, {
     get(oTarget, sKey, receiver) {
       const value = Reflect.get(oTarget, sKey, receiver);
@@ -59,23 +59,25 @@ function wrapper(key: string, target: any): any {
       if (isBaseType(value)) {
         return value;
       } else if (Object.prototype.toString.apply(value) !== '[object Function]') {
-        return wrapper(key, value);
+        return wrapper(modelKey, value);
       }
 
       // 执行完函数自动执行视图更新操作
       return (...args: any[]) => {
-        const modelContainer = store.get(key)!;
+        const modelContainer = store.get(modelKey)!;
         modelContainer.fastUpdate = true;
-        const returnResult = Reflect.apply(value, target, args);
+        const returnResult = Reflect.apply(value, oTarget, args);
         modelContainer.fastUpdate = false;
 
-        autoTrigger(key);
+        if (oTarget.hasOwnProperty(sKey)) {
+          autoTrigger(modelKey);
+        }
         return returnResult;
       }
     },
     // 禁止直接更改代理对象的属性
     set(oTarget, sKey, vValue, receiver) {
-      const modelContainer = store.get(key)!;
+      const modelContainer = store.get(modelKey)!;
       if (modelContainer.fastUpdate) {
         Reflect.set(oTarget, sKey, vValue, receiver);
         return true;
@@ -89,8 +91,8 @@ function wrapper(key: string, target: any): any {
   })
 }
 
-function autoTrigger(key: string) {
-  const modelContainer = store.get(key)!;
+function autoTrigger(modelKey: string) {
+  const modelContainer = store.get(modelKey)!;
   modelContainer.execTrigger = true;
   Promise.resolve().then(() => {
     if (!modelContainer.execTrigger) {
