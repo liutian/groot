@@ -135,6 +135,10 @@ export default class Studio {
   public updateOrAddStudioItem = (blockItem: CodeMetaStudioPropItem) => {
     const newItem = Object.assign(this.currSettingStudioItem, blockItem);
 
+    if (!['select', 'radio', 'checkbox'].includes(newItem.type)) {
+      newItem.options = undefined;
+    }
+
     if (!this.currSettingStudioItem?.id) {
       const id = uuid();
       this.currBlockOfSettingStudioItem?.propItems.splice(this.currSettingIndex + 1, 0, { ...newItem, id });

@@ -57,7 +57,7 @@ const StudioItemSetting: React.FC = () => {
     )
   }
 
-  return (<Modal mask={false} width={450} title="配置项" visible={!!model.currSettingStudioItem} onOk={handleOk} onCancel={handleCancel}>
+  return (<Modal mask={false} destroyOnClose width={450} title="配置项" visible={!!model.currSettingStudioItem} onOk={handleOk} onCancel={handleCancel}>
     <Form form={form} labelAlign="right" labelCol={{ span: 6 }} wrapperCol={{ span: 18 }} >
       <Form.Item name="label" label="名称" rules={[{ required: true }]}>
         <Input />
