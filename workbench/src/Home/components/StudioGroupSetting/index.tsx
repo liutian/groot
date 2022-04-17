@@ -14,7 +14,7 @@ const StudioGroupSetting: React.FC = () => {
 
   const handleCancel = () => {
     updateAction(() => {
-      model.currSettingStudioGroup = null;
+      model.currSettingStudioGroup = undefined;
     })
   }
 

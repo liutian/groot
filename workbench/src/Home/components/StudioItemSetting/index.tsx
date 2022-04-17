@@ -15,8 +15,8 @@ const StudioItemSetting: React.FC = () => {
 
   const handleCancel = () => {
     updateAction(() => {
-      model.currSettingStudioItem = null;
-      model.currBlockOfSettingStudioItem = null;
+      model.currSettingStudioItem = undefined;
+      model.currBlockOfSettingStudioItem = undefined;
     })
   }
 

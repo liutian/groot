@@ -14,8 +14,8 @@ const StudioBlockSetting: React.FC = () => {
 
   const handleCancel = () => {
     updateAction(() => {
-      model.currSettingStudioBlock = null;
-      model.currGroupOfSettingStudioBlock = null;
+      model.currSettingStudioBlock = undefined;
+      model.currGroupOfSettingStudioBlock = undefined;
     })
   }
 

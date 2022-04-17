@@ -5,21 +5,21 @@ export default class Studio {
   /**
    * tab激活的分组
    */
-  public activeGroupId: string | undefined = undefined;
+  public activeGroupId?: string;
   /**
    * 当前配置组
    */
-  public currSettingStudioGroup: CodeMetaStudioPropGroup | null = null;
+  public currSettingStudioGroup?: CodeMetaStudioPropGroup;
   /**
    * 当前配置块
    */
-  public currSettingStudioBlock: CodeMetaStudioPropBlock | null = null;
-  public currGroupOfSettingStudioBlock: CodeMetaStudioPropGroup | null = null;
+  public currSettingStudioBlock?: CodeMetaStudioPropBlock;
+  public currGroupOfSettingStudioBlock?: CodeMetaStudioPropGroup;
   /**
    * 当前配置项
    */
-  public currSettingStudioItem: CodeMetaStudioPropItem | null = null;
-  public currBlockOfSettingStudioItem: CodeMetaStudioPropBlock | null = null;
+  public currSettingStudioItem?: CodeMetaStudioPropItem;
+  public currBlockOfSettingStudioItem?: CodeMetaStudioPropBlock;
 
   public currSettingIndex = 0;
 
@@ -29,7 +29,9 @@ export default class Studio {
 
   public blockFormInstanceMap = new Map<string, FormInstance>();
 
-  public notifyIframe: Function | undefined;
+  public notifyIframe?: Function;
+
+  public handUpStudioItem?: CodeMetaStudioPropItem;
 
   public init(studioData: CodeMetaStudio) {
     this.codeMetaStudio = studioData;
@@ -115,7 +117,7 @@ export default class Studio {
       const groupIndex = this.codeMetaStudio.propGroups.findIndex(g => g.id === newGroup.id);
       this.codeMetaStudio.propGroups.splice(groupIndex!, 1, { ...newGroup });
     }
-    this.currSettingStudioGroup = null;
+    this.currSettingStudioGroup = undefined;
   }
 
   public updateOrAddStudioBlock = (block: CodeMetaStudioPropBlock) => {
@@ -128,8 +130,8 @@ export default class Studio {
       const groupIndex = this.currGroupOfSettingStudioBlock?.propBlocks.findIndex(b => b.id === newBlock.id);
       this.currGroupOfSettingStudioBlock?.propBlocks.splice(groupIndex!, 1, { ...newBlock });
     }
-    this.currSettingStudioBlock = null;
-    this.currGroupOfSettingStudioBlock = null;
+    this.currSettingStudioBlock = undefined;
+    this.currGroupOfSettingStudioBlock = undefined;
   }
 
   public updateOrAddStudioItem = (blockItem: CodeMetaStudioPropItem) => {
@@ -149,8 +151,8 @@ export default class Studio {
 
     this.blockFormInstanceMap.get(`${this.currGroupOfSettingStudioBlock?.id}-${this.currBlockOfSettingStudioItem?.id}`)?.resetFields();
 
-    this.currBlockOfSettingStudioItem = null;
-    this.currSettingStudioItem = null;
+    this.currBlockOfSettingStudioItem = undefined;
+    this.currSettingStudioItem = undefined;
 
     setTimeout(() => {
       this.productStudioData!();
