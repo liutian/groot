@@ -36,7 +36,7 @@ type CodeMetaStudioPropGroup = {
 }
 
 /**
- * 描述代码元数据配置的属性分组块类型
+ * 描述代码元数据配置的属性配置块类型
  */
 type CodeMetaStudioPropBlock = {
   id: string,
@@ -47,7 +47,7 @@ type CodeMetaStudioPropBlock = {
 }
 
 /**
- * 描述代码元数据配置的属性分组项类型
+ * 描述代码元数据配置的属性配置项类型
  */
 type CodeMetaStudioPropItem = {
   id: string,

@@ -40,7 +40,7 @@ export default class Studio {
    */
   public notifyIframe?: Function;
   /**
-  * 当前正在配置的分组块或者分组项需要插入的位置
+  * 当前正在配置的配置块或者配置项需要插入的位置
   */
   public currSettingInsertIndex: number = -1;
 
@@ -301,18 +301,18 @@ export default class Studio {
     if (inner) {
       const newBlock = JSON.parse(JSON.stringify(innerTemplateBlock)) as CodeMetaStudioPropBlock;
       newBlock.id = '';
-      newBlock.title = `分组块${group.propBlocks.length + 1}`;
+      newBlock.title = `配置块${group.propBlocks.length + 1}`;
       newBlock.groupId = group.id;
       this.currSettingStudioBlock = newBlock;
     } else {
       this.currSettingStudioBlock = {
         id: '',
-        title: '分组块' + group.propBlocks.length,
+        title: '配置块' + group.propBlocks.length,
         groupId: group.id,
         propItems: [{
           id: '',
           type: 'input',
-          label: '分组项1',
+          label: '配置项1',
           propKey: 'prop1',
           span: 24
         }],

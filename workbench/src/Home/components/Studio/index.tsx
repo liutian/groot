@@ -61,7 +61,7 @@ function Studio() {
           title: `分组${model.codeMetaStudio.propGroups.length + 1}`,
           propBlocks: [{
             id: '',
-            title: '分组块1',
+            title: '配置块1',
             propItems: [{
               id: '',
               type: 'input',
