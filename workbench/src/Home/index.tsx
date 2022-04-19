@@ -24,7 +24,7 @@ const Home = () => {
     // 加载页面组件配置器数据
     fetchPageComponentStudioData().then((data) => {
       pageComponentStudioRef.current = data;
-      model.init(data.codeMetaStudio!);
+      model.init(data.codeMetaStudio);
       // todo
       setPageName(`groot::{"path": "${data.path}","name":"${data.name}"}`);
     });
@@ -41,7 +41,7 @@ const Home = () => {
 
   // 通知iframe更新数据
   const notifyIframe = (codeMetadata?: string) => {
-    const propsStr = codeMetadata || pageComponentStudioRef.current?.codeMetadata;
+    const propsStr = codeMetadata || pageComponentStudioRef.current?.codeMetadata || '';
 
     iframeRef.current.contentWindow.postMessage({
       type: 'refresh',
@@ -51,7 +51,7 @@ const Home = () => {
         packageName: pageComponentStudioRef.current?.packageName,
         componentName: pageComponentStudioRef.current?.componentName,
         // todo
-        props: JSON.parse(propsStr!),
+        props: JSON.parse(propsStr),
       }
     }, '*');
   }
@@ -66,7 +66,7 @@ const Home = () => {
     }
 
     if (model.manualMode) {
-      return <Editor onContentChange={notifyIframe} defaultContent={pageComponentStudioRef.current.codeMetadata!} />;
+      return <Editor onContentChange={notifyIframe} defaultContent={pageComponentStudioRef.current.codeMetadata || ''} />;
     } else {
       return <Studio />;
     }
@@ -105,6 +105,7 @@ const codeMetaStudioData = {
       {
         id: '002',
         title: '通用',
+        groupId: '001',
         propItems: [
           {
             id: '003',
@@ -113,6 +114,8 @@ const codeMetaStudioData = {
             value: 'hello world!',
             type: 'input',
             span: 24,
+            groupId: '001',
+            blockId: '002'
           }, {
             id: '004',
             propKey: 'type',
@@ -120,6 +123,8 @@ const codeMetaStudioData = {
             value: 'primary',
             type: 'input',
             span: 24,
+            groupId: '001',
+            blockId: '002'
           }
         ]
       }

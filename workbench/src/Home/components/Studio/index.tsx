@@ -13,7 +13,7 @@ import StudioGroup from "../StudioGroup";
 import StudioGroupSetting from "../StudioGroupSetting";
 import StudioItemSetting from "../StudioItemSetting";
 import StudioBlockSetting from "../StudioBlockSetting";
-import { uuid } from "@util/utils";
+import ArrayObjectPanel from "../ArrayObjectPanel";
 
 function Studio() {
 
@@ -35,7 +35,7 @@ function Studio() {
 
     const menus = (
       <Menu>
-        <Menu.Item key="del" disabled={model.codeMetaStudio.propGroups.length === 0} onClick={() => model.delGroup(group.id!)}>删除</Menu.Item>
+        <Menu.Item key="del" disabled={model.codeMetaStudio.propGroups.length === 0} onClick={() => model.delGroup(group.id)}>删除</Menu.Item>
         <Menu.Item key="copy">复制</Menu.Item>
         <Menu.Item key="setting" onClick={(e) => {
           e.domEvent.stopPropagation();
@@ -57,14 +57,15 @@ function Studio() {
       updateAction(() => {
         // 显示分组弹框
         model.currSettingStudioGroup = {
-          title: '分组' + model.codeMetaStudio.propGroups.length,
+          id: '',
+          title: `分组${model.codeMetaStudio.propGroups.length + 1}`,
           propBlocks: [{
-            id: uuid(),
-            title: '区块1',
+            id: '',
+            title: '分组块1',
             propItems: [{
-              id: uuid(),
+              id: '',
               type: 'input',
-              label: '属性1',
+              label: '配置项1',
               propKey: 'prop1',
               span: 24
             }],
@@ -117,6 +118,11 @@ function Studio() {
     <StudioGroupSetting />
     <StudioBlockSetting />
     <StudioItemSetting />
+    {
+      model.handUpStudioItemStack.map(item => {
+        return <ArrayObjectPanel key={item.id} item={item} />
+      })
+    }
   </>
 }
 

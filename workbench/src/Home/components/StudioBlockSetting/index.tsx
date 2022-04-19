@@ -9,13 +9,13 @@ const StudioBlockSetting: React.FC = () => {
 
   const handleOk = async () => {
     const blockFormData = await form.validateFields();
+    form.resetFields();
     model.updateOrAddStudioBlock(blockFormData);
   }
 
   const handleCancel = () => {
     updateAction(() => {
       model.currSettingStudioBlock = undefined;
-      model.currGroupOfSettingStudioBlock = undefined;
     })
   }
 

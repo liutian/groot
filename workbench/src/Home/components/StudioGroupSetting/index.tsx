@@ -9,6 +9,7 @@ const StudioGroupSetting: React.FC = () => {
 
   const handleOk = async () => {
     const groupFormData = await form.validateFields();
+    form.resetFields();
     model.updateOrAddStudioGroup(groupFormData);
   }
 

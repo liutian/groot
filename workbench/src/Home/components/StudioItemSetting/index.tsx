@@ -10,13 +10,13 @@ const StudioItemSetting: React.FC = () => {
 
   const handleOk = async () => {
     const itemFormData = await form.validateFields();
+    form.resetFields();
     model.updateOrAddStudioItem(itemFormData);
   }
 
   const handleCancel = () => {
     updateAction(() => {
       model.currSettingStudioItem = undefined;
-      model.currBlockOfSettingStudioItem = undefined;
     })
   }
 
@@ -69,7 +69,8 @@ const StudioItemSetting: React.FC = () => {
           { label: '开关', value: 'switch' },
           { label: '下拉框', value: 'select' },
           { label: '多选', value: 'checkbox' },
-          { label: '单选', value: 'radio' }
+          { label: '单选', value: 'radio' },
+          { label: '数组', value: 'array-object' }
         ]} />
       </Form.Item>
       <Form.Item label="属性映射" rules={[{ required: true }]} name="propKey">
@@ -85,7 +86,9 @@ const StudioItemSetting: React.FC = () => {
       <Form.Item dependencies={['type']} noStyle >
         {({ getFieldValue }) => {
           const type = getFieldValue('type');
-          return ['select', 'radio', 'checkbox'].includes(type) ? renderSelectFormItem() : null
+          const hasOption = ['select', 'radio', 'checkbox'].includes(type);
+
+          return hasOption ? renderSelectFormItem() : null
         }}
       </Form.Item>
     </Form>

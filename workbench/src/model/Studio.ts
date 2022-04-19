@@ -14,24 +14,39 @@ export default class Studio {
    * 当前配置块
    */
   public currSettingStudioBlock?: CodeMetaStudioPropBlock;
-  public currGroupOfSettingStudioBlock?: CodeMetaStudioPropGroup;
   /**
    * 当前配置项
    */
   public currSettingStudioItem?: CodeMetaStudioPropItem;
-  public currBlockOfSettingStudioItem?: CodeMetaStudioPropBlock;
 
-  public currSettingIndex = 0;
-
+  /**
+   * 当前组件配置对象
+   */
   public codeMetaStudio = {} as CodeMetaStudio;
+  /**
+   * 设置配置项模式
+   */
   public settingMode = false;
+  /**
+   * 手动编码配置模式
+   */
   public manualMode = false;
-
+  /**
+   * 配置块所属表单实例
+   */
   public blockFormInstanceMap = new Map<string, FormInstance>();
-
+  /**
+   * 配置项变动通知iframe更新
+   */
   public notifyIframe?: Function;
+  /**
+  * 当前正在配置的分组块或者分组项需要插入的位置
+  */
+  public currSettingInsertIndex: number = -1;
 
-  public handUpStudioItem?: CodeMetaStudioPropItem;
+  public handUpStudioItemStack: CodeMetaStudioPropItem[] = [];
+
+  public innerTempStudioGroupMap = new Map<string, CodeMetaStudioPropGroup>();
 
   public init(studioData: CodeMetaStudio) {
     this.codeMetaStudio = studioData;
@@ -44,7 +59,7 @@ export default class Studio {
     const props: any[] = [];
     this.codeMetaStudio.propGroups.forEach((group) => {
       group.propBlocks.forEach((block) => {
-        const values = this.blockFormInstanceMap.get(`${group.id}-${block.id}`)?.getFieldsValue();
+        const values = this.blockFormInstanceMap.get(block.id)?.getFieldsValue();
         block.propItems.forEach((item) => {
           props.push({
             key: item.propKey,
@@ -109,53 +124,91 @@ export default class Studio {
   public updateOrAddStudioGroup = (group: CodeMetaStudioPropGroup) => {
     const newGroup = Object.assign(this.currSettingStudioGroup, group);
 
-    if (!this.currSettingStudioGroup?.id) {
-      const id = uuid();
-      this.codeMetaStudio.propGroups.push({ ...newGroup, id });
-      this.activeGroupId = id;
-    } else {
+    if (newGroup.id) {
       const groupIndex = this.codeMetaStudio.propGroups.findIndex(g => g.id === newGroup.id);
-      this.codeMetaStudio.propGroups.splice(groupIndex!, 1, { ...newGroup });
+      this.codeMetaStudio.propGroups.splice(groupIndex, 1, { ...newGroup });
+    } else {
+      const groupId = uuid();
+      newGroup.id = groupId;
+      this.codeMetaStudio.propGroups.push(newGroup);
+      this.activeGroupId = groupId;
+
+      newGroup.propBlocks.forEach((block) => {
+        block.id = uuid();
+        block.groupId = groupId;
+        block.propItems.forEach((item) => {
+          item.id = uuid();
+          item.groupId = groupId;
+          item.blockId = block.id;
+        })
+      })
     }
     this.currSettingStudioGroup = undefined;
   }
 
   public updateOrAddStudioBlock = (block: CodeMetaStudioPropBlock) => {
     const newBlock = Object.assign(this.currSettingStudioBlock, block);
+    const group = this.getStudioGroup(newBlock.groupId!);
 
-    if (!this.currSettingStudioBlock!.id) {
-      const id = uuid();
-      this.currGroupOfSettingStudioBlock?.propBlocks.splice(this.currSettingIndex + 1, 0, { ...newBlock, id });
+    if (newBlock.id) {
+      const blockIndex = group?.propBlocks.findIndex(b => b.id === newBlock.id);
+      group?.propBlocks.splice(blockIndex!, 1, { ...newBlock });
     } else {
-      const groupIndex = this.currGroupOfSettingStudioBlock?.propBlocks.findIndex(b => b.id === newBlock.id);
-      this.currGroupOfSettingStudioBlock?.propBlocks.splice(groupIndex!, 1, { ...newBlock });
+      const blockId = uuid();
+      newBlock.id = blockId;
+      group?.propBlocks.splice(this.currSettingInsertIndex + 1, 0, newBlock);
+
+      newBlock.propItems.forEach((item) => {
+        item.id = uuid();
+        item.blockId = blockId;
+        item.groupId = newBlock.groupId;
+      })
     }
     this.currSettingStudioBlock = undefined;
-    this.currGroupOfSettingStudioBlock = undefined;
   }
 
-  public updateOrAddStudioItem = (blockItem: CodeMetaStudioPropItem) => {
-    const newItem = Object.assign(this.currSettingStudioItem, blockItem);
+  public updateOrAddStudioItem = (item: CodeMetaStudioPropItem) => {
+    const newItem = Object.assign(this.currSettingStudioItem, item);
 
     if (!['select', 'radio', 'checkbox'].includes(newItem.type)) {
       newItem.options = undefined;
     }
 
-    if (!this.currSettingStudioItem?.id) {
-      const id = uuid();
-      this.currBlockOfSettingStudioItem?.propItems.splice(this.currSettingIndex + 1, 0, { ...newItem, id });
-    } else {
-      const groupIndex = this.currBlockOfSettingStudioItem?.propItems.findIndex(item => item.id === newItem.id);
-      this.currBlockOfSettingStudioItem?.propItems.splice(groupIndex!, 1, { ...newItem });
+    if (newItem.type === 'array-object') {
+      const item = {
+        id: uuid(),
+        label: '配置项1',
+        propKey: 'prop_001',
+        type: 'input',
+        span: 24
+      } as CodeMetaStudioPropItem;
+      const block = {
+        id: uuid(),
+        title: '配置块1',
+        propItems: [item]
+      }
+
+      item.blockId = block.id;
+      newItem.valueOfArrayObject = [JSON.parse(JSON.stringify(block))];
+
+      newItem.templateBlockOfArrayObject = JSON.parse(JSON.stringify(block));
+      newItem.templateBlockOfArrayObject!.id = uuid();
+      newItem.templateBlockOfArrayObject?.propItems.forEach((item) => item.id = uuid());
     }
 
-    this.blockFormInstanceMap.get(`${this.currGroupOfSettingStudioBlock?.id}-${this.currBlockOfSettingStudioItem?.id}`)?.resetFields();
+    const block = this.getStudioBlock(newItem.blockId!);
+    if (newItem.id) {
+      const itemIndex = block?.propItems.findIndex(item => item.id === newItem.id);
+      block?.propItems.splice(itemIndex!, 1, { ...newItem });
+    } else {
+      const id = uuid();
+      block?.propItems.splice(this.currSettingInsertIndex + 1, 0, { ...newItem, id });
+    }
 
-    this.currBlockOfSettingStudioItem = undefined;
     this.currSettingStudioItem = undefined;
 
     setTimeout(() => {
-      this.productStudioData!();
+      this.productStudioData();
     }, 100)
   }
 
@@ -163,7 +216,7 @@ export default class Studio {
     const index = this.codeMetaStudio.propGroups.findIndex(g => g.id === groupId);
     this.codeMetaStudio.propGroups.splice(index, 1);
     if (this.activeGroupId === groupId) {
-      this.activeGroupId = this.codeMetaStudio.propGroups[0]!.id;
+      this.activeGroupId = this.codeMetaStudio.propGroups[0]?.id;
     }
   }
 
@@ -179,7 +232,7 @@ export default class Studio {
       this.settingMode = false;
       this.codeMetaStudio.propGroups.forEach((group) => {
         group.propBlocks.forEach((block) => {
-          const values = this.blockFormInstanceMap.get(`${group.id}-${block.id}`)?.getFieldsValue();
+          const values = this.blockFormInstanceMap.get(block.id)?.getFieldsValue();
           block.propItems.forEach((item) => {
             item.defaultValue = values[item.propKey];
             item.value = null;
@@ -198,4 +251,74 @@ export default class Studio {
       this.manualMode = true;
     }
   }
+
+  public pushHandUpStudioItem = (item: CodeMetaStudioPropItem) => {
+    this.handUpStudioItemStack?.push(item);
+  }
+
+  public popHandUpStudioItem = (blocks: CodeMetaStudioPropBlock[], templateBlockOfArrayObject: CodeMetaStudioPropBlock) => {
+    const item = this.handUpStudioItemStack.pop();
+    if (item) {
+      item.valueOfArrayObject = JSON.parse(JSON.stringify(blocks));
+      item.templateBlockOfArrayObject = JSON.parse(JSON.stringify(templateBlockOfArrayObject));
+    }
+  }
+
+  public getStudioGroup = (groupId: string) => {
+    let group = this.codeMetaStudio.propGroups.find((group) => {
+      return group.id === groupId;
+    })
+
+    return group || this.innerTempStudioGroupMap.get(groupId);
+  }
+
+  public getStudioBlock = (blockId: string) => {
+    for (let groupIndex = 0; groupIndex < this.codeMetaStudio.propGroups.length; groupIndex++) {
+      const group = this.codeMetaStudio.propGroups[groupIndex];
+      for (let blockIndex = 0; blockIndex < group!.propBlocks.length; blockIndex++) {
+        const block = group?.propBlocks[blockIndex];
+        if (block?.id === blockId) {
+          return block;
+        }
+      }
+    }
+
+    const tempGroups = [...this.innerTempStudioGroupMap.values()];
+    for (let groupIndex = 0; groupIndex < tempGroups.length; groupIndex++) {
+      const group = tempGroups[groupIndex];
+      for (let blockIndex = 0; blockIndex < group!.propBlocks.length; blockIndex++) {
+        const block = group?.propBlocks[blockIndex];
+        if (block?.id === blockId) {
+          return block;
+        }
+      }
+    }
+
+    return undefined;
+  }
+
+  public showStudioBlockSettinngForCreate = (relativeBlock: CodeMetaStudioPropBlock, group: CodeMetaStudioPropGroup, inner: boolean, innerTemplateBlock: CodeMetaStudioPropBlock) => {
+    if (inner) {
+      const newBlock = JSON.parse(JSON.stringify(innerTemplateBlock)) as CodeMetaStudioPropBlock;
+      newBlock.id = '';
+      newBlock.title = `分组块${group.propBlocks.length + 1}`;
+      newBlock.groupId = group.id;
+      this.currSettingStudioBlock = newBlock;
+    } else {
+      this.currSettingStudioBlock = {
+        id: '',
+        title: '分组块' + group.propBlocks.length,
+        groupId: group.id,
+        propItems: [{
+          id: '',
+          type: 'input',
+          label: '分组项1',
+          propKey: 'prop1',
+          span: 24
+        }],
+      };
+    }
+    this.currSettingInsertIndex = group.propBlocks.findIndex(b => b.id === relativeBlock.id);
+  }
+
 }

@@ -26,7 +26,7 @@ export const registerModel = (key: string, model: any) => {
  * @param key 
  * @returns [返回模型的代理对象, 主动更新的函数]
  */
-export const useModel = <T>(key: string, isRoot = false): [T, Function] => {
+export const useModel = <T>(key: string, isRoot = false): [T, (fun: Function, execTrigger?: boolean) => void] => {
   if (!store.has(key)) {
     throw new Error(`key:${key} not find`);
   }

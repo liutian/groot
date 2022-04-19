@@ -2,16 +2,17 @@ import { Checkbox, Col, DatePicker, Form, Input, Radio, Row, Select, Space, Swit
 import { VerticalAlignTopOutlined, DeleteOutlined, VerticalAlignBottomOutlined, SettingOutlined, PlusOutlined } from '@ant-design/icons';
 import { useModel } from "@util/robot";
 import StudioModel from '@model/Studio';
+import ArrayObjectFormItem from "../ArrayObjectFormItem";
 
 type PropType = {
   block: CodeMetaStudioPropBlock,
-  group: CodeMetaStudioPropGroup
+  noSetting?: boolean,
 }
 
-function StudioBlock({ block, group }: PropType) {
+function StudioBlock({ block, noSetting }: PropType) {
   const [model, updateAction] = useModel<StudioModel>('studio');
   const [form] = Form.useForm();
-  model.blockFormInstanceMap.set(`${group.id}-${block.id}`, form);
+  model.blockFormInstanceMap.set(block.id!, form);
 
   const renderItemLabel = (studioItem: CodeMetaStudioPropItem, itemIndex: number) => {
 
@@ -24,26 +25,26 @@ function StudioBlock({ block, group }: PropType) {
     const editStudioItem = () => {
       updateAction(() => {
         model.currSettingStudioItem = JSON.parse(JSON.stringify(studioItem));
-        model.currBlockOfSettingStudioItem = block;
-        model.currGroupOfSettingStudioBlock = group;
       })
     }
 
     const renderItemSetting = () => {
-      if (!model.settingMode) return null;
+      if (!model.settingMode || noSetting === true) return null;
 
       return (<Space size="small">
         <Typography.Link onClick={(e) => {
           e.preventDefault();
           updateAction(() => {
             model.currSettingStudioItem = {
+              id: '',
               type: 'input',
-              label: '属性' + block.propItems.length,
-              propKey: 'prop' + block.propItems.length,
+              label: `配置项${block.propItems.length + 1}`,
+              propKey: `prop${block.propItems.length + 1}`,
+              blockId: block.id,
+              groupId: block.groupId,
               span: 24
             }
-            model.currBlockOfSettingStudioItem = block;
-            model.currSettingIndex = block.propItems.findIndex(item => item.id === studioItem.id);
+            model.currSettingInsertIndex = block.propItems.findIndex(item => item.id === studioItem.id);
           })
         }}>
           <PlusOutlined />
@@ -98,6 +99,8 @@ function StudioBlock({ block, group }: PropType) {
       return <Radio.Group options={item.options} />
     } else if (item.type === 'checkbox') {
       return <Checkbox.Group options={item.options} />
+    } else if (item.type === 'array-object') {
+      return <ArrayObjectFormItem item={item}>对象数组</ArrayObjectFormItem>
     }
 
     return <>not found item</>
@@ -117,7 +120,6 @@ function StudioBlock({ block, group }: PropType) {
           })
         }
       </Row>
-
     </Form>
   </>
 }

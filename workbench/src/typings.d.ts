@@ -29,7 +29,7 @@ type CodeMetaStudio = {
  * 描述代码元数据配置的属性分组类型
  */
 type CodeMetaStudioPropGroup = {
-  id?: string,
+  id: string,
   title: string,
   propKey?: string,
   propBlocks: CodeMetaStudioPropBlock[]
@@ -39,30 +39,35 @@ type CodeMetaStudioPropGroup = {
  * 描述代码元数据配置的属性分组块类型
  */
 type CodeMetaStudioPropBlock = {
-  id?: string,
+  id: string,
   title: string,
   propKey?: string,
   propItems: CodeMetaStudioPropItem[],
+  groupId?: string
 }
 
 /**
  * 描述代码元数据配置的属性分组项类型
  */
 type CodeMetaStudioPropItem = {
-  id?: string,
-  propKey: string,
+  id: string,
   label: string,
+  propKey: string,
+  type: CodeMetaStudioPropItemType,
+  blockId?: string,
+  groupId?: string,
   value?: any,
   defaultValue?: any,
-  span?: number,
-  type: CodeMetaStudioPropItemType,
+  span: number,
   options?: [{
     label: string,
     value: string
-  }]
+  }],
+  valueOfArrayObject?: CodeMetaStudioPropBlock[],
+  templateBlockOfArrayObject?: CodeMetaStudioPropBlock
 }
 
-type CodeMetaStudioPropItemType = 'input' | 'date-picker' | 'switch' | 'select' | 'radio';
+type CodeMetaStudioPropItemType = 'input' | 'date-picker' | 'switch' | 'select' | 'radio' | 'checkbox' | 'array-object';
 
 /**
  * 组件配置类型
@@ -71,7 +76,7 @@ type ComponentStudio = {
   id: number,
   name: string,
   codeMetadata: string,
-  codeMetaStudio?: CodeMetaStudio,
+  codeMetaStudio: CodeMetaStudio,
   packageName: string,
   moduleName: string,
   componentName: string,

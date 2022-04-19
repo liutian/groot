@@ -2,6 +2,6 @@ export const uuid = (() => {
   let id = 0xaaaaaaaa;
 
   return () => {
-    return (++id).toString(16);
+    return `u_${(++id).toString(16)}`;
   }
 })();
