@@ -1,4 +1,4 @@
-import { CloseOutlined, LeftOutlined, SettingFilled, SettingOutlined } from '@ant-design/icons';
+import { LeftOutlined, SettingFilled, SettingOutlined } from '@ant-design/icons';
 import Studio from '@model/Studio';
 import { useModel } from '@util/robot';
 import { uuid } from '@util/utils';
@@ -105,7 +105,6 @@ const ArrayObjectPanel: React.FC<PropsType> = ({ item: studioItem }) => {
       <Row>
         <Col span={5} >
           <Button type="link" disabled={settingMode} icon={<LeftOutlined />} onClick={closePanel}></Button>
-          {model.handUpStudioItemStack.length > 1 ? <Button disabled={settingMode} type="link" icon={<CloseOutlined />} ></Button> : null}
           {model.handUpStudioItemStack.length > 1 ? <Badge count={model.handUpStudioItemStack.length} color="#aaa"></Badge> : null}
         </Col>
         <Col span={16} style={{ textAlign: 'center' }}>
