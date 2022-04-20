@@ -38,9 +38,9 @@
     "react-router-dom": "6.2.1"
   },
   "dependencies": {
-    "@ant-design/icons": "^4.7.0",
+    "@ant-design/icons": "4.7.0",
     "monaco-editor-webpack-plugin": "7.0.1",
-    "react-dnd": "^15.1.1",
-    "react-dnd-html5-backend": "^15.1.2"
+    "react-dnd": "15.1.1",
+    "react-dnd-html5-backend": "15.1.2"
   }
 }

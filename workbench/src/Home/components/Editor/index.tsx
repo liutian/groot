@@ -1,5 +1,5 @@
 import * as monaco from 'monaco-editor';
-import { metadataSchema } from '@groot-elf/core';
+import { metadataSchema } from '@grootio/core';
 import { useEffect, useRef } from 'react';
 
 type propsType = {

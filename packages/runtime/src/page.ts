@@ -1,4 +1,4 @@
-import { CodeMetadata } from "@groot-elf/core";
+import { CodeMetadata } from "@grootio/core";
 import { UIManagerInstance, WebWorkerInputMessage } from "./types";
 import { errorInfo, studioMode } from "./util";
 

@@ -1,4 +1,4 @@
-import { transform } from '@groot-elf/core';
+import { transform } from '@grootio/core';
 import { WebWorkerInputMessage, WebWorkerOutputMessage, WebWorkerType } from './types';
 
 const defaultOptions: WebWorkerType = {
