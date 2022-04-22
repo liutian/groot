@@ -14,10 +14,11 @@ module.exports = (env, args) => {
 			clean: true,
 		},
 		resolve: {
-			extensions: ['.tsx', '.ts', '.less', '.js'],
+			// 顺序很重要，惨痛教训！！！！！！！！！！
+			extensions: ['.js', '.ts', '.tsx', '.less'],
 			plugins: [
 				new TsconfigPathsPlugin({
-				
+
 				})
 			]
 		},
@@ -106,10 +107,10 @@ module.exports = (env, args) => {
 			new webpack.DefinePlugin({
 				'process.env.APP': JSON.stringify('dev'),
 			}),
-			
+
 			new CopyPlugin({
 				patterns: [
-					{from: "public/**/*.*"}
+					{ from: "public/**/*.*" }
 				],
 			})
 		]
