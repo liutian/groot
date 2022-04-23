@@ -4,6 +4,7 @@ const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
+const ReactRefreshTypeScript = require('react-refresh-typescript');
 
 module.exports = (env, args) => {
 	return {
@@ -49,6 +50,9 @@ module.exports = (env, args) => {
 					loader: 'ts-loader',
 					exclude: env.prod ? /node_modules/ : undefined,
 					options: {
+						getCustomTransformers: () => ({
+							before: !env.prod ? [ReactRefreshTypeScript()] : [],
+						}),
 						transpileOnly: !env.prod,
 						allowTsInNodeModules: !env.prod,
 						compilerOptions: {

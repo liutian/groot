@@ -1,6 +1,8 @@
 // const webpack = require('webpack');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 const proxyMap = require('./proxy');
+
 
 module.exports = (env, args) => {
   return {
@@ -20,6 +22,7 @@ module.exports = (env, args) => {
       new ForkTsCheckerWebpackPlugin({
 
       }),
+      new ReactRefreshWebpackPlugin()
     ],
   }
 }
