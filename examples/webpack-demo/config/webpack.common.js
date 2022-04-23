@@ -3,7 +3,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const CopyPlugin = require("copy-webpack-plugin");
+const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = (env, args) => {
 	return {
@@ -15,7 +15,7 @@ module.exports = (env, args) => {
 		},
 		resolve: {
 			// 顺序很重要，惨痛教训！！！！！！！！！！
-			extensions: ['.js', '.ts', '.tsx', '.less'],
+			extensions: ['.js', '.ts', '.d.ts', '.tsx', '.json'],
 			plugins: [
 				new TsconfigPathsPlugin({
 
@@ -110,7 +110,7 @@ module.exports = (env, args) => {
 
 			new CopyPlugin({
 				patterns: [
-					{ from: "public/**/*.*" }
+					{ from: 'public/**/*.*' }
 				],
 			})
 		]
