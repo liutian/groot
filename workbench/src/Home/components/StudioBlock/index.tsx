@@ -100,7 +100,7 @@ function StudioBlock({ block, noSetting }: PropType) {
     } else if (item.type === 'checkbox') {
       return <Checkbox.Group options={item.options} />
     } else if (item.type === 'array-object') {
-      return <ArrayObjectFormItem item={item}>对象数组</ArrayObjectFormItem>
+      return <ArrayObjectFormItem item={item}></ArrayObjectFormItem>
     }
 
     return <>not found item</>

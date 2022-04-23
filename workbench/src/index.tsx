@@ -1,12 +1,11 @@
-import { render } from 'react-dom';
+import ReactDOM from 'react-dom/client';
 import './index.less';
 
 import App from './App';
 import { BrowserRouter } from 'react-router-dom';
 
-render(
+ReactDOM.createRoot(document.getElementById('root')).render(
   <BrowserRouter>
     <App />
-  </BrowserRouter>,
-  document.getElementById('root')
+  </BrowserRouter>
 );

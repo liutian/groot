@@ -1,4 +1,4 @@
-import { ReactChildren, useRef } from "react";
+import { useRef } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import './index.less'
 
@@ -6,7 +6,7 @@ const type = 'DraggableTabNode';
 
 type PramsType = {
   nodeKey: string,
-  children: ReactChildren,
+  children: React.ReactChild,
   moveNode: (dragKey: string, hoverKey: string) => void
 }
 

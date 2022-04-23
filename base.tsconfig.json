@@ -5,7 +5,6 @@
     "lib": [
       "es2021"
     ],
-    "strict": true,
     "moduleResolution": "node",
     "noEmitOnError": true,
     "importHelpers": true,
