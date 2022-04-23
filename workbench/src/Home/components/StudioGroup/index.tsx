@@ -1,6 +1,6 @@
 import { useModel } from "@util/robot";
 import StudioModel from '@model/Studio';
-import { Collapse, Space, Typography } from "antd";
+import { Collapse, CollapsePanelProps, Space, Typography } from "antd";
 import { CaretRightOutlined, DeleteOutlined, PlusOutlined, SettingOutlined, VerticalAlignBottomOutlined, VerticalAlignTopOutlined } from "@ant-design/icons";
 import StudioBlock from "../StudioBlock";
 
@@ -65,13 +65,16 @@ const StudioGroup: React.FC<PropsType> = ({ group, inner = false, innerTemplateB
     <Collapse defaultActiveKey={group.propBlocks.map(b => b.id)} bordered={false} expandIconPosition="right" expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}>
       {
         group.propBlocks.map((block, blockIndex) => {
-          return (<Collapse.Panel header={block.title} key={block.id} extra={renderBlockSetting(block, blockIndex)}>
+          return (<CollapsePanel header={block.title} key={block.id} extra={renderBlockSetting(block, blockIndex)}>
             <StudioBlock block={block} noSetting={inner} />
-          </Collapse.Panel>)
+          </CollapsePanel>)
         })
       }
     </Collapse>
   </>)
 };
+
+const CollapsePanel = Collapse.Panel as CollapsePanelType;
+type CollapsePanelType = React.FC<CollapsePanelProps & { children: React.ReactChild }>;
 
 export default StudioGroup;
