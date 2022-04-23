@@ -50,9 +50,11 @@ module.exports = (env, args) => {
 					loader: 'ts-loader',
 					exclude: env.prod ? /node_modules/ : undefined,
 					options: {
+						// 快速刷新
 						getCustomTransformers: () => ({
 							before: !env.prod ? [ReactRefreshTypeScript()] : [],
 						}),
+						// 快速刷新依赖 transpileOnly = true
 						transpileOnly: !env.prod,
 						allowTsInNodeModules: !env.prod,
 						compilerOptions: {

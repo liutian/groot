@@ -16,12 +16,14 @@ module.exports = (env, args) => {
     devServer: {
       historyApiFallback: true,
       proxy: proxyMap[env.APP_ENV],
+      // 快速刷新依赖hot = true
       hot: true
     },
     plugins: [
       new ForkTsCheckerWebpackPlugin({
 
       }),
+      // 快速刷新
       new ReactRefreshWebpackPlugin()
     ],
   }
