@@ -3,6 +3,7 @@ import { VerticalAlignTopOutlined, DeleteOutlined, VerticalAlignBottomOutlined, 
 import { useModel } from "@util/robot";
 import StudioModel from '@model/Studio';
 import ArrayObjectFormItem from "../ArrayObjectFormItem";
+import styles from './index.module.less';
 
 type PropType = {
   block: CodeMetaStudioPropBlock,
@@ -76,11 +77,11 @@ function StudioBlock({ block, noSetting }: PropType) {
       </Space>)
     }
 
-    return <div style={{ display: 'flex' }}>
-      <div >
+    return <div className={styles.studioItemHeader}>
+      <div className={styles.studioItemHeaderText}>
         {studioItem.label}
       </div>
-      <div style={{ marginLeft: 'auto' }}>
+      <div className={styles.studioItemHeaderActions}>
         {renderItemSetting()}
       </div>
     </div>
@@ -112,7 +113,7 @@ function StudioBlock({ block, noSetting }: PropType) {
         {
           block.propItems.map((item, index) => {
             return <Col span={item.span} key={item.id} >
-              <Form.Item label={renderItemLabel(item, index)} name={item.propKey} preserve={false}
+              <Form.Item className={styles.studioItem} label={renderItemLabel(item, index)} name={item.propKey} preserve={false}
                 valuePropName={item.type === 'switch' ? 'checked' : 'value'} initialValue={item.value || item.defaultValue}>
                 {renderFormItem(item)}
               </Form.Item>
