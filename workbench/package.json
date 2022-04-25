@@ -33,7 +33,7 @@
   },
   "dependencies": {
     "@ant-design/icons": "4.7.0",
-    "antd": "4.20.0-alpha.1",
+    "antd": "^4.20.0",
     "monaco-editor-webpack-plugin": "7.0.1",
     "react": "18.0.0",
     "react-dnd": "16.0.1",
