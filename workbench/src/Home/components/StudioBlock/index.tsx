@@ -76,11 +76,11 @@ function StudioBlock({ block, noSetting }: PropType) {
       </Space>)
     }
 
-    return <div className="clearfix">
-      <div className="pull-left">
+    return <div style={{ display: 'flex' }}>
+      <div >
         {studioItem.label}
       </div>
-      <div className="pull-right">
+      <div style={{ marginLeft: 'auto' }}>
         {renderItemSetting()}
       </div>
     </div>
