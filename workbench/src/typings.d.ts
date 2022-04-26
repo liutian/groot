@@ -21,8 +21,11 @@ interface Window {
  * 描述代码元数据配置的类型
  */
 type CodeMetaStudio = {
-  name: string;
-  propGroups: CodeMetaStudioPropGroup[]
+  propGroups: CodeMetaStudioPropGroup[],
+  allGroups: CodeMetaStudioPropGroup[],
+  allBlocks: CodeMetaStudioPropBlock[],
+  allItems: CodeMetaStudioPropItem[],
+  propGroupIds: string[]
 }
 
 /**
@@ -31,6 +34,7 @@ type CodeMetaStudio = {
 type CodeMetaStudioPropGroup = {
   id: string,
   title: string,
+  relativeItemId?: string,
   propKey?: string,
   propBlocks: CodeMetaStudioPropBlock[]
 }
@@ -44,6 +48,8 @@ type CodeMetaStudioPropBlock = {
   propKey?: string,
   propItems: CodeMetaStudioPropItem[],
   groupId?: string
+  relativeItemId?: string,
+  isRootPropKey?: boolean,
 }
 
 /**
@@ -59,12 +65,23 @@ type CodeMetaStudioPropItem = {
   value?: any,
   defaultValue?: any,
   span: number,
+  isRootPropKey?: boolean,
   options?: [{
     label: string,
     value: string
   }],
+  relativeGroupId?: string,
+  relativeGroup?: CodeMetaStudioPropGroup,
+  relativeBlockId?: string,
+  relativeBlock?: CodeMetaStudioPropBlock,
   valueOfArrayObject?: CodeMetaStudioPropBlock[],
   templateBlockOfArrayObject?: CodeMetaStudioPropBlock
+}
+
+type CodeMeta = {
+  key: string,
+  defaultValue: any,
+  type: CodeMetaStudioPropItemType
 }
 
 type CodeMetaStudioPropItemType = 'input' | 'date-picker' | 'switch' | 'select' | 'radio' | 'checkbox' | 'array-object';

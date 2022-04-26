@@ -48,10 +48,11 @@ export default class Studio {
 
   public innerTempStudioGroupMap = new Map<string, CodeMetaStudioPropGroup>();
 
-  public init(studioData: CodeMetaStudio) {
-    this.codeMetaStudio = studioData;
+  public init(codeMetaStudio: CodeMetaStudio) {
+    this.codeMetaStudio = codeMetaStudio;
+    this.buildPropGroups(codeMetaStudio);
+    this.activeGroupId = codeMetaStudio.propGroups[0]?.id;
     this.settingMode = true;
-    this.activeGroupId = studioData.propGroups[0]?.id;
   }
 
   // todo
@@ -319,6 +320,96 @@ export default class Studio {
       };
     }
     this.currSettingInsertIndex = group.propBlocks.findIndex(b => b.id === relativeBlock.id);
+  }
+
+  public createCodemeta(codeMetaStudio: CodeMetaStudio) {
+    const codemetas = [] as CodeMeta[];
+    for (let groupIndex = 0; groupIndex < codeMetaStudio.propGroups.length; groupIndex++) {
+      const group = codeMetaStudio.propGroups[groupIndex]!;
+      this.createCodemetaFromGroup(group, codemetas, '');
+    }
+    return codemetas;
+  }
+
+  private createCodemetaFromGroup(group: CodeMetaStudioPropGroup, codemetas: CodeMeta[], contextKey = '') {
+    const blocks = group.propBlocks;
+    const groupPropKey = group.propKey || '';
+    for (let blockIndex = 0; blockIndex < blocks.length; blockIndex++) {
+      const block = blocks[blockIndex]!;
+      const blockPropKey = block.propKey || '';
+      for (let itemIndex = 0; itemIndex < block.propItems.length; itemIndex++) {
+        const item = block.propItems[itemIndex]!;
+        const itemPropKey = item.propKey || '';
+        const keyArr = [contextKey];
+
+        if (group.relativeItemId) {
+          keyArr.push(`[${blockIndex}]`);
+        } else {
+          keyArr.push(groupPropKey, blockPropKey);
+        }
+
+        if (!group.relativeItemId && block.isRootPropKey) {
+          keyArr.length = 0;
+          keyArr.push(blockPropKey);
+        }
+
+        keyArr.push(itemPropKey);
+
+        if (!group.relativeItemId && item.isRootPropKey) {
+          keyArr.length = 0;
+          keyArr.push(itemPropKey);
+        }
+
+        const key = keyArr.filter(k => !!k).join('.');
+        codemetas.push({
+          key,
+          type: item.type,
+          defaultValue: item.value || item.defaultValue
+        });
+        if (item.type === 'array-object') {
+          this.createCodemetaFromGroup(item.relativeGroup!, codemetas, key);
+        }
+      }
+    }
+  }
+
+
+
+  private buildPropGroups(codeMetaStudio: CodeMetaStudio) {
+    codeMetaStudio.propGroups = [];
+    for (let i = 0; i < codeMetaStudio.propGroupIds.length; i++) {
+      const groupId = codeMetaStudio.propGroupIds[i]!;
+      const group = this.buildStudioGroup(groupId);
+      codeMetaStudio.propGroups.push(group);
+    }
+  }
+
+  private buildStudioGroup(groupId: string) {
+    const group = this.codeMetaStudio.allGroups.find(g => g.id === groupId);
+    if (!group) {
+      throw new Error(`can not find group[${groupId}]`);
+    }
+
+    const blocks = this.codeMetaStudio.allBlocks.filter(b => b.groupId === groupId);
+    group.propBlocks = blocks;
+    for (let blockIndex = 0; blockIndex < blocks.length; blockIndex++) {
+      const block = blocks[blockIndex]!;
+      const items = this.codeMetaStudio.allItems.filter(i => i.groupId === groupId && i.blockId === block.id);
+      block.propItems = items;
+
+      for (let itemIndex = 0; itemIndex < items.length; itemIndex++) {
+        const item = items[itemIndex]!;
+        if (item.type === 'array-object') {
+          const relativeGroup = this.buildStudioGroup(item.relativeGroupId!);
+          item.relativeGroup = relativeGroup;
+          const relativeBlock = relativeGroup.propBlocks.find(b => b.id === item.relativeBlockId);
+          item.relativeBlock = relativeBlock;
+          relativeGroup.propBlocks = relativeGroup.propBlocks.filter(b => b.id !== item.relativeBlockId)
+        }
+      }
+    }
+
+    return group;
   }
 
 }
