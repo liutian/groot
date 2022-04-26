@@ -74,8 +74,6 @@ type CodeMetaStudioPropItem = {
   relativeGroup?: CodeMetaStudioPropGroup,
   relativeBlockId?: string,
   relativeBlock?: CodeMetaStudioPropBlock,
-  valueOfArrayObject?: CodeMetaStudioPropBlock[],
-  templateBlockOfArrayObject?: CodeMetaStudioPropBlock
 }
 
 type CodeMeta = {

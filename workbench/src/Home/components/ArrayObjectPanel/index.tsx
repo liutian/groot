@@ -18,27 +18,14 @@ const ArrayObjectPanel: React.FC<PropsType> = ({ item: studioItem }) => {
   const [settingMode, setSettingMode] = useState(false);
 
   const [templateBlock] = useState<CodeMetaStudioPropBlock>(() => {
-    const block = JSON.parse(JSON.stringify(studioItem.templateBlockOfArrayObject!)) as CodeMetaStudioPropBlock;
+    const block = JSON.parse(JSON.stringify(studioItem.relativeBlock)) as CodeMetaStudioPropBlock;
     return block;
   });
 
   const preTemplateBlockRef = useRef(JSON.stringify(templateBlock));
 
   const [studioGroup] = useState<CodeMetaStudioPropGroup>(() => {
-    const group = {
-      id: uuid(),
-      title: '',
-      propBlocks: JSON.parse(JSON.stringify(studioItem.valueOfArrayObject || []))
-    } as CodeMetaStudioPropGroup;
-
-    group.propBlocks.forEach((block) => {
-      block.groupId = group.id;
-
-      block.propItems.forEach((item) => {
-        item.groupId = group.id;
-      })
-    })
-
+    const group = JSON.parse(JSON.stringify(studioItem.relativeGroup)) as CodeMetaStudioPropGroup;
     return group;
   })
 
@@ -97,7 +84,7 @@ const ArrayObjectPanel: React.FC<PropsType> = ({ item: studioItem }) => {
   }
 
   const closePanel = () => {
-    model.popHandUpStudioItem(studioGroup.propBlocks, templateBlock);
+    model.popHandUpStudioItem(studioGroup, templateBlock);
   }
 
   return <div className={styles.container}>

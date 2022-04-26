@@ -176,25 +176,36 @@ export default class Studio {
     }
 
     if (newItem.type === 'array-object') {
-      const item = {
+      const itemChild = {
         id: uuid(),
         label: '配置项1',
         propKey: 'prop_001',
         type: 'input',
         span: 24
       } as CodeMetaStudioPropItem;
-      const block = {
+      const blockChild = {
         id: uuid(),
         title: '配置块1',
-        propItems: [item]
-      }
+        propItems: [itemChild]
+      } as CodeMetaStudioPropBlock;
+      const groupChild = {
+        id: uuid(),
+        title: '',
+        propBlocks: [blockChild]
+      } as CodeMetaStudioPropGroup;
 
-      item.blockId = block.id;
-      newItem.valueOfArrayObject = [JSON.parse(JSON.stringify(block))];
+      item.blockId = blockChild.id;
+      item.groupId = groupChild.id;
+      blockChild.groupId = groupChild.id;
+      newItem.relativeGroup = groupChild;
+      newItem.relativeGroupId = groupChild.id;
 
-      newItem.templateBlockOfArrayObject = JSON.parse(JSON.stringify(block));
-      newItem.templateBlockOfArrayObject!.id = uuid();
-      newItem.templateBlockOfArrayObject?.propItems.forEach((item) => item.id = uuid());
+      newItem.relativeBlock = JSON.parse(JSON.stringify(blockChild));
+      newItem.relativeBlock!.id = uuid();
+      newItem.relativeBlock?.propItems.forEach((item) => {
+        item.id = uuid();
+        item.blockId = newItem.relativeBlock!.id;
+      });
     }
 
     const block = this.getStudioBlock(newItem.blockId!);
@@ -257,11 +268,11 @@ export default class Studio {
     this.handUpStudioItemStack?.push(item);
   }
 
-  public popHandUpStudioItem = (blocks: CodeMetaStudioPropBlock[], templateBlockOfArrayObject: CodeMetaStudioPropBlock) => {
+  public popHandUpStudioItem = (group: CodeMetaStudioPropGroup, templateBlockOfArrayObject: CodeMetaStudioPropBlock) => {
     const item = this.handUpStudioItemStack.pop();
     if (item) {
-      item.valueOfArrayObject = JSON.parse(JSON.stringify(blocks));
-      item.templateBlockOfArrayObject = JSON.parse(JSON.stringify(templateBlockOfArrayObject));
+      item.relativeGroup = JSON.parse(JSON.stringify(group));
+      item.relativeBlock = JSON.parse(JSON.stringify(templateBlockOfArrayObject));
     }
   }
 
