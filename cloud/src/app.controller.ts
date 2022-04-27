@@ -1,6 +1,8 @@
+import { RequestContext } from '@mikro-orm/core';
 import { Controller, Get, Param } from '@nestjs/common';
+import { StudioGroup } from 'entities/StudioGroup';
 import { AppService } from './app.service';
-@Controller('/project')
+@Controller('/studio')
 export class AppController {
   constructor(private readonly appService: AppService) { }
 
@@ -23,5 +25,12 @@ export class AppController {
         }
       ]
     };
+  }
+
+  @Get()
+  run() {
+    const em = RequestContext.getEntityManager();
+    const group = new StudioGroup();
+    em.persistAndFlush(group);
   }
 }
