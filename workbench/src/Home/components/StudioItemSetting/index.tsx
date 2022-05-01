@@ -5,7 +5,7 @@ import StudioModel from '@model/Studio';
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 
 const StudioItemSetting: React.FC = () => {
-  const [form] = Form.useForm<CodeMetaStudioPropItem>();
+  const [form] = Form.useForm<CodeMetaStudioItem>();
   const [model, updateAction] = useModel<StudioModel>('studio');
 
   const handleOk = async () => {

@@ -10,22 +10,22 @@ import styles from './index.module.less';
 
 
 type PropsType = {
-  item: CodeMetaStudioPropItem
+  item: CodeMetaStudioItem
 }
 
 const ArrayObjectPanel: React.FC<PropsType> = ({ item: studioItem }) => {
   const [model] = useModel<Studio>('studio');
   const [settingMode, setSettingMode] = useState(false);
 
-  const [templateBlock] = useState<CodeMetaStudioPropBlock>(() => {
-    const block = JSON.parse(JSON.stringify(studioItem.templateBlock)) as CodeMetaStudioPropBlock;
+  const [templateBlock] = useState<CodeMetaStudioBlock>(() => {
+    const block = JSON.parse(JSON.stringify(studioItem.templateBlock)) as CodeMetaStudioBlock;
     return block;
   });
 
   const preTemplateBlockRef = useRef(JSON.stringify(templateBlock));
 
-  const [studioGroup] = useState<CodeMetaStudioPropGroup>(() => {
-    const group = JSON.parse(JSON.stringify(studioItem.valueOfGroup)) as CodeMetaStudioPropGroup;
+  const [studioGroup] = useState<CodeMetaStudioGroup>(() => {
+    const group = JSON.parse(JSON.stringify(studioItem.valueOfGroup)) as CodeMetaStudioGroup;
     return group;
   })
 
@@ -34,7 +34,7 @@ const ArrayObjectPanel: React.FC<PropsType> = ({ item: studioItem }) => {
       id: uuid(),
       name: '',
       propBlocks: [templateBlock]
-    } as CodeMetaStudioPropGroup;
+    } as CodeMetaStudioGroup;
     templateBlock.groupId = templateGroup.id;
     templateBlock.propItems.forEach(item => {
       item.groupId = templateGroup.id;
@@ -62,7 +62,7 @@ const ArrayObjectPanel: React.FC<PropsType> = ({ item: studioItem }) => {
 
       if (JSON.stringify(templateBlock) !== preTemplateBlockRef.current) {
         preTemplateBlockRef.current = JSON.stringify(templateBlock)
-        const newTemplateBlockChild = JSON.parse(JSON.stringify(templateBlock)) as CodeMetaStudioPropBlock;
+        const newTemplateBlockChild = JSON.parse(JSON.stringify(templateBlock)) as CodeMetaStudioBlock;
         newTemplateBlockChild.id = uuid();
         newTemplateBlockChild.propItems.forEach((item) => {
           item.id = uuid();

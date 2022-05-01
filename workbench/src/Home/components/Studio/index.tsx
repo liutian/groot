@@ -31,7 +31,7 @@ function Studio() {
   );
 
   // 自定义渲染Tab标题，实现右键菜单功能
-  const renderTabBarItem = (group: CodeMetaStudioPropGroup) => {
+  const renderTabBarItem = (group: CodeMetaStudioGroup) => {
 
     const menus = (
       <Menu>

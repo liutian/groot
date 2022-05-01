@@ -21,32 +21,32 @@ interface Window {
  * 描述代码元数据配置的类型
  */
 type CodeMetaStudio = {
-  propGroups: CodeMetaStudioPropGroup[],
-  allGroups: CodeMetaStudioPropGroup[],
-  allBlocks: CodeMetaStudioPropBlock[],
-  allItems: CodeMetaStudioPropItem[],
+  propGroups: CodeMetaStudioGroup[],
+  allGroups: CodeMetaStudioGroup[],
+  allBlocks: CodeMetaStudioBlock[],
+  allItems: CodeMetaStudioItem[],
   propGroupIds: number[]
 }
 
 /**
  * 描述代码元数据配置的属性分组类型
  */
-type CodeMetaStudioPropGroup = {
+type CodeMetaStudioGroup = {
   id: number,
   name: string,
   propKey?: string,
-  propBlocks: CodeMetaStudioPropBlock[],
+  propBlocks: CodeMetaStudioBlock[],
   relativeItemId?: number,
 }
 
 /**
  * 描述代码元数据配置的属性配置块类型
  */
-type CodeMetaStudioPropBlock = {
+type CodeMetaStudioBlock = {
   id: number,
   name: string,
   propKey?: string,
-  propItems: CodeMetaStudioPropItem[],
+  propItems: CodeMetaStudioItem[],
   groupId: number
   relativeItemId?: number,
   isRootPropKey?: boolean,
@@ -55,7 +55,7 @@ type CodeMetaStudioPropBlock = {
 /**
  * 描述代码元数据配置的属性配置项类型
  */
-type CodeMetaStudioPropItem = {
+type CodeMetaStudioItem = {
   id: number,
   label: string,
   propKey: string,
@@ -71,9 +71,9 @@ type CodeMetaStudioPropItem = {
   span?: number,
   isRootPropKey?: boolean,
   valueOfGroupId?: number,
-  valueOfGroup?: CodeMetaStudioPropGroup,
+  valueOfGroup?: CodeMetaStudioGroup,
   templateBlockId?: number,
-  templateBlock?: CodeMetaStudioPropBlock,
+  templateBlock?: CodeMetaStudioBlock,
 }
 
 type CodeMeta = {

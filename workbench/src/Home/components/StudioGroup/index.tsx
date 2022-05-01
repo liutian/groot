@@ -5,9 +5,9 @@ import { CaretRightOutlined, DeleteOutlined, PlusOutlined, SettingOutlined, Vert
 import StudioBlock from "../StudioBlock";
 
 type PropsType = {
-  group: CodeMetaStudioPropGroup,
+  group: CodeMetaStudioGroup,
   inner?: boolean,
-  innerTemplateBlock?: CodeMetaStudioPropBlock
+  innerTemplateBlock?: CodeMetaStudioBlock
 }
 
 const StudioGroup: React.FC<PropsType> = ({ group, inner = false, innerTemplateBlock }) => {
@@ -17,13 +17,13 @@ const StudioGroup: React.FC<PropsType> = ({ group, inner = false, innerTemplateB
     updateAction(() => group.propBlocks.splice(blockIndex, 1));
   }
 
-  const editBlock = (block: CodeMetaStudioPropBlock) => {
+  const editBlock = (block: CodeMetaStudioBlock) => {
     updateAction(() => {
       model.currSettingStudioBlock = JSON.parse(JSON.stringify(block));
     })
   }
 
-  const renderBlockSetting = (block: CodeMetaStudioPropBlock, blockIndex: number) => {
+  const renderBlockSetting = (block: CodeMetaStudioBlock, blockIndex: number) => {
     if (!model.settingMode) return null;
 
     return (<Space size="small">

@@ -3,7 +3,7 @@ import { useModel } from "@util/robot";
 import { Button } from "antd";
 
 type PropsType = {
-  item: CodeMetaStudioPropItem,
+  item: CodeMetaStudioItem,
   value?: any[],
   onChange?: (value: any[]) => void;
 }

@@ -6,7 +6,7 @@ import ArrayObjectFormItem from "../ArrayObjectFormItem";
 import styles from './index.module.less';
 
 type PropType = {
-  block: CodeMetaStudioPropBlock,
+  block: CodeMetaStudioBlock,
   noSetting?: boolean,
 }
 
@@ -15,7 +15,7 @@ function StudioBlock({ block, noSetting }: PropType) {
   const [form] = Form.useForm();
   model.blockFormInstanceMap.set(block.id!, form);
 
-  const renderItemLabel = (studioItem: CodeMetaStudioPropItem, itemIndex: number) => {
+  const renderItemLabel = (studioItem: CodeMetaStudioItem, itemIndex: number) => {
 
     const delStudioItem = (itemIndex: number) => {
       updateAction(() => {
@@ -87,7 +87,7 @@ function StudioBlock({ block, noSetting }: PropType) {
     </div>
   }
 
-  const renderFormItem = (item: CodeMetaStudioPropItem) => {
+  const renderFormItem = (item: CodeMetaStudioItem) => {
     if (item.type === 'input') {
       return <Input />;
     } else if (item.type === 'date-picker') {

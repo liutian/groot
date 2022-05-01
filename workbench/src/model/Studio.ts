@@ -9,15 +9,15 @@ export default class Studio {
   /**
    * 当前配置组
    */
-  public currSettingStudioGroup?: CodeMetaStudioPropGroup;
+  public currSettingStudioGroup?: CodeMetaStudioGroup;
   /**
    * 当前配置块
    */
-  public currSettingStudioBlock?: CodeMetaStudioPropBlock;
+  public currSettingStudioBlock?: CodeMetaStudioBlock;
   /**
    * 当前配置项
    */
-  public currSettingStudioItem?: CodeMetaStudioPropItem;
+  public currSettingStudioItem?: CodeMetaStudioItem;
 
   /**
    * 当前组件配置对象
@@ -44,9 +44,9 @@ export default class Studio {
   */
   public currSettingInsertIndex: number = -1;
 
-  public handUpStudioItemStack: CodeMetaStudioPropItem[] = [];
+  public handUpStudioItemStack: CodeMetaStudioItem[] = [];
 
-  public innerTempStudioGroupMap = new Map<number, CodeMetaStudioPropGroup>();
+  public innerTempStudioGroupMap = new Map<number, CodeMetaStudioGroup>();
 
   public init(codeMetaStudio: CodeMetaStudio) {
     this.codeMetaStudio = codeMetaStudio;
@@ -72,7 +72,7 @@ export default class Studio {
     this.notifyIframe!(JSON.stringify(props));
   }
 
-  public moveStudioBlock = (group: CodeMetaStudioPropGroup, originIndex: number, up: boolean) => {
+  public moveStudioBlock = (group: CodeMetaStudioGroup, originIndex: number, up: boolean) => {
     const [moveBlock] = group.propBlocks.splice(originIndex, 1);
     if (up) {
       group.propBlocks.splice(originIndex - 1, 0, moveBlock!);
@@ -113,7 +113,7 @@ export default class Studio {
     }
   }
 
-  public moveStudioItem = (block: CodeMetaStudioPropBlock, originIndex: number, up: boolean) => {
+  public moveStudioItem = (block: CodeMetaStudioBlock, originIndex: number, up: boolean) => {
     const [moveItem] = block.propItems.splice(originIndex, 1);
     if (up) {
       block.propItems.splice(originIndex - 1, 0, moveItem!);
@@ -122,7 +122,7 @@ export default class Studio {
     }
   }
 
-  public updateOrAddStudioGroup = (group: CodeMetaStudioPropGroup) => {
+  public updateOrAddStudioGroup = (group: CodeMetaStudioGroup) => {
     const newGroup = Object.assign(this.currSettingStudioGroup, group);
 
     if (newGroup.id) {
@@ -147,7 +147,7 @@ export default class Studio {
     this.currSettingStudioGroup = undefined;
   }
 
-  public updateOrAddStudioBlock = (block: CodeMetaStudioPropBlock) => {
+  public updateOrAddStudioBlock = (block: CodeMetaStudioBlock) => {
     const newBlock = Object.assign(this.currSettingStudioBlock, block);
     const group = this.getStudioGroup(newBlock.groupId!);
 
@@ -168,7 +168,7 @@ export default class Studio {
     this.currSettingStudioBlock = undefined;
   }
 
-  public updateOrAddStudioItem = (item: CodeMetaStudioPropItem) => {
+  public updateOrAddStudioItem = (item: CodeMetaStudioItem) => {
     const newItem = Object.assign(this.currSettingStudioItem, item);
 
     if (!['select', 'radio', 'checkbox'].includes(newItem.type)) {
@@ -182,17 +182,17 @@ export default class Studio {
         propKey: 'prop_001',
         type: 'input',
         span: 24
-      } as CodeMetaStudioPropItem;
+      } as CodeMetaStudioItem;
       const blockChild = {
         id: uuid(),
         name: '配置块1',
         propItems: [itemChild]
-      } as CodeMetaStudioPropBlock;
+      } as CodeMetaStudioBlock;
       const groupChild = {
         id: uuid(),
         name: '',
         propBlocks: [blockChild]
-      } as CodeMetaStudioPropGroup;
+      } as CodeMetaStudioGroup;
 
       item.blockId = blockChild.id;
       item.groupId = groupChild.id;
@@ -264,11 +264,11 @@ export default class Studio {
     }
   }
 
-  public pushHandUpStudioItem = (item: CodeMetaStudioPropItem) => {
+  public pushHandUpStudioItem = (item: CodeMetaStudioItem) => {
     this.handUpStudioItemStack?.push(item);
   }
 
-  public popHandUpStudioItem = (group: CodeMetaStudioPropGroup, templateBlockOfArrayObject: CodeMetaStudioPropBlock) => {
+  public popHandUpStudioItem = (group: CodeMetaStudioGroup, templateBlockOfArrayObject: CodeMetaStudioBlock) => {
     const item = this.handUpStudioItemStack.pop();
     if (item) {
       item.valueOfGroup = JSON.parse(JSON.stringify(group));
@@ -309,9 +309,9 @@ export default class Studio {
     return undefined;
   }
 
-  public showStudioBlockSettinngForCreate = (relativeBlock: CodeMetaStudioPropBlock, group: CodeMetaStudioPropGroup, inner: boolean, innerTemplateBlock: CodeMetaStudioPropBlock) => {
+  public showStudioBlockSettinngForCreate = (relativeBlock: CodeMetaStudioBlock, group: CodeMetaStudioGroup, inner: boolean, innerTemplateBlock: CodeMetaStudioBlock) => {
     if (inner) {
-      const newBlock = JSON.parse(JSON.stringify(innerTemplateBlock)) as CodeMetaStudioPropBlock;
+      const newBlock = JSON.parse(JSON.stringify(innerTemplateBlock)) as CodeMetaStudioBlock;
       newBlock.id = 0;
       newBlock.name = `配置块${group.propBlocks.length + 1}`;
       newBlock.groupId = group.id;
@@ -344,7 +344,7 @@ export default class Studio {
     return codemetas;
   }
 
-  private createCodemetaFromGroup(group: CodeMetaStudioPropGroup, codemetas: CodeMeta[], contextKey = '') {
+  private createCodemetaFromGroup(group: CodeMetaStudioGroup, codemetas: CodeMeta[], contextKey = '') {
     const blocks = group.propBlocks;
     const groupPropKey = group.propKey || '';
     for (let blockIndex = 0; blockIndex < blocks.length; blockIndex++) {
