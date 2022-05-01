@@ -6,7 +6,7 @@ import styles from './index.module.less';
 
 import { registerModel, useModel } from '@util/robot';
 import StudioModel from '@model/Studio';
-import { fetchPageComponentData } from '@util/dataSource';
+import { fetchPageData } from '@util/dataSource';
 
 
 const Home = () => {
@@ -16,16 +16,16 @@ const Home = () => {
   const [pageName, setPageName] = useState('');
   const iframeRef = useRef({} as any);
   // 页面组件配置器
-  const pageComponentStudioRef = useRef<PageComponentStudio>();
+  const PageDataRef = useRef<PageData>();
   // 使用页面全局实例
   const [model, updateAction] = useModel<StudioModel>('studio', true);
 
 
   useEffect(() => {
     // 加载页面组件配置器数据
-    fetchPageComponentData().then((data) => {
-      pageComponentStudioRef.current = data;
-      model.init(data.codeMetaStudio);
+    fetchPageData().then((data) => {
+      PageDataRef.current = data;
+      model.init(data.component.studio.codeMetaStudio);
       // todo
       setPageName(`groot::{"path": "${data.path}","name":"${data.name}"}`);
     });
@@ -41,18 +41,18 @@ const Home = () => {
   }, []);
 
   // 通知iframe更新数据
-  const notifyIframe = (codeMetadata?: string) => {
-    const propsStr = codeMetadata || pageComponentStudioRef.current?.codeMetadata || '';
+  const notifyIframe = (content?: string) => {
+    const props = content || PageDataRef.current?.component.codeMetaData;
 
     iframeRef.current.contentWindow.postMessage({
       type: 'refresh',
-      path: pageComponentStudioRef.current?.path,
+      path: PageDataRef.current?.path,
       metadata: {
-        moduleName: pageComponentStudioRef.current?.moduleName,
-        packageName: pageComponentStudioRef.current?.packageName,
-        componentName: pageComponentStudioRef.current?.componentName,
+        moduleName: PageDataRef.current?.component.studio.moduleName,
+        packageName: PageDataRef.current?.component.studio.packageName,
+        componentName: PageDataRef.current?.component.studio.componentName,
         // todo
-        props: JSON.parse(propsStr),
+        props
       }
     }, '*');
   }
@@ -62,12 +62,12 @@ const Home = () => {
   }, false);
 
   const renderSetting = () => {
-    if (!pageComponentStudioRef.current) {
+    if (!PageDataRef.current) {
       return null;
     }
 
     if (model.manualMode) {
-      return <Editor onContentChange={notifyIframe} defaultContent={pageComponentStudioRef.current.codeMetadata || ''} />;
+      return <Editor onContentChange={notifyIframe} defaultContent={PageDataRef.current.component.codeMetaData} />;
     } else {
       return <Studio />;
     }
@@ -75,7 +75,7 @@ const Home = () => {
 
 
   return <div className={styles.main}>
-    {pageComponentStudioRef.current ? <iframe ref={iframeRef} name={pageName} className={styles.pageView} src={pageComponentStudioRef.current.url}></iframe> : null}
+    {PageDataRef.current ? <iframe ref={iframeRef} name={pageName} className={styles.pageView} src={PageDataRef.current.url}></iframe> : null}
 
     <div className={styles.sidePanel}>
       <div className={styles.sideEdge}></div>

@@ -25,30 +25,30 @@ type CodeMetaStudio = {
   allGroups: CodeMetaStudioPropGroup[],
   allBlocks: CodeMetaStudioPropBlock[],
   allItems: CodeMetaStudioPropItem[],
-  propGroupIds: string[]
+  propGroupIds: number[]
 }
 
 /**
  * 描述代码元数据配置的属性分组类型
  */
 type CodeMetaStudioPropGroup = {
-  id: string,
-  title: string,
-  relativeItemId?: string,
+  id: number,
+  name: string,
   propKey?: string,
-  propBlocks: CodeMetaStudioPropBlock[]
+  propBlocks: CodeMetaStudioPropBlock[],
+  relativeItemId?: number,
 }
 
 /**
  * 描述代码元数据配置的属性配置块类型
  */
 type CodeMetaStudioPropBlock = {
-  id: string,
-  title: string,
+  id: number,
+  name: string,
   propKey?: string,
   propItems: CodeMetaStudioPropItem[],
-  groupId?: string
-  relativeItemId?: string,
+  groupId: number
+  relativeItemId?: number,
   isRootPropKey?: boolean,
 }
 
@@ -56,24 +56,24 @@ type CodeMetaStudioPropBlock = {
  * 描述代码元数据配置的属性配置项类型
  */
 type CodeMetaStudioPropItem = {
-  id: string,
+  id: number,
   label: string,
   propKey: string,
   type: CodeMetaStudioPropItemType,
-  blockId?: string,
-  groupId?: string,
   value?: any,
   defaultValue?: any,
-  span: number,
-  isRootPropKey?: boolean,
   options?: [{
     label: string,
     value: string
   }],
-  relativeGroupId?: string,
-  relativeGroup?: CodeMetaStudioPropGroup,
-  relativeBlockId?: string,
-  relativeBlock?: CodeMetaStudioPropBlock,
+  blockId: number,
+  groupId: number,
+  span?: number,
+  isRootPropKey?: boolean,
+  valueOfGroupId?: number,
+  valueOfGroup?: CodeMetaStudioPropGroup,
+  templateBlockId?: number,
+  templateBlock?: CodeMetaStudioPropBlock,
 }
 
 type CodeMeta = {
@@ -90,14 +90,24 @@ type CodeMetaStudioPropItemType = 'input' | 'date-picker' | 'switch' | 'select' 
 type ComponentStudio = {
   id: number,
   name: string,
-  codeMetadata: string,
   codeMetaStudio: CodeMetaStudio,
   packageName: string,
   moduleName: string,
   componentName: string,
 }
 
-type PageComponentStudio = ComponentStudio & {
+type ComponentInstance = {
+  id: number,
+  name: string,
+  codeMetaData: CodeMeta[],
+  studio: ComponentStudio,
+}
+
+type PageData = {
+  id: number,
+  name: string,
   url: string,
   path: string,
+  component: ComponentInstance
 }
+

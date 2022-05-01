@@ -47,7 +47,7 @@ function Studio() {
     );
 
     return <Dropdown overlayStyle={{ minWidth: '5em' }} overlay={menus} trigger={['contextMenu']}>
-      <div>{group.title}</div>
+      <div>{group.name}</div>
     </Dropdown>
   }
 
@@ -57,13 +57,16 @@ function Studio() {
       updateAction(() => {
         // 显示分组弹框
         model.currSettingStudioGroup = {
-          id: '',
-          title: `分组${model.codeMetaStudio.propGroups.length + 1}`,
+          id: 0,
+          name: `分组${model.codeMetaStudio.propGroups.length + 1}`,
           propBlocks: [{
-            id: '',
-            title: '配置块1',
+            id: 0,
+            name: '配置块1',
+            groupId: 0,
             propItems: [{
-              id: '',
+              id: 0,
+              blockId: 0,
+              groupId: 0,
               type: 'input',
               label: '配置项1',
               propKey: 'prop1',
@@ -76,7 +79,7 @@ function Studio() {
     }
 
     // 选中某个分组
-    model.switchActiveGroup(activeKey);
+    model.switchActiveGroup(parseInt(activeKey));
   }
 
   // tab右上角模式切换按钮
@@ -108,7 +111,7 @@ function Studio() {
   /////////////////////////////////////////////////////////////////////////////
   return <>
     <DndProvider backend={HTML5Backend}>
-      <Tabs type="card" size="small" className="studio-tabs" tabBarExtraContent={renderSettingSwitchBtn()} activeKey={model.activeGroupId}
+      <Tabs type="card" size="small" className="studio-tabs" tabBarExtraContent={renderSettingSwitchBtn()} activeKey={model.activeGroupId?.toString()}
         onChange={tabOnChange}
         renderTabBar={renderTabBar} >
         {renderTabContent()}

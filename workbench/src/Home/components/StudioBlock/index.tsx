@@ -37,7 +37,7 @@ function StudioBlock({ block, noSetting }: PropType) {
           e.preventDefault();
           updateAction(() => {
             model.currSettingStudioItem = {
-              id: '',
+              id: 0,
               type: 'input',
               label: `配置项${block.propItems.length + 1}`,
               propKey: `prop${block.propItems.length + 1}`,

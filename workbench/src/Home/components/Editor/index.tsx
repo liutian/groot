@@ -3,7 +3,7 @@ import { metadataSchema } from '@grootio/core';
 import { useEffect, useRef } from 'react';
 
 type propsType = {
-  defaultContent: string;
+  defaultContent: any;
   onContentChange: (content: string) => void
 }
 
@@ -17,7 +17,7 @@ function Editor({ onContentChange, defaultContent }: propsType) {
 
 
   useEffect(() => {
-    model.setValue(defaultContent);
+    model.setValue(JSON.stringify(defaultContent || ''));
 
     // http://json-schema.org/learn/getting-started-step-by-step
     // http://json-schema.org/understanding-json-schema/

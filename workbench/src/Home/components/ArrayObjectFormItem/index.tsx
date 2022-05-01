@@ -11,7 +11,7 @@ type PropsType = {
 const ArrayObjectFormItem: React.FC<PropsType> = ({ item }) => {
   const [model] = useModel<Studio>('studio');
   return <>
-    <Button block onClick={() => model.pushHandUpStudioItem(item)}>对象数组{item.relativeGroup?.propBlocks?.length}</Button>
+    <Button block onClick={() => model.pushHandUpStudioItem(item)}>对象数组{item.valueOfGroup?.propBlocks?.length}</Button>
   </>
 }
 

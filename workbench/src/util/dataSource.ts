@@ -1,45 +1,56 @@
-export const fetchPageComponentData = () => {
+import { uuid } from "./utils";
+
+export const fetchPageData = () => {
   return Promise.resolve({
+    id: uuid(),
     name: 'demo',
     url: 'http://localhost:8888/admin/groot/page1',
     path: '/groot/page1',
-    codeMetadata: '[{ "key": "children", "defaultValue": "hello world!" },{"key": "type","defaultValue": "primary"}]',
-    codeMetaStudio: codeMetaStudioData,
-    packageName: 'antd',
-    moduleName: 'Button_text',
-    componentName: 'Button'
-  } as PageComponentStudio);
+    component: {
+      id: uuid(),
+      name: 'demo',
+      codeMetaData: [{ key: 'children', defaultValue: 'hello world!', type: 'input' }, { key: 'type', defaultValue: 'primary', type: 'input' }],
+      studio: {
+        id: uuid(),
+        name: 'demo',
+        packageName: 'antd',
+        moduleName: 'Button_text',
+        componentName: 'Button',
+        codeMetaStudio: codeMetaStudioData,
+      }
+    }
+  } as PageData);
 }
 
 
 const codeMetaStudioData = {
   propGroups: [{
-    id: '001',
-    title: '属性配置',
+    id: 1,
+    name: '属性配置',
     propBlocks: [
       {
-        id: '002',
-        title: '通用',
-        groupId: '001',
+        id: 2,
+        name: '通用',
+        groupId: 1,
         propItems: [
           {
-            id: '003',
+            id: 3,
             propKey: 'children',
             label: '内容',
             value: 'hello world!',
             type: 'input',
             span: 24,
-            groupId: '001',
-            blockId: '002'
+            groupId: 1,
+            blockId: 2
           }, {
-            id: '004',
+            id: 4,
             propKey: 'type',
             label: '类型',
             value: 'primary',
             type: 'input',
             span: 24,
-            groupId: '001',
-            blockId: '002'
+            groupId: 1,
+            blockId: 2
           }
         ]
       }

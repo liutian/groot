@@ -5,7 +5,7 @@ export default class Studio {
   /**
    * tab激活的分组
    */
-  public activeGroupId?: string;
+  public activeGroupId?: number;
   /**
    * 当前配置组
    */
@@ -34,7 +34,7 @@ export default class Studio {
   /**
    * 配置块所属表单实例
    */
-  public blockFormInstanceMap = new Map<string, FormInstance>();
+  public blockFormInstanceMap = new Map<number, FormInstance>();
   /**
    * 配置项变动通知iframe更新
    */
@@ -46,7 +46,7 @@ export default class Studio {
 
   public handUpStudioItemStack: CodeMetaStudioPropItem[] = [];
 
-  public innerTempStudioGroupMap = new Map<string, CodeMetaStudioPropGroup>();
+  public innerTempStudioGroupMap = new Map<number, CodeMetaStudioPropGroup>();
 
   public init(codeMetaStudio: CodeMetaStudio) {
     this.codeMetaStudio = codeMetaStudio;
@@ -88,9 +88,9 @@ export default class Studio {
 
     const groups = this.codeMetaStudio.propGroups;
 
-    const drag = groups.find(g => g.id === dragId)!;
-    const hoverIndex = groups.findIndex(g => g.id === hoverId);
-    const dragIndex = groups.findIndex(g => g.id === dragId);
+    const drag = groups.find(g => g.id === +dragId)!;
+    const hoverIndex = groups.findIndex(g => g.id === +hoverId);
+    const dragIndex = groups.findIndex(g => g.id === +dragId);
     const currentIndex = groups.findIndex(g => g.id === this.activeGroupId);
 
     groups.splice(hoverIndex, 0, drag);
@@ -101,7 +101,7 @@ export default class Studio {
       if (currentIndex >= hoverIndex && currentIndex < dragIndex) {
         this.activeGroupId = groups[currentIndex + 1]?.id;
       } else if (currentIndex === dragIndex) {
-        this.activeGroupId = hoverId;
+        this.activeGroupId = +hoverId;
       }
     } else {
       if (currentIndex === dragIndex && currentIndex < hoverIndex) {
@@ -185,26 +185,26 @@ export default class Studio {
       } as CodeMetaStudioPropItem;
       const blockChild = {
         id: uuid(),
-        title: '配置块1',
+        name: '配置块1',
         propItems: [itemChild]
       } as CodeMetaStudioPropBlock;
       const groupChild = {
         id: uuid(),
-        title: '',
+        name: '',
         propBlocks: [blockChild]
       } as CodeMetaStudioPropGroup;
 
       item.blockId = blockChild.id;
       item.groupId = groupChild.id;
       blockChild.groupId = groupChild.id;
-      newItem.relativeGroup = groupChild;
-      newItem.relativeGroupId = groupChild.id;
+      newItem.valueOfGroup = groupChild;
+      newItem.valueOfGroupId = groupChild.id;
 
-      newItem.relativeBlock = JSON.parse(JSON.stringify(blockChild));
-      newItem.relativeBlock!.id = uuid();
-      newItem.relativeBlock?.propItems.forEach((item) => {
+      newItem.templateBlock = JSON.parse(JSON.stringify(blockChild));
+      newItem.templateBlock!.id = uuid();
+      newItem.templateBlock?.propItems.forEach((item) => {
         item.id = uuid();
-        item.blockId = newItem.relativeBlock!.id;
+        item.blockId = newItem.templateBlock!.id;
       });
     }
 
@@ -224,7 +224,7 @@ export default class Studio {
     }, 100)
   }
 
-  public delGroup = (groupId: string) => {
+  public delGroup = (groupId: number) => {
     const index = this.codeMetaStudio.propGroups.findIndex(g => g.id === groupId);
     this.codeMetaStudio.propGroups.splice(index, 1);
     if (this.activeGroupId === groupId) {
@@ -232,7 +232,7 @@ export default class Studio {
     }
   }
 
-  public switchActiveGroup = (id: string) => {
+  public switchActiveGroup = (id: number) => {
     const activeItem = this.codeMetaStudio.propGroups.find(g => g.id === id);
     if (activeItem) {
       this.activeGroupId = id;
@@ -271,12 +271,12 @@ export default class Studio {
   public popHandUpStudioItem = (group: CodeMetaStudioPropGroup, templateBlockOfArrayObject: CodeMetaStudioPropBlock) => {
     const item = this.handUpStudioItemStack.pop();
     if (item) {
-      item.relativeGroup = JSON.parse(JSON.stringify(group));
-      item.relativeBlock = JSON.parse(JSON.stringify(templateBlockOfArrayObject));
+      item.valueOfGroup = JSON.parse(JSON.stringify(group));
+      item.templateBlock = JSON.parse(JSON.stringify(templateBlockOfArrayObject));
     }
   }
 
-  public getStudioGroup = (groupId: string) => {
+  public getStudioGroup = (groupId: number) => {
     let group = this.codeMetaStudio.propGroups.find((group) => {
       return group.id === groupId;
     })
@@ -284,7 +284,7 @@ export default class Studio {
     return group || this.innerTempStudioGroupMap.get(groupId);
   }
 
-  public getStudioBlock = (blockId: string) => {
+  public getStudioBlock = (blockId: number) => {
     for (let groupIndex = 0; groupIndex < this.codeMetaStudio.propGroups.length; groupIndex++) {
       const group = this.codeMetaStudio.propGroups[groupIndex];
       for (let blockIndex = 0; blockIndex < group!.propBlocks.length; blockIndex++) {
@@ -312,20 +312,22 @@ export default class Studio {
   public showStudioBlockSettinngForCreate = (relativeBlock: CodeMetaStudioPropBlock, group: CodeMetaStudioPropGroup, inner: boolean, innerTemplateBlock: CodeMetaStudioPropBlock) => {
     if (inner) {
       const newBlock = JSON.parse(JSON.stringify(innerTemplateBlock)) as CodeMetaStudioPropBlock;
-      newBlock.id = '';
-      newBlock.title = `配置块${group.propBlocks.length + 1}`;
+      newBlock.id = 0;
+      newBlock.name = `配置块${group.propBlocks.length + 1}`;
       newBlock.groupId = group.id;
       this.currSettingStudioBlock = newBlock;
     } else {
       this.currSettingStudioBlock = {
-        id: '',
-        title: '配置块' + group.propBlocks.length,
+        id: 0,
+        name: '配置块' + group.propBlocks.length,
         groupId: group.id,
         propItems: [{
-          id: '',
+          id: 0,
           type: 'input',
           label: '配置项1',
           propKey: 'prop1',
+          groupId: 0,
+          blockId: 0,
           span: 24
         }],
       };
@@ -378,7 +380,7 @@ export default class Studio {
           defaultValue: item.value || item.defaultValue
         });
         if (item.type === 'array-object') {
-          this.createCodemetaFromGroup(item.relativeGroup!, codemetas, key);
+          this.createCodemetaFromGroup(item.valueOfGroup!, codemetas, key);
         }
       }
     }
@@ -395,7 +397,7 @@ export default class Studio {
     }
   }
 
-  private buildStudioGroup(groupId: string) {
+  private buildStudioGroup(groupId: number) {
     const group = this.codeMetaStudio.allGroups.find(g => g.id === groupId);
     if (!group) {
       throw new Error(`can not find group[${groupId}]`);
@@ -411,11 +413,11 @@ export default class Studio {
       for (let itemIndex = 0; itemIndex < items.length; itemIndex++) {
         const item = items[itemIndex]!;
         if (item.type === 'array-object') {
-          const relativeGroup = this.buildStudioGroup(item.relativeGroupId!);
-          item.relativeGroup = relativeGroup;
-          const relativeBlock = relativeGroup.propBlocks.find(b => b.id === item.relativeBlockId);
-          item.relativeBlock = relativeBlock;
-          relativeGroup.propBlocks = relativeGroup.propBlocks.filter(b => b.id !== item.relativeBlockId)
+          const relativeGroup = this.buildStudioGroup(item.valueOfGroupId!);
+          item.valueOfGroup = relativeGroup;
+          const relativeBlock = relativeGroup.propBlocks.find(b => b.id === item.templateBlockId);
+          item.templateBlock = relativeBlock;
+          relativeGroup.propBlocks = relativeGroup.propBlocks.filter(b => b.id !== item.templateBlockId)
         }
       }
     }

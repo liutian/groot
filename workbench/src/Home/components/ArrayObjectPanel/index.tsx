@@ -18,21 +18,21 @@ const ArrayObjectPanel: React.FC<PropsType> = ({ item: studioItem }) => {
   const [settingMode, setSettingMode] = useState(false);
 
   const [templateBlock] = useState<CodeMetaStudioPropBlock>(() => {
-    const block = JSON.parse(JSON.stringify(studioItem.relativeBlock)) as CodeMetaStudioPropBlock;
+    const block = JSON.parse(JSON.stringify(studioItem.templateBlock)) as CodeMetaStudioPropBlock;
     return block;
   });
 
   const preTemplateBlockRef = useRef(JSON.stringify(templateBlock));
 
   const [studioGroup] = useState<CodeMetaStudioPropGroup>(() => {
-    const group = JSON.parse(JSON.stringify(studioItem.relativeGroup)) as CodeMetaStudioPropGroup;
+    const group = JSON.parse(JSON.stringify(studioItem.valueOfGroup)) as CodeMetaStudioPropGroup;
     return group;
   })
 
   useEffect(() => {
     const templateGroup = {
       id: uuid(),
-      title: '',
+      name: '',
       propBlocks: [templateBlock]
     } as CodeMetaStudioPropGroup;
     templateBlock.groupId = templateGroup.id;
