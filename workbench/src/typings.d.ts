@@ -50,7 +50,7 @@ type CodeMetaStudioItem = {
   id: number,
   label: string,
   propKey: string,
-  type: CodeMetaStudioPropItemType,
+  type: StudioItemType,
   value?: any,
   defaultValue?: any,
   options?: [{
@@ -73,10 +73,10 @@ type CodeMetaStudioItem = {
 type CodeMeta = {
   key: string,
   defaultValue: any,
-  type: CodeMetaStudioPropItemType
+  type: StudioItemType
 }
 
-type CodeMetaStudioPropItemType = 'input' | 'date-picker' | 'switch' | 'select' | 'radio' | 'checkbox' | 'array-object';
+type StudioItemType = 'input' | 'date-picker' | 'switch' | 'select' | 'radio' | 'checkbox' | 'array-object';
 
 /**
  * 组件配置类型

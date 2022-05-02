@@ -1,5 +1,6 @@
 import { Collection, Entity, Enum, ManyToOne, OneToMany, Property } from "@mikro-orm/core";
 import { BaseEntity } from "./BaseEntity";
+import { ComponentStudio } from "./ComponentStudio";
 import { StudioBlock } from "./StudioBlock";
 import { StudioGroup } from "./StudioGroup";
 import { StudioOption } from "./StudioOption";
@@ -11,16 +12,16 @@ export class StudioItem extends BaseEntity {
   label: string;
 
   @Property()
-  propKey: string;
+  propKey?: string;
 
   @Enum()
   type: StudioItemType;
 
-  @Property()
+  @Property({ length: 1024 })
   value: string;
 
-  @Property()
-  defaultValue: string;
+  @Property({ length: 1024 })
+  defaultValue?: string;
 
   @OneToMany(() => StudioOption, option => option.studioItem)
   options = new Collection<StudioOption>(this);
@@ -32,16 +33,19 @@ export class StudioItem extends BaseEntity {
   group: StudioGroup;
 
   @Property()
-  span: number;
+  span: number = 24;
 
   @ManyToOne()
-  valueOfGroup: StudioGroup;
+  valueOfGroup?: StudioGroup;
 
   @ManyToOne()
-  templateBlock: StudioBlock;
+  templateBlock?: StudioBlock;
 
   @Property()
-  isRootPropKey: boolean;
+  isRootPropKey: boolean = false;
+
+  @ManyToOne()
+  componentStudio: ComponentStudio;
 }
 
 export enum StudioItemType {

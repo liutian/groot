@@ -1,5 +1,6 @@
-import { Collection, Entity, OneToMany, OneToOne, Property } from "@mikro-orm/core";
+import { Collection, Entity, ManyToOne, OneToMany, OneToOne, Property } from "@mikro-orm/core";
 import { BaseEntity } from "./BaseEntity";
+import { ComponentStudio } from "./ComponentStudio";
 import { StudioBlock } from "./StudioBlock";
 import { StudioItem } from "./StudioItem";
 
@@ -16,6 +17,8 @@ export class StudioGroup extends BaseEntity {
   propBlocks = new Collection<StudioBlock>(this);
 
   @OneToOne()
-  relativeItem: StudioItem;
+  relativeItem?: StudioItem;
 
+  @ManyToOne()
+  componentStudio: ComponentStudio;
 }

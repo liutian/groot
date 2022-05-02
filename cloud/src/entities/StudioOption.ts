@@ -1,7 +1,8 @@
-import { ManyToOne, Property } from '@mikro-orm/core';
+import { Entity, ManyToOne, Property } from '@mikro-orm/core';
+import { BaseEntity } from './BaseEntity';
 import { StudioItem } from './StudioItem';
-
-export class StudioOption {
+@Entity()
+export class StudioOption extends BaseEntity {
 
   @Property()
   label: string;
