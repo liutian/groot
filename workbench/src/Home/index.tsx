@@ -16,7 +16,7 @@ const Home = () => {
   const [pageName, setPageName] = useState('');
   const iframeRef = useRef({} as any);
   // 页面组件配置器
-  const PageDataRef = useRef<PageData>();
+  const PageDataRef = useRef<Page>();
   // 使用页面全局实例
   const [model, updateAction] = useModel<StudioModel>('studio', true);
 
@@ -25,7 +25,7 @@ const Home = () => {
     // 加载页面组件配置器数据
     fetchPageData().then((data) => {
       PageDataRef.current = data;
-      model.init(data.component.studio.codeMetaStudio);
+      model.init(data.component.studio);
       // todo
       setPageName(`groot::{"path": "${data.path}","name":"${data.name}"}`);
     });

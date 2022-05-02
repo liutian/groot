@@ -16,44 +16,39 @@ export const fetchPageData = () => {
         packageName: 'antd',
         moduleName: 'Button_text',
         componentName: 'Button',
-        codeMetaStudio: codeMetaStudioData,
+        propGroups: [{
+          id: 1,
+          name: '属性配置',
+          propBlocks: [
+            {
+              id: 2,
+              name: '通用',
+              groupId: 1,
+              propItems: [
+                {
+                  id: 3,
+                  propKey: 'children',
+                  label: '内容',
+                  value: 'hello world!',
+                  type: 'input',
+                  span: 24,
+                  groupId: 1,
+                  blockId: 2
+                }, {
+                  id: 4,
+                  propKey: 'type',
+                  label: '类型',
+                  value: 'primary',
+                  type: 'input',
+                  span: 24,
+                  groupId: 1,
+                  blockId: 2
+                }
+              ]
+            }
+          ]
+        }]
       }
     }
-  } as PageData);
+  } as Page);
 }
-
-
-const codeMetaStudioData = {
-  propGroups: [{
-    id: 1,
-    name: '属性配置',
-    propBlocks: [
-      {
-        id: 2,
-        name: '通用',
-        groupId: 1,
-        propItems: [
-          {
-            id: 3,
-            propKey: 'children',
-            label: '内容',
-            value: 'hello world!',
-            type: 'input',
-            span: 24,
-            groupId: 1,
-            blockId: 2
-          }, {
-            id: 4,
-            propKey: 'type',
-            label: '类型',
-            value: 'primary',
-            type: 'input',
-            span: 24,
-            groupId: 1,
-            blockId: 2
-          }
-        ]
-      }
-    ]
-  }]
-} as CodeMetaStudio;

@@ -35,7 +35,7 @@ function Studio() {
 
     const menus = (
       <Menu>
-        <Menu.Item key="del" disabled={model.codeMetaStudio.propGroups.length === 0} onClick={() => model.delGroup(group.id)}>删除</Menu.Item>
+        <Menu.Item key="del" disabled={model.componentStudio.propGroups.length === 0} onClick={() => model.delGroup(group.id)}>删除</Menu.Item>
         <Menu.Item key="copy">复制</Menu.Item>
         <Menu.Item key="setting" onClick={(e) => {
           e.domEvent.stopPropagation();
@@ -58,7 +58,7 @@ function Studio() {
         // 显示分组弹框
         model.currSettingStudioGroup = {
           id: 0,
-          name: `分组${model.codeMetaStudio.propGroups.length + 1}`,
+          name: `分组${model.componentStudio.propGroups.length + 1}`,
           propBlocks: [{
             id: 0,
             name: '配置块1',
@@ -97,7 +97,7 @@ function Studio() {
   }
 
   const renderTabContent = () => {
-    const list = model.codeMetaStudio.propGroups.map((group) => {
+    const list = model.componentStudio.propGroups.map((group) => {
       return (<Tabs.TabPane key={group.id} tab={renderTabBarItem(group)} >
         <StudioGroup group={group} />
       </Tabs.TabPane>)

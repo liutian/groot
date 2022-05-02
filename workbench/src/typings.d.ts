@@ -18,17 +18,6 @@ interface Window {
 }
 
 /**
- * 描述代码元数据配置的类型
- */
-type CodeMetaStudio = {
-  propGroups: CodeMetaStudioGroup[],
-  allGroups: CodeMetaStudioGroup[],
-  allBlocks: CodeMetaStudioBlock[],
-  allItems: CodeMetaStudioItem[],
-  propGroupIds: number[]
-}
-
-/**
  * 描述代码元数据配置的属性分组类型
  */
 type CodeMetaStudioGroup = {
@@ -37,6 +26,7 @@ type CodeMetaStudioGroup = {
   propKey?: string,
   propBlocks: CodeMetaStudioBlock[],
   relativeItemId?: number,
+  componentId?: number
 }
 
 /**
@@ -50,6 +40,7 @@ type CodeMetaStudioBlock = {
   groupId: number
   relativeItemId?: number,
   isRootPropKey?: boolean,
+  componentId?: number
 }
 
 /**
@@ -74,7 +65,10 @@ type CodeMetaStudioItem = {
   valueOfGroup?: CodeMetaStudioGroup,
   templateBlockId?: number,
   templateBlock?: CodeMetaStudioBlock,
+  componentId?: number
 }
+
+
 
 type CodeMeta = {
   key: string,
@@ -90,24 +84,28 @@ type CodeMetaStudioPropItemType = 'input' | 'date-picker' | 'switch' | 'select' 
 type ComponentStudio = {
   id: number,
   name: string,
-  codeMetaStudio: CodeMetaStudio,
   packageName: string,
   moduleName: string,
   componentName: string,
+  propGroups: CodeMetaStudioGroup[],
+  allGroups: CodeMetaStudioGroup[],
+  allBlocks: CodeMetaStudioBlock[],
+  allItems: CodeMetaStudioItem[],
+  propGroupIds: number[]
 }
 
-type ComponentInstance = {
+type Component = {
   id: number,
   name: string,
   codeMetaData: CodeMeta[],
   studio: ComponentStudio,
 }
 
-type PageData = {
+type Page = {
   id: number,
   name: string,
   url: string,
   path: string,
-  component: ComponentInstance
+  component: Component
 }
 

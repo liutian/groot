@@ -22,7 +22,7 @@ export default class Studio {
   /**
    * 当前组件配置对象
    */
-  public codeMetaStudio = {} as CodeMetaStudio;
+  public componentStudio = {} as ComponentStudio;
   /**
    * 设置配置项模式
    */
@@ -48,8 +48,8 @@ export default class Studio {
 
   public innerTempStudioGroupMap = new Map<number, CodeMetaStudioGroup>();
 
-  public init(codeMetaStudio: CodeMetaStudio) {
-    this.codeMetaStudio = codeMetaStudio;
+  public init(codeMetaStudio: ComponentStudio) {
+    this.componentStudio = codeMetaStudio;
     this.buildPropGroups(codeMetaStudio);
     this.activeGroupId = codeMetaStudio.propGroups[0]?.id;
     this.settingMode = true;
@@ -58,7 +58,7 @@ export default class Studio {
   // todo
   public productStudioData = () => {
     const props: any[] = [];
-    this.codeMetaStudio.propGroups.forEach((group) => {
+    this.componentStudio.propGroups.forEach((group) => {
       group.propBlocks.forEach((block) => {
         const values = this.blockFormInstanceMap.get(block.id)?.getFieldsValue();
         block.propItems.forEach((item) => {
@@ -86,7 +86,7 @@ export default class Studio {
       return;
     }
 
-    const groups = this.codeMetaStudio.propGroups;
+    const groups = this.componentStudio.propGroups;
 
     const drag = groups.find(g => g.id === +dragId)!;
     const hoverIndex = groups.findIndex(g => g.id === +hoverId);
@@ -126,12 +126,12 @@ export default class Studio {
     const newGroup = Object.assign(this.currSettingStudioGroup, group);
 
     if (newGroup.id) {
-      const groupIndex = this.codeMetaStudio.propGroups.findIndex(g => g.id === newGroup.id);
-      this.codeMetaStudio.propGroups.splice(groupIndex, 1, { ...newGroup });
+      const groupIndex = this.componentStudio.propGroups.findIndex(g => g.id === newGroup.id);
+      this.componentStudio.propGroups.splice(groupIndex, 1, { ...newGroup });
     } else {
       const groupId = uuid();
       newGroup.id = groupId;
-      this.codeMetaStudio.propGroups.push(newGroup);
+      this.componentStudio.propGroups.push(newGroup);
       this.activeGroupId = groupId;
 
       newGroup.propBlocks.forEach((block) => {
@@ -225,15 +225,15 @@ export default class Studio {
   }
 
   public delGroup = (groupId: number) => {
-    const index = this.codeMetaStudio.propGroups.findIndex(g => g.id === groupId);
-    this.codeMetaStudio.propGroups.splice(index, 1);
+    const index = this.componentStudio.propGroups.findIndex(g => g.id === groupId);
+    this.componentStudio.propGroups.splice(index, 1);
     if (this.activeGroupId === groupId) {
-      this.activeGroupId = this.codeMetaStudio.propGroups[0]?.id;
+      this.activeGroupId = this.componentStudio.propGroups[0]?.id;
     }
   }
 
   public switchActiveGroup = (id: number) => {
-    const activeItem = this.codeMetaStudio.propGroups.find(g => g.id === id);
+    const activeItem = this.componentStudio.propGroups.find(g => g.id === id);
     if (activeItem) {
       this.activeGroupId = id;
     }
@@ -242,7 +242,7 @@ export default class Studio {
   public switchSettingMode = () => {
     if (this.settingMode) {
       this.settingMode = false;
-      this.codeMetaStudio.propGroups.forEach((group) => {
+      this.componentStudio.propGroups.forEach((group) => {
         group.propBlocks.forEach((block) => {
           const values = this.blockFormInstanceMap.get(block.id)?.getFieldsValue();
           block.propItems.forEach((item) => {
@@ -277,7 +277,7 @@ export default class Studio {
   }
 
   public getStudioGroup = (groupId: number) => {
-    let group = this.codeMetaStudio.propGroups.find((group) => {
+    let group = this.componentStudio.propGroups.find((group) => {
       return group.id === groupId;
     })
 
@@ -285,8 +285,8 @@ export default class Studio {
   }
 
   public getStudioBlock = (blockId: number) => {
-    for (let groupIndex = 0; groupIndex < this.codeMetaStudio.propGroups.length; groupIndex++) {
-      const group = this.codeMetaStudio.propGroups[groupIndex];
+    for (let groupIndex = 0; groupIndex < this.componentStudio.propGroups.length; groupIndex++) {
+      const group = this.componentStudio.propGroups[groupIndex];
       for (let blockIndex = 0; blockIndex < group!.propBlocks.length; blockIndex++) {
         const block = group?.propBlocks[blockIndex];
         if (block?.id === blockId) {
@@ -335,10 +335,10 @@ export default class Studio {
     this.currSettingInsertIndex = group.propBlocks.findIndex(b => b.id === relativeBlock.id);
   }
 
-  public createCodemeta(codeMetaStudio: CodeMetaStudio) {
+  public createCodemeta(componentStudio: ComponentStudio) {
     const codemetas = [] as CodeMeta[];
-    for (let groupIndex = 0; groupIndex < codeMetaStudio.propGroups.length; groupIndex++) {
-      const group = codeMetaStudio.propGroups[groupIndex]!;
+    for (let groupIndex = 0; groupIndex < componentStudio.propGroups.length; groupIndex++) {
+      const group = componentStudio.propGroups[groupIndex]!;
       this.createCodemetaFromGroup(group, codemetas, '');
     }
     return codemetas;
@@ -388,26 +388,26 @@ export default class Studio {
 
 
 
-  private buildPropGroups(codeMetaStudio: CodeMetaStudio) {
-    codeMetaStudio.propGroups = [];
-    for (let i = 0; i < codeMetaStudio.propGroupIds.length; i++) {
-      const groupId = codeMetaStudio.propGroupIds[i]!;
+  private buildPropGroups(componentStudio: ComponentStudio) {
+    componentStudio.propGroups = [];
+    for (let i = 0; i < componentStudio.propGroupIds.length; i++) {
+      const groupId = componentStudio.propGroupIds[i]!;
       const group = this.buildStudioGroup(groupId);
-      codeMetaStudio.propGroups.push(group);
+      componentStudio.propGroups.push(group);
     }
   }
 
   private buildStudioGroup(groupId: number) {
-    const group = this.codeMetaStudio.allGroups.find(g => g.id === groupId);
+    const group = this.componentStudio.allGroups.find(g => g.id === groupId);
     if (!group) {
       throw new Error(`can not find group[${groupId}]`);
     }
 
-    const blocks = this.codeMetaStudio.allBlocks.filter(b => b.groupId === groupId);
+    const blocks = this.componentStudio.allBlocks.filter(b => b.groupId === groupId);
     group.propBlocks = blocks;
     for (let blockIndex = 0; blockIndex < blocks.length; blockIndex++) {
       const block = blocks[blockIndex]!;
-      const items = this.codeMetaStudio.allItems.filter(i => i.groupId === groupId && i.blockId === block.id);
+      const items = this.componentStudio.allItems.filter(i => i.groupId === groupId && i.blockId === block.id);
       block.propItems = items;
 
       for (let itemIndex = 0; itemIndex < items.length; itemIndex++) {
