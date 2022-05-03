@@ -1,4 +1,4 @@
-import { RequestContext } from '@mikro-orm/core';
+import { RequestContext, wrap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { Page } from 'entities/Page';
 import { StudioBlock } from 'entities/StudioBlock';
@@ -16,6 +16,22 @@ export class AppService {
         'component.codeMetaData',
       ],
     });
+
+    const studio = page.component.studio;
+
+    studio.allGroups = await em.find(StudioGroup, { componentStudio: studio.id });
+    studio.allBlocks = await em.find(StudioBlock, { componentStudio: studio.id });
+    studio.allItems = await em.find(StudioItem, { componentStudio: studio.id });
+
+    page.omitProps([
+      'component.codeMetaData.component',
+      'component.studio.allGroups.componentStudio',
+      'component.studio.allBlocks.componentStudio',
+      'component.studio.allItems.componentStudio',
+    ]);
+
+    em.flush();
+
     return page;
   }
 }
