@@ -23,7 +23,7 @@ const Home = () => {
 
   useEffect(() => {
     // 加载页面组件配置器数据
-    fetchPageData().then((data) => {
+    fetchPageData('http://127.0.0.1:3000/studio/page/1').then((data) => {
       PageDataRef.current = data;
       model.init(data.component.studio);
       // todo

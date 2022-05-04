@@ -11,12 +11,15 @@ export class StudioGroup extends BaseEntity {
   name: string;
 
   @Property()
+  isRoot: boolean = true;
+
+  @Property()
   propKey?: string;
 
   @OneToMany(() => StudioBlock, block => block.group)
   propBlocks = new Collection<StudioBlock>(this);
 
-  @OneToOne()
+  @OneToOne({ serializer: value => value?.id, serializedName: 'relativeItemId' })
   relativeItem?: StudioItem;
 
   @ManyToOne()

@@ -20,9 +20,6 @@ export class ComponentStudio extends BaseEntity {
   @Property()
   componentName: string;
 
-  @OneToMany(() => StudioGroup, group => group.componentStudio)
-  propGroups = new Collection<StudioGroup>(this);
-
   @Property({ persist: false })
   allGroups: StudioGroup[];
 

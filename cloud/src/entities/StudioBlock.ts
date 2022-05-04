@@ -16,10 +16,10 @@ export class StudioBlock extends BaseEntity {
   @OneToMany(() => StudioItem, item => item.block)
   propItems = new Collection<StudioItem>(this);
 
-  @ManyToOne()
+  @ManyToOne({ serializer: value => value?.id, serializedName: 'groupId' })
   group: StudioGroup;
 
-  @OneToOne()
+  @OneToOne({ serializer: value => value?.id, serializedName: 'relativeItemId' })
   relativeItem?: StudioItem;
 
   @Property()

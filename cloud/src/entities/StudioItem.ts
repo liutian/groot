@@ -26,19 +26,19 @@ export class StudioItem extends BaseEntity {
   @OneToMany(() => StudioOption, option => option.studioItem)
   options = new Collection<StudioOption>(this);
 
-  @ManyToOne()
+  @ManyToOne({ serializer: value => value?.id, serializedName: 'blockId' })
   block: StudioBlock;
 
-  @ManyToOne()
+  @ManyToOne({ serializer: value => value?.id, serializedName: 'groupId' })
   group: StudioGroup;
 
   @Property()
   span: number = 24;
 
-  @ManyToOne()
+  @ManyToOne({ serializer: value => value?.id, serializedName: 'valueOfGroupId' })
   valueOfGroup?: StudioGroup;
 
-  @ManyToOne()
+  @ManyToOne({ serializer: value => value?.id, serializedName: 'templateBlockId' })
   templateBlock?: StudioBlock;
 
   @Property()

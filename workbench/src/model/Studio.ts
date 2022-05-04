@@ -51,14 +51,14 @@ export default class Studio {
   public init(codeMetaStudio: ComponentStudio) {
     this.componentStudio = codeMetaStudio;
     this.buildPropGroups(codeMetaStudio);
-    this.activeGroupId = codeMetaStudio.propGroups[0]?.id;
+    this.activeGroupId = codeMetaStudio.rootGroups[0]?.id;
     this.settingMode = true;
   }
 
   // todo
   public productStudioData = () => {
     const props: any[] = [];
-    this.componentStudio.propGroups.forEach((group) => {
+    this.componentStudio.rootGroups.forEach((group) => {
       group.propBlocks.forEach((block) => {
         const values = this.blockFormInstanceMap.get(block.id)?.getFieldsValue();
         block.propItems.forEach((item) => {
@@ -86,7 +86,7 @@ export default class Studio {
       return;
     }
 
-    const groups = this.componentStudio.propGroups;
+    const groups = this.componentStudio.rootGroups;
 
     const drag = groups.find(g => g.id === +dragId)!;
     const hoverIndex = groups.findIndex(g => g.id === +hoverId);
@@ -126,12 +126,12 @@ export default class Studio {
     const newGroup = Object.assign(this.currSettingStudioGroup, group);
 
     if (newGroup.id) {
-      const groupIndex = this.componentStudio.propGroups.findIndex(g => g.id === newGroup.id);
-      this.componentStudio.propGroups.splice(groupIndex, 1, { ...newGroup });
+      const groupIndex = this.componentStudio.rootGroups.findIndex(g => g.id === newGroup.id);
+      this.componentStudio.rootGroups.splice(groupIndex, 1, { ...newGroup });
     } else {
       const groupId = uuid();
       newGroup.id = groupId;
-      this.componentStudio.propGroups.push(newGroup);
+      this.componentStudio.rootGroups.push(newGroup);
       this.activeGroupId = groupId;
 
       newGroup.propBlocks.forEach((block) => {
@@ -191,7 +191,8 @@ export default class Studio {
       const groupChild = {
         id: uuid(),
         name: '',
-        propBlocks: [blockChild]
+        propBlocks: [blockChild],
+        isRoot: false
       } as CodeMetaStudioGroup;
 
       item.blockId = blockChild.id;
@@ -225,15 +226,15 @@ export default class Studio {
   }
 
   public delGroup = (groupId: number) => {
-    const index = this.componentStudio.propGroups.findIndex(g => g.id === groupId);
-    this.componentStudio.propGroups.splice(index, 1);
+    const index = this.componentStudio.rootGroups.findIndex(g => g.id === groupId);
+    this.componentStudio.rootGroups.splice(index, 1);
     if (this.activeGroupId === groupId) {
-      this.activeGroupId = this.componentStudio.propGroups[0]?.id;
+      this.activeGroupId = this.componentStudio.rootGroups[0]?.id;
     }
   }
 
   public switchActiveGroup = (id: number) => {
-    const activeItem = this.componentStudio.propGroups.find(g => g.id === id);
+    const activeItem = this.componentStudio.rootGroups.find(g => g.id === id);
     if (activeItem) {
       this.activeGroupId = id;
     }
@@ -242,7 +243,7 @@ export default class Studio {
   public switchSettingMode = () => {
     if (this.settingMode) {
       this.settingMode = false;
-      this.componentStudio.propGroups.forEach((group) => {
+      this.componentStudio.rootGroups.forEach((group) => {
         group.propBlocks.forEach((block) => {
           const values = this.blockFormInstanceMap.get(block.id)?.getFieldsValue();
           block.propItems.forEach((item) => {
@@ -277,7 +278,7 @@ export default class Studio {
   }
 
   public getStudioGroup = (groupId: number) => {
-    let group = this.componentStudio.propGroups.find((group) => {
+    let group = this.componentStudio.rootGroups.find((group) => {
       return group.id === groupId;
     })
 
@@ -285,8 +286,8 @@ export default class Studio {
   }
 
   public getStudioBlock = (blockId: number) => {
-    for (let groupIndex = 0; groupIndex < this.componentStudio.propGroups.length; groupIndex++) {
-      const group = this.componentStudio.propGroups[groupIndex];
+    for (let groupIndex = 0; groupIndex < this.componentStudio.rootGroups.length; groupIndex++) {
+      const group = this.componentStudio.rootGroups[groupIndex];
       for (let blockIndex = 0; blockIndex < group!.propBlocks.length; blockIndex++) {
         const block = group?.propBlocks[blockIndex];
         if (block?.id === blockId) {
@@ -337,8 +338,8 @@ export default class Studio {
 
   public createCodemeta(componentStudio: ComponentStudio) {
     const codemetas = [] as CodeMeta[];
-    for (let groupIndex = 0; groupIndex < componentStudio.propGroups.length; groupIndex++) {
-      const group = componentStudio.propGroups[groupIndex]!;
+    for (let groupIndex = 0; groupIndex < componentStudio.rootGroups.length; groupIndex++) {
+      const group = componentStudio.rootGroups[groupIndex]!;
       this.createCodemetaFromGroup(group, codemetas, '');
     }
     return codemetas;
@@ -375,6 +376,7 @@ export default class Studio {
 
         const key = keyArr.filter(k => !!k).join('.');
         codemetas.push({
+          id: uuid(),
           key,
           type: item.type,
           defaultValue: item.value || item.defaultValue
@@ -389,11 +391,12 @@ export default class Studio {
 
 
   private buildPropGroups(componentStudio: ComponentStudio) {
-    componentStudio.propGroups = [];
-    for (let i = 0; i < componentStudio.propGroupIds.length; i++) {
-      const groupId = componentStudio.propGroupIds[i]!;
+    componentStudio.rootGroups = [];
+    const rootGroupIds = componentStudio.allGroups.filter(g => g.isRoot).map(g => g.id);
+    for (let i = 0; i < rootGroupIds.length; i++) {
+      const groupId = rootGroupIds[i]!;
       const group = this.buildStudioGroup(groupId);
-      componentStudio.propGroups.push(group);
+      componentStudio.rootGroups.push(group);
     }
   }
 

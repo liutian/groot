@@ -23,10 +23,10 @@ interface Window {
 type CodeMetaStudioGroup = {
   id: number,
   name: string,
+  isRoot: boolean,
   propKey?: string,
   propBlocks: CodeMetaStudioBlock[],
-  relativeItemId?: number,
-  componentId?: number
+  relativeItemId?: number
 }
 
 /**
@@ -39,8 +39,7 @@ type CodeMetaStudioBlock = {
   propItems: CodeMetaStudioItem[],
   groupId: number
   relativeItemId?: number,
-  isRootPropKey?: boolean,
-  componentId?: number
+  isRootPropKey?: boolean
 }
 
 /**
@@ -64,13 +63,13 @@ type CodeMetaStudioItem = {
   valueOfGroupId?: number,
   valueOfGroup?: CodeMetaStudioGroup,
   templateBlockId?: number,
-  templateBlock?: CodeMetaStudioBlock,
-  componentId?: number
+  templateBlock?: CodeMetaStudioBlock
 }
 
 
 
 type CodeMeta = {
+  id: number,
   key: string,
   defaultValue: any,
   type: StudioItemType
@@ -87,11 +86,10 @@ type ComponentStudio = {
   packageName: string,
   moduleName: string,
   componentName: string,
-  propGroups: CodeMetaStudioGroup[],
+  rootGroups: CodeMetaStudioGroup[],
   allGroups: CodeMetaStudioGroup[],
   allBlocks: CodeMetaStudioBlock[],
   allItems: CodeMetaStudioItem[],
-  propGroupIds: number[]
 }
 
 type Component = {
