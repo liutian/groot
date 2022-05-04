@@ -4,6 +4,7 @@ import { Page } from 'entities/Page';
 import { StudioBlock } from 'entities/StudioBlock';
 import { StudioGroup } from 'entities/StudioGroup';
 import { StudioItem } from 'entities/StudioItem';
+import { omitProps } from 'util.ts/ormUtil';
 
 
 @Injectable()
@@ -17,20 +18,19 @@ export class AppService {
       ],
     });
 
+
     const studio = page.component.studio;
 
     studio.allGroups = await em.find(StudioGroup, { componentStudio: studio.id });
     studio.allBlocks = await em.find(StudioBlock, { componentStudio: studio.id });
     studio.allItems = await em.find(StudioItem, { componentStudio: studio.id });
 
-    page.omitProps([
+    omitProps(page, [
       'component.codeMetaData.component',
       'component.studio.allGroups.componentStudio',
       'component.studio.allBlocks.componentStudio',
       'component.studio.allItems.componentStudio',
     ]);
-
-    em.flush();
 
     return page;
   }
