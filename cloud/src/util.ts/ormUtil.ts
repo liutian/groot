@@ -88,45 +88,26 @@ function wrapToJSON(keys: string) {
   return toJSON;
 }
 
-
-// type AutoPath<O, P extends string> = P extends any ?
-//   (
-//     (P & `${string}.` extends never ? P : P & `${string}.`) extends infer Q ?
-//     (Q extends `${infer A}.${infer B}` ?
-//       (A extends StringKeys<O> ? `${A}.${AutoPath<Defined<GetStringKey<O, A>>, B>}` : never)
-//       :
-//       (Q extends StringKeys<O> ?
-//         (
-//           (Defined<GetStringKey<O, Q>> extends unknown ? Exclude<P, `${string}.`> : never)
-//           |
-//           (StringKeys<Defined<GetStringKey<O, Q>>> extends never ? never : `${Q}.`)
-//         )
-//         :
-//         StringKeys<O>
-//       )
-//     )
-//     :
-//     never
-//   )
+// 校验字符串代表的属性是否在类型下存在
+// type AutoPath<O, P extends string> = (P extends `${infer A}.${infer B}` ?
+//   (A extends StringKeys<O> ? `${A}.${AutoPath<GetStringKey<O, A>, B>}` : never)
 //   :
-//   never;
-
-
-// type GetStringKey<T, K extends StringKeys<T>> = K extends keyof T ? ExtractType<T[K]> : never;
-
-// type Defined<T> = Exclude<T, null | undefined>;
-
-// type StringKeys<T> = T extends Collection<any, any> ?
-//   (`${Exclude<keyof ExtractType<T>, symbol>}`)
-//   :
-//   (
-//     T extends Reference<any> ?
-//     (`${Exclude<keyof ExtractType<T>, symbol>}`)
-//     :
+//   (P extends StringKeys<O> ?
 //     (
-//       T extends object ? `${Exclude<keyof ExtractType<T>, symbol>}` : never
+//       (GetStringKey<O, P> extends unknown ? Exclude<P, `${string}.`> : never)
+//       |
+//       (StringKeys<GetStringKey<O, P>> extends never ? never : `${P}.`)
 //     )
-//   );
+//     :
+//     StringKeys<O>
+//   )
+// );
 
-// type Loadable<T> = Collection<T, any> | Reference<T> | readonly T[];
+// type GetStringKey<T, K> = K extends keyof T ? ExtractType<T[K]> : never;
+
+// type StringKeys<T> = `${Exclude<keyof ExtractType<T>, symbol>}`;
+
+// type Loadable<T> = Collection<T, any> | Reference<T> | T[];
+
 // type ExtractType<T> = T extends Loadable<infer U> ? U : T;
+
