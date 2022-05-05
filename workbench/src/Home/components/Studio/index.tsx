@@ -60,20 +60,8 @@ function Studio() {
           id: 0,
           name: `分组${model.componentStudio.rootGroups.length + 1}`,
           isRoot: true,
-          propBlocks: [{
-            id: 0,
-            name: '配置块1',
-            groupId: 0,
-            propItems: [{
-              id: 0,
-              blockId: 0,
-              groupId: 0,
-              type: 'input',
-              label: '配置项1',
-              propKey: 'prop1',
-              span: 24
-            }],
-          }]
+          propBlocks: [],
+          componentStudioId: model.componentStudio.id
         };
       })
       return;

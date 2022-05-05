@@ -26,7 +26,8 @@ type CodeMetaStudioGroup = {
   isRoot: boolean,
   propKey?: string,
   propBlocks: CodeMetaStudioBlock[],
-  relativeItemId?: number
+  relativeItemId?: number,
+  componentStudioId?: number
 }
 
 /**
@@ -39,7 +40,8 @@ type CodeMetaStudioBlock = {
   propItems: CodeMetaStudioItem[],
   groupId: number
   relativeItemId?: number,
-  isRootPropKey?: boolean
+  isRootPropKey?: boolean,
+  componentStudioId?: number
 }
 
 /**
@@ -63,7 +65,8 @@ type CodeMetaStudioItem = {
   valueOfGroupId?: number,
   valueOfGroup?: CodeMetaStudioGroup,
   templateBlockId?: number,
-  templateBlock?: CodeMetaStudioBlock
+  templateBlock?: CodeMetaStudioBlock,
+  componentStudioId?: number
 }
 
 

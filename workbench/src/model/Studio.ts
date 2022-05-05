@@ -129,21 +129,20 @@ export default class Studio {
       const groupIndex = this.componentStudio.rootGroups.findIndex(g => g.id === newGroup.id);
       this.componentStudio.rootGroups.splice(groupIndex, 1, { ...newGroup });
     } else {
-      const groupId = uuid();
-      newGroup.id = groupId;
-      this.componentStudio.rootGroups.push(newGroup);
-      this.activeGroupId = groupId;
-
-      newGroup.propBlocks.forEach((block) => {
-        block.id = uuid();
-        block.groupId = groupId;
-        block.propItems.forEach((item) => {
-          item.id = uuid();
-          item.groupId = groupId;
-          item.blockId = block.id;
-        })
+      fetch('http://127.0.0.1:3000/studio/group/add',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(newGroup)
+        }
+      ).then(r => r.json()).then((data) => {
+        this.componentStudio.rootGroups.push(data);
+        this.activeGroupId = data.id;
       })
     }
+
     this.currSettingStudioGroup = undefined;
   }
 
