@@ -127,8 +127,19 @@ export default class Studio {
     const newGroup = Object.assign(this.currSettingStudioGroup, group);
 
     if (newGroup.id) {
-      const groupIndex = this.componentStudio.rootGroups.findIndex(g => g.id === newGroup.id);
-      this.componentStudio.rootGroups.splice(groupIndex, 1, { ...newGroup });
+      fetch(`${serverPath}/group/update`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(newGroup)
+      }).then(r => r.json()).then(() => {
+        let groupIndex = this.componentStudio.rootGroups.findIndex(g => g.id === newGroup.id);
+        this.componentStudio.rootGroups.splice(groupIndex, 1, JSON.parse(JSON.stringify(newGroup)));
+
+        groupIndex = this.componentStudio.allGroups.findIndex(g => g.id === newGroup.id);
+        this.componentStudio.allGroups.splice(groupIndex, 1, JSON.parse(JSON.stringify(newGroup)));
+      })
     } else {
       fetch(`${serverPath}/group/add`,
         {

@@ -114,7 +114,15 @@ export class AppService {
 
   }
 
+  async groupUpdate(rawGroup: StudioGroup) {
+    const em = RequestContext.getEntityManager();
 
+    const group = await em.findOne(StudioGroup, rawGroup.id);
+
+    pick(rawGroup, ['name', 'propKey'], group);
+
+    em.flush();
+  }
 }
 
 

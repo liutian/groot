@@ -20,4 +20,9 @@ export class AppController {
   groupRemove(@Param('groupId') groupId: number): any {
     this.appService.groupRemove(groupId);
   }
+
+  @Post('/group/update')
+  groupUpdate(@Body() group: StudioGroup): any {
+    this.appService.groupUpdate(group);
+  }
 }
