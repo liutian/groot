@@ -1,7 +1,7 @@
 
 // 从对象中抓取部分属性生成另一个对象
-export function pick<O extends Object, P extends string>(obj: O, props: AutoPath<O, P>[]): O {
-  const newObj = {} as O;
+export function pick<O extends Object, P extends string>(obj: O, props: AutoPath<O, P>[], target?: O): O {
+  const newObj = target || {} as O;
 
   Object.keys(obj).forEach(function (key) {
     if (props.includes('**' as any) || props.includes(key as any)) {
