@@ -1,5 +1,6 @@
 import { uuid } from "@util/utils";
 import { FormInstance } from "antd";
+import { serverPath } from "config";
 
 export default class Studio {
   /**
@@ -129,7 +130,7 @@ export default class Studio {
       const groupIndex = this.componentStudio.rootGroups.findIndex(g => g.id === newGroup.id);
       this.componentStudio.rootGroups.splice(groupIndex, 1, { ...newGroup });
     } else {
-      fetch('http://127.0.0.1:3000/studio/group/add',
+      fetch(`${serverPath}/group/add`,
         {
           method: 'POST',
           headers: {
@@ -137,8 +138,17 @@ export default class Studio {
           },
           body: JSON.stringify(newGroup)
         }
-      ).then(r => r.json()).then((data) => {
-        this.componentStudio.rootGroups.push(data);
+      ).then(r => r.json()).then(({ data }: { data: CodeMetaStudioGroup }) => {
+
+        this.componentStudio.allGroups.push(JSON.parse(JSON.stringify(data)));
+        data.propBlocks.forEach((block) => {
+          this.componentStudio.allBlocks.push(JSON.parse(JSON.stringify(block)));
+          block.propItems.forEach((item) => {
+            this.componentStudio.allItems.push(JSON.parse(JSON.stringify(item)));
+          })
+        })
+        this.componentStudio.rootGroups.push(JSON.parse(JSON.stringify(data)));
+
         this.activeGroupId = data.id;
       })
     }
@@ -225,11 +235,26 @@ export default class Studio {
   }
 
   public delGroup = (groupId: number) => {
-    const index = this.componentStudio.rootGroups.findIndex(g => g.id === groupId);
-    this.componentStudio.rootGroups.splice(index, 1);
-    if (this.activeGroupId === groupId) {
-      this.activeGroupId = this.componentStudio.rootGroups[0]?.id;
-    }
+    fetch(`${serverPath}/group/remove/${groupId}`).then(() => {
+      const index = this.componentStudio.rootGroups.findIndex(g => g.id === groupId);
+      const group = this.componentStudio.rootGroups[index]!;
+
+      group.propBlocks.forEach((block) => {
+        block.propItems.forEach((item) => {
+          const itemIndex = this.componentStudio.allItems.findIndex(i => i.id === item.id);
+          this.componentStudio.allItems.splice(itemIndex, 1);
+        });
+        const blockIndex = this.componentStudio.allBlocks.findIndex(b => b.id == block.id);
+        this.componentStudio.allBlocks.splice(blockIndex, 1);
+      });
+      const groupIndex = this.componentStudio.allGroups.findIndex(g => g.id === group.id);
+      this.componentStudio.allGroups.splice(groupIndex, 1);
+      this.componentStudio.rootGroups.splice(index, 1);
+
+      if (this.activeGroupId === groupId) {
+        this.activeGroupId = this.componentStudio.rootGroups[0]?.id;
+      }
+    })
   }
 
   public switchActiveGroup = (id: number) => {

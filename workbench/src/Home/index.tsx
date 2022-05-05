@@ -6,7 +6,7 @@ import styles from './index.module.less';
 
 import { registerModel, useModel } from '@util/robot';
 import StudioModel from '@model/Studio';
-import { fetchPageData } from '@util/dataSource';
+import { serverPath } from 'config';
 
 
 const Home = () => {
@@ -23,7 +23,7 @@ const Home = () => {
 
   useEffect(() => {
     // 加载页面组件配置器数据
-    fetchPageData('http://127.0.0.1:3000/studio/page/1').then((data) => {
+    fetch(`${serverPath}/page/1`).then(r => r.json()).then(({ data }) => {
       PageDataRef.current = data;
       model.init(data.component.studio);
       // todo
