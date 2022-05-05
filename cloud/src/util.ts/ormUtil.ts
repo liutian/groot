@@ -13,7 +13,7 @@ export function omitProps<O, P extends string>(instance: O, propKeys: AutoPath<O
     // 数组迭代的索引
     let arrayContextIndexStack = [];
 
-    let currcArrayContextIndex = -1;
+    let currArrayContextIndex = -1;
     let currArrayContext;
     let currIndexOfStageKeys = -1;
     for (let indexOfStageKeys = 0; indexOfStageKeys < stageKeys.length; indexOfStageKeys++) {
@@ -30,19 +30,23 @@ export function omitProps<O, P extends string>(instance: O, propKeys: AutoPath<O
         // 属性上层有数组结构
         if (currArrayContext) {
           // 数组最后一个
-          if (currcArrayContextIndex === currArrayContext.length - 1) {
+          if (currArrayContextIndex === currArrayContext.length - 1) {
             currIndexOfStageKeys = indexOfStageKeysStack.pop();
             currArrayContext = arrayContextStack.pop();
-            currcArrayContextIndex = arrayContextIndexStack.pop();
+            currArrayContextIndex = arrayContextIndexStack.pop();
 
             // 最终
             if (!currArrayContext) {
-              continue;
+              break;
             }
           }
 
-          context = currArrayContext[++currcArrayContextIndex];
+          context = currArrayContext[++currArrayContextIndex];
           indexOfStageKeys = currIndexOfStageKeys;
+        }
+
+        if (!context) {
+          break;
         }
 
         continue;
@@ -54,15 +58,15 @@ export function omitProps<O, P extends string>(instance: O, propKeys: AutoPath<O
       if (Number.isInteger(context.length)) {
         if (currArrayContext) {
           arrayContextStack.push(currArrayContext);
-          arrayContextIndexStack.push(currcArrayContextIndex);
+          arrayContextIndexStack.push(currArrayContextIndex);
           indexOfStageKeysStack.push(currIndexOfStageKeys);
         }
 
         currArrayContext = context;
-        currcArrayContextIndex = 0;
+        currArrayContextIndex = 0;
         currIndexOfStageKeys = indexOfStageKeys;
 
-        context = currArrayContext[currcArrayContextIndex];
+        context = currArrayContext[currArrayContextIndex];
       }
 
     }

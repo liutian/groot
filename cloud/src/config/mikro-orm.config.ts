@@ -10,5 +10,6 @@ export default {
   user: 'demo1',
   password: '123456',
   type: 'mysql',
+  persistOnCreate: true
 } as MikroOrmModuleSyncOptions;
 

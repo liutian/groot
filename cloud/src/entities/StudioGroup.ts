@@ -11,7 +11,7 @@ export class StudioGroup extends BaseEntity {
   name: string;
 
   @Property()
-  isRoot: boolean = true;
+  isRoot: boolean;
 
   @Property()
   propKey?: string;
@@ -24,4 +24,7 @@ export class StudioGroup extends BaseEntity {
 
   @ManyToOne()
   componentStudio: ComponentStudio;
+
+  @Property({ persist: false })
+  componentStudioId?: number;
 }

@@ -1,5 +1,6 @@
 import { RequestContext } from '@mikro-orm/core';
-import { Controller, Get, Param } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { StudioGroup } from 'entities/StudioGroup';
 import { AppService } from './app.service';
 @Controller('/studio')
 export class AppController {
@@ -8,5 +9,10 @@ export class AppController {
   @Get('/page/:id')
   getHello(@Param('id') id: number): any {
     return this.appService.getPage(id);
+  }
+
+  @Post('/group/add')
+  groupAdd(@Body() group: StudioGroup): any {
+    return this.appService.groupAdd(group);
   }
 }
