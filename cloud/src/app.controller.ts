@@ -15,4 +15,9 @@ export class AppController {
   groupAdd(@Body() group: StudioGroup): any {
     return this.appService.groupAdd(group);
   }
+
+  @Get('/group/remove/:groupId')
+  groupRemove(@Param('groupId') groupId: number): any {
+    this.appService.groupRemove(groupId);
+  }
 }

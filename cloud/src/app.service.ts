@@ -20,7 +20,6 @@ export class AppService {
       ],
     });
 
-
     const studio = page.component.studio;
 
     studio.allGroups = await em.find(StudioGroup, { componentStudio: studio.id });
@@ -76,6 +75,46 @@ export class AppService {
 
     return newGroup;
   }
+
+  async groupRemove(groupId: number) {
+    const em = RequestContext.getEntityManager();
+
+    const group = await em.findOne(StudioGroup, groupId, {
+      populate: [
+        'propBlocks.propItems'
+      ]
+    });
+
+    if (!group) {
+      return;
+    }
+
+    await em.begin();
+    try {
+      const blockList = group.propBlocks.getItems();
+      for (let blockIndex = 0; blockIndex < blockList.length; blockIndex++) {
+        const block = blockList[blockIndex];
+
+        const itemList = block.propItems.getItems();
+        for (let itemIndex = 0; itemIndex < itemList.length; itemIndex++) {
+          const item = itemList[itemIndex];
+          await em.removeAndFlush(item);
+        }
+
+        await em.removeAndFlush(block);
+      }
+
+      await em.removeAndFlush(group);
+
+      await em.commit();
+    } catch (e) {
+      await em.rollback();
+      throw e;
+    }
+
+  }
+
+
 }
 
 
