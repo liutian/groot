@@ -11,7 +11,14 @@
   "plugins": [
     "@typescript-eslint",
   ],
-  "rules": {},
+  "rules": {
+    "no-param-reassign": [
+      true,
+      {
+        "ignore-pattern": "^_"
+      }
+    ]
+  },
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
