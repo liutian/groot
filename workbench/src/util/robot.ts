@@ -1,5 +1,5 @@
 import { useState } from "react";
-
+import 'zone.js';
 
 const store = new Map<string, ModelContainer>();
 
@@ -17,7 +17,7 @@ export const registerModel = (key: string, model: any) => {
     origin: model,
     fastUpdate: false,
     proxy: wrapper(key, model),
-    execTrigger: false
+    // execTrigger: false
   })
 }
 
@@ -39,12 +39,14 @@ export const useModel = <T>(key: string, isRoot = false): [T, (fun: Function, ex
   }
 
   const updateAction = (fun: Function, execTrigger = true) => {
-    modelContainer.fastUpdate = true;
-    fun();
-    modelContainer.fastUpdate = false;
-    if (execTrigger) {
-      autoTrigger(key);
-    }
+
+    execInZone(key, 'updateAction', () => {
+      fun();
+    }, (asyncTaskName) => {
+      if (execTrigger) {
+        autoTrigger(key, asyncTaskName);
+      }
+    })
   }
 
   return [modelContainer.proxy, updateAction];
@@ -64,14 +66,14 @@ function wrapper(modelKey: string, target: any): any {
 
       // 执行完函数自动执行视图更新操作
       return (...args: any[]) => {
-        const modelContainer = store.get(modelKey)!;
-        modelContainer.fastUpdate = true;
-        const returnResult = Reflect.apply(value, oTarget, args);
-        modelContainer.fastUpdate = false;
+        let returnResult = execInZone(modelKey, 'default', () => {
+          return Reflect.apply(value, oTarget, args);
+        }, (asyncTaskName) => {
+          if (oTarget.hasOwnProperty(sKey)) {
+            autoTrigger(modelKey, asyncTaskName);
+          }
+        })
 
-        if (oTarget.hasOwnProperty(sKey)) {
-          autoTrigger(modelKey);
-        }
         return returnResult;
       }
     },
@@ -91,19 +93,39 @@ function wrapper(modelKey: string, target: any): any {
   })
 }
 
-function autoTrigger(modelKey: string) {
+function autoTrigger(modelKey: string, asyncTaskName?: string) {
   const modelContainer = store.get(modelKey)!;
-  modelContainer.execTrigger = true;
-  Promise.resolve().then(() => {
-    if (!modelContainer.execTrigger) {
-      return;
-    }
+  console.log(`robot trigger ${asyncTaskName ? `[${asyncTaskName}]` : ''}: ${modelKey}`)
+  modelContainer.rootTrigger!((tick: number) => {
+    return ++tick;
+  })
 
-    modelContainer.rootTrigger!((tick: number) => {
-      return ++tick;
-    })
-    modelContainer.execTrigger = false;
-  });
+}
+
+function execInZone(modelKey: string, type: string, runFn: Function, triggerFn: (asyncTaskName?: string) => void) {
+  let resultOfRun;
+  const modelContainer = store.get(modelKey)!;
+
+  Zone.current.fork({
+    name: `robot-${type}-${modelKey}`,
+    onInvokeTask: (delegate, _currentZone, targetZone, task, ...args) => {
+      modelContainer.fastUpdate = true;
+      const result = delegate.invokeTask(targetZone, task, ...args);
+      modelContainer.fastUpdate = false;
+
+      triggerFn(task.source);
+
+      return result;
+    }
+  }).run(() => {
+    modelContainer.fastUpdate = true;
+    resultOfRun = runFn();
+    modelContainer.fastUpdate = false;
+
+    triggerFn();
+  })
+
+  return resultOfRun;
 }
 
 const typeList = ['Number', 'String', 'Null', 'Undefined', 'Boolean', 'Symbol'];
@@ -117,5 +139,5 @@ type ModelContainer = {
   origin: any,
   rootTrigger?: Function,
   fastUpdate: boolean,
-  execTrigger: boolean
+  // execTrigger: boolean
 };
