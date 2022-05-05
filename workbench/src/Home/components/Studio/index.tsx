@@ -1,4 +1,4 @@
-import { Button, Dropdown, Menu, Tabs } from "antd";
+import { Button, Dropdown, Menu, MenuProps, Tabs } from "antd";
 import { EditFilled, EditOutlined, PlusOutlined, SettingFilled, SettingOutlined } from '@ant-design/icons';
 import React from "react";
 import { DndProvider } from "react-dnd";
@@ -33,20 +33,28 @@ function Studio() {
   // 自定义渲染Tab标题，实现右键菜单功能
   const renderTabBarItem = (group: CodeMetaStudioGroup) => {
 
-    const menus = (
-      <Menu>
-        <Menu.Item key="del" disabled={model.componentStudio.rootGroups.length === 0} onClick={() => model.delGroup(group.id)}>删除</Menu.Item>
-        <Menu.Item key="copy">复制</Menu.Item>
-        <Menu.Item key="setting" onClick={(e) => {
+    const items: MenuProps['items'] = [
+      {
+        key: 'del',
+        disabled: model.componentStudio.rootGroups.length === 0,
+        onClick: () => model.delGroup(group.id),
+        label: '删除'
+      }, {
+        key: 'copy',
+        label: '复制'
+      }, {
+        key: 'setting',
+        label: '配置',
+        onClick: (e) => {
           e.domEvent.stopPropagation();
           updateAction(() => {
             model.currSettingStudioGroup = JSON.parse(JSON.stringify(group));
           });
-        }}>配置</Menu.Item>
-      </Menu>
-    );
+        }
+      }
+    ];
 
-    return <Dropdown overlayStyle={{ minWidth: '5em' }} overlay={menus} trigger={['contextMenu']}>
+    return <Dropdown overlayStyle={{ minWidth: '5em' }} overlay={<Menu items={items} />} trigger={['contextMenu']}>
       <div>{group.name}</div>
     </Dropdown>
   }
