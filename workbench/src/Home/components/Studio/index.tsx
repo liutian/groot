@@ -37,7 +37,10 @@ function Studio() {
       {
         key: 'del',
         disabled: model.componentStudio.rootGroups.length === 0,
-        onClick: () => model.delGroup(group.id),
+        onClick: (e) => {
+          e.domEvent.stopPropagation();
+          model.delGroup(group.id);
+        },
         label: '删除'
       }, {
         key: 'copy',
@@ -61,22 +64,28 @@ function Studio() {
 
   // tab点击切换事件
   const tabOnChange = (activeKey: string) => {
-    if (activeKey === '__add') {
-      updateAction(() => {
-        // 显示分组弹框
-        model.currSettingStudioGroup = {
-          id: 0,
-          name: `分组${model.componentStudio.rootGroups.length + 1}`,
-          isRoot: true,
-          propBlocks: [],
-          componentStudioId: model.componentStudio.id
-        };
-      })
-      return;
+    if (activeKey !== '__add') {
+      // 选中某个分组
+      model.switchActiveGroup(parseInt(activeKey));
     }
 
-    // 选中某个分组
-    model.switchActiveGroup(parseInt(activeKey));
+    updateAction(() => {
+      const serial = model.componentStudio.rootGroups
+        .map(g => g.name.replace(/^\D+/mg, ''))
+        .map(s => parseInt(s) || 0)
+        .sort((a, b) => b - a)[0] || 0;
+
+      const nameSuffix = serial ? serial + 1 : model.componentStudio.rootGroups.length + 1;
+      // 显示分组弹框
+      model.currSettingStudioGroup = {
+        id: 0,
+        name: `分组${nameSuffix}`,
+        isRoot: true,
+        propBlocks: [],
+        componentStudioId: model.componentStudio.id,
+        order: 0
+      };
+    })
   }
 
   // tab右上角模式切换按钮

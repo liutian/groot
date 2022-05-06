@@ -87,31 +87,43 @@ export default class Studio {
       return;
     }
 
-    const groups = this.componentStudio.rootGroups;
+    fetch(`${serverPath}/move/position`, {
+      body: JSON.stringify({
+        originId: dragId,
+        targetId: hoverId,
+        type: 'group'
+      }),
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+    }).then(r => r.json()).then(() => {
+      const groups = this.componentStudio.rootGroups;
 
-    const drag = groups.find(g => g.id === +dragId)!;
-    const hoverIndex = groups.findIndex(g => g.id === +hoverId);
-    const dragIndex = groups.findIndex(g => g.id === +dragId);
-    const currentIndex = groups.findIndex(g => g.id === this.activeGroupId);
+      const drag = groups.find(g => g.id === +dragId)!;
+      const hoverIndex = groups.findIndex(g => g.id === +hoverId);
+      const dragIndex = groups.findIndex(g => g.id === +dragId);
+      const currentIndex = groups.findIndex(g => g.id === this.activeGroupId);
 
-    groups.splice(hoverIndex, 0, drag);
+      groups.splice(hoverIndex, 0, drag);
 
-    if (hoverIndex < dragIndex) {
+      if (hoverIndex < dragIndex) {
 
-      groups.splice(dragIndex + 1, 1);
-      if (currentIndex >= hoverIndex && currentIndex < dragIndex) {
-        this.activeGroupId = groups[currentIndex + 1]?.id;
-      } else if (currentIndex === dragIndex) {
-        this.activeGroupId = +hoverId;
+        groups.splice(dragIndex + 1, 1);
+        if (currentIndex >= hoverIndex && currentIndex < dragIndex) {
+          this.activeGroupId = groups[currentIndex + 1]?.id;
+        } else if (currentIndex === dragIndex) {
+          this.activeGroupId = +hoverId;
+        }
+      } else {
+        if (currentIndex === dragIndex && currentIndex < hoverIndex) {
+          this.activeGroupId = groups[currentIndex - 1]?.id;
+        } else if (currentIndex === dragIndex) {
+          this.activeGroupId = groups[hoverIndex - 1]?.id;
+        }
+        groups.splice(dragIndex, 1);
       }
-    } else {
-      if (currentIndex === dragIndex && currentIndex < hoverIndex) {
-        this.activeGroupId = groups[currentIndex - 1]?.id;
-      } else if (currentIndex === dragIndex) {
-        this.activeGroupId = groups[hoverIndex - 1]?.id;
-      }
-      groups.splice(dragIndex, 1);
-    }
+    })
   }
 
   public moveStudioItem = (block: CodeMetaStudioBlock, originIndex: number, up: boolean) => {
@@ -158,7 +170,7 @@ export default class Studio {
             this.componentStudio.allItems.push(JSON.parse(JSON.stringify(item)));
           })
         })
-        this.componentStudio.rootGroups.push(JSON.parse(JSON.stringify(data)));
+        this.componentStudio.rootGroups.unshift(JSON.parse(JSON.stringify(data)));
 
         this.activeGroupId = data.id;
       })
@@ -364,8 +376,10 @@ export default class Studio {
           propKey: 'prop1',
           groupId: 0,
           blockId: 0,
-          span: 24
+          span: 24,
+          order: 0
         }],
+        order: 0
       };
     }
     this.currSettingInsertIndex = group.propBlocks.findIndex(b => b.id === relativeBlock.id);
@@ -427,7 +441,11 @@ export default class Studio {
 
   private buildPropGroups(componentStudio: ComponentStudio) {
     componentStudio.rootGroups = [];
-    const rootGroupIds = componentStudio.allGroups.filter(g => g.isRoot).map(g => g.id);
+    const rootGroupIds = componentStudio.allGroups
+      .filter(g => g.isRoot)
+      .sort((a, b) => b.order - a.order)
+      .map(g => g.id);
+
     for (let i = 0; i < rootGroupIds.length; i++) {
       const groupId = rootGroupIds[i]!;
       const group = this.buildStudioGroup(groupId);
@@ -441,11 +459,17 @@ export default class Studio {
       throw new Error(`can not find group[${groupId}]`);
     }
 
-    const blocks = this.componentStudio.allBlocks.filter(b => b.groupId === groupId);
+    const blocks = this.componentStudio.allBlocks
+      .filter(b => b.groupId === groupId)
+      .sort((a, b) => b.order - a.order);
+
     group.propBlocks = blocks;
     for (let blockIndex = 0; blockIndex < blocks.length; blockIndex++) {
       const block = blocks[blockIndex]!;
-      const items = this.componentStudio.allItems.filter(i => i.groupId === groupId && i.blockId === block.id);
+      const items = this.componentStudio.allItems
+        .filter(i => i.groupId === groupId && i.blockId === block.id)
+        .sort((a, b) => b.order - a.order);
+
       block.propItems = items;
 
       for (let itemIndex = 0; itemIndex < items.length; itemIndex++) {

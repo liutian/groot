@@ -43,7 +43,8 @@ function StudioBlock({ block, noSetting }: PropType) {
               propKey: `prop${block.propItems.length + 1}`,
               blockId: block.id,
               groupId: block.groupId,
-              span: 24
+              span: 24,
+              order: 0
             }
             model.currSettingInsertIndex = block.propItems.findIndex(item => item.id === studioItem.id);
           })
