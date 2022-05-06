@@ -5,7 +5,9 @@ export function pick<O extends Object, P extends string>(obj: O, props: AutoPath
 
   Object.keys(obj).forEach(function (key) {
     if (props.includes('**' as any) || props.includes(key as any)) {
-      newObj[key] = obj[key];
+      if (obj[key] !== null && obj[key] !== undefined) {
+        newObj[key] = obj[key];
+      }
     }
     if (props.includes(('-' + key) as any)) {
       delete newObj[key];
