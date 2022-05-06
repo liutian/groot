@@ -27,4 +27,7 @@ export class StudioGroup extends BaseEntity {
 
   @Property({ persist: false })
   componentStudioId?: number;
+
+  @Property({ columnType: 'double' })
+  order: number;
 }

@@ -1,4 +1,3 @@
-import { RequestContext } from '@mikro-orm/core';
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { StudioGroup } from 'entities/StudioGroup';
 import { AppService } from './app.service';
@@ -24,5 +23,10 @@ export class AppController {
   @Post('/group/update')
   groupUpdate(@Body() group: StudioGroup): any {
     this.appService.groupUpdate(group);
+  }
+
+  @Post('/move/position')
+  movePosition(@Body() data: { originId: number, targetId: number, type: 'group' | 'block' | 'item' }): any {
+    this.appService.movePosition(data);
   }
 }

@@ -27,4 +27,7 @@ export class StudioBlock extends BaseEntity {
 
   @ManyToOne()
   componentStudio: ComponentStudio;
+
+  @Property({ columnType: 'double' })
+  order: number;
 }

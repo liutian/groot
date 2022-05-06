@@ -40,17 +40,20 @@ export class AppService {
     const em = RequestContext.getEntityManager();
 
     const componentStudio = await em.findOne(ComponentStudio, group.componentStudioId);
+    const firstGroup = await em.findOne(StudioGroup, { isRoot: true, componentStudio: componentStudio }, { orderBy: { order: 'DESC' } });
 
     const newGroup = em.create(StudioGroup, {
       ...pick(group, ['name', 'propKey']),
       componentStudio,
       isRoot: true,
+      order: (firstGroup ? firstGroup.order : 0) + 1000
     });
 
     const newBlock = em.create(StudioBlock, {
       name: '配置块',
       group: newGroup,
-      componentStudio
+      componentStudio,
+      order: 1000
     });
     newGroup.propBlocks.add(newBlock);
 
@@ -61,7 +64,8 @@ export class AppService {
       type: StudioItemType.INPUT,
       propKey: 'prop',
       value: '',
-      componentStudio
+      componentStudio,
+      order: 1000
     });
     newBlock.propItems.add(newItem);
 
@@ -122,6 +126,29 @@ export class AppService {
     pick(rawGroup, ['name', 'propKey'], group);
 
     em.flush();
+  }
+
+  async movePosition(data: { originId: number, targetId: number, type: 'group' | 'block' | 'item' }) {
+    const em = RequestContext.getEntityManager();
+    if (data.type === 'group') {
+      const originGroup = await em.findOne(StudioGroup, data.originId, { fields: ['order'] });
+      const targetGroup = await em.findOne(StudioGroup, data.targetId, { fields: ['order'] });
+
+      if (!originGroup || !targetGroup) {
+        return;
+      }
+
+      const targetGroupPrev = await em.findOne(StudioGroup, { order: { $gt: targetGroup.order } }, { fields: ['order'] });
+
+      if (!targetGroupPrev) {
+        originGroup.order = targetGroup.order + 1000;
+      } else {
+        const newOrder = (targetGroup.order + targetGroupPrev.order) / 2;
+        originGroup.order = newOrder;
+      }
+
+      await em.flush();
+    }
   }
 }
 
