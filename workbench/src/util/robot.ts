@@ -109,18 +109,24 @@ function execInZone(modelKey: string, type: string, runFn: Function, triggerFn: 
   Zone.current.fork({
     name: `robot-${type}-${modelKey}`,
     onInvokeTask: (delegate, _currentZone, targetZone, task, ...args) => {
+      const forceFalse = modelContainer.fastUpdate !== true;
       modelContainer.fastUpdate = true;
       const result = delegate.invokeTask(targetZone, task, ...args);
-      modelContainer.fastUpdate = false;
+      if (forceFalse) {
+        modelContainer.fastUpdate = false;
+      }
 
       triggerFn(task.source);
 
       return result;
     }
   }).run(() => {
+    const forceFalse = modelContainer.fastUpdate !== true;
     modelContainer.fastUpdate = true;
     resultOfRun = runFn();
-    modelContainer.fastUpdate = false;
+    if (forceFalse) {
+      modelContainer.fastUpdate = false;
+    }
 
     triggerFn();
   })
