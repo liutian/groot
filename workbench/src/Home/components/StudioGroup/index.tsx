@@ -13,10 +13,6 @@ type PropsType = {
 const StudioGroup: React.FC<PropsType> = ({ group, inner = false, innerTemplateBlock }) => {
   const [model, updateAction] = useModel<StudioModel>('studio');
 
-  const delBlock = (blockIndex: number) => {
-    updateAction(() => group.propBlocks.splice(blockIndex, 1));
-  }
-
   const editBlock = (block: CodeMetaStudioBlock) => {
     updateAction(() => {
       model.currSettingStudioBlock = JSON.parse(JSON.stringify(block));
@@ -47,7 +43,7 @@ const StudioGroup: React.FC<PropsType> = ({ group, inner = false, innerTemplateB
       </Typography.Link>
       <Typography.Link disabled={blockIndex === 0 && group.propBlocks.length === 1} onClick={(e) => {
         e.stopPropagation();
-        delBlock(blockIndex);
+        model.delBlock(block.id, group);
       }} >
         <DeleteOutlined />
       </Typography.Link>

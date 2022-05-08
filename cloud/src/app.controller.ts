@@ -1,9 +1,16 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { StudioBlock } from 'entities/StudioBlock';
 import { StudioGroup } from 'entities/StudioGroup';
+import { BlockService } from 'service/block.service';
+import { GroupService } from 'service/group.service';
 import { AppService } from './app.service';
 @Controller('/studio')
 export class AppController {
-  constructor(private readonly appService: AppService) { }
+  constructor(
+    private readonly appService: AppService,
+    private readonly blockService: BlockService,
+    private readonly groupService: GroupService
+  ) { }
 
   @Get('/page/:id')
   getHello(@Param('id') id: number): any {
@@ -12,21 +19,41 @@ export class AppController {
 
   @Post('/group/add')
   groupAdd(@Body() group: StudioGroup): any {
-    return this.appService.groupAdd(group);
+    return this.groupService.add(group);
   }
 
   @Get('/group/remove/:groupId')
   groupRemove(@Param('groupId') groupId: number): any {
-    this.appService.groupRemove(groupId);
+    this.groupService.remove(groupId);
   }
 
   @Post('/group/update')
   groupUpdate(@Body() group: StudioGroup): any {
-    this.appService.groupUpdate(group);
+    this.groupService.update(group);
   }
 
   @Post('/move/position')
   movePosition(@Body() data: { originId: number, targetId: number, type: 'group' | 'block' | 'item' }): any {
-    this.appService.movePosition(data);
+    // 将 origin 移动至 target位置，target 向后一一位
+    if (data.type === 'group') {
+      this.groupService.movePosition(data.originId, data.targetId);
+    } else if (data.type === 'block') {
+      this.blockService.movePosition(data.originId, data.targetId);
+    }
+  }
+
+  @Post('/block/add')
+  blockAdd(@Body() block: StudioBlock, @Body('moveBlockId') moveBlockId: number): any {
+    return this.blockService.add(block, moveBlockId);
+  }
+
+  @Get('/block/remove/:blockId')
+  blockRemove(@Param('blockId') blockId: number): any {
+    this.blockService.remove(blockId);
+  }
+
+  @Post('/block/update')
+  blockUpdate(@Body() block: StudioBlock): any {
+    this.blockService.update(block);
   }
 }

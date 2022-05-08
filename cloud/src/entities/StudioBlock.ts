@@ -28,6 +28,12 @@ export class StudioBlock extends BaseEntity {
   @ManyToOne()
   componentStudio: ComponentStudio;
 
+  @Property({ persist: false })
+  componentStudioId?: number;
+
+  @Property({ persist: false })
+  groupId?: number;
+
   @Property({ columnType: 'double' })
   order: number;
 }

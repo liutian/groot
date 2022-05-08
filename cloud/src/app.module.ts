@@ -5,6 +5,8 @@ import { AppService } from './app.service';
 import config from 'config/mikro-orm.config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { StandardResultInterceptor } from 'config/standardResult.interceptor';
+import { BlockService } from 'service/block.service';
+import { GroupService } from 'service/group.service';
 @Module({
   imports: [
     MikroOrmModule.forRoot({
@@ -18,7 +20,9 @@ import { StandardResultInterceptor } from 'config/standardResult.interceptor';
       provide: APP_INTERCEPTOR,
       useClass: StandardResultInterceptor
     },
-    AppService
+    BlockService,
+    GroupService,
+    AppService,
   ],
 })
 export class AppModule { }

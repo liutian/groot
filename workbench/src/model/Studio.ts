@@ -1,4 +1,4 @@
-import { uuid } from "@util/utils";
+import { autoIncrementForName, uuid } from "@util/utils";
 import { FormInstance } from "antd";
 import { serverPath } from "config";
 
@@ -75,11 +75,24 @@ export default class Studio {
 
   public moveStudioBlock = (group: CodeMetaStudioGroup, originIndex: number, up: boolean) => {
     const [moveBlock] = group.propBlocks.splice(originIndex, 1);
-    if (up) {
-      group.propBlocks.splice(originIndex - 1, 0, moveBlock!);
-    } else {
-      group.propBlocks.splice(originIndex + 1, 0, moveBlock!);
-    }
+    fetch(`${serverPath}/move/position`, {
+      body: JSON.stringify({
+        originId: moveBlock!.id,
+        targetId: up ? group.propBlocks[originIndex - 1]!.id : group.propBlocks[originIndex + 2]?.id,
+        type: 'block'
+      }),
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+    }).then(r => r.json()).then(() => {
+
+      if (up) {
+        group.propBlocks.splice(originIndex - 1, 0, moveBlock!);
+      } else {
+        group.propBlocks.splice(originIndex + 1, 0, moveBlock!);
+      }
+    });
   }
 
   public moveStudioGroup = (dragId: string, hoverId: string) => {
@@ -90,7 +103,7 @@ export default class Studio {
     fetch(`${serverPath}/move/position`, {
       body: JSON.stringify({
         originId: dragId,
-        targetId: hoverId,
+        targetId: hoverId === '__add' ? null : hoverId,
         type: 'group'
       }),
       method: 'POST',
@@ -101,7 +114,7 @@ export default class Studio {
       const groups = this.componentStudio.rootGroups;
 
       const drag = groups.find(g => g.id === +dragId)!;
-      const hoverIndex = groups.findIndex(g => g.id === +hoverId);
+      const hoverIndex = hoverId === '__add' ? groups.length : groups.findIndex(g => g.id === +hoverId);
       const dragIndex = groups.findIndex(g => g.id === +dragId);
       const currentIndex = groups.findIndex(g => g.id === this.activeGroupId);
 
@@ -161,18 +174,18 @@ export default class Studio {
           },
           body: JSON.stringify(newGroup)
         }
-      ).then(r => r.json()).then(({ data }: { data: CodeMetaStudioGroup }) => {
+      ).then(r => r.json()).then(({ data: groupData }: { data: CodeMetaStudioGroup }) => {
 
-        this.componentStudio.allGroups.push(JSON.parse(JSON.stringify(data)));
-        data.propBlocks.forEach((block) => {
+        this.componentStudio.allGroups.push(JSON.parse(JSON.stringify(groupData)));
+        groupData.propBlocks.forEach((block) => {
           this.componentStudio.allBlocks.push(JSON.parse(JSON.stringify(block)));
           block.propItems.forEach((item) => {
             this.componentStudio.allItems.push(JSON.parse(JSON.stringify(item)));
           })
         })
-        this.componentStudio.rootGroups.unshift(JSON.parse(JSON.stringify(data)));
+        this.componentStudio.rootGroups.push(JSON.parse(JSON.stringify(groupData)));
 
-        this.activeGroupId = data.id;
+        this.activeGroupId = groupData.id;
       })
     }
 
@@ -181,21 +194,42 @@ export default class Studio {
 
   public updateOrAddStudioBlock = (block: CodeMetaStudioBlock) => {
     const newBlock = Object.assign(this.currSettingStudioBlock, block);
-    const group = this.getStudioGroup(newBlock.groupId!);
+    const group = this.getStudioGroup(newBlock.groupId)!;
 
     if (newBlock.id) {
-      const blockIndex = group?.propBlocks.findIndex(b => b.id === newBlock.id);
-      group?.propBlocks.splice(blockIndex!, 1, { ...newBlock });
-    } else {
-      const blockId = uuid();
-      newBlock.id = blockId;
-      group?.propBlocks.splice(this.currSettingInsertIndex + 1, 0, newBlock);
+      fetch(`${serverPath}/block/update`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(newBlock)
+      }).then(r => r.json()).then(() => {
+        let blockIndex = group.propBlocks.findIndex(b => b.id === newBlock.id);
+        group.propBlocks.splice(blockIndex, 1, { ...newBlock });
 
-      newBlock.propItems.forEach((item) => {
-        item.id = uuid();
-        item.blockId = blockId;
-        item.groupId = newBlock.groupId;
+        blockIndex = this.componentStudio.allBlocks.findIndex(b => b.id === newBlock.id);
+        this.componentStudio.allBlocks.splice(blockIndex, 1, { ...newBlock });
+      });
+    } else {
+      const moveBlockId = this.currSettingInsertIndex >= group.propBlocks.length - 1 ? null : group.propBlocks[this.currSettingInsertIndex + 1]!.id
+      fetch(`${serverPath}/block/add`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          moveBlockId,
+          ...newBlock
+        })
+      }).then(r => r.json()).then(({ data: blockData }: { data: CodeMetaStudioBlock }) => {
+        group?.propBlocks.splice(this.currSettingInsertIndex + 1, 0, blockData);
+
+        blockData.propItems.forEach((item) => {
+          this.componentStudio.allItems.push(JSON.parse(JSON.stringify(item)));
+        });
+        this.componentStudio.allBlocks.push(JSON.parse(JSON.stringify(blockData)))
       })
+
     }
     this.currSettingStudioBlock = undefined;
   }
@@ -277,6 +311,20 @@ export default class Studio {
       if (this.activeGroupId === groupId) {
         this.activeGroupId = this.componentStudio.rootGroups[0]?.id;
       }
+    })
+  }
+
+  public delBlock = (blockId: number, group: CodeMetaStudioGroup) => {
+    fetch(`${serverPath}/block/remove/${blockId}`).then(() => {
+      const blockIndex = group.propBlocks.findIndex(b => b.id === blockId);
+      const block = this.componentStudio.allBlocks[blockIndex]!;
+
+      block.propItems.forEach((item) => {
+        const itemIndex = this.componentStudio.allItems.findIndex(i => i.id === item.id);
+        this.componentStudio.allItems.splice(itemIndex, 1);
+      });
+      this.componentStudio.allBlocks.splice(blockIndex, 1);
+      group.propBlocks.splice(blockIndex, 1);
     })
   }
 
@@ -365,20 +413,13 @@ export default class Studio {
       newBlock.groupId = group.id;
       this.currSettingStudioBlock = newBlock;
     } else {
+      const nameSuffix = autoIncrementForName(group.propBlocks.map(b => b.name));
+
       this.currSettingStudioBlock = {
         id: 0,
-        name: '配置块' + group.propBlocks.length,
+        name: `配置块${nameSuffix}`,
         groupId: group.id,
-        propItems: [{
-          id: 0,
-          type: 'input',
-          label: '配置项1',
-          propKey: 'prop1',
-          groupId: 0,
-          blockId: 0,
-          span: 24,
-          order: 0
-        }],
+        propItems: [],
         order: 0
       };
     }
@@ -443,7 +484,7 @@ export default class Studio {
     componentStudio.rootGroups = [];
     const rootGroupIds = componentStudio.allGroups
       .filter(g => g.isRoot)
-      .sort((a, b) => b.order - a.order)
+      .sort((a, b) => a.order - b.order)
       .map(g => g.id);
 
     for (let i = 0; i < rootGroupIds.length; i++) {
@@ -461,14 +502,14 @@ export default class Studio {
 
     const blocks = this.componentStudio.allBlocks
       .filter(b => b.groupId === groupId)
-      .sort((a, b) => b.order - a.order);
+      .sort((a, b) => a.order - b.order)
 
     group.propBlocks = blocks;
     for (let blockIndex = 0; blockIndex < blocks.length; blockIndex++) {
       const block = blocks[blockIndex]!;
       const items = this.componentStudio.allItems
         .filter(i => i.groupId === groupId && i.blockId === block.id)
-        .sort((a, b) => b.order - a.order);
+        .sort((a, b) => a.order - b.order)
 
       block.propItems = items;
 

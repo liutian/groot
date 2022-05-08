@@ -23,11 +23,11 @@ const Home = () => {
 
   useEffect(() => {
     // 加载页面组件配置器数据
-    fetch(`${serverPath}/page/1`).then(r => r.json()).then(({ data }) => {
-      PageDataRef.current = data;
-      model.init(data.component.studio);
+    fetch(`${serverPath}/page/1`).then(r => r.json()).then(({ data: pageData }: { data: Page }) => {
+      PageDataRef.current = pageData;
+      model.init(pageData.component.studio);
       // todo
-      setPageName(`groot::{"path": "${data.path}","name":"${data.name}"}`);
+      setPageName(`groot::{"path": "${pageData.path}","name":"${pageData.name}"}`);
     });
 
     // 监听iframe页面，进行通信

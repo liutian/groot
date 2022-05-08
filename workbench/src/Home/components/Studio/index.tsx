@@ -14,6 +14,7 @@ import StudioGroupSetting from "../StudioGroupSetting";
 import StudioItemSetting from "../StudioItemSetting";
 import StudioBlockSetting from "../StudioBlockSetting";
 import ArrayObjectPanel from "../ArrayObjectPanel";
+import { autoIncrementForName } from "@util/utils";
 
 function Studio() {
 
@@ -67,15 +68,11 @@ function Studio() {
     if (activeKey !== '__add') {
       // 选中某个分组
       model.switchActiveGroup(parseInt(activeKey));
+      return;
     }
 
     updateAction(() => {
-      const serial = model.componentStudio.rootGroups
-        .map(g => g.name.replace(/^\D+/mg, ''))
-        .map(s => parseInt(s) || 0)
-        .sort((a, b) => b - a)[0] || 0;
-
-      const nameSuffix = serial ? serial + 1 : model.componentStudio.rootGroups.length + 1;
+      const nameSuffix = autoIncrementForName(model.componentStudio.rootGroups.map(g => g.name));
       // 显示分组弹框
       model.currSettingStudioGroup = {
         id: 0,
