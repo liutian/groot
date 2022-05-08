@@ -9,7 +9,7 @@ import { omitProps } from 'util.ts/ormUtil';
 
 
 @Injectable()
-export class GroupService {
+export class StudioGroupService {
 
   async add(group: StudioGroup) {
     const em = RequestContext.getEntityManager();

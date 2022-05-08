@@ -1,15 +1,15 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { StudioBlock } from 'entities/StudioBlock';
 import { StudioGroup } from 'entities/StudioGroup';
-import { BlockService } from 'service/block.service';
-import { GroupService } from 'service/group.service';
+import { StudioBlockService } from 'service/StudioBlock.service';
+import { StudioGroupService } from 'service/StudioGroup.service';
 import { AppService } from './app.service';
 @Controller('/studio')
 export class AppController {
   constructor(
     private readonly appService: AppService,
-    private readonly blockService: BlockService,
-    private readonly groupService: GroupService
+    private readonly blockService: StudioBlockService,
+    private readonly groupService: StudioGroupService
   ) { }
 
   @Get('/page/:id')

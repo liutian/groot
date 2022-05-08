@@ -5,13 +5,10 @@ import { StudioGroup } from 'entities/StudioGroup';
 import { StudioItem, StudioItemType } from 'entities/StudioItem';
 import { pick } from 'util.ts/common';
 import { omitProps } from 'util.ts/ormUtil';
-import { GroupService } from './group.service';
 
 
 @Injectable()
-export class BlockService {
-
-  constructor(private readonly groupService: GroupService) { }
+export class StudioBlockService {
 
   async add(rawBlock: StudioBlock, moveBlockId: number) {
     const em = RequestContext.getEntityManager();
