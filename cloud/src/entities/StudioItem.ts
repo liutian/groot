@@ -49,6 +49,9 @@ export class StudioItem extends BaseEntity {
 
   @Property({ columnType: 'double' })
   order: number;
+
+  @Property({ persist: false })
+  blockId?: number;
 }
 
 export enum StudioItemType {

@@ -7,6 +7,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { StandardResultInterceptor } from 'config/standardResult.interceptor';
 import { StudioBlockService } from 'service/StudioBlock.service';
 import { StudioGroupService } from 'service/StudioGroup.service';
+import { StudioItemService } from 'service/StudioItem.service';
 @Module({
   imports: [
     MikroOrmModule.forRoot({
@@ -20,6 +21,7 @@ import { StudioGroupService } from 'service/StudioGroup.service';
       provide: APP_INTERCEPTOR,
       useClass: StandardResultInterceptor
     },
+    StudioItemService,
     StudioBlockService,
     StudioGroupService,
     AppService,

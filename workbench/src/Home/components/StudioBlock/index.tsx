@@ -4,6 +4,7 @@ import { useModel } from "@util/robot";
 import StudioModel from '@model/Studio';
 import ArrayObjectFormItem from "../ArrayObjectFormItem";
 import styles from './index.module.less';
+import { autoIncrementForName } from "@util/utils";
 
 type PropType = {
   block: CodeMetaStudioBlock,
@@ -17,11 +18,6 @@ function StudioBlock({ block, noSetting }: PropType) {
 
   const renderItemLabel = (studioItem: CodeMetaStudioItem, itemIndex: number) => {
 
-    const delStudioItem = (itemIndex: number) => {
-      updateAction(() => {
-        block.propItems.splice(itemIndex, 1);
-      })
-    }
 
     const editStudioItem = () => {
       updateAction(() => {
@@ -32,14 +28,17 @@ function StudioBlock({ block, noSetting }: PropType) {
     const renderItemSetting = () => {
       if (!model.settingMode || noSetting === true) return null;
 
+
       return (<Space size="small">
         <Typography.Link onClick={(e) => {
           e.preventDefault();
           updateAction(() => {
+            const nameSuffix = autoIncrementForName(block.propItems.map(item => item.label));
+
             model.currSettingStudioItem = {
               id: 0,
               type: 'input',
-              label: `配置项${block.propItems.length + 1}`,
+              label: `配置项${nameSuffix}`,
               propKey: `prop${block.propItems.length + 1}`,
               blockId: block.id,
               groupId: block.groupId,
@@ -65,7 +64,7 @@ function StudioBlock({ block, noSetting }: PropType) {
         </Typography.Link>
         <Typography.Link disabled={itemIndex === 0 && block.propItems.length === 1} onClick={(e) => {
           e.preventDefault();
-          delStudioItem(itemIndex);
+          model.delItem(studioItem.id, block);
         }} >
           <DeleteOutlined />
         </Typography.Link>
