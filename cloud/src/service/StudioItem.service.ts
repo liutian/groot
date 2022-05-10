@@ -1,13 +1,21 @@
-import { RequestContext, wrap } from '@mikro-orm/core';
+import { EntityManager, RequestContext, wrap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { StudioBlock } from 'entities/StudioBlock';
-import { StudioItem } from 'entities/StudioItem';
+import { StudioGroup } from 'entities/StudioGroup';
+import { StudioItem, StudioItemType } from 'entities/StudioItem';
 import { pick } from 'util.ts/common';
 import { omitProps } from 'util.ts/ormUtil';
+import { StudioBlockService } from './StudioBlock.service';
+import { StudioGroupService } from './StudioGroup.service';
 
 
 @Injectable()
 export class StudioItemService {
+
+  constructor(
+    private studioGroupService: StudioGroupService,
+    private studioBlockService: StudioBlockService
+  ) { }
 
   async add(rawItem: StudioItem, moveItemId: number) {
     const em = RequestContext.getEntityManager();
@@ -17,31 +25,61 @@ export class StudioItemService {
       return;
     }
 
-    const firstItem = await em.findOne(StudioItem, { block }, { orderBy: { order: 'DESC' } });
+    let newItem, valueOfGroup, templateBlock;
 
-    const newItem = em.create(StudioItem, {
-      ...pick(rawItem, ['label', 'propKey', 'isRootPropKey', 'type', 'span', 'options']),
-      block,
-      group: block.group,
-      componentStudio: block.componentStudio,
-      order: firstItem ? firstItem.order + 1000 : 1000,
-      value: ''
-    });
+    await em.begin();
 
-    block.propItems.add(newItem);
+    try {
+      const firstItem = await em.findOne(StudioItem, { block }, { orderBy: { order: 'DESC' } });
 
-    await em.flush();
+      newItem = em.create(StudioItem, {
+        ...pick(rawItem, ['label', 'propKey', 'isRootPropKey', 'type', 'span', 'options']),
+        block,
+        group: block.group,
+        componentStudio: block.componentStudio,
+        order: firstItem ? firstItem.order + 1000 : 1000,
+        value: '',
+      });
 
-    this.movePosition(
-      newItem.id,
-      moveItemId
-    );
+      await em.flush();
+
+      if (newItem.type === StudioItemType.ARRAY_OBJECT) {
+        const rawGroup = {
+          name: '关联分组',
+          componentStudioId: block.componentStudio.id,
+        } as StudioGroup;
+        valueOfGroup = await this.studioGroupService.add(rawGroup, false);
+        newItem.valueOfGroup = valueOfGroup;
+
+        const rawBlock = {
+          name: '配置块模版',
+          groupId: valueOfGroup.id
+        } as StudioBlock;
+
+        templateBlock = await this.studioBlockService.add(rawBlock);
+        newItem.templateBlock = templateBlock;
+      }
+
+      block.propItems.add(newItem);
+
+      await em.flush();
+
+      await this.movePosition(
+        newItem.id,
+        moveItemId,
+      );
+
+      await em.commit();
+    } catch (e) {
+      await em.rollback();
+      throw e;
+    }
 
     omitProps(newItem, [
       'componentStudio',
     ]);
 
-    return newItem;
+    return { newItem, valueOfGroup, templateBlock };
   }
 
   async movePosition(originId: number, targetId: number) {
@@ -96,7 +134,7 @@ export class StudioItemService {
 
     const item = await em.findOne(StudioItem, rawItem.id, { populate: ['options'] });
 
-    pick(rawItem, ['label', 'propKey', 'isRootPropKey', 'type'], item);
+    pick(rawItem, ['label', 'propKey', 'isRootPropKey', 'type', 'span'], item);
 
     if (rawItem.options && rawItem.options.length) {
       wrap(item).assign({
@@ -104,7 +142,7 @@ export class StudioItemService {
       })
     }
 
-    em.flush();
+    await em.flush();
   }
 }
 

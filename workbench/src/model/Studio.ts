@@ -235,39 +235,6 @@ export default class Studio {
       newItem.options = undefined;
     }
 
-    if (newItem.type === 'array-object') {
-      const itemChild = {
-        id: uuid(),
-        label: '配置项1',
-        propKey: 'prop_001',
-        type: 'input',
-        span: 24
-      } as CodeMetaStudioItem;
-      const blockChild = {
-        id: uuid(),
-        name: '配置块1',
-        propItems: [itemChild]
-      } as CodeMetaStudioBlock;
-      const groupChild = {
-        id: uuid(),
-        name: '',
-        propBlocks: [blockChild],
-        isRoot: false
-      } as CodeMetaStudioGroup;
-
-      item.blockId = blockChild.id;
-      item.groupId = groupChild.id;
-      blockChild.groupId = groupChild.id;
-      newItem.valueOfGroup = groupChild;
-      newItem.valueOfGroupId = groupChild.id;
-
-      newItem.templateBlock = JSON.parse(JSON.stringify(blockChild));
-      newItem.templateBlock!.id = uuid();
-      newItem.templateBlock?.propItems.forEach((item) => {
-        item.id = uuid();
-        item.blockId = newItem.templateBlock!.id;
-      });
-    }
 
     if (newItem.id) {
       fetch(`${serverPath}/item/update`, {
@@ -293,8 +260,12 @@ export default class Studio {
           moveItemId,
           ...newItem
         })
-      }).then(r => r.json()).then(({ data: itemData }: { data: CodeMetaStudioItem }) => {
-        block.propItems.splice(this.currSettingInsertIndex + 1, 0, itemData);
+      }).then(r => r.json()).then((result: { data: { newItem: CodeMetaStudioItem, valueOfGroup: CodeMetaStudioGroup, templateBlock: CodeMetaStudioBlock } }) => {
+        block.propItems.splice(this.currSettingInsertIndex + 1, 0, result.data.newItem);
+        if (newItem.type === 'array-object') {
+          result.data.newItem.valueOfGroup = result.data.valueOfGroup;
+          result.data.newItem.templateBlock = result.data.templateBlock;
+        }
       })
     }
 

@@ -11,16 +11,16 @@ import { omitProps } from 'util.ts/ormUtil';
 @Injectable()
 export class StudioGroupService {
 
-  async add(group: StudioGroup) {
+  async add(group: StudioGroup, isRoot = true) {
     const em = RequestContext.getEntityManager();
 
     const componentStudio = await em.findOne(ComponentStudio, group.componentStudioId);
-    const firstGroup = await em.findOne(StudioGroup, { isRoot: true, componentStudio: componentStudio }, { orderBy: { order: 'DESC' } });
+    const firstGroup = await em.findOne(StudioGroup, { componentStudio: componentStudio }, { orderBy: { order: 'DESC' } });
 
     const newGroup = em.create(StudioGroup, {
       ...pick(group, ['name', 'propKey']),
       componentStudio,
-      isRoot: true,
+      isRoot,
       order: (firstGroup ? firstGroup.order : 0) + 1000
     });
 
@@ -100,7 +100,7 @@ export class StudioGroupService {
 
     pick(rawGroup, ['name', 'propKey'], group);
 
-    em.flush();
+    await em.flush();
   }
 
   async movePosition(originId: number, targetId?: number) {
@@ -112,7 +112,7 @@ export class StudioGroupService {
     }
 
     if (!targetId) {
-      const firstGroup = await em.findOne(StudioGroup, { isRoot: true, componentStudio: originGroup.componentStudio }, { orderBy: { order: 'DESC' } });
+      const firstGroup = await em.findOne(StudioGroup, { componentStudio: originGroup.componentStudio }, { orderBy: { order: 'DESC' } });
 
       originGroup.order = firstGroup ? firstGroup.order + 1000 : 1000;
     } else {

@@ -47,6 +47,9 @@ export class StudioItem extends BaseEntity {
   @ManyToOne()
   componentStudio: ComponentStudio;
 
+  @Property({ persist: false })
+  componentStudioId: number;
+
   @Property({ columnType: 'double' })
   order: number;
 

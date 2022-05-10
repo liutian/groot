@@ -16,64 +16,64 @@ export class AppController {
   ) { }
 
   @Get('/page/:id')
-  getHello(@Param('id') id: number): any {
+  async getHello(@Param('id') id: number) {
     return this.appService.getPage(id);
   }
 
   @Post('/group/add')
-  groupAdd(@Body() group: StudioGroup): any {
+  async groupAdd(@Body() group: StudioGroup) {
     return this.groupService.add(group);
   }
 
   @Get('/group/remove/:groupId')
-  groupRemove(@Param('groupId') groupId: number): any {
-    this.groupService.remove(groupId);
+  async groupRemove(@Param('groupId') groupId: number) {
+    await this.groupService.remove(groupId);
   }
 
   @Post('/group/update')
-  groupUpdate(@Body() group: StudioGroup): any {
-    this.groupService.update(group);
+  async groupUpdate(@Body() group: StudioGroup) {
+    await this.groupService.update(group);
   }
 
   @Post('/move/position')
-  movePosition(@Body() data: { originId: number, targetId: number, type: 'group' | 'block' | 'item' }): any {
+  async movePosition(@Body() data: { originId: number, targetId: number, type: 'group' | 'block' | 'item' }) {
     // 将 origin 移动至 target位置，target 向后一一位
     if (data.type === 'group') {
-      this.groupService.movePosition(data.originId, data.targetId);
+      await this.groupService.movePosition(data.originId, data.targetId);
     } else if (data.type === 'block') {
-      this.blockService.movePosition(data.originId, data.targetId);
+      await this.blockService.movePosition(data.originId, data.targetId);
     } else if (data.type === 'item') {
-      this.itemService.movePosition(data.originId, data.targetId);
+      await this.itemService.movePosition(data.originId, data.targetId);
     }
   }
 
   @Post('/block/add')
-  blockAdd(@Body() block: StudioBlock, @Body('moveBlockId') moveBlockId: number): any {
+  async blockAdd(@Body() block: StudioBlock, @Body('moveBlockId') moveBlockId: number) {
     return this.blockService.add(block, moveBlockId);
   }
 
   @Get('/block/remove/:blockId')
-  blockRemove(@Param('blockId') blockId: number): any {
-    this.blockService.remove(blockId);
+  async blockRemove(@Param('blockId') blockId: number) {
+    await this.blockService.remove(blockId);
   }
 
   @Post('/block/update')
-  blockUpdate(@Body() block: StudioBlock): any {
-    this.blockService.update(block);
+  async blockUpdate(@Body() block: StudioBlock) {
+    await this.blockService.update(block);
   }
 
   @Post('/item/add')
-  itemAdd(@Body() item: StudioItem, @Body('moveItemId') moveItemId: number): any {
+  async itemAdd(@Body() item: StudioItem, @Body('moveItemId') moveItemId: number) {
     return this.itemService.add(item, moveItemId);
   }
 
   @Get('/item/remove/:itemId')
-  itemRemove(@Param('itemId') itemId: number): any {
-    this.itemService.remove(itemId);
+  async itemRemove(@Param('itemId') itemId: number) {
+    await this.itemService.remove(itemId);
   }
 
   @Post('/item/update')
-  itemUpdate(@Body() item: StudioItem): any {
-    this.itemService.update(item);
+  async itemUpdate(@Body() item: StudioItem) {
+    await this.itemService.update(item);
   }
 }

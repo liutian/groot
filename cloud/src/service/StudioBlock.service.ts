@@ -10,7 +10,7 @@ import { omitProps } from 'util.ts/ormUtil';
 @Injectable()
 export class StudioBlockService {
 
-  async add(rawBlock: StudioBlock, moveBlockId: number) {
+  async add(rawBlock: StudioBlock, moveBlockId?: number) {
     const em = RequestContext.getEntityManager();
 
     const group = await em.findOne(StudioGroup, rawBlock.groupId, { populate: ['componentStudio'] });
@@ -41,7 +41,7 @@ export class StudioBlockService {
 
     await em.flush();
 
-    this.movePosition(
+    await this.movePosition(
       newBlock.id,
       moveBlockId
     );
@@ -54,7 +54,7 @@ export class StudioBlockService {
     return newBlock;
   }
 
-  async movePosition(originId: number, targetId: number) {
+  async movePosition(originId: number, targetId?: number) {
     const em = RequestContext.getEntityManager();
     const originBlock = await em.findOne(StudioBlock, originId, { populate: ['componentStudio', 'group'] });
 
@@ -126,7 +126,7 @@ export class StudioBlockService {
 
     pick(rawBlock, ['name', 'propKey', 'isRootPropKey'], block);
 
-    em.flush();
+    await em.flush();
   }
 }
 
