@@ -172,10 +172,7 @@ export default class Studio {
         body: JSON.stringify(newGroup)
       }).then(r => r.json()).then(() => {
         let groupIndex = this.componentStudio.rootGroups.findIndex(g => g.id === newGroup.id);
-        this.componentStudio.rootGroups.splice(groupIndex, 1, JSON.parse(JSON.stringify(newGroup)));
-
-        groupIndex = this.componentStudio.allGroups.findIndex(g => g.id === newGroup.id);
-        this.componentStudio.allGroups.splice(groupIndex, 1, JSON.parse(JSON.stringify(newGroup)));
+        this.componentStudio.rootGroups.splice(groupIndex, 1, newGroup);
       })
     } else {
       fetch(`${serverPath}/group/add`,
@@ -186,15 +183,8 @@ export default class Studio {
           },
           body: JSON.stringify(newGroup)
         }
-      ).then(r => r.json()).then(({ data: groupData }: { data: CodeMetaStudioGroup }) => {
+      ).then(r => r.json()).then(({ data: groupData }) => {
 
-        this.componentStudio.allGroups.push(JSON.parse(JSON.stringify(groupData)));
-        groupData.propBlocks.forEach((block) => {
-          this.componentStudio.allBlocks.push(JSON.parse(JSON.stringify(block)));
-          block.propItems.forEach((item) => {
-            this.componentStudio.allItems.push(JSON.parse(JSON.stringify(item)));
-          })
-        })
         this.componentStudio.rootGroups.push(JSON.parse(JSON.stringify(groupData)));
 
         this.activeGroupId = groupData.id;
@@ -217,10 +207,7 @@ export default class Studio {
         body: JSON.stringify(newBlock)
       }).then(r => r.json()).then(() => {
         let blockIndex = group.propBlocks.findIndex(b => b.id === newBlock.id);
-        group.propBlocks.splice(blockIndex, 1, { ...newBlock });
-
-        blockIndex = this.componentStudio.allBlocks.findIndex(b => b.id === newBlock.id);
-        this.componentStudio.allBlocks.splice(blockIndex, 1, { ...newBlock });
+        group.propBlocks.splice(blockIndex, 1, JSON.parse(JSON.stringify(newBlock)));
       });
     } else {
       const moveBlockId = this.currSettingInsertIndex >= group.propBlocks.length - 1 ? null : group.propBlocks[this.currSettingInsertIndex + 1]!.id
@@ -233,13 +220,8 @@ export default class Studio {
           moveBlockId,
           ...newBlock
         })
-      }).then(r => r.json()).then(({ data: blockData }: { data: CodeMetaStudioBlock }) => {
+      }).then(r => r.json()).then(({ data: blockData }) => {
         group?.propBlocks.splice(this.currSettingInsertIndex + 1, 0, blockData);
-
-        blockData.propItems.forEach((item) => {
-          this.componentStudio.allItems.push(JSON.parse(JSON.stringify(item)));
-        });
-        this.componentStudio.allBlocks.push(JSON.parse(JSON.stringify(blockData)))
       })
 
     }
@@ -298,9 +280,6 @@ export default class Studio {
         const block = this.getStudioBlock(newItem.blockId)!;
         let itemIndex = block.propItems.findIndex(item => item.id === newItem.id);
         block.propItems.splice(itemIndex, 1, JSON.parse(JSON.stringify(newItem)));
-
-        itemIndex = this.componentStudio.allItems.findIndex(item => item.id === newItem.id);
-        this.componentStudio.allItems.splice(itemIndex, 1, JSON.parse(JSON.stringify(newItem)));
       });
     } else {
       const block = this.getStudioBlock(newItem.blockId)!;
@@ -316,7 +295,6 @@ export default class Studio {
         })
       }).then(r => r.json()).then(({ data: itemData }: { data: CodeMetaStudioItem }) => {
         block.propItems.splice(this.currSettingInsertIndex + 1, 0, itemData);
-        this.componentStudio.allItems.push(JSON.parse(JSON.stringify(itemData)));
       })
     }
 
@@ -330,18 +308,7 @@ export default class Studio {
   public delGroup = (groupId: number) => {
     fetch(`${serverPath}/group/remove/${groupId}`).then(() => {
       const index = this.componentStudio.rootGroups.findIndex(g => g.id === groupId);
-      const group = this.componentStudio.rootGroups[index]!;
 
-      group.propBlocks.forEach((block) => {
-        block.propItems.forEach((item) => {
-          const itemIndex = this.componentStudio.allItems.findIndex(i => i.id === item.id);
-          this.componentStudio.allItems.splice(itemIndex, 1);
-        });
-        const blockIndex = this.componentStudio.allBlocks.findIndex(b => b.id == block.id);
-        this.componentStudio.allBlocks.splice(blockIndex, 1);
-      });
-      const groupIndex = this.componentStudio.allGroups.findIndex(g => g.id === group.id);
-      this.componentStudio.allGroups.splice(groupIndex, 1);
       this.componentStudio.rootGroups.splice(index, 1);
 
       if (this.activeGroupId === groupId) {
@@ -353,16 +320,7 @@ export default class Studio {
   public delBlock = (blockId: number, group: CodeMetaStudioGroup) => {
     fetch(`${serverPath}/block/remove/${blockId}`).then(() => {
       let blockIndex = group.propBlocks.findIndex(b => b.id === blockId);
-      const block = group.propBlocks[blockIndex]!;
       group.propBlocks.splice(blockIndex, 1);
-
-      block.propItems.forEach((item) => {
-        const itemIndex = this.componentStudio.allItems.findIndex(i => i.id === item.id);
-        this.componentStudio.allItems.splice(itemIndex, 1);
-      });
-
-      blockIndex = this.componentStudio.allBlocks.findIndex(b => b.id === blockId);
-      this.componentStudio.allBlocks.splice(blockIndex, 1);
     })
   }
 
@@ -370,9 +328,6 @@ export default class Studio {
     fetch(`${serverPath}/item/remove/${itemId}`).then(() => {
       let itemIndex = block.propItems.findIndex(item => item.id === itemId);
       block.propItems.splice(itemIndex, 1);
-
-      itemIndex = this.componentStudio.allItems.findIndex(item => item.id === itemId);
-      this.componentStudio.allItems.splice(itemIndex, 1);
     })
   }
 
