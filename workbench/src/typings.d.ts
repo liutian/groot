@@ -39,7 +39,7 @@ type CodeMetaStudioBlock = {
   name: string,
   propKey?: string,
   propItems: CodeMetaStudioItem[],
-  groupId: number
+  groupId: number,
   relativeItemId?: number,
   isRootPropKey?: boolean,
   componentStudioId?: number,

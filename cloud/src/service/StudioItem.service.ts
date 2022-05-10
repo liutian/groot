@@ -20,7 +20,7 @@ export class StudioItemService {
     const firstItem = await em.findOne(StudioItem, { block }, { orderBy: { order: 'DESC' } });
 
     const newItem = em.create(StudioItem, {
-      ...pick(rawItem, ['label', 'propKey', 'isRootPropKey', 'type']),
+      ...pick(rawItem, ['label', 'propKey', 'isRootPropKey', 'type', 'span', 'options']),
       block,
       group: block.group,
       componentStudio: block.componentStudio,
@@ -82,7 +82,7 @@ export class StudioItemService {
   async remove(itemId: number) {
     const em = RequestContext.getEntityManager();
 
-    const item = await em.findOne(StudioItem, itemId);
+    const item = await em.findOne(StudioItem, itemId, { populate: ['options'] });
 
     if (!item) {
       return;

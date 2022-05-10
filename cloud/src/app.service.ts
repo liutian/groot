@@ -23,7 +23,7 @@ export class AppService {
 
     studio.allGroups = await em.find(StudioGroup, { componentStudio: studio.id });
     studio.allBlocks = await em.find(StudioBlock, { componentStudio: studio.id });
-    studio.allItems = await em.find(StudioItem, { componentStudio: studio.id });
+    studio.allItems = await em.find(StudioItem, { componentStudio: studio.id }, { populate: ['options'] });
 
     omitProps(page, [
       'component.codeMetaData.component',

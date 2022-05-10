@@ -1,4 +1,4 @@
-import { Collection, Entity, Enum, ManyToOne, OneToMany, Property } from "@mikro-orm/core";
+import { Cascade, Collection, Entity, Enum, ManyToOne, OneToMany, Property } from "@mikro-orm/core";
 import { BaseEntity } from "./BaseEntity";
 import { ComponentStudio } from "./ComponentStudio";
 import { StudioBlock } from "./StudioBlock";
@@ -23,7 +23,7 @@ export class StudioItem extends BaseEntity {
   @Property({ length: 1024 })
   defaultValue?: string;
 
-  @OneToMany(() => StudioOption, option => option.studioItem)
+  @OneToMany({ entity: () => StudioOption, mappedBy: option => option.studioItem, cascade: [Cascade.ALL] })
   options = new Collection<StudioOption>(this);
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'blockId' })
