@@ -1,4 +1,4 @@
-import { RequestContext } from '@mikro-orm/core';
+import { RequestContext, wrap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { StudioBlock } from 'entities/StudioBlock';
 import { StudioItem } from 'entities/StudioItem';
@@ -94,9 +94,15 @@ export class StudioItemService {
   async update(rawItem: StudioItem) {
     const em = RequestContext.getEntityManager();
 
-    const item = await em.findOne(StudioItem, rawItem.id);
+    const item = await em.findOne(StudioItem, rawItem.id, { populate: ['options'] });
 
     pick(rawItem, ['label', 'propKey', 'isRootPropKey', 'type'], item);
+
+    if (rawItem.options && rawItem.options.length) {
+      wrap(item).assign({
+        options: [...rawItem.options]
+      })
+    }
 
     em.flush();
   }
