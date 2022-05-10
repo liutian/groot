@@ -30,6 +30,7 @@ export class AppService {
       'component.studio.allGroups.componentStudio',
       'component.studio.allBlocks.componentStudio',
       'component.studio.allItems.componentStudio',
+      'component.studio.allItems.options.studioItem',
     ]);
 
     return page;

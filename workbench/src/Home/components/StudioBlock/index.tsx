@@ -34,12 +34,13 @@ function StudioBlock({ block, noSetting }: PropType) {
           e.preventDefault();
           updateAction(() => {
             const nameSuffix = autoIncrementForName(block.propItems.map(item => item.label));
+            const propSuffix = autoIncrementForName(block.propItems.map(item => item.propKey));
 
             model.currSettingStudioItem = {
               id: 0,
               type: 'input',
               label: `配置项${nameSuffix}`,
-              propKey: `prop${block.propItems.length + 1}`,
+              propKey: `prop${propSuffix}`,
               blockId: block.id,
               groupId: block.groupId,
               span: 24,

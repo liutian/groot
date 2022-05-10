@@ -5,10 +5,10 @@ export abstract class BaseEntity {
   @PrimaryKey()
   id!: number;
 
-  @Property()
+  @Property({ lazy: true })
   createdAt = new Date();
 
-  @Property({ onUpdate: () => new Date() })
+  @Property({ onUpdate: () => new Date(), lazy: true })
   updatedAt = new Date();
 
 
