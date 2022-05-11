@@ -5,10 +5,13 @@ import { StudioGroup } from 'entities/StudioGroup';
 import { StudioItem, StudioItemType } from 'entities/StudioItem';
 import { pick } from 'util.ts/common';
 import { omitProps } from 'util.ts/ormUtil';
+import { StudioGroupService } from './StudioGroup.service';
 
 
 @Injectable()
 export class StudioBlockService {
+
+  constructor(private studioGroupService: StudioGroupService) { }
 
   async add(rawBlock: StudioBlock, moveBlockId?: number) {
     const em = RequestContext.getEntityManager();
@@ -102,12 +105,17 @@ export class StudioBlockService {
       return;
     }
 
+    const innerGroupIds = [];
+
     await em.begin();
     try {
       const itemList = block.propItems.getItems();
       for (let itemIndex = 0; itemIndex < itemList.length; itemIndex++) {
         const item = itemList[itemIndex];
         await em.removeAndFlush(item);
+        if (item.type === StudioItemType.ARRAY_OBJECT) {
+          innerGroupIds.push(item.valueOfGroup.id);
+        }
       }
 
       await em.removeAndFlush(block);
@@ -116,6 +124,11 @@ export class StudioBlockService {
     } catch (e) {
       await em.rollback();
       throw e;
+    }
+
+    for (let index = 0; index < innerGroupIds.length; index++) {
+      const groupId = innerGroupIds[index];
+      await this.studioGroupService.remove(groupId);
     }
   }
 

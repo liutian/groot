@@ -127,6 +127,10 @@ export class StudioItemService {
     }
 
     await em.removeAndFlush(item);
+    if (item.type === StudioItemType.ARRAY_OBJECT) {
+      await this.studioGroupService.remove(item.valueOfGroup.id);
+    }
+
   }
 
   async update(rawItem: StudioItem) {

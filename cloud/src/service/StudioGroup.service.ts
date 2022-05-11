@@ -68,6 +68,7 @@ export class StudioGroupService {
       return;
     }
 
+    const innerGroupIds = [];
     await em.begin();
     try {
       const blockList = group.propBlocks.getItems();
@@ -78,6 +79,10 @@ export class StudioGroupService {
         for (let itemIndex = 0; itemIndex < itemList.length; itemIndex++) {
           const item = itemList[itemIndex];
           await em.removeAndFlush(item);
+          if (item.type === StudioItemType.ARRAY_OBJECT) {
+            innerGroupIds.push(item.valueOfGroup.id);
+
+          }
         }
 
         await em.removeAndFlush(block);
@@ -89,6 +94,11 @@ export class StudioGroupService {
     } catch (e) {
       await em.rollback();
       throw e;
+    }
+
+    for (let index = 0; index < innerGroupIds.length; index++) {
+      const groupId = innerGroupIds[index];
+      await this.remove(groupId);
     }
 
   }
