@@ -20,7 +20,7 @@ export class StudioItemService {
   async add(rawItem: StudioItem, moveItemId: number) {
     const em = RequestContext.getEntityManager();
 
-    const block = await em.findOne(StudioBlock, rawItem.blockId, { populate: ['componentStudio', 'group'] });
+    const block = await em.findOne(StudioBlock, rawItem.blockId);
     if (!block) {
       return;
     }
@@ -84,7 +84,7 @@ export class StudioItemService {
 
   async movePosition(originId: number, targetId: number) {
     const em = RequestContext.getEntityManager();
-    const originItem = await em.findOne(StudioItem, originId, { populate: ['componentStudio', 'block'] });
+    const originItem = await em.findOne(StudioItem, originId);
 
     if (!originItem) {
       return;

@@ -81,7 +81,6 @@ export class StudioGroupService {
           await em.removeAndFlush(item);
           if (item.type === StudioItemType.ARRAY_OBJECT) {
             innerGroupIds.push(item.valueOfGroup.id);
-
           }
         }
 
@@ -115,7 +114,7 @@ export class StudioGroupService {
 
   async movePosition(originId: number, targetId?: number) {
     const em = RequestContext.getEntityManager();
-    const originGroup = await em.findOne(StudioGroup, originId, { populate: ['componentStudio'] });
+    const originGroup = await em.findOne(StudioGroup, originId);
 
     if (!originGroup) {
       return;
