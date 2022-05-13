@@ -34,6 +34,7 @@ export class StudioBlock extends BaseEntity {
   @Property({ persist: false })
   groupId?: number;
 
+  // 模版配置块order 为-1000，方便区分费模版配置块
   @Property({ columnType: 'double' })
   order: number;
 }

@@ -10,7 +10,7 @@ type PropsType = {
   innerTemplateBlock?: CodeMetaStudioBlock
 }
 
-const StudioGroup: React.FC<PropsType> = ({ group, inner = false, innerTemplateBlock }) => {
+const StudioGroup: React.FC<PropsType> = ({ group, innerTemplateBlock }) => {
   const [model, updateAction] = useModel<StudioModel>('studio');
 
   const editBlock = (block: CodeMetaStudioBlock) => {
@@ -25,7 +25,7 @@ const StudioGroup: React.FC<PropsType> = ({ group, inner = false, innerTemplateB
     return (<Space size="small">
       <Typography.Link onClick={(e) => {
         e.stopPropagation();
-        model.showStudioBlockSettinngForCreate(block, group, inner, innerTemplateBlock!);
+        model.showStudioBlockSettinngForCreate(block, group, innerTemplateBlock!);
       }}>
         <PlusOutlined />
       </Typography.Link>
@@ -58,11 +58,12 @@ const StudioGroup: React.FC<PropsType> = ({ group, inner = false, innerTemplateB
 
 
   return (<>
-    <Collapse defaultActiveKey={group.propBlocks.map(b => b.id)} bordered={false} expandIconPosition="right" expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}>
+    <Collapse defaultActiveKey={group.propBlocks.map(b => b.id)} bordered={false}
+      expandIconPosition="right" expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}>
       {
         group.propBlocks.map((block, blockIndex) => {
           return (<Collapse.Panel header={block.name} key={block.id} extra={renderBlockSetting(block, blockIndex)}>
-            <StudioBlock block={block} noSetting={inner} />
+            <StudioBlock block={block} noSetting={!!innerTemplateBlock} />
           </Collapse.Panel>)
         })
       }

@@ -28,7 +28,8 @@ type CodeMetaStudioGroup = {
   propBlocks: CodeMetaStudioBlock[],
   relativeItemId?: number,
   componentStudioId?: number,
-  order: number
+  order: number,
+  templateBlock?: CodeMetaStudioBlock
 }
 
 /**

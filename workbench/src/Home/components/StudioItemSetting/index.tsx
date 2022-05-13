@@ -63,7 +63,7 @@ const StudioItemSetting: React.FC = () => {
         <Input />
       </Form.Item>
       <Form.Item label="类型" name="type" rules={[{ required: true }]}>
-        <Select options={[
+        <Select disabled={!!model.currSettingStudioItem?.id} options={[
           { label: '文本', value: 'input' },
           { label: '日期', value: 'date-picker' },
           { label: '开关', value: 'switch' },

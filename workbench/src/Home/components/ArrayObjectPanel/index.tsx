@@ -30,22 +30,9 @@ const ArrayObjectPanel: React.FC<PropsType> = ({ item: studioItem }) => {
   })
 
   useEffect(() => {
-    const templateGroup = {
-      id: uuid(),
-      name: '',
-      propBlocks: [templateBlock]
-    } as CodeMetaStudioGroup;
-    templateBlock.groupId = templateGroup.id;
-    templateBlock.propItems.forEach(item => {
-      item.groupId = templateGroup.id;
-    });
-    preTemplateBlockRef.current = JSON.stringify(templateBlock);
-    model.innerTempStudioGroupMap.set(templateGroup.id, templateGroup);
-
     model.innerTempStudioGroupMap.set(studioGroup.id, studioGroup);
     return () => {
       model.innerTempStudioGroupMap.delete(studioGroup.id);
-      model.innerTempStudioGroupMap.delete(templateGroup.id);
     }
   }, [])
 

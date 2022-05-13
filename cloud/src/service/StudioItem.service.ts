@@ -53,7 +53,8 @@ export class StudioItemService {
 
         const rawBlock = {
           name: '配置块模版',
-          groupId: valueOfGroup.id
+          groupId: valueOfGroup.id,
+          order: -1000
         } as StudioBlock;
 
         templateBlock = await this.studioBlockService.add(rawBlock);

@@ -368,6 +368,11 @@ export default class Studio {
     const tempGroups = [...this.innerTempStudioGroupMap.values()];
     for (let groupIndex = 0; groupIndex < tempGroups.length; groupIndex++) {
       const group = tempGroups[groupIndex];
+
+      if (group?.templateBlock!.id === blockId) {
+        return group?.templateBlock;
+      }
+
       for (let blockIndex = 0; blockIndex < group!.propBlocks.length; blockIndex++) {
         const block = group?.propBlocks[blockIndex];
         if (block?.id === blockId) {
@@ -379,8 +384,8 @@ export default class Studio {
     return undefined;
   }
 
-  public showStudioBlockSettinngForCreate = (relativeBlock: CodeMetaStudioBlock, group: CodeMetaStudioGroup, inner: boolean, innerTemplateBlock: CodeMetaStudioBlock) => {
-    if (inner) {
+  public showStudioBlockSettinngForCreate = (relativeBlock: CodeMetaStudioBlock, group: CodeMetaStudioGroup, innerTemplateBlock?: CodeMetaStudioBlock) => {
+    if (!!innerTemplateBlock) {
       const newBlock = JSON.parse(JSON.stringify(innerTemplateBlock)) as CodeMetaStudioBlock;
       newBlock.id = 0;
       newBlock.name = `配置块${group.propBlocks.length + 1}`;
@@ -489,10 +494,12 @@ export default class Studio {
         const item = items[itemIndex]!;
         if (item.type === 'array-object') {
           const relativeGroup = this.buildStudioGroup(item.valueOfGroupId!);
+          const templateBlock = relativeGroup.propBlocks.find(b => b.id === item.templateBlockId);
+          relativeGroup.propBlocks = relativeGroup.propBlocks.filter(b => b.id !== item.templateBlockId);
+          relativeGroup.templateBlock = templateBlock;
+
           item.valueOfGroup = relativeGroup;
-          const relativeBlock = relativeGroup.propBlocks.find(b => b.id === item.templateBlockId);
-          item.templateBlock = relativeBlock;
-          relativeGroup.propBlocks = relativeGroup.propBlocks.filter(b => b.id !== item.templateBlockId)
+          item.templateBlock = templateBlock;
         }
       }
     }

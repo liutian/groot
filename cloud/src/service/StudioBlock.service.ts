@@ -21,13 +21,14 @@ export class StudioBlockService {
       return;
     }
 
-    const firstBlock = await em.findOne(StudioBlock, { group: group }, { orderBy: { order: 'DESC' } });
+    const firstBlock = await em.findOne(StudioBlock, { group: group, order: { $gt: 0 } }, { orderBy: { order: 'DESC' } });
+    const order = rawBlock.order ? rawBlock.order : (firstBlock ? firstBlock.order + 1000 : 1000);
 
     const newBlock = em.create(StudioBlock, {
       ...pick(rawBlock, ['name', 'propKey', 'isRootPropKey']),
       group,
       componentStudio: group.componentStudio,
-      order: firstBlock ? firstBlock.order + 1000 : 1000
+      order
     });
 
     const newItem = em.create(StudioItem, {
@@ -66,7 +67,7 @@ export class StudioBlockService {
     }
 
     if (!targetId) {
-      const firstBlock = await em.findOne(StudioBlock, { group: originBlock.group }, { orderBy: { order: 'DESC' } });
+      const firstBlock = await em.findOne(StudioBlock, { group: originBlock.group, order: { $gt: 0 } }, { orderBy: { order: 'DESC' } });
 
       originBlock.order = firstBlock ? firstBlock.order + 1000 : 1000;
     } else {
