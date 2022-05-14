@@ -50,6 +50,7 @@ export class StudioItemService {
         } as StudioGroup;
         valueOfGroup = await this.studioGroupService.add(rawGroup, false);
         newItem.valueOfGroup = valueOfGroup;
+        valueOfGroup.relativeItem = newItem;
 
         const rawBlock = {
           name: '配置块模版',
@@ -57,8 +58,9 @@ export class StudioItemService {
           order: -1000
         } as StudioBlock;
 
-        templateBlock = await this.studioBlockService.add(rawBlock);
+        templateBlock = await this.studioBlockService.add({ block: rawBlock });
         newItem.templateBlock = templateBlock;
+        templateBlock.relativeItem = newItem;
       }
 
       block.propItems.add(newItem);
