@@ -65,7 +65,7 @@ export default class Studio {
         block.propItems.forEach((item) => {
           props.push({
             key: item.propKey,
-            defaultValue: values[item.propKey]
+            defaultValue: values ? values[item.propKey] : item.defaultValue
           })
         })
       })
