@@ -261,10 +261,17 @@ export default class Studio {
           ...newItem
         })
       }).then(r => r.json()).then((result: { data: { newItem: CodeMetaStudioItem, valueOfGroup: CodeMetaStudioGroup, templateBlock: CodeMetaStudioBlock } }) => {
-        block.propItems.splice(this.currSettingInsertIndex + 1, 0, result.data.newItem);
+        const resultItem = result.data.newItem;
+
+        block.propItems.splice(this.currSettingInsertIndex + 1, 0, resultItem);
         if (newItem.type === 'array-object') {
-          result.data.newItem.valueOfGroup = result.data.valueOfGroup;
-          result.data.newItem.templateBlock = result.data.templateBlock;
+          const valueOfGroup = result.data.valueOfGroup;
+          const templateBlock = result.data.templateBlock;
+
+          valueOfGroup.propBlocks = valueOfGroup.propBlocks.filter(b => b.id !== templateBlock.id);
+          valueOfGroup.templateBlock = templateBlock;
+          resultItem.templateBlock = templateBlock;
+          resultItem.valueOfGroup = valueOfGroup;
         }
       })
     }

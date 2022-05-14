@@ -59,7 +59,7 @@ function StudioBlock({ block, noSetting }: PropType) {
         </Typography.Link>
         <Typography.Link disabled={itemIndex === block.propItems.length - 1} onClick={(e) => {
           e.preventDefault();
-          model.moveStudioItem(block, itemIndex, true);
+          model.moveStudioItem(block, itemIndex, false);
         }}>
           <VerticalAlignBottomOutlined />
         </Typography.Link>
