@@ -8,10 +8,10 @@ import { autoIncrementForName } from "@util/utils";
 
 type PropType = {
   block: CodeMetaStudioBlock,
-  noSetting?: boolean,
+  dynamic?: boolean
 }
 
-function StudioBlock({ block, noSetting }: PropType) {
+function StudioBlock({ block, dynamic }: PropType) {
   const [model, updateAction] = useModel<StudioModel>('studio');
   const [form] = Form.useForm();
   model.blockFormInstanceMap.set(block.id!, form);
@@ -26,7 +26,7 @@ function StudioBlock({ block, noSetting }: PropType) {
     }
 
     const renderItemSetting = () => {
-      if (!model.settingMode || noSetting === true) return null;
+      if (!model.settingMode || dynamic === true) return null;
 
 
       return (<Space size="small">

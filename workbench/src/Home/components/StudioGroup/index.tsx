@@ -6,7 +6,6 @@ import StudioBlock from "../StudioBlock";
 
 type PropsType = {
   group: CodeMetaStudioGroup,
-  inner?: boolean,
   innerTemplateBlock?: CodeMetaStudioBlock
 }
 
@@ -47,12 +46,16 @@ const StudioGroup: React.FC<PropsType> = ({ group, innerTemplateBlock }) => {
       }} >
         <DeleteOutlined />
       </Typography.Link>
-      <Typography.Link onClick={(e) => {
-        e.stopPropagation();
-        editBlock(block);
-      }}>
-        <SettingOutlined />
-      </Typography.Link>
+      {
+        !!innerTemplateBlock ? null : (
+          <Typography.Link onClick={(e) => {
+            e.stopPropagation();
+            editBlock(block);
+          }}>
+            <SettingOutlined />
+          </Typography.Link>
+        )
+      }
     </Space>)
   }
 
@@ -63,7 +66,7 @@ const StudioGroup: React.FC<PropsType> = ({ group, innerTemplateBlock }) => {
       {
         group.propBlocks.map((block, blockIndex) => {
           return (<Collapse.Panel header={block.name} key={block.id} extra={renderBlockSetting(block, blockIndex)}>
-            <StudioBlock block={block} noSetting={!!innerTemplateBlock} />
+            <StudioBlock block={block} dynamic={!!innerTemplateBlock} />
           </Collapse.Panel>)
         })
       }

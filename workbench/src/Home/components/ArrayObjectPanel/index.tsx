@@ -90,7 +90,7 @@ const ArrayObjectPanel: React.FC<PropsType> = ({ item: studioItem }) => {
       </Row>
     </div>
     <div className={styles.content}>
-      {settingMode ? <StudioBlock block={templateBlock} /> : <StudioGroup inner innerTemplateBlock={templateBlock} group={studioGroup} />}
+      {settingMode ? <StudioBlock block={templateBlock} /> : <StudioGroup innerTemplateBlock={templateBlock} group={studioGroup} />}
     </div>
   </div>
 }
