@@ -17,17 +17,11 @@ const ArrayObjectPanel: React.FC<PropsType> = ({ item: studioItem }) => {
   const [model] = useModel<Studio>('studio');
   const [settingMode, setSettingMode] = useState(false);
 
-  const [templateBlock] = useState<CodeMetaStudioBlock>(() => {
-    const block = JSON.parse(JSON.stringify(studioItem.templateBlock)) as CodeMetaStudioBlock;
-    return block;
-  });
+  const templateBlock = studioItem.templateBlock!;
 
   const preTemplateBlockRef = useRef(JSON.stringify(templateBlock));
 
-  const [studioGroup] = useState<CodeMetaStudioGroup>(() => {
-    const group = JSON.parse(JSON.stringify(studioItem.valueOfGroup)) as CodeMetaStudioGroup;
-    return group;
-  })
+  const studioGroup = studioItem.valueOfGroup!;
 
   useEffect(() => {
     model.innerTempStudioGroupMap.set(studioGroup.id, studioGroup);
