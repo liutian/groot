@@ -1,4 +1,4 @@
-import { Cascade, Collection, Entity, Enum, ManyToOne, OneToMany, Property } from "@mikro-orm/core";
+import { Cascade, Collection, Entity, Enum, ManyToOne, OneToMany, OneToOne, Property } from "@mikro-orm/core";
 import { BaseEntity } from "./BaseEntity";
 import { ComponentStudio } from "./ComponentStudio";
 import { StudioBlock } from "./StudioBlock";
@@ -35,10 +35,10 @@ export class StudioItem extends BaseEntity {
   @Property()
   span: number = 24;
 
-  @ManyToOne({ serializer: value => value?.id, serializedName: 'valueOfGroupId' })
+  @OneToOne({ serializer: value => value?.id, serializedName: 'valueOfGroupId' })
   valueOfGroup?: StudioGroup;
 
-  @ManyToOne({ serializer: value => value?.id, serializedName: 'templateBlockId' })
+  @OneToOne({ serializer: value => value?.id, serializedName: 'templateBlockId' })
   templateBlock?: StudioBlock;
 
   @Property()

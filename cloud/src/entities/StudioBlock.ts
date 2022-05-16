@@ -19,7 +19,7 @@ export class StudioBlock extends BaseEntity {
   @ManyToOne({ serializer: value => value?.id, serializedName: 'groupId' })
   group: StudioGroup;
 
-  @OneToOne({ serializer: value => value?.id, serializedName: 'relativeItemId' })
+  @ManyToOne({ serializer: value => value?.id, serializedName: 'relativeItemId' })
   relativeItem?: StudioItem;
 
   @Property()

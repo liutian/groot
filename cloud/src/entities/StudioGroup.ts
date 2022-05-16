@@ -19,8 +19,11 @@ export class StudioGroup extends BaseEntity {
   @OneToMany(() => StudioBlock, block => block.group)
   propBlocks = new Collection<StudioBlock>(this);
 
-  @OneToOne({ serializer: value => value?.id, serializedName: 'relativeItemId' })
+  @ManyToOne({ serializer: value => value?.id, serializedName: 'relativeItemId' })
   relativeItem?: StudioItem;
+
+  @OneToOne({ serializer: value => value?.id, serializedName: 'templateBlockId' })
+  templateBlock?: StudioBlock;
 
   @ManyToOne()
   componentStudio: ComponentStudio;

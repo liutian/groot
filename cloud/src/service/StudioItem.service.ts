@@ -25,7 +25,7 @@ export class StudioItemService {
       return;
     }
 
-    let newItem, valueOfGroup, templateBlock;
+    let newItem: StudioItem, valueOfGroup: StudioGroup, templateBlock: StudioBlock;
 
     await em.begin();
 
@@ -58,9 +58,10 @@ export class StudioItemService {
           order: -1000
         } as StudioBlock;
 
-        templateBlock = await this.studioBlockService.add({ block: rawBlock });
+        templateBlock = await this.studioBlockService.add(rawBlock);
         newItem.templateBlock = templateBlock;
         templateBlock.relativeItem = newItem;
+        valueOfGroup.templateBlock = templateBlock;
       }
 
       block.propItems.add(newItem);
