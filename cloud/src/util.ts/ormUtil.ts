@@ -21,10 +21,12 @@ export function omitProps<O, P extends string>(instance: O, propKeys: AutoPath<O
 
       // 最后一个属性
       if (indexOfStageKeys === stageKeys.length - 1) {
-        if (stripKeysOfObj.has(context)) {
-          stripKeysOfObj.get(context).push(key);
-        } else {
-          stripKeysOfObj.set(context, [key]);
+        if (context) {
+          if (stripKeysOfObj.has(context)) {
+            stripKeysOfObj.get(context).push(key);
+          } else {
+            stripKeysOfObj.set(context, [key]);
+          }
         }
 
         // 属性上层有数组结构
@@ -54,8 +56,18 @@ export function omitProps<O, P extends string>(instance: O, propKeys: AutoPath<O
 
       context = context[key];
 
+      if (!context) {
+        indexOfStageKeys = stageKeys.length - 2;
+        continue;
+      }
+
       // 数组
-      if (Number.isInteger(context.length) && context.length > 0) {
+      if (Number.isInteger(context.length)) {
+        if (context.length === 0) {
+          indexOfStageKeys = stageKeys.length - 2;
+          continue;
+        }
+
         if (currArrayContext) {
           arrayContextStack.push(currArrayContext);
           arrayContextIndexStack.push(currArrayContextIndex);
