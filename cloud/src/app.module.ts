@@ -10,10 +10,7 @@ import { StudioGroupService } from 'service/StudioGroup.service';
 import { StudioItemService } from 'service/StudioItem.service';
 @Module({
   imports: [
-    MikroOrmModule.forRoot({
-      ...config,
-      debug: process.env.NODE_ENV !== 'production'
-    })
+    MikroOrmModule.forRoot(config)
   ],
   controllers: [AppController],
   providers: [

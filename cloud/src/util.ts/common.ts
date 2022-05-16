@@ -17,6 +17,10 @@ export function pick<O extends Object, P extends string>(obj: O, props: AutoPath
   return newObj;
 }
 
+export function isDevMode() {
+  return process.env.NODE_ENV !== 'production'
+}
+
 
 // 校验字符串代表的属性是否在类型下存在
 type AutoPath<O, P extends string> = (P extends `${infer A}.${infer B}` ?

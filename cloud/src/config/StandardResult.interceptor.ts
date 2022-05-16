@@ -1,12 +1,13 @@
 import { Injectable, NestInterceptor, ExecutionContext, CallHandler, RequestTimeoutException } from '@nestjs/common';
 import { Observable, of, throwError, TimeoutError } from 'rxjs';
 import { catchError, map, tap, timeout } from 'rxjs/operators';
+import { isDevMode } from 'util.ts/common';
 
 @Injectable()
 export class StandardResultInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     return next.handle().pipe(
-      timeout(5000),
+      timeout(isDevMode() ? 1000 * 60 * 5 : 1000 * 60),
       map(value => value === null || value === undefined ? '' : value),
       map((value) => {
         if (Array.isArray(value)) {
