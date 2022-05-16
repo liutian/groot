@@ -2,6 +2,11 @@ import { wrap } from '@mikro-orm/core';
 import { AutoPath } from '@mikro-orm/core/typings';
 
 export function omitProps<O, P extends string>(instance: O, propKeys: AutoPath<O, P>[]) {
+
+  if (!instance) {
+    throw new Error('instance can not null');
+  }
+
   const stripKeysOfObj = new Map();
 
   for (let i = 0; i < propKeys.length; i++) {

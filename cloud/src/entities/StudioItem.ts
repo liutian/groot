@@ -18,7 +18,7 @@ export class StudioItem extends BaseEntity {
   type: StudioItemType;
 
   @Property({ length: 1024 })
-  value: string;
+  value?: string;
 
   @Property({ length: 1024 })
   defaultValue?: string;

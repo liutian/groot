@@ -1,5 +1,4 @@
-import { Collection, Entity, OneToMany, OneToOne, Property } from "@mikro-orm/core";
-import { group } from "console";
+import { Entity, Property } from "@mikro-orm/core";
 import { BaseEntity } from "./BaseEntity";
 import { StudioBlock } from "./StudioBlock";
 import { StudioGroup } from "./StudioGroup";

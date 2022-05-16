@@ -1,7 +1,7 @@
 import { MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { TsMorphMetadataProvider } from '@mikro-orm/reflection';
 import { SqlHighlighter } from '@mikro-orm/sql-highlighter';
-import { isDevMode } from 'util.ts/common';
+import { isDevMode } from '../util.ts/common';
 
 export default {
   metadataProvider: TsMorphMetadataProvider,
