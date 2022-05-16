@@ -1,5 +1,6 @@
 import { MikroORM, RequestContext } from '@mikro-orm/core';
-import { NestFactory } from '@nestjs/core';
+import { HttpAdapterHost, NestFactory } from '@nestjs/core';
+import { AllExceptionsFilter } from 'config/AllExceptions.filter';
 import { AppModule } from './app.module';
 
 
@@ -11,8 +12,11 @@ async function bootstrap() {
   app.use((req, res, next) => {
     RequestContext.create(orm.em, next);
   });
-  app.enableShutdownHooks();
 
+  const { httpAdapter } = app.get(HttpAdapterHost);
+  app.useGlobalFilters(new AllExceptionsFilter(httpAdapter));
+
+  app.enableShutdownHooks();
   await app.listen(3000);
 }
 bootstrap();
