@@ -15,7 +15,7 @@ export class StudioBlockService {
 
   constructor(private studioGroupService: StudioGroupService) { }
 
-  async add(block: StudioBlock, moveBlockId?: number) {
+  async add(block: StudioBlock) {
     const em = RequestContext.getEntityManager();
 
     const group = await em.findOne(StudioGroup, block.groupId);
@@ -33,24 +33,7 @@ export class StudioBlockService {
       order
     });
 
-    // const newItem = em.create(StudioItem, {
-    //   label: '配置项',
-    //   block: newBlock,
-    //   group: group,
-    //   type: StudioItemType.INPUT,
-    //   propKey: 'prop',
-    //   value: '',
-    //   componentStudio: group.componentStudio,
-    //   order: 1000
-    // });
-    // newBlock.propItems.add(newItem);
-
     await em.flush();
-
-    await this.movePosition(
-      newBlock.id,
-      moveBlockId
-    );
 
     omitProps(newBlock, [
       'componentStudio',

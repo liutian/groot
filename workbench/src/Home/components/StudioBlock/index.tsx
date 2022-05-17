@@ -1,23 +1,22 @@
-import { Checkbox, Col, DatePicker, Form, Input, Radio, Row, Select, Space, Switch, Typography } from "antd";
-import { VerticalAlignTopOutlined, DeleteOutlined, VerticalAlignBottomOutlined, SettingOutlined, PlusOutlined } from '@ant-design/icons';
+import { Button, Checkbox, Col, DatePicker, Form, Input, Radio, Row, Select, Space, Switch, Typography } from "antd";
+import { VerticalAlignTopOutlined, DeleteOutlined, VerticalAlignBottomOutlined, SettingOutlined } from '@ant-design/icons';
 import { useModel } from "@util/robot";
 import StudioModel from '@model/Studio';
 import ArrayObjectFormItem from "../ArrayObjectFormItem";
 import styles from './index.module.less';
-import { autoIncrementForName } from "@util/utils";
 
 type PropType = {
   block: CodeMetaStudioBlock,
-  dynamic?: boolean
+  dynamic?: boolean,
+  templateMode?: boolean
 }
 
-function StudioBlock({ block, dynamic }: PropType) {
+function StudioBlock({ block, dynamic, templateMode }: PropType) {
   const [model, updateAction] = useModel<StudioModel>('studio');
   const [form] = Form.useForm();
   model.blockFormInstanceMap.set(block.id!, form);
 
   const renderItemLabel = (studioItem: CodeMetaStudioItem, itemIndex: number) => {
-
 
     const editStudioItem = () => {
       updateAction(() => {
@@ -30,27 +29,6 @@ function StudioBlock({ block, dynamic }: PropType) {
 
 
       return (<Space size="small">
-        <Typography.Link onClick={(e) => {
-          e.preventDefault();
-          updateAction(() => {
-            const nameSuffix = autoIncrementForName(block.propItems.map(item => item.label));
-            const propSuffix = autoIncrementForName(block.propItems.map(item => item.propKey));
-
-            model.currSettingStudioItem = {
-              id: 0,
-              type: 'input',
-              label: `配置项${nameSuffix}`,
-              propKey: `prop${propSuffix}`,
-              blockId: block.id,
-              groupId: block.groupId,
-              span: 24,
-              order: 0
-            }
-            model.currSettingInsertIndex = block.propItems.findIndex(item => item.id === studioItem.id);
-          })
-        }}>
-          <PlusOutlined />
-        </Typography.Link>
         <Typography.Link disabled={itemIndex === 0} onClick={(e) => {
           e.preventDefault();
           model.moveStudioItem(block, itemIndex, true);
@@ -123,6 +101,15 @@ function StudioBlock({ block, dynamic }: PropType) {
         }
       </Row>
     </Form>
+    {
+      templateMode ? (
+        <Button type="dashed" block onClick={() => {
+          model.showStudioItemSettinngForCreate(block)
+        }}>
+          添加
+        </Button>
+      ) : null
+    }
   </>
 }
 

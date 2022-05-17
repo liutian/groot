@@ -17,7 +17,7 @@ export class StudioItemService {
     private studioBlockService: StudioBlockService
   ) { }
 
-  async add(rawItem: StudioItem, moveItemId: number) {
+  async add(rawItem: StudioItem) {
     const em = RequestContext.getEntityManager();
 
     const block = await em.findOne(StudioBlock, rawItem.blockId);
@@ -68,15 +68,14 @@ export class StudioItemService {
 
       await em.flush();
 
-      await this.movePosition(
-        newItem.id,
-        moveItemId,
-      );
-
       await em.commit();
     } catch (e) {
       await em.rollback();
       throw e;
+    }
+
+    if (block.order < 0) {
+      this.clearSubBlockFromTemplate((block.group as any) as number);
     }
 
     omitProps(newItem, [
@@ -84,6 +83,15 @@ export class StudioItemService {
     ]);
 
     return { newItem, valueOfGroup, templateBlock };
+  }
+
+  private async clearSubBlockFromTemplate(groupId: number) {
+    const em = RequestContext.getEntityManager();
+    const blockList = await em.find(StudioBlock, { group: groupId, order: { $gt: 0 } }, { fields: ['id'] });
+    for (let index = 0; index < blockList.length; index++) {
+      const blockId = blockList[index].id;
+      await this.studioBlockService.remove(blockId);
+    }
   }
 
   async movePosition(originId: number, targetId: number) {
@@ -119,6 +127,11 @@ export class StudioItemService {
     }
 
     await em.flush();
+
+    const block = await em.findOne(StudioBlock, originItem.block);
+    if (block.order < 0) {
+      this.clearSubBlockFromTemplate((block.group as any) as number);
+    }
   }
 
   async remove(itemId: number) {
@@ -133,6 +146,11 @@ export class StudioItemService {
     await em.removeAndFlush(item);
     if (item.type === StudioItemType.ARRAY_OBJECT) {
       await this.studioGroupService.remove(item.valueOfGroup.id);
+    }
+
+    const block = await em.findOne(StudioBlock, item.block);
+    if (block.order < 0) {
+      this.clearSubBlockFromTemplate((block.group as any) as number);
     }
 
   }
@@ -151,6 +169,11 @@ export class StudioItemService {
     }
 
     await em.flush();
+
+    const block = await em.findOne(StudioBlock, item.block);
+    if (block.order < 0) {
+      this.clearSubBlockFromTemplate((block.group as any) as number);
+    }
   }
 }
 

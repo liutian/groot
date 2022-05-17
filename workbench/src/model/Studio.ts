@@ -40,10 +40,6 @@ export default class Studio {
    * 配置项变动通知iframe更新
    */
   public notifyIframe?: Function;
-  /**
-  * 当前正在配置的配置块或者配置项需要插入的位置
-  */
-  public currSettingInsertIndex: number = -1;
 
   public handUpStudioItemStack: CodeMetaStudioItem[] = [];
 
@@ -210,18 +206,14 @@ export default class Studio {
         group.propBlocks.splice(blockIndex, 1, JSON.parse(JSON.stringify(newBlock)));
       });
     } else {
-      const moveBlockId = this.currSettingInsertIndex >= group.propBlocks.length - 1 ? null : group.propBlocks[this.currSettingInsertIndex + 1]!.id
       fetch(`${serverPath}/block/add`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-          moveBlockId,
-          ...newBlock
-        })
+        body: JSON.stringify(newBlock)
       }).then(r => r.json()).then(({ data: blockData }) => {
-        group?.propBlocks.splice(this.currSettingInsertIndex + 1, 0, blockData);
+        group?.propBlocks.push(blockData);
       })
 
     }
@@ -265,20 +257,16 @@ export default class Studio {
       });
     } else {
       const block = this.getStudioBlock(newItem.blockId)!;
-      const moveItemId = this.currSettingInsertIndex >= block.propItems.length - 1 ? null : block.propItems[this.currSettingInsertIndex + 1]?.id
       fetch(`${serverPath}/item/add`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-          moveItemId,
-          ...newItem
-        })
+        body: JSON.stringify(newItem)
       }).then(r => r.json()).then((result: { data: { newItem: CodeMetaStudioItem, valueOfGroup: CodeMetaStudioGroup, templateBlock: CodeMetaStudioBlock } }) => {
         const resultItem = result.data.newItem;
 
-        block.propItems.splice(this.currSettingInsertIndex + 1, 0, resultItem);
+        block.propItems.push(resultItem);
         if (newItem.type === 'array-object') {
           const valueOfGroup = result.data.valueOfGroup;
           const templateBlock = result.data.templateBlock;
@@ -406,7 +394,7 @@ export default class Studio {
     return undefined;
   }
 
-  public showStudioBlockSettinngForCreate = (relativeBlock: CodeMetaStudioBlock, group: CodeMetaStudioGroup) => {
+  public showStudioBlockSettinngForCreate = (group: CodeMetaStudioGroup) => {
     const nameSuffix = autoIncrementForName(group.propBlocks.map(b => b.name));
 
     this.currSettingStudioBlock = {
@@ -416,7 +404,22 @@ export default class Studio {
       propItems: [],
       order: 0
     };
-    this.currSettingInsertIndex = group.propBlocks.findIndex(b => b.id === relativeBlock.id);
+  }
+
+  public showStudioItemSettinngForCreate = (block: CodeMetaStudioBlock) => {
+    const nameSuffix = autoIncrementForName(block.propItems.map(item => item.label));
+    const propSuffix = autoIncrementForName(block.propItems.map(item => item.propKey));
+
+    this.currSettingStudioItem = {
+      id: 0,
+      type: 'input',
+      label: `配置项${nameSuffix}`,
+      propKey: `prop${propSuffix}`,
+      blockId: block.id,
+      groupId: block.groupId,
+      span: 24,
+      order: 0
+    }
   }
 
   public createCodemeta(componentStudio: ComponentStudio) {

@@ -24,7 +24,7 @@ const StudioGroup: React.FC<PropsType> = ({ group, innerTemplateBlock }) => {
     return (<Space size="small">
       <Typography.Link onClick={(e) => {
         e.stopPropagation();
-        model.showStudioBlockSettinngForCreate(block, group);
+        model.showStudioItemSettinngForCreate(block);
       }}>
         <PlusOutlined />
       </Typography.Link>
@@ -73,13 +73,20 @@ const StudioGroup: React.FC<PropsType> = ({ group, innerTemplateBlock }) => {
     </Collapse>
     {
       model.settingMode ? (
-        <Button style={{ marginTop: '10px' }} type="primary" block onClick={() => {
-          if (group.isRoot) {
+        <div style={{ padding: group.isRoot ? '16px' : '16px 0 0' }}>
+          <Button hidden={!group.isRoot} type="primary" ghost block onClick={() => {
+            model.showStudioBlockSettinngForCreate(group);
+          }}>
+            添加
+          </Button>
+
+          <Button hidden={group.isRoot} disabled={!group.templateBlock?.propItems.length} type="primary" ghost block onClick={() => {
             model.addBlockFromTemplate(group.id)
-          }
-        }}>
-          添加
-        </Button>
+          }}>
+            添加
+          </Button>
+
+        </div>
       ) : null
     }
   </>)

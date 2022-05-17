@@ -48,8 +48,8 @@ export class AppController {
   }
 
   @Post('/block/add')
-  async blockAdd(@Body() block: StudioBlock, @Body('moveBlockId') moveBlockId: number) {
-    return this.blockService.add(block, moveBlockId);
+  async blockAdd(@Body() block: StudioBlock) {
+    return this.blockService.add(block);
   }
 
   @Post('/block/addFromTemplate')
@@ -68,8 +68,8 @@ export class AppController {
   }
 
   @Post('/item/add')
-  async itemAdd(@Body() item: StudioItem, @Body('moveItemId') moveItemId: number) {
-    return this.itemService.add(item, moveItemId);
+  async itemAdd(@Body() item: StudioItem) {
+    return this.itemService.add(item);
   }
 
   @Get('/item/remove/:itemId')

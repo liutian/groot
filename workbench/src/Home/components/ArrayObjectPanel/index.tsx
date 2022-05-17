@@ -1,7 +1,6 @@
 import { LeftOutlined, SettingFilled, SettingOutlined } from '@ant-design/icons';
 import Studio from '@model/Studio';
 import { useModel } from '@util/robot';
-import { uuid } from '@util/utils';
 import { Badge, Button, Col, Row } from 'antd';
 import { useEffect, useRef, useState } from 'react';
 import StudioBlock from '../StudioBlock';
@@ -43,13 +42,7 @@ const ArrayObjectPanel: React.FC<PropsType> = ({ item: studioItem }) => {
 
       if (JSON.stringify(templateBlock) !== preTemplateBlockRef.current) {
         preTemplateBlockRef.current = JSON.stringify(templateBlock)
-        const newTemplateBlockChild = JSON.parse(JSON.stringify(templateBlock)) as CodeMetaStudioBlock;
-        newTemplateBlockChild.id = uuid();
-        newTemplateBlockChild.propItems.forEach((item) => {
-          item.id = uuid();
-          item.blockId = newTemplateBlockChild.id;
-        });
-        studioGroup.propBlocks = [newTemplateBlockChild];
+        studioGroup.propBlocks = [];
       }
     } else {
       studioGroup.propBlocks.forEach((block) => {
@@ -84,7 +77,7 @@ const ArrayObjectPanel: React.FC<PropsType> = ({ item: studioItem }) => {
       </Row>
     </div>
     <div className={styles.content}>
-      {settingMode ? <StudioBlock block={templateBlock} /> : <StudioGroup innerTemplateBlock={templateBlock} group={studioGroup} />}
+      {settingMode ? <StudioBlock templateMode block={templateBlock} /> : <StudioGroup innerTemplateBlock={templateBlock} group={studioGroup} />}
     </div>
   </div>
 }
