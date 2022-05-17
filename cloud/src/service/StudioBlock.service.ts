@@ -1,8 +1,10 @@
 import { RequestContext } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
+import { LogicException, LogicExceptionCode } from 'config/Logic.exception';
 import { StudioBlock } from 'entities/StudioBlock';
 import { StudioGroup } from 'entities/StudioGroup';
 import { StudioItem, StudioItemType } from 'entities/StudioItem';
+import { StudioOption } from 'entities/StudioOption';
 import { pick } from 'util.ts/common';
 import { omitProps } from 'util.ts/ormUtil';
 import { StudioGroupService } from './StudioGroup.service';
@@ -13,35 +15,35 @@ export class StudioBlockService {
 
   constructor(private studioGroupService: StudioGroupService) { }
 
-  async add(rawBlock: StudioBlock, moveBlockId?: number) {
+  async add(block: StudioBlock, moveBlockId?: number) {
     const em = RequestContext.getEntityManager();
 
-    const group = await em.findOne(StudioGroup, rawBlock.groupId);
+    const group = await em.findOne(StudioGroup, block.groupId);
     if (!group) {
       return;
     }
 
     const firstBlock = await em.findOne(StudioBlock, { group: group, order: { $gt: 0 } }, { orderBy: { order: 'DESC' } });
-    const order = rawBlock.order ? rawBlock.order : (firstBlock ? firstBlock.order + 1000 : 1000);
+    const order = block.order ? block.order : (firstBlock ? firstBlock.order + 1000 : 1000);
 
     const newBlock = em.create(StudioBlock, {
-      ...pick(rawBlock, ['name', 'propKey', 'isRootPropKey']),
+      ...pick(block, ['name', 'propKey', 'isRootPropKey']),
       group,
       componentStudio: group.componentStudio,
       order
     });
 
-    const newItem = em.create(StudioItem, {
-      label: '配置项',
-      block: newBlock,
-      group: group,
-      type: StudioItemType.INPUT,
-      propKey: 'prop',
-      value: '',
-      componentStudio: group.componentStudio,
-      order: 1000
-    });
-    newBlock.propItems.add(newItem);
+    // const newItem = em.create(StudioItem, {
+    //   label: '配置项',
+    //   block: newBlock,
+    //   group: group,
+    //   type: StudioItemType.INPUT,
+    //   propKey: 'prop',
+    //   value: '',
+    //   componentStudio: group.componentStudio,
+    //   order: 1000
+    // });
+    // newBlock.propItems.add(newItem);
 
     await em.flush();
 
@@ -56,6 +58,76 @@ export class StudioBlockService {
     ]);
 
     return newBlock;
+  }
+
+  async addFromTemplate(groupId: number,) {
+    const em = RequestContext.getEntityManager();
+
+    await em.begin();
+    try {
+
+      const group = await em.findOne(StudioGroup, groupId, {
+        populate: [
+          'templateBlock.propItems.valueOfGroup',
+          'templateBlock.propItems.templateBlock',
+          'templateBlock.propItems.options'
+        ]
+      });
+
+      if (!group || !group.templateBlock) {
+        throw new LogicException(`not found groupId:${groupId}`, LogicExceptionCode.NotFound);
+      }
+
+      const firstBlock = await em.findOne(StudioBlock, { group: group, order: { $gt: 0 } }, { orderBy: { order: 'DESC' } });
+      const newBlock = em.create(StudioBlock, pick(group.templateBlock, [
+        'name', 'group', 'relativeItem', 'componentStudio'
+      ]));
+      newBlock.order = firstBlock ? firstBlock.order + 1000 : 1000;
+
+      group.propBlocks.add(newBlock);
+
+      const templateItemList = group.templateBlock.propItems.getItems();
+      for (let index = 0; index < templateItemList.length; index++) {
+        const templateItem = templateItemList[index];
+        const newItem = em.create(StudioItem, pick(templateItem, [
+          'label', 'propKey', 'type', 'defaultValue', 'block', 'group', 'span', 'componentStudio'
+        ]));
+        newItem.order = (index + 1) * 1000;
+        newBlock.propItems.add(newItem);
+
+        templateItem.options.getItems().forEach((option) => {
+          const newOption = em.create(StudioOption, pick(option, ['label', 'value', 'studioItem']));
+          newItem.options.add(newOption);
+        })
+
+        if (newItem.type === StudioItemType.ARRAY_OBJECT) {
+          const valueOfGroup = em.create(StudioGroup, {
+            isRoot: false,
+            componentStudio: group.componentStudio,
+            relativeItem: newItem,
+            templateBlock: templateItem.templateBlock
+          });
+          valueOfGroup.propBlocks.add(templateItem.templateBlock);
+
+          newItem.valueOfGroup = valueOfGroup;
+          newItem.templateBlock = templateItem.templateBlock;
+
+          await em.flush();
+        }
+      }
+
+      await em.commit();
+
+      omitProps(newBlock, [
+        'componentStudio',
+        'propItems.componentStudio',
+      ]);
+
+      return newBlock;
+    } catch (e) {
+      await em.rollback();
+      throw e;
+    }
   }
 
   async movePosition(originId: number, targetId?: number) {

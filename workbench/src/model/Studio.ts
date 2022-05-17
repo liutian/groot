@@ -228,6 +228,21 @@ export default class Studio {
     this.currSettingStudioBlock = undefined;
   }
 
+  public addBlockFromTemplate = (groupId: number,) => {
+    fetch(`${serverPath}/block/addFromTemplate`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        groupId
+      })
+    }).then(r => r.json()).then(({ data: blockData }) => {
+      const group = this.getStudioGroup(groupId)!;
+      group.propBlocks.push(blockData);
+    })
+  }
+
   public updateOrAddStudioItem = (item: CodeMetaStudioItem) => {
     const newItem = Object.assign(this.currSettingStudioItem, item);
 
@@ -391,24 +406,16 @@ export default class Studio {
     return undefined;
   }
 
-  public showStudioBlockSettinngForCreate = (relativeBlock: CodeMetaStudioBlock, group: CodeMetaStudioGroup, innerTemplateBlock?: CodeMetaStudioBlock) => {
-    if (!!innerTemplateBlock) {
-      const newBlock = JSON.parse(JSON.stringify(innerTemplateBlock)) as CodeMetaStudioBlock;
-      newBlock.id = 0;
-      newBlock.name = `配置块${group.propBlocks.length + 1}`;
-      newBlock.groupId = group.id;
-      this.currSettingStudioBlock = newBlock;
-    } else {
-      const nameSuffix = autoIncrementForName(group.propBlocks.map(b => b.name));
+  public showStudioBlockSettinngForCreate = (relativeBlock: CodeMetaStudioBlock, group: CodeMetaStudioGroup) => {
+    const nameSuffix = autoIncrementForName(group.propBlocks.map(b => b.name));
 
-      this.currSettingStudioBlock = {
-        id: 0,
-        name: `配置块${nameSuffix}`,
-        groupId: group.id,
-        propItems: [],
-        order: 0
-      };
-    }
+    this.currSettingStudioBlock = {
+      id: 0,
+      name: `配置块${nameSuffix}`,
+      groupId: group.id,
+      propItems: [],
+      order: 0
+    };
     this.currSettingInsertIndex = group.propBlocks.findIndex(b => b.id === relativeBlock.id);
   }
 

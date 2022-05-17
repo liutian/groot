@@ -52,6 +52,11 @@ export class AppController {
     return this.blockService.add(block, moveBlockId);
   }
 
+  @Post('/block/addFromTemplate')
+  async addFromTemplate(@Body('groupId') groupId: number) {
+    return this.blockService.addFromTemplate(groupId);
+  }
+
   @Get('/block/remove/:blockId')
   async blockRemove(@Param('blockId') blockId: number) {
     await this.blockService.remove(blockId);

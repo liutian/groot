@@ -24,25 +24,25 @@ export class StudioGroupService {
       order: (firstGroup ? firstGroup.order : 0) + 1000
     });
 
-    const newBlock = em.create(StudioBlock, {
-      name: '配置块',
-      group: newGroup,
-      componentStudio,
-      order: 1000
-    });
-    newGroup.propBlocks.add(newBlock);
+    // const newBlock = em.create(StudioBlock, {
+    //   name: '配置块',
+    //   group: newGroup,
+    //   componentStudio,
+    //   order: 1000
+    // });
+    // newGroup.propBlocks.add(newBlock);
 
-    const newItem = em.create(StudioItem, {
-      label: '配置项',
-      block: newBlock,
-      group: newGroup,
-      type: StudioItemType.INPUT,
-      propKey: 'prop',
-      value: '',
-      componentStudio,
-      order: 1000
-    });
-    newBlock.propItems.add(newItem);
+    // const newItem = em.create(StudioItem, {
+    //   label: '配置项',
+    //   block: newBlock,
+    //   group: newGroup,
+    //   type: StudioItemType.INPUT,
+    //   propKey: 'prop',
+    //   value: '',
+    //   componentStudio,
+    //   order: 1000
+    // });
+    // newBlock.propItems.add(newItem);
 
     await em.flush();
 

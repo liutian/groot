@@ -1,6 +1,6 @@
 import { useModel } from "@util/robot";
 import StudioModel from '@model/Studio';
-import { Collapse, Space, Typography } from "antd";
+import { Button, Collapse, Space, Typography } from "antd";
 import { CaretRightOutlined, DeleteOutlined, PlusOutlined, SettingOutlined, VerticalAlignBottomOutlined, VerticalAlignTopOutlined } from "@ant-design/icons";
 import StudioBlock from "../StudioBlock";
 
@@ -24,7 +24,7 @@ const StudioGroup: React.FC<PropsType> = ({ group, innerTemplateBlock }) => {
     return (<Space size="small">
       <Typography.Link onClick={(e) => {
         e.stopPropagation();
-        model.showStudioBlockSettinngForCreate(block, group, innerTemplateBlock!);
+        model.showStudioBlockSettinngForCreate(block, group);
       }}>
         <PlusOutlined />
       </Typography.Link>
@@ -71,6 +71,17 @@ const StudioGroup: React.FC<PropsType> = ({ group, innerTemplateBlock }) => {
         })
       }
     </Collapse>
+    {
+      model.settingMode ? (
+        <Button style={{ marginTop: '10px' }} type="primary" block onClick={() => {
+          if (group.isRoot) {
+            model.addBlockFromTemplate(group.id)
+          }
+        }}>
+          添加
+        </Button>
+      ) : null
+    }
   </>)
 };
 
