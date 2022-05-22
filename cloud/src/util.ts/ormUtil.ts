@@ -97,7 +97,7 @@ export function omitProps<O, P extends string>(instance: O, propKeys: AutoPath<O
 
 function wrapToJSON(keys: string[]) {
   function toJSON(...args: any[]) {
-    const obj = wrap(this, true).toObject(...args);
+    const obj = wrap(this).toObject(...args);
 
     keys.forEach(key => {
       delete obj[key]

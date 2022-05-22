@@ -1,6 +1,6 @@
 import { Cascade, Collection, Entity, Enum, ManyToOne, OneToMany, OneToOne, Property } from "@mikro-orm/core";
 import { BaseEntity } from "./BaseEntity";
-import { ComponentStudio } from "./ComponentStudio";
+import { ComponentVersion } from "./ComponentVersion";
 import { StudioBlock } from "./StudioBlock";
 import { StudioGroup } from "./StudioGroup";
 import { StudioOption } from "./StudioOption";
@@ -18,13 +18,10 @@ export class StudioItem extends BaseEntity {
   type: StudioItemType;
 
   @Property({ length: 1024 })
-  value?: string;
-
-  @Property({ length: 1024 })
   defaultValue?: string;
 
   @OneToMany({ entity: () => StudioOption, mappedBy: option => option.studioItem, cascade: [Cascade.ALL] })
-  options = new Collection<StudioOption>(this);
+  optionList = new Collection<StudioOption>(this);
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'blockId' })
   block: StudioBlock;
@@ -33,7 +30,7 @@ export class StudioItem extends BaseEntity {
   group: StudioGroup;
 
   @Property()
-  span: number = 24;
+  span = 24;
 
   @OneToOne({ serializer: value => value?.id, serializedName: 'valueOfGroupId' })
   valueOfGroup?: StudioGroup;
@@ -42,13 +39,13 @@ export class StudioItem extends BaseEntity {
   templateBlock?: StudioBlock;
 
   @Property()
-  isRootPropKey: boolean = false;
+  isRootPropKey = false;
 
   @ManyToOne()
-  componentStudio: ComponentStudio;
+  componentVersion: ComponentVersion;
 
   @Property({ persist: false })
-  componentStudioId: number;
+  componentVersionId?: number;
 
   @Property({ columnType: 'double' })
   order: number;

@@ -1,30 +1,28 @@
-import { Entity, Property } from "@mikro-orm/core";
+import { Entity, ManyToOne, Property } from "@mikro-orm/core";
 import { BaseEntity } from "./BaseEntity";
+import { Component } from "./Component";
 import { StudioBlock } from "./StudioBlock";
 import { StudioGroup } from "./StudioGroup";
 import { StudioItem } from "./StudioItem";
 
 @Entity()
-export class ComponentStudio extends BaseEntity {
+export class ComponentVersion extends BaseEntity {
 
   @Property()
   name: string;
 
-  @Property()
-  packageName: string;
+  @ManyToOne()
+  component: Component;
 
   @Property()
-  moduleName: string;
-
-  @Property()
-  componentName: string;
+  publish = false;
 
   @Property({ persist: false })
-  allGroups: StudioGroup[];
+  groupList?: StudioGroup[];
 
   @Property({ persist: false })
-  allBlocks: StudioBlock[];
+  blockList?: StudioBlock[];
 
   @Property({ persist: false })
-  allItems: StudioItem[];
+  itemList?: StudioItem[];
 }

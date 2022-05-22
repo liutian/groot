@@ -1,6 +1,6 @@
 import { RequestContext } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
-import { ComponentStudio } from 'entities/ComponentStudio';
+import { ComponentVersion } from 'entities/ComponentVersion';
 import { StudioBlock } from 'entities/StudioBlock';
 import { StudioGroup } from 'entities/StudioGroup';
 import { StudioItem, StudioItemType } from 'entities/StudioItem';
@@ -14,12 +14,12 @@ export class StudioGroupService {
   async add(group: StudioGroup, isRoot = true) {
     const em = RequestContext.getEntityManager();
 
-    const componentStudio = await em.findOne(ComponentStudio, group.componentStudioId);
-    const firstGroup = await em.findOne(StudioGroup, { componentStudio: componentStudio }, { orderBy: { order: 'DESC' } });
+    const componentVersion = await em.findOne(ComponentVersion, group.componentVersionId);
+    const firstGroup = await em.findOne(StudioGroup, { componentVersion: componentVersion }, { orderBy: { order: 'DESC' } });
 
     const newGroup = em.create(StudioGroup, {
       ...pick(group, ['name', 'propKey']),
-      componentStudio,
+      componentVersion,
       isRoot,
       order: (firstGroup ? firstGroup.order : 0) + 1000
     });
@@ -27,9 +27,9 @@ export class StudioGroupService {
     await em.flush();
 
     omitProps(newGroup, [
-      'componentStudio',
-      'propBlocks.componentStudio',
-      'propBlocks.propItems.componentStudio'
+      'componentVersion',
+      'propBlockList.componentVersion',
+      'propBlockList.propItemList.componentVersion'
     ]);
 
     return newGroup;
@@ -40,7 +40,7 @@ export class StudioGroupService {
 
     const group = await em.findOne(StudioGroup, groupId, {
       populate: [
-        'propBlocks.propItems'
+        'propBlockList.propItemList'
       ]
     });
 
@@ -51,11 +51,11 @@ export class StudioGroupService {
     const innerGroupIds = [];
     await em.begin();
     try {
-      const blockList = group.propBlocks.getItems();
+      const blockList = group.propBlockList.getItems();
       for (let blockIndex = 0; blockIndex < blockList.length; blockIndex++) {
         const block = blockList[blockIndex];
 
-        const itemList = block.propItems.getItems();
+        const itemList = block.propItemList.getItems();
         for (let itemIndex = 0; itemIndex < itemList.length; itemIndex++) {
           const item = itemList[itemIndex];
           await em.removeAndFlush(item);
@@ -101,7 +101,7 @@ export class StudioGroupService {
     }
 
     if (!targetId) {
-      const firstGroup = await em.findOne(StudioGroup, { componentStudio: originGroup.componentStudio }, { orderBy: { order: 'DESC' } });
+      const firstGroup = await em.findOne(StudioGroup, { componentVersion: originGroup.componentVersion }, { orderBy: { order: 'DESC' } });
 
       originGroup.order = firstGroup ? firstGroup.order + 1000 : 1000;
     } else {
@@ -112,7 +112,7 @@ export class StudioGroupService {
 
       const targetGroupNext = await em.findOne(StudioGroup, {
         order: { $gt: targetOrder },
-        componentStudio: originGroup.componentStudio,
+        componentVersion: originGroup.componentVersion,
         isRoot: true
       });
 

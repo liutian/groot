@@ -1,6 +1,6 @@
 import { Collection, Entity, ManyToOne, OneToMany, OneToOne, Property } from "@mikro-orm/core";
 import { BaseEntity } from "./BaseEntity";
-import { ComponentStudio } from "./ComponentStudio";
+import { ComponentVersion } from "./ComponentVersion";
 import { StudioBlock } from "./StudioBlock";
 import { StudioItem } from "./StudioItem";
 
@@ -11,13 +11,13 @@ export class StudioGroup extends BaseEntity {
   name: string;
 
   @Property()
-  isRoot: boolean;
+  isRoot = true;
 
   @Property()
   propKey?: string;
 
   @OneToMany(() => StudioBlock, block => block.group)
-  propBlocks = new Collection<StudioBlock>(this);
+  propBlockList = new Collection<StudioBlock>(this);
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'relativeItemId' })
   relativeItem?: StudioItem;
@@ -26,10 +26,10 @@ export class StudioGroup extends BaseEntity {
   templateBlock?: StudioBlock;
 
   @ManyToOne()
-  componentStudio: ComponentStudio;
+  componentVersion: ComponentVersion;
 
   @Property({ persist: false })
-  componentStudioId?: number;
+  componentVersionId?: number;
 
   @Property({ columnType: 'double' })
   order: number;

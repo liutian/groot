@@ -29,15 +29,15 @@ export class StudioBlockService {
     const newBlock = em.create(StudioBlock, {
       ...pick(block, ['name', 'propKey', 'isRootPropKey']),
       group,
-      componentStudio: group.componentStudio,
+      componentVersion: group.componentVersion,
       order
     });
 
     await em.flush();
 
     omitProps(newBlock, [
-      'componentStudio',
-      'propItems.componentStudio',
+      'componentVersion',
+      'propItemList.componentVersion',
     ]);
 
     return newBlock;
@@ -51,9 +51,9 @@ export class StudioBlockService {
 
       const group = await em.findOne(StudioGroup, groupId, {
         populate: [
-          'templateBlock.propItems.valueOfGroup',
-          'templateBlock.propItems.templateBlock',
-          'templateBlock.propItems.options'
+          'templateBlock.propItemList.valueOfGroup',
+          'templateBlock.propItemList.templateBlock',
+          'templateBlock.propItemList.optionList'
         ]
       });
 
@@ -63,34 +63,34 @@ export class StudioBlockService {
 
       const firstBlock = await em.findOne(StudioBlock, { group: group, order: { $gt: 0 } }, { orderBy: { order: 'DESC' } });
       const newBlock = em.create(StudioBlock, pick(group.templateBlock, [
-        'name', 'group', 'relativeItem', 'componentStudio'
+        'name', 'group', 'relativeItem', 'componentVersion'
       ]));
       newBlock.order = firstBlock ? firstBlock.order + 1000 : 1000;
 
-      group.propBlocks.add(newBlock);
+      group.propBlockList.add(newBlock);
 
-      const templateItemList = group.templateBlock.propItems.getItems();
+      const templateItemList = group.templateBlock.propItemList.getItems();
       for (let index = 0; index < templateItemList.length; index++) {
         const templateItem = templateItemList[index];
         const newItem = em.create(StudioItem, pick(templateItem, [
-          'label', 'propKey', 'type', 'defaultValue', 'block', 'group', 'span', 'componentStudio'
+          'label', 'propKey', 'type', 'defaultValue', 'block', 'group', 'span', 'componentVersion'
         ]));
         newItem.order = (index + 1) * 1000;
-        newBlock.propItems.add(newItem);
+        newBlock.propItemList.add(newItem);
 
-        templateItem.options.getItems().forEach((option) => {
+        templateItem.optionList.getItems().forEach((option) => {
           const newOption = em.create(StudioOption, pick(option, ['label', 'value', 'studioItem']));
-          newItem.options.add(newOption);
+          newItem.optionList.add(newOption);
         })
 
         if (newItem.type === StudioItemType.ARRAY_OBJECT) {
           const valueOfGroup = em.create(StudioGroup, {
             isRoot: false,
-            componentStudio: group.componentStudio,
+            componentVersion: group.componentVersion,
             relativeItem: newItem,
             templateBlock: templateItem.templateBlock
           });
-          valueOfGroup.propBlocks.add(templateItem.templateBlock);
+          valueOfGroup.propBlockList.add(templateItem.templateBlock);
 
           newItem.valueOfGroup = valueOfGroup;
           newItem.templateBlock = templateItem.templateBlock;
@@ -102,8 +102,8 @@ export class StudioBlockService {
       await em.commit();
 
       omitProps(newBlock, [
-        'componentStudio',
-        'propItems.componentStudio',
+        'componentVersion',
+        'propItemList.componentVersion',
       ]);
 
       return newBlock;
@@ -153,7 +153,7 @@ export class StudioBlockService {
 
     const block = await em.findOne(StudioBlock, blockId, {
       populate: [
-        'propItems'
+        'propItemList'
       ]
     });
 
@@ -165,7 +165,7 @@ export class StudioBlockService {
 
     await em.begin();
     try {
-      const itemList = block.propItems.getItems();
+      const itemList = block.propItemList.getItems();
       for (let itemIndex = 0; itemIndex < itemList.length; itemIndex++) {
         const item = itemList[itemIndex];
         await em.removeAndFlush(item);

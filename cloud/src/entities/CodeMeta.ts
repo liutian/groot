@@ -1,6 +1,6 @@
 import { Entity, Enum, ManyToOne, Property } from "@mikro-orm/core";
 import { BaseEntity } from "./BaseEntity";
-import { Component } from "./Component";
+import { ComponentInstance } from "./ComponentInstance";
 import { StudioItemType } from "./StudioItem";
 
 @Entity()
@@ -16,5 +16,5 @@ export class CodeMeta extends BaseEntity {
   type: StudioItemType
 
   @ManyToOne()
-  component: Component;
+  componentInstance: ComponentInstance;
 }

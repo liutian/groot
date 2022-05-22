@@ -1,7 +1,6 @@
-import { Collection, Entity, ManyToOne, OneToMany, Property } from "@mikro-orm/core";
+import { Collection, Entity, OneToMany, OneToOne, Property } from "@mikro-orm/core";
 import { BaseEntity } from "./BaseEntity";
-import { CodeMeta } from "./CodeMeta";
-import { ComponentStudio } from "./ComponentStudio";
+import { ComponentVersion } from "./ComponentVersion";
 
 @Entity()
 export class Component extends BaseEntity {
@@ -9,9 +8,24 @@ export class Component extends BaseEntity {
   @Property()
   name: string;
 
-  @ManyToOne()
-  studio: ComponentStudio;
+  @Property()
+  packageName: string;
 
-  @OneToMany(() => CodeMeta, codeMeta => codeMeta.component)
-  codeMetaData = new Collection<CodeMeta>(this);
+  @Property()
+  moduleName: string;
+
+  @Property()
+  componentName: string;
+
+  @Property()
+  isPage = true;
+
+  @OneToMany(() => ComponentVersion, studio => studio.component)
+  versionList = new Collection<ComponentVersion>(this);
+
+  @OneToOne()
+  currentVersion?: ComponentVersion;
+
+  @Property({ persist: false })
+  version?: ComponentVersion;
 }

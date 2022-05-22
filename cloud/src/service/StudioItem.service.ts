@@ -33,12 +33,11 @@ export class StudioItemService {
       const firstItem = await em.findOne(StudioItem, { block }, { orderBy: { order: 'DESC' } });
 
       newItem = em.create(StudioItem, {
-        ...pick(rawItem, ['label', 'propKey', 'isRootPropKey', 'type', 'span', 'options']),
+        ...pick(rawItem, ['label', 'propKey', 'isRootPropKey', 'type', 'span', 'optionList']),
         block,
         group: block.group,
-        componentStudio: block.componentStudio,
+        componentVersion: block.componentVersion,
         order: firstItem ? firstItem.order + 1000 : 1000,
-        value: '',
       });
 
       await em.flush();
@@ -46,7 +45,7 @@ export class StudioItemService {
       if (newItem.type === StudioItemType.ARRAY_OBJECT) {
         const rawGroup = {
           name: '关联分组',
-          componentStudioId: block.componentStudio.id,
+          componentVersionId: block.componentVersion.id,
         } as StudioGroup;
         valueOfGroup = await this.studioGroupService.add(rawGroup, false);
         newItem.valueOfGroup = valueOfGroup;
@@ -64,7 +63,7 @@ export class StudioItemService {
         valueOfGroup.templateBlock = templateBlock;
       }
 
-      block.propItems.add(newItem);
+      block.propItemList.add(newItem);
 
       await em.flush();
 
@@ -79,7 +78,7 @@ export class StudioItemService {
     }
 
     omitProps(newItem, [
-      'componentStudio',
+      'componentVersion',
     ]);
 
     return { newItem, valueOfGroup, templateBlock };
@@ -137,7 +136,7 @@ export class StudioItemService {
   async remove(itemId: number) {
     const em = RequestContext.getEntityManager();
 
-    const item = await em.findOne(StudioItem, itemId, { populate: ['options'] });
+    const item = await em.findOne(StudioItem, itemId, { populate: ['optionList'] });
 
     if (!item) {
       return;
@@ -158,13 +157,13 @@ export class StudioItemService {
   async update(rawItem: StudioItem) {
     const em = RequestContext.getEntityManager();
 
-    const item = await em.findOne(StudioItem, rawItem.id, { populate: ['options'] });
+    const item = await em.findOne(StudioItem, rawItem.id, { populate: ['optionList'] });
 
     pick(rawItem, ['label', 'propKey', 'isRootPropKey', 'type', 'span'], item);
 
-    if (rawItem.options && rawItem.options.length) {
+    if (rawItem.optionList && rawItem.optionList.length) {
       wrap(item).assign({
-        options: [...rawItem.options]
+        optionList: [...rawItem.optionList]
       })
     }
 

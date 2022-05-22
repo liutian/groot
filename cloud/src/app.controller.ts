@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { StudioBlock } from 'entities/StudioBlock';
 import { StudioGroup } from 'entities/StudioGroup';
 import { StudioItem } from 'entities/StudioItem';
@@ -15,9 +15,9 @@ export class AppController {
     private readonly groupService: StudioGroupService
   ) { }
 
-  @Get('/page/:id')
-  async getHello(@Param('id') id: number) {
-    return this.appService.getPage(id);
+  @Get('/component')
+  async getHello(@Query('id') id: number, @Query('versionId') versionId: number) {
+    return this.appService.getComponent(id, versionId);
   }
 
   @Post('/group/add')
