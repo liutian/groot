@@ -7,24 +7,27 @@ import { serverPath } from 'config';
 import styles from './index.module.less';
 import SidePanel from './components/SidePanel';
 import WidgetWindow from './components/WidgetWindow';
+import WorkbenchModel from '@model/Workbench';
 
 const Home = () => {
   // 注册工作台页面全局数据实例，每次页面打开重新初始化
   useState(() => registerModel('studio', new StudioModel()));
+  useState(() => registerModel('workbench', new WorkbenchModel()));
   // 提供给iframe页面mock数据（正常情况需要iframe页面通过接口获取元数据信息）
   const [pageName, setPageName] = useState('');
   const iframeRef = useRef({} as any);
   // 页面组件配置器
   const PageDataRef = useRef<Page>();
   // 使用页面全局实例
-  const [model, updateAction] = useModel<StudioModel>('studio', true);
+  const [studioModel, updateAction] = useModel<StudioModel>('studio', true);
+  useModel<StudioModel>('workbench', true);
 
 
   useEffect(() => {
     // 加载页面组件配置器数据
     fetch(`${serverPath}/page/1`).then(r => r.json()).then(({ data: pageData }: { data: Page }) => {
       PageDataRef.current = pageData;
-      model.init(pageData.component.studio);
+      studioModel.init(pageData.component.studio);
       // todo
       setPageName(`groot::{"path": "${pageData.path}","name":"${pageData.name}"}`);
     });
@@ -57,7 +60,7 @@ const Home = () => {
   }
 
   updateAction(() => {
-    model.notifyIframe = notifyIframe;
+    studioModel.notifyIframe = notifyIframe;
   }, false);
 
   return <div className={styles.container}>
@@ -65,7 +68,7 @@ const Home = () => {
       {PageDataRef.current ? <iframe ref={iframeRef} name={pageName} src={PageDataRef.current.url}></iframe> : null}
     </div>
 
-    <WidgetWindow className={styles.widgetWindow} />
+    <WidgetWindow />
 
     <SidePanel className={styles.sidePanel} />
   </div >

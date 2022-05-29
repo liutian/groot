@@ -1,9 +1,24 @@
 import { BellOutlined, BlockOutlined, BranchesOutlined, CommentOutlined, NumberOutlined } from '@ant-design/icons';
+import { useModel } from '@util/robot';
 import { Typography } from 'antd';
 import { HTMLAttributes } from 'react';
 import styles from './index.module.less';
 
+import WorkbenchModel from '@model/Workbench';
+
 const SideFooter: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
+  const [model, updateAction] = useModel<WorkbenchModel>('workbench');
+
+  const switchWidgetWidnwo = () => {
+    updateAction(() => {
+      if (model.widgetWindowRect === 'none') {
+        model.widgetWindowRect = 'normal';
+      } else {
+        model.widgetWindowRect = 'none';
+      }
+    });
+  }
+
   return <div {...props}>
     <div >
       <div className={styles.actionItem}>
@@ -16,7 +31,7 @@ const SideFooter: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
       <span>columns.[].form.lable</span>
     </Typography.Text>
     <div>
-      <div className={styles.actionItem}>
+      <div className={styles.actionItem} onClick={switchWidgetWidnwo}>
         <BlockOutlined title="窗口" />
       </div>
       <div className={styles.actionItem}>
