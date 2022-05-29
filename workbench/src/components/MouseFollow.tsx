@@ -1,27 +1,29 @@
-import React, { useEffect, useRef } from 'react';
+import React, { HTMLAttributes, useEffect, useRef } from 'react';
 
 type PropsType = {
-  start?: () => boolean,
+  start?: () => boolean | any,
   end?: () => void,
-  move?: (x: number, y: number) => void,
+  move?: (x: number, y: number, originData: any) => void,
   cursor?: 'move' | 'row-resize' | 'col-resize'
-}
+} & HTMLAttributes<HTMLDivElement>;
 
-const MouseFollow: React.FC<PropsType> = ({ start, end, move, cursor = 'move' }) => {
+const MouseFollow: React.FC<PropsType> = ({ start, end, move, cursor = 'move', ...props }) => {
   const hostRef = useRef<HTMLDivElement>(null);
   const orignPositionRef = useRef<{ x: number, y: number }>({ x: -1, y: -1 });
 
   useEffect(() => {
     let originBodyCursor = '';
+    let originData: any;
     hostRef.current!.style.cursor = cursor;
     hostRef.current?.addEventListener('mousedown', mousedownListener);
 
     function mousedownListener(e: MouseEvent) {
-      const cancel = !!start && start();
+      const cancelOrData = !!start && start();
 
-      if (cancel) {
+      if (cancelOrData === false) {
         return;
       }
+      originData = cancelOrData;
 
       originBodyCursor = document.body.style.cursor;
       document.body.style.cursor = cursor;
@@ -41,12 +43,12 @@ const MouseFollow: React.FC<PropsType> = ({ start, end, move, cursor = 'move' })
       if (move) {
         const x = e.screenX - orignPositionRef.current.x;
         const y = e.screenY - orignPositionRef.current.y;
-        move(x, y);
+        move(x, y, originData);
       }
     }
   }, []);
 
-  return <div ref={hostRef}></div>
+  return <div ref={hostRef} {...props}></div>
 }
 
 export default MouseFollow;

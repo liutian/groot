@@ -20,7 +20,7 @@ const Home = () => {
   const PageDataRef = useRef<Page>();
   // 使用页面全局实例
   const [studioModel, updateAction] = useModel<StudioModel>('studio', true);
-  useModel<StudioModel>('workbench', true);
+  const [workbenchModel] = useModel<WorkbenchModel>('workbench', true);
 
 
   useEffect(() => {
@@ -63,7 +63,7 @@ const Home = () => {
     studioModel.notifyIframe = notifyIframe;
   }, false);
 
-  return <div className={styles.container}>
+  return <div className={styles.container} style={{ '--side-width': `${workbenchModel.sideWidth}px` } as any}>
     <div className={styles.mainView}>
       {PageDataRef.current ? <iframe ref={iframeRef} name={pageName} src={PageDataRef.current.url}></iframe> : null}
     </div>
