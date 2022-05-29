@@ -1,0 +1,32 @@
+import { BellOutlined, BlockOutlined, BranchesOutlined, CommentOutlined, NumberOutlined } from '@ant-design/icons';
+import { Typography } from 'antd';
+import { HTMLAttributes } from 'react';
+import styles from './index.module.less';
+
+const SideFooter: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
+  return <div {...props}>
+    <div >
+      <div className={styles.actionItem}>
+        <BranchesOutlined title="版本" />
+        <span>master</span>
+      </div>
+    </div>
+    <Typography.Text ellipsis={{ tooltip: 'columns.[].form.lable' }} className={styles.content} >
+      <NumberOutlined />&nbsp;
+      <span>columns.[].form.lable</span>
+    </Typography.Text>
+    <div>
+      <div className={styles.actionItem}>
+        <BlockOutlined title="窗口" />
+      </div>
+      <div className={styles.actionItem}>
+        <CommentOutlined title="反馈" />
+      </div>
+      <div className={styles.actionItem}>
+        <BellOutlined title="通知" />
+      </div>
+    </div>
+  </div>
+}
+
+export default SideFooter;

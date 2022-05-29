@@ -1,13 +1,12 @@
-import { useEffect } from 'react';
-import { useRef, useState } from 'react';
-import Editor from './components/Editor';
-import Studio from './components/Studio';
-import styles from './index.module.less';
+import { useEffect, useRef, useState } from 'react';
 
 import { registerModel, useModel } from '@util/robot';
 import StudioModel from '@model/Studio';
 import { serverPath } from 'config';
 
+import styles from './index.module.less';
+import SidePanel from './components/SidePanel';
+import WidgetWindow from './components/WidgetWindow';
 
 const Home = () => {
   // 注册工作台页面全局数据实例，每次页面打开重新初始化
@@ -61,27 +60,15 @@ const Home = () => {
     model.notifyIframe = notifyIframe;
   }, false);
 
-  const renderSetting = () => {
-    if (!PageDataRef.current) {
-      return null;
-    }
-
-    if (model.manualMode) {
-      return <Editor onContentChange={notifyIframe} defaultContent={PageDataRef.current.component.codeMetaData} />;
-    } else {
-      return <Studio />;
-    }
-  }
-
-
-  return <div className={styles.main}>
-    {PageDataRef.current ? <iframe ref={iframeRef} name={pageName} className={styles.pageView} src={PageDataRef.current.url}></iframe> : null}
-
-    <div className={styles.sidePanel}>
-      <div className={styles.sideEdge}></div>
-      {renderSetting()}
+  return <div className={styles.container}>
+    <div className={styles.mainView}>
+      {PageDataRef.current ? <iframe ref={iframeRef} name={pageName} src={PageDataRef.current.url}></iframe> : null}
     </div>
-  </div>
+
+    <WidgetWindow className={styles.widgetWindow} />
+
+    <SidePanel className={styles.sidePanel} />
+  </div >
 }
 
 export default Home;

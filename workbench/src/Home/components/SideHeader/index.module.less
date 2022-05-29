@@ -1,0 +1,30 @@
+@import 'styles/util.less';
+
+.env,
+.actions {
+  margin: 0 8px;
+}
+
+.envOverlay {
+  border-radius: 2px;
+  padding: 2px;
+  background-color: #fff;
+  .box-shadow;
+}
+
+.title {
+  flex-grow: 1;
+
+  &:not(.searchMode) {
+    background-color: #efefef;
+
+    :global(.ant-input-affix-wrapper) {
+      background-color: transparent;
+      border-color: transparent;
+
+      input {
+        background-color: transparent;
+      }
+    }
+  }
+}
