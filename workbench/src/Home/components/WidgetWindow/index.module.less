@@ -15,15 +15,17 @@
 
   &:global(.min) {
     display: flex;
-    height: auto;
+    height: unset !important;
+    top: unset !important;
+    left: unset !important;
     width: 200px;
     padding: 5px;
   }
 
 
   &:global(.full) {
-    top: 30px;
-    left: 30px;
+    top: 30px !important;
+    left: 30px !important;
     height: unset;
     width: unset;
   }

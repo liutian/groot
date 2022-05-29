@@ -1,10 +1,11 @@
-import { CloseOutlined, FullscreenExitOutlined, FullscreenOutlined, LineOutlined } from '@ant-design/icons';
+import { CloseOutlined, DragOutlined, FullscreenExitOutlined, FullscreenOutlined, LineOutlined } from '@ant-design/icons';
 import { Button, Tabs, Typography } from 'antd';
-import { HTMLAttributes, ReactNode } from 'react';
+import { HTMLAttributes, ReactNode, useEffect, useRef } from 'react';
 import WorkbenchModel from '@model/Workbench';
 
 import styles from './index.module.less';
 import { useModel } from '@util/robot';
+import MouseFollow from 'components/MouseFollow';
 
 const tabBarStyles = {
   padding: '0 15px',
@@ -13,14 +14,45 @@ const tabBarStyles = {
 
 const WidgetWindow: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
   const [model, updateAction] = useModel<WorkbenchModel>('workbench');
+  const containerRef = useRef<HTMLDivElement>(null);
 
   let middleBtn: ReactNode;
 
   if (model.widgetWindowRect === 'full') {
     middleBtn = <Button type="text" icon={<FullscreenExitOutlined />} onClick={() => updateAction(() => model.widgetWindowRect = 'normal')} />;
   } else if (model.widgetWindowRect === 'normal') {
-    middleBtn = <Button type="text" icon={<FullscreenOutlined onClick={() => updateAction(() => model.widgetWindowRect = 'full')} />} />;
+    middleBtn = <>
+      <Button type="text" icon={<FullscreenOutlined onClick={() => updateAction(() => model.widgetWindowRect = 'full')} />} />
+      <MouseFollow
+        start={() => {
+          return containerRef.current!.getBoundingClientRect();
+        }}
+        move={(x, y, originData) => {
+          const top = originData.top + y;
+          const left = originData.left + x;
+          containerRef.current!.style.top = `${top}px`;
+          containerRef.current!.style.left = `${left}px`;
+        }}
+      >
+        <Button type="text" icon={<DragOutlined />} />;
+      </MouseFollow>
+    </>
   }
+
+  useEffect(() => {
+    if (model.widgetWindowRect === 'normal') {
+      containerRef.current!.style.top = '';
+      containerRef.current!.style.left = '';
+    }
+  }, [model.widgetWindowRect]);
+
+  useEffect(() => {
+    const originOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = originOverflow;
+    }
+  }, []);
 
   const renderTabs = () => {
     return <Tabs tabBarStyle={tabBarStyles} tabBarExtraContent={
@@ -39,7 +71,7 @@ const WidgetWindow: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
     </Tabs>
   }
 
-  return <div {...props} className={`${styles.widgetWindow} ${typeof model.widgetWindowRect === 'string' ? model.widgetWindowRect : ''}`}>
+  return <div {...props} ref={containerRef} className={`${styles.widgetWindow} ${typeof model.widgetWindowRect === 'string' ? model.widgetWindowRect : ''}`}>
     {
       model.widgetWindowRect !== 'min' ? renderTabs() : <>
         <Typography.Text ellipsis className={styles.minText} onClick={() => updateAction(() => model.widgetWindowRect = 'normal')}>
@@ -51,8 +83,6 @@ const WidgetWindow: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
         </div>
       </>
     }
-
-    {/* {model.manualMode ? <Editor onContentChange={notifyIframe} defaultContent={PageDataRef.current.component.codeMetaData} /> : null} */}
   </div>
 }
 

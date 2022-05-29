@@ -48,7 +48,7 @@ const MouseFollow: React.FC<PropsType> = ({ start, end, move, cursor = 'move', .
     }
   }, []);
 
-  return <div ref={hostRef} {...props}></div>
+  return <div ref={hostRef} {...props} style={{ display: 'inline-block' }}></div>
 }
 
 export default MouseFollow;
