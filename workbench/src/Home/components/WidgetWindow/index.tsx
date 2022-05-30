@@ -77,8 +77,8 @@ const WidgetWindow: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
         <Typography.Text ellipsis className={styles.minText} onClick={() => updateAction(() => model.widgetWindowRect = 'normal')}>
           组件源码
         </Typography.Text>
-        <Button type="text" icon={<FullscreenOutlined />} onClick={() => updateAction(() => model.widgetWindowRect = 'normal')} />
-        <Button type="text" icon={<CloseOutlined />} onClick={() => updateAction(() => model.widgetWindowRect = 'none')} />
+        <Button className={styles.actionItem} type="text" icon={<FullscreenOutlined />} onClick={() => updateAction(() => model.widgetWindowRect = 'normal')} />
+        <Button className={styles.actionItem} type="text" icon={<CloseOutlined />} onClick={() => updateAction(() => model.widgetWindowRect = 'none')} />
       </>
     }
   </div>
