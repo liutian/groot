@@ -75,12 +75,10 @@ const WidgetWindow: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
     {
       model.widgetWindowRect !== 'min' ? renderTabs() : <>
         <Typography.Text ellipsis className={styles.minText} onClick={() => updateAction(() => model.widgetWindowRect = 'normal')}>
-          <Button type="link">组件生成源码</Button>
+          组件源码
         </Typography.Text>
-        <div>
-          <Button type="text" icon={<FullscreenOutlined onClick={() => updateAction(() => model.widgetWindowRect = 'normal')} />} />
-          <Button type="text" icon={<CloseOutlined />} onClick={() => updateAction(() => model.widgetWindowRect = 'none')} />
-        </div>
+        <Button type="text" icon={<FullscreenOutlined />} onClick={() => updateAction(() => model.widgetWindowRect = 'normal')} />
+        <Button type="text" icon={<CloseOutlined />} onClick={() => updateAction(() => model.widgetWindowRect = 'none')} />
       </>
     }
   </div>
