@@ -1,5 +1,5 @@
-import { LayoutOutlined, MenuOutlined, NodeIndexOutlined, SyncOutlined } from "@ant-design/icons";
-import { Button, Dropdown, Input, Menu } from "antd";
+import { LayoutOutlined, MenuOutlined, SyncOutlined } from "@ant-design/icons";
+import { Button, Dropdown, Input, Menu, Radio, Tag } from "antd";
 import { HTMLAttributes, useState } from "react";
 
 import styles from './index.module.less';
@@ -37,17 +37,34 @@ const SideHeader: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
   }
 
   // 环境切换
-  const renderEnvOverlay = () => {
-    return <div className={styles.envOverlay}>
-      <Button type="text" icon={<NodeIndexOutlined style={{ color: 'red' }} />}></Button>
-      <Button type="text" icon={<NodeIndexOutlined style={{ color: 'orange' }} />}></Button>
-      <Button type="text" icon={<NodeIndexOutlined style={{ color: 'blue' }} />}></Button>
-      <Button type="text" icon={<NodeIndexOutlined style={{ color: 'green' }} />}></Button>
+  const renderReleaseOverlay = () => {
+    return <div className={styles.releaseOverlay}>
+      <div className={styles.shortcutRelease}>
+        <Radio.Group >
+          <Radio.Button value="dev">dev</Radio.Button>
+          <Radio.Button value="qa">qa</Radio.Button>
+          <Radio.Button value="pl">pl</Radio.Button>
+          <Radio.Button value="online">online</Radio.Button>
+        </Radio.Group>
+      </div>
+
+      <div className={styles.recentRelease}>
+        <div className={styles.releaseItem}>
+          <div className={styles.releaseText}>v0.0.1</div>
+          <div className={styles.releaseSuffix}>
+            <Tag>dev</Tag>
+          </div>
+        </div>
+
+        <div className={`${styles.releaseItem} ${styles.seaMoreRelease}`}>
+          <a href="">查看所有</a>
+        </div>
+      </div>
     </div>
   }
 
   // 全局设置
-  const renderHeaderActionsOverlay = () => {
+  const renderSettingsOverlay = () => {
     return <Menu items={[
       {
         key: '1',
@@ -73,9 +90,11 @@ const SideHeader: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
   }
 
   return <div {...props}>
-    <div className={styles.env}>
-      <Dropdown overlay={renderEnvOverlay()} >
-        <Button icon={<NodeIndexOutlined />} title="环境" type="text" />
+    <div className={styles.currRelease}>
+      <Dropdown overlay={renderReleaseOverlay()} trigger={['click']} >
+        <Button title="迭代" type="ghost">
+          v2.2.1
+        </Button>
       </Dropdown>
     </div>
 
@@ -107,8 +126,8 @@ const SideHeader: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
       </Dropdown>
     </div>
 
-    <div className={styles.actions}>
-      <Dropdown overlay={renderHeaderActionsOverlay()} trigger={['click']}>
+    <div className={styles.settings}>
+      <Dropdown overlay={renderSettingsOverlay()} trigger={['click']}>
         <Button icon={<MenuOutlined />} type="text" title="全局设置" />
       </Dropdown>
     </div>
