@@ -114,3 +114,7 @@ type Page = {
   component: Component
 }
 
+
+type Project = {
+  name: string,
+}

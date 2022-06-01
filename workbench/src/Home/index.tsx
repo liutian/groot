@@ -63,7 +63,15 @@ const Home = () => {
     studioModel.notifyIframe = notifyIframe;
   }, false);
 
-  return <div className={styles.container} style={{ '--side-width': `${workbenchModel.sideWidth}px` } as any}>
+  const renderLoadProject = () => {
+    if (workbenchModel.loadProject === 'doing') {
+      return <>loading</>
+    } else {
+      return <>notfound</>
+    }
+  }
+
+  return workbenchModel.loadProject === 'over' ? (<div className={styles.container} style={{ '--side-width': `${workbenchModel.sideWidth}px` } as any}>
     <div className={styles.mainView}>
       {PageDataRef.current ? <iframe ref={iframeRef} name={pageName} src={PageDataRef.current.url}></iframe> : null}
     </div>
@@ -71,7 +79,7 @@ const Home = () => {
     <WidgetWindow />
 
     <SidePanel className={styles.sidePanel} />
-  </div >
+  </div>) : renderLoadProject();
 }
 
 export default Home;
