@@ -1,5 +1,5 @@
-import { LayoutOutlined, MenuOutlined, SyncOutlined } from "@ant-design/icons";
-import { Button, Dropdown, Input, Menu, Radio, Tag } from "antd";
+import { BarsOutlined, LayoutOutlined, MenuOutlined, SyncOutlined } from "@ant-design/icons";
+import { Button, Dropdown, Input, Menu, Radio, Tag, Typography } from "antd";
 import { HTMLAttributes, useState } from "react";
 
 import styles from './index.module.less';
@@ -12,31 +12,37 @@ const SideHeader: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
 
   // 搜索结果
   const renderSearchOverlay = () => {
-    return <Menu items={[
-      {
-        key: '1',
-        label: `搜索结果 ${searchText}`,
-      },
-      {
-        key: '2',
-        label: `搜索结果 ${searchText}`,
-      },
-      {
-        key: '3',
-        label: `搜索结果 ${searchText}`,
-      },
-      {
-        type: 'divider',
-      },
-      {
-        label: `搜索结果 ${searchText}`,
-        key: '4',
-        disabled: true,
-      },
-    ]} />
+    return <div className={styles.releaseSearchOverlay}>
+      <div className={styles.releaseSearchContainer}>
+
+        <div className={styles.releaseSearchItem}>
+          <div className="name">搜索结果</div>
+          <div className="path">/user/list</div>
+        </div>
+        <div className={styles.releaseSearchItem}>
+          <div className="name">搜索结果</div>
+          <div className="path">/user/list</div>
+        </div>
+        <div className={styles.releaseSearchItem}>
+          <div className="name">搜索结果</div>
+          <div className="path">/user/list</div>
+        </div>
+      </div>
+
+      <div className={`${styles.releaseSearchItem} ${styles.releaseSearchMoreSetting}`} >
+        <div className="actions">
+          <Typography.Link>
+            <BarsOutlined />
+          </Typography.Link>
+        </div>
+        <div>
+          <a href="">高级查询</a>
+        </div>
+      </div>
+    </div>
   }
 
-  // 环境切换
+  // 迭代版本列表
   const renderReleaseOverlay = () => {
     return <div className={styles.releaseOverlay}>
       <div className={styles.shortcutRelease}>
@@ -50,13 +56,13 @@ const SideHeader: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
 
       <div className={styles.recentRelease}>
         <div className={styles.releaseItem}>
-          <div className={styles.releaseText}>v0.0.1</div>
-          <div className={styles.releaseSuffix}>
+          <div className={styles.releaseItemText}>v0.0.1</div>
+          <div >
             <Tag>dev</Tag>
           </div>
         </div>
 
-        <div className={`${styles.releaseItem} ${styles.seaMoreRelease}`}>
+        <div className={`${styles.releaseItem} ${styles.releaseItemMore}`}>
           <a href="">查看所有</a>
         </div>
       </div>
@@ -98,7 +104,7 @@ const SideHeader: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
       </Dropdown>
     </div>
 
-    <div className={`${styles.title} ${searchMode ? styles.searchMode : ''}`}>
+    <div className={`${styles.componentTitle} ${searchMode ? styles.searchMode : ''}`}>
       <Dropdown overlay={renderSearchOverlay()} visible={searchMode}>
         <Input
           placeholder="输入页面地址或者组件名称"

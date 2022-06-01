@@ -19,7 +19,7 @@
 }
 
 .shortcutRelease {
-  padding: 8px;
+  padding: 10px;
   border-bottom: solid 1px #efefef;
 }
 
@@ -32,7 +32,7 @@
   display: flex;
   height: 35px;
   line-height: 35px;
-  padding-left: 8px;
+  padding-left: 10px;
   cursor: pointer;
 
   &:not(:last-of-type) {
@@ -43,17 +43,59 @@
     background-color: #efefef;
   }
 
-  &.seaMoreRelease {
+  &.releaseItemMore {
     justify-content: center;
   }
 }
 
-.releaseText {
+.releaseItemText {
   flex-grow: 1;
 }
 
+.releaseSearchOverlay {
+  background-color: #fff;
+  .box-shadow;
+  padding: 2px 0;
+}
 
-.title {
+.releaseSearchContainer {
+  overflow-y: auto;
+  max-height: 400px;
+}
+
+.releaseSearchItem {
+  padding: 0 10px;
+  display: flex;
+  height: 35px;
+  line-height: 35px;
+
+  &:not(.releaseSearchMoreSetting) {
+    cursor: pointer;
+
+    &:hover {
+      background-color: #efefef;
+    }
+  }
+
+  :global(.name) {
+    flex-grow: 1;
+  }
+
+  :global(.path) {
+    color: gray;
+  }
+}
+
+.releaseSearchMoreSetting {
+  border-top: solid 1px #efefef;
+
+  :global(.actions) {
+    flex-grow: 1;
+  }
+}
+
+
+.componentTitle {
   flex-grow: 1;
 
   &:not(.searchMode) {
