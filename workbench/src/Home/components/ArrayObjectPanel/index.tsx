@@ -35,20 +35,20 @@ const ArrayObjectPanel: React.FC<PropsType> = ({ item: studioItem }) => {
       const formInstance = model.blockFormInstanceMap.get(templateBlock.id)!;
       const defaultData = formInstance.getFieldsValue();
 
-      templateBlock.propItems.forEach((item) => {
+      templateBlock.propItemList.forEach((item) => {
         const itemValue = defaultData[item.propKey];
         item.defaultValue = itemValue;
       })
 
       if (JSON.stringify(templateBlock) !== preTemplateBlockRef.current) {
         preTemplateBlockRef.current = JSON.stringify(templateBlock)
-        studioGroup.propBlocks = [];
+        studioGroup.propBlockList = [];
       }
     } else {
-      studioGroup.propBlocks.forEach((block) => {
+      studioGroup.propBlockList.forEach((block) => {
         const formInstance = model.blockFormInstanceMap.get(block.id);
         const formData = formInstance?.getFieldsValue();
-        block.propItems.forEach((item) => {
+        block.propItemList.forEach((item) => {
           item.defaultValue = formData[item.propKey];
         });
       })

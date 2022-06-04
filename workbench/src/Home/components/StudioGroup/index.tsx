@@ -34,13 +34,13 @@ const StudioGroup: React.FC<PropsType> = ({ group, innerTemplateBlock }) => {
       }}>
         <VerticalAlignTopOutlined />
       </Typography.Link>
-      <Typography.Link disabled={blockIndex === group.propBlocks.length - 1} onClick={(e) => {
+      <Typography.Link disabled={blockIndex === group.propBlockList.length - 1} onClick={(e) => {
         e.stopPropagation();
         model.moveStudioBlock(group, blockIndex, false);
       }}>
         <VerticalAlignBottomOutlined />
       </Typography.Link>
-      <Typography.Link disabled={blockIndex === 0 && group.propBlocks.length === 1} onClick={(e) => {
+      <Typography.Link disabled={blockIndex === 0 && group.propBlockList.length === 1} onClick={(e) => {
         e.stopPropagation();
         model.delBlock(block.id, group);
       }} >
@@ -61,10 +61,10 @@ const StudioGroup: React.FC<PropsType> = ({ group, innerTemplateBlock }) => {
 
 
   return (<>
-    <Collapse defaultActiveKey={group.propBlocks.map(b => b.id)} bordered={false}
+    <Collapse defaultActiveKey={group.propBlockList.map(b => b.id)} bordered={false}
       expandIconPosition="right" expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}>
       {
-        group.propBlocks.map((block, blockIndex) => {
+        group.propBlockList.map((block, blockIndex) => {
           return (<Collapse.Panel header={block.name} key={block.id} extra={renderBlockSetting(block, blockIndex)}>
             <StudioBlock block={block} dynamic={!!innerTemplateBlock} />
           </Collapse.Panel>)
@@ -80,7 +80,7 @@ const StudioGroup: React.FC<PropsType> = ({ group, innerTemplateBlock }) => {
             添加
           </Button>
 
-          <Button hidden={group.isRoot} disabled={!group.templateBlock?.propItems.length} type="primary" ghost block onClick={() => {
+          <Button hidden={group.isRoot} disabled={!group.templateBlock?.propItemList.length} type="primary" ghost block onClick={() => {
             model.addBlockFromTemplate(group.id)
           }}>
             添加

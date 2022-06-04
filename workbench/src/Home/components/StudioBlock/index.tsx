@@ -35,13 +35,13 @@ function StudioBlock({ block, dynamic, templateMode }: PropType) {
         }}>
           <VerticalAlignTopOutlined />
         </Typography.Link>
-        <Typography.Link disabled={itemIndex === block.propItems.length - 1} onClick={(e) => {
+        <Typography.Link disabled={itemIndex === block.propItemList.length - 1} onClick={(e) => {
           e.preventDefault();
           model.moveStudioItem(block, itemIndex, false);
         }}>
           <VerticalAlignBottomOutlined />
         </Typography.Link>
-        <Typography.Link disabled={itemIndex === 0 && block.propItems.length === 1} onClick={(e) => {
+        <Typography.Link disabled={itemIndex === 0 && block.propItemList.length === 1} onClick={(e) => {
           e.preventDefault();
           model.delItem(studioItem.id, block);
         }} >
@@ -74,11 +74,11 @@ function StudioBlock({ block, dynamic, templateMode }: PropType) {
     } else if (item.type === 'switch') {
       return <Switch />
     } else if (item.type === 'select') {
-      return <Select options={item.options} />
+      return <Select options={item.optionList} />
     } else if (item.type === 'radio') {
-      return <Radio.Group options={item.options} />
+      return <Radio.Group options={item.optionList} />
     } else if (item.type === 'checkbox') {
-      return <Checkbox.Group options={item.options} />
+      return <Checkbox.Group options={item.optionList} />
     } else if (item.type === 'array-object') {
       return <ArrayObjectFormItem item={item}></ArrayObjectFormItem>
     }
@@ -90,10 +90,10 @@ function StudioBlock({ block, dynamic, templateMode }: PropType) {
     <Form form={form} layout="vertical" className="studio-form" onValuesChange={() => model.productStudioData()}>
       <Row gutter={6}>
         {
-          block.propItems.map((item, index) => {
+          block.propItemList.map((item, index) => {
             return <Col span={item.span} key={item.id} >
               <Form.Item className={styles.studioItem} label={renderItemLabel(item, index)} name={item.propKey} preserve={false}
-                valuePropName={item.type === 'switch' ? 'checked' : 'value'} initialValue={item.value || item.defaultValue}>
+                valuePropName={item.type === 'switch' ? 'checked' : 'value'} initialValue={item.defaultValue}>
                 {renderFormItem(item)}
               </Form.Item>
             </Col>

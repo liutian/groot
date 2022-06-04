@@ -37,7 +37,7 @@ function Studio() {
     const items: MenuProps['items'] = [
       {
         key: 'del',
-        disabled: model.componentStudio.rootGroups.length === 0,
+        disabled: model.component!.version!.rootGroupList!.length === 0,
         onClick: (e) => {
           e.domEvent.stopPropagation();
           model.delGroup(group.id);
@@ -72,14 +72,14 @@ function Studio() {
     }
 
     updateAction(() => {
-      const nameSuffix = autoIncrementForName(model.componentStudio.rootGroups.map(g => g.name));
+      const nameSuffix = autoIncrementForName(model.component!.version!.rootGroupList!.map(g => g.name));
       // 显示分组弹框
       model.currSettingStudioGroup = {
         id: 0,
         name: `分组${nameSuffix}`,
         isRoot: true,
-        propBlocks: [],
-        componentStudioId: model.componentStudio.id,
+        propBlockList: [],
+        componentStudioId: model.component.id,
         order: 0
       };
     })
@@ -100,7 +100,7 @@ function Studio() {
   }
 
   const renderTabContent = () => {
-    const list = model.componentStudio.rootGroups.map((group) => {
+    const list = model.component!.version!.rootGroupList!.map((group) => {
       return (<Tabs.TabPane key={group.id} tab={renderTabBarItem(group)} >
         <StudioGroup group={group} />
       </Tabs.TabPane>)

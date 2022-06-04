@@ -17,8 +17,6 @@ const Home = () => {
   // 提供给iframe页面mock数据（正常情况需要iframe页面通过接口获取元数据信息）
   const [pageName, setPageName] = useState('');
   const iframeRef = useRef({} as any);
-  // 页面组件配置器
-  const PageDataRef = useRef<Page>();
   // 使用页面全局实例
   const [studioModel, updateAction] = useModel<StudioModel>('studio', true);
   const [workbenchModel, workbenchUpdateAction] = useModel<WorkbenchModel>('workbench', true);
@@ -38,6 +36,7 @@ const Home = () => {
     fetch(`${serverPath}/component?componentId=${componentId}&releaseId=${releaseId}&versionId=${versionId}`).then(r => r.json()).then((data: Component) => {
       workbenchUpdateAction(() => {
         workbenchModel.loadComponent = 'over';
+        studioModel.init(data);
       })
     })
 
@@ -53,15 +52,15 @@ const Home = () => {
 
   // 通知iframe更新数据
   const notifyIframe = (content?: string) => {
-    const props = content || PageDataRef.current?.component.codeMetaData;
+    const props = content;
 
     iframeRef.current.contentWindow.postMessage({
       type: 'refresh',
-      path: PageDataRef.current?.path,
+      path: studioModel.component.instance!.path,
       metadata: {
-        moduleName: PageDataRef.current?.component.studio.moduleName,
-        packageName: PageDataRef.current?.component.studio.packageName,
-        componentName: PageDataRef.current?.component.studio.componentName,
+        moduleName: studioModel.component.moduleName,
+        packageName: studioModel.component.packageName,
+        componentName: studioModel.component.componentName,
         // todo
         props
       }
@@ -82,7 +81,7 @@ const Home = () => {
 
   return workbenchModel.loadComponent === 'over' ? (<div className={styles.container} style={{ '--side-width': `${workbenchModel.sideWidth}px` } as any}>
     <div className={styles.mainView}>
-      {PageDataRef.current ? <iframe ref={iframeRef} name={pageName} src={PageDataRef.current.url}></iframe> : null}
+      {workbenchModel.loadComponent === 'over' ? <iframe ref={iframeRef} name={pageName} src={studioModel.component.instance!.path}></iframe> : null}
     </div>
 
     <WidgetWindow />

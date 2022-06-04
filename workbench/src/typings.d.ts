@@ -25,7 +25,7 @@ type CodeMetaStudioGroup = {
   name: string,
   isRoot: boolean,
   propKey?: string,
-  propBlocks: CodeMetaStudioBlock[],
+  propBlockList: CodeMetaStudioBlock[],
   relativeItemId?: number,
   componentStudioId?: number,
   order: number,
@@ -39,7 +39,7 @@ type CodeMetaStudioBlock = {
   id: number,
   name: string,
   propKey?: string,
-  propItems: CodeMetaStudioItem[],
+  propItemList: CodeMetaStudioItem[],
   groupId: number,
   relativeItemId?: number,
   isRootPropKey?: boolean,
@@ -55,9 +55,8 @@ type CodeMetaStudioItem = {
   label: string,
   propKey: string,
   type: StudioItemType,
-  value?: any,
   defaultValue?: any,
-  options?: [{
+  optionList?: [{
     label: string,
     value: string
   }],
@@ -84,28 +83,16 @@ type CodeMeta = {
 
 type StudioItemType = 'input' | 'date-picker' | 'switch' | 'select' | 'radio' | 'checkbox' | 'array-object';
 
-/**
- * 组件配置类型
- */
-type ComponentStudio = {
-  id: number,
-  name: string,
-  packageName: string,
-  moduleName: string,
-  componentName: string,
-  rootGroups: CodeMetaStudioGroup[],
-  allGroups: CodeMetaStudioGroup[],
-  allBlocks: CodeMetaStudioBlock[],
-  allItems: CodeMetaStudioItem[],
-}
 
 type ComponentVersion = {
   id: number,
   name: string,
   publish: boolean,
-  // groupList?: StudioGroup[],
-  // blockList?: StudioBlock[],
-  // itemList?: StudioItem[]
+  groupList?: CodeMetaStudioGroup[],
+  blockList?: CodeMetaStudioBlock[],
+  itemList?: CodeMetaStudioItem[],
+
+  rootGroupList?: CodeMetaStudioGroup[]
 }
 
 type ComponentInstance = {
@@ -138,19 +125,7 @@ type Component = {
   version?: ComponentVersion,
   instance?: ComponentInstance,
   release?: Release,
-
-  codeMetaData: CodeMeta[],
-  studio: ComponentStudio,
 }
-
-type Page = {
-  id: number,
-  name: string,
-  url: string,
-  path: string,
-  component: Component
-}
-
 
 type Project = {
   name: string,
