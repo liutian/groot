@@ -3,5 +3,5 @@ export default class Workbench {
   public sideWidth = 480;
 
   public project?: Project;
-  public loadProject: 'doing' | 'notfound' | 'over' = 'doing';
+  public loadComponent: 'doing' | 'notfound' | 'over' = 'doing';
 }

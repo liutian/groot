@@ -8,6 +8,7 @@ import styles from './index.module.less';
 import SidePanel from './components/SidePanel';
 import WidgetWindow from './components/WidgetWindow';
 import WorkbenchModel from '@model/Workbench';
+import { useParams } from 'react-router-dom';
 
 const Home = () => {
   // 注册工作台页面全局数据实例，每次页面打开重新初始化
@@ -20,17 +21,25 @@ const Home = () => {
   const PageDataRef = useRef<Page>();
   // 使用页面全局实例
   const [studioModel, updateAction] = useModel<StudioModel>('studio', true);
-  const [workbenchModel] = useModel<WorkbenchModel>('workbench', true);
+  const [workbenchModel, workbenchUpdateAction] = useModel<WorkbenchModel>('workbench', true);
+  let { id: componentId, releaseId, versionId } = useParams();
 
 
   useEffect(() => {
-    // 加载页面组件配置器数据
-    fetch(`${serverPath}/page/1`).then(r => r.json()).then(({ data: pageData }: { data: Page }) => {
-      PageDataRef.current = pageData;
-      studioModel.init(pageData.component.studio);
-      // todo
-      setPageName(`groot::{"path": "${pageData.path}","name":"${pageData.name}"}`);
-    });
+    // // 加载页面组件配置器数据
+    // fetch(`${serverPath}/page/1`).then(r => r.json()).then(({ data: pageData }: { data: Page }) => {
+    //   PageDataRef.current = pageData;
+    //   studioModel.init(pageData.component.studio);
+    //   // todo
+    //   setPageName(`groot::{"path": "${pageData.path}","name":"${pageData.name}"}`);
+    // });
+
+
+    fetch(`${serverPath}/component?componentId=${componentId}&releaseId=${releaseId}&versionId=${versionId}`).then(r => r.json()).then((data: Component) => {
+      workbenchUpdateAction(() => {
+        workbenchModel.loadComponent = 'over';
+      })
+    })
 
     // 监听iframe页面，进行通信
     window.self.addEventListener('message', (event: any) => {
@@ -64,14 +73,14 @@ const Home = () => {
   }, false);
 
   const renderLoadProject = () => {
-    if (workbenchModel.loadProject === 'doing') {
+    if (workbenchModel.loadComponent === 'doing') {
       return <>loading</>
     } else {
       return <>notfound</>
     }
   }
 
-  return workbenchModel.loadProject === 'over' ? (<div className={styles.container} style={{ '--side-width': `${workbenchModel.sideWidth}px` } as any}>
+  return workbenchModel.loadComponent === 'over' ? (<div className={styles.container} style={{ '--side-width': `${workbenchModel.sideWidth}px` } as any}>
     <div className={styles.mainView}>
       {PageDataRef.current ? <iframe ref={iframeRef} name={pageName} src={PageDataRef.current.url}></iframe> : null}
     </div>

@@ -8,6 +8,7 @@ import { StandardResultInterceptor } from 'config/standardResult.interceptor';
 import { StudioBlockService } from 'service/StudioBlock.service';
 import { StudioGroupService } from 'service/StudioGroup.service';
 import { StudioItemService } from 'service/StudioItem.service';
+import { ComponentService } from 'service/Component.service';
 @Module({
   imports: [
     MikroOrmModule.forRoot(config)
@@ -21,6 +22,7 @@ import { StudioItemService } from 'service/StudioItem.service';
     StudioItemService,
     StudioBlockService,
     StudioGroupService,
+    ComponentService,
     AppService,
   ],
 })

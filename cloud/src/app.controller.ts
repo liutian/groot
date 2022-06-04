@@ -2,22 +2,22 @@ import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { StudioBlock } from 'entities/StudioBlock';
 import { StudioGroup } from 'entities/StudioGroup';
 import { StudioItem } from 'entities/StudioItem';
+import { ComponentService } from 'service/Component.service';
 import { StudioBlockService } from 'service/StudioBlock.service';
 import { StudioGroupService } from 'service/StudioGroup.service';
 import { StudioItemService } from 'service/StudioItem.service';
-import { AppService } from './app.service';
 @Controller('/studio')
 export class AppController {
   constructor(
-    private readonly appService: AppService,
     private readonly itemService: StudioItemService,
     private readonly blockService: StudioBlockService,
-    private readonly groupService: StudioGroupService
+    private readonly groupService: StudioGroupService,
+    private readonly componentService: ComponentService,
   ) { }
 
   @Get('/component')
-  async getHello(@Query('id') id: number, @Query('versionId') versionId: number) {
-    return this.appService.getComponent(id, versionId);
+  async getHello(@Query('id') id: number, @Query('versionId') versionId?: number, @Query('releaseId') releaseId?: number) {
+    return this.componentService.getComponent(id, versionId, releaseId);
   }
 
   @Post('/group/add')

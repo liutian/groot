@@ -24,6 +24,9 @@ export class DatabaseSeeder extends Seeder {
       project
     });
     project.devRelease = release;
+    project.qaRelease = release;
+    project.plRelease = release;
+    project.onlineRelease = release;
     await em.persistAndFlush(release);
 
     const component = em.create(Component, {
@@ -31,6 +34,7 @@ export class DatabaseSeeder extends Seeder {
       packageName: 'ant',
       componentName: 'Button',
       moduleName: 'Button_demo',
+      project
     });
     await em.persistAndFlush(component);
 

@@ -99,9 +99,46 @@ type ComponentStudio = {
   allItems: CodeMetaStudioItem[],
 }
 
+type ComponentVersion = {
+  id: number,
+  name: string,
+  publish: boolean,
+  // groupList?: StudioGroup[],
+  // blockList?: StudioBlock[],
+  // itemList?: StudioItem[]
+}
+
+type ComponentInstance = {
+  id: number,
+  name: string,
+  path?: string,
+  valueList: StudioValue[],
+}
+
+type Release = {
+  id: number,
+  name: string,
+  lock: boolean
+}
+
+type StudioValue = {
+  id: number,
+  keyChain?: string,
+  value: string,
+}
+
 type Component = {
   id: number,
   name: string,
+
+  packageName: string,
+  moduleName: string,
+  componentName: string,
+  isPage: boolean,
+  version?: ComponentVersion,
+  instance?: ComponentInstance,
+  release?: Release,
+
   codeMetaData: CodeMeta[],
   studio: ComponentStudio,
 }

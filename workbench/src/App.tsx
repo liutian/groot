@@ -4,7 +4,7 @@ import Home from './Home';
 function App() {
   const element = useRoutes([
     {
-      path: '/:project',
+      path: '/component/:id',
       element: <Home />,
     }, {
       path: '*',
