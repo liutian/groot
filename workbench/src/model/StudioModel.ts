@@ -48,14 +48,14 @@ export default class StudioModel {
   public init(component: Component) {
     this.component = component;
     this.buildPropGroups();
-    this.activeGroupId = this.component!.version!.rootGroupList![0]?.id;
+    this.activeGroupId = this.component.version.rootGroupList![0]?.id;
     this.settingMode = true;
   }
 
   // todo
   public productStudioData = () => {
     const props: any[] = [];
-    this.component!.version!.rootGroupList!.forEach((group) => {
+    this.component.version.rootGroupList!.forEach((group) => {
       group.propBlockList.forEach((block) => {
         const values = this.blockFormInstanceMap.get(block.id)?.getFieldsValue();
         block.propItemList.forEach((item) => {
@@ -107,7 +107,7 @@ export default class StudioModel {
         'Content-Type': 'application/json'
       },
     }).then(r => r.json()).then(() => {
-      const groups = this.component!.version!.rootGroupList!;
+      const groups = this.component.version.rootGroupList!;
 
       const drag = groups.find(g => g.id === +dragId)!;
       const hoverIndex = hoverId === '__add' ? groups.length : groups.findIndex(g => g.id === +hoverId);
@@ -167,8 +167,8 @@ export default class StudioModel {
         },
         body: JSON.stringify(newGroup)
       }).then(r => r.json()).then(() => {
-        let groupIndex = this.component!.version!.rootGroupList!.findIndex(g => g.id === newGroup.id);
-        this.component!.version!.rootGroupList!.splice(groupIndex, 1, newGroup);
+        let groupIndex = this.component.version.rootGroupList!.findIndex(g => g.id === newGroup.id);
+        this.component.version.rootGroupList!.splice(groupIndex, 1, newGroup);
       })
     } else {
       fetch(`${serverPath}/group/add`,
@@ -181,7 +181,7 @@ export default class StudioModel {
         }
       ).then(r => r.json()).then(({ data: groupData }) => {
 
-        this.component!.version!.rootGroupList!.push(JSON.parse(JSON.stringify(groupData)));
+        this.component.version.rootGroupList!.push(JSON.parse(JSON.stringify(groupData)));
 
         this.activeGroupId = groupData.id;
       })
@@ -288,12 +288,12 @@ export default class StudioModel {
 
   public delGroup = (groupId: number) => {
     fetch(`${serverPath}/group/remove/${groupId}`).then(() => {
-      const index = this.component!.version!.rootGroupList!.findIndex(g => g.id === groupId);
+      const index = this.component.version.rootGroupList!.findIndex(g => g.id === groupId);
 
-      this.component!.version!.rootGroupList!.splice(index, 1);
+      this.component.version.rootGroupList!.splice(index, 1);
 
       if (this.activeGroupId === groupId) {
-        this.activeGroupId = this.component!.version!.rootGroupList![0]?.id;
+        this.activeGroupId = this.component.version.rootGroupList![0]?.id;
       }
     })
   }
@@ -313,7 +313,7 @@ export default class StudioModel {
   }
 
   public switchActiveGroup = (id: number) => {
-    const activeItem = this.component!.version!.rootGroupList!.find(g => g.id === id);
+    const activeItem = this.component.version.rootGroupList!.find(g => g.id === id);
     if (activeItem) {
       this.activeGroupId = id;
     }
@@ -322,7 +322,7 @@ export default class StudioModel {
   public switchSettingMode = () => {
     if (this.settingMode) {
       this.settingMode = false;
-      this.component!.version!.rootGroupList!.forEach((group) => {
+      this.component.version.rootGroupList!.forEach((group) => {
         group.propBlockList.forEach((block) => {
           const values = this.blockFormInstanceMap.get(block.id)?.getFieldsValue();
           block.propItemList.forEach((item) => {
@@ -356,7 +356,7 @@ export default class StudioModel {
   }
 
   public getPropGroup = (groupId: number) => {
-    let group = this.component!.version!.rootGroupList!.find((group) => {
+    let group = this.component.version.rootGroupList!.find((group) => {
       return group.id === groupId;
     })
 
@@ -364,8 +364,8 @@ export default class StudioModel {
   }
 
   public getPropBlock = (blockId: number) => {
-    for (let groupIndex = 0; groupIndex < this.component!.version!.rootGroupList!.length; groupIndex++) {
-      const group = this.component!.version!.rootGroupList![groupIndex];
+    for (let groupIndex = 0; groupIndex < this.component.version.rootGroupList!.length; groupIndex++) {
+      const group = this.component.version.rootGroupList![groupIndex];
       for (let blockIndex = 0; blockIndex < group!.propBlockList.length; blockIndex++) {
         const block = group?.propBlockList[blockIndex];
         if (block?.id === blockId) {
@@ -423,8 +423,8 @@ export default class StudioModel {
 
   public createCodemeta(component: Component) {
     const codemetas = [] as CodeMeta[];
-    for (let groupIndex = 0; groupIndex < component!.version!.rootGroupList!.length; groupIndex++) {
-      const group = component!.version!.rootGroupList![groupIndex]!;
+    for (let groupIndex = 0; groupIndex < component.version.rootGroupList!.length; groupIndex++) {
+      const group = component.version.rootGroupList![groupIndex]!;
       this.createCodemetaFromGroup(group, codemetas, '');
     }
     return codemetas;
@@ -447,14 +447,14 @@ export default class StudioModel {
           keyArr.push(groupPropKey, blockPropKey);
         }
 
-        if (!group.relativeItemId && block.isRootPropKey) {
+        if (!group.relativeItemId && block.rootPropKey) {
           keyArr.length = 0;
           keyArr.push(blockPropKey);
         }
 
         keyArr.push(itemPropKey);
 
-        if (!group.relativeItemId && item.isRootPropKey) {
+        if (!group.relativeItemId && item.rootPropKey) {
           keyArr.length = 0;
           keyArr.push(itemPropKey);
         }
@@ -474,33 +474,33 @@ export default class StudioModel {
   }
 
   private buildPropGroups() {
-    this.component.version!.rootGroupList = [];
-    const rootGroupIds = this.component.version!.groupList!
-      .filter(g => g.isRoot)
+    this.component.version.rootGroupList = [];
+    const rootGroupIds = this.component.version.groupList
+      .filter(g => g.root)
       .sort((a, b) => a.order - b.order)
       .map(g => g.id);
 
     for (let i = 0; i < rootGroupIds.length; i++) {
       const groupId = rootGroupIds[i]!;
       const group = this.buildPropGroup(groupId);
-      this.component.version!.rootGroupList.push(group);
+      this.component.version.rootGroupList.push(group);
     }
   }
 
   private buildPropGroup(groupId: number) {
-    const group = this.component.version!.groupList!.find(g => g.id === groupId);
+    const group = this.component.version.groupList.find(g => g.id === groupId);
     if (!group) {
       throw new Error(`can not find group[${groupId}]`);
     }
 
-    const blocks = this.component.version!.blockList!
+    const blocks = this.component.version.blockList
       .filter(b => b.groupId === groupId)
       .sort((a, b) => a.order - b.order)
 
     group.propBlockList = blocks;
     for (let blockIndex = 0; blockIndex < blocks.length; blockIndex++) {
       const block = blocks[blockIndex]!;
-      const items = this.component.version!.itemList!
+      const items = this.component.version.itemList
         .filter(i => i.groupId === groupId && i.blockId === block.id)
         .sort((a, b) => a.order - b.order)
 

@@ -8,7 +8,7 @@ import styles from './index.module.less';
 import SidePanel from './components/SidePanel';
 import WidgetWindow from './components/WidgetWindow';
 import WorkbenchModel from '@model/WorkbenchModel';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 
 const Home = () => {
   // 注册工作台页面全局数据实例，每次页面打开重新初始化
@@ -20,7 +20,8 @@ const Home = () => {
   // 使用页面全局实例
   const [studioModel, updateAction] = useModel<StudioModel>('studio', true);
   const [workbenchModel, workbenchUpdateAction] = useModel<WorkbenchModel>('workbench', true);
-  let { id: componentId, releaseId, versionId } = useParams();
+  let { componentId } = useParams();
+  let [searchParams] = useSearchParams();
 
 
   useEffect(() => {
@@ -32,8 +33,13 @@ const Home = () => {
     //   setPageName(`groot::{"path": "${pageData.path}","name":"${pageData.name}"}`);
     // });
 
-
-    fetch(`${serverPath}/component?componentId=${componentId}&releaseId=${releaseId}&versionId=${versionId}`).then(r => r.json()).then((data: Component) => {
+    let url = `${serverPath}/component?id=${componentId}`;
+    if (searchParams.get('releaseId')) {
+      url += `&releaseId=${searchParams.get('releaseId')}`;
+    } else if (searchParams.get('versionId')) {
+      url += `&versionId=${searchParams.get('versionId')}`;
+    }
+    fetch(url).then(r => r.json()).then(({ data }: { data: Component }) => {
       workbenchUpdateAction(() => {
         workbenchModel.loadComponent = 'over';
         studioModel.init(data);
@@ -58,7 +64,7 @@ const Home = () => {
       type: 'refresh',
       path: studioModel.component.instance!.path,
       metadata: {
-        moduleName: studioModel.component.moduleName,
+        moduleName: studioModel.component.componentName + '_module',
         packageName: studioModel.component.packageName,
         componentName: studioModel.component.componentName,
         // todo

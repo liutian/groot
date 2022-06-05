@@ -23,13 +23,13 @@ interface Window {
 type PropGroup = {
   id: number,
   name: string,
-  isRoot: boolean,
+  root: boolean,
   propKey?: string,
   propBlockList: PropBlock[],
   relativeItemId?: number,
-  componentId?: number,
+  templateBlock?: PropBlock,
   order: number,
-  templateBlock?: PropBlock
+  componentId?: number,
 }
 
 /**
@@ -42,9 +42,9 @@ type PropBlock = {
   propItemList: PropItem[],
   groupId: number,
   relativeItemId?: number,
-  isRootPropKey?: boolean,
+  rootPropKey?: boolean,
+  order: number,
   componentId?: number,
-  order: number
 }
 
 /**
@@ -63,13 +63,13 @@ type PropItem = {
   blockId: number,
   groupId: number,
   span?: number,
-  isRootPropKey?: boolean,
   valueOfGroupId?: number,
   valueOfGroup?: PropGroup,
   templateBlockId?: number,
   templateBlock?: PropBlock,
+  rootPropKey?: boolean,
+  order: number,
   componentId?: number,
-  order: number
 }
 
 
@@ -88,9 +88,9 @@ type ComponentVersion = {
   id: number,
   name: string,
   publish: boolean,
-  groupList?: PropGroup[],
-  blockList?: PropBlock[],
-  itemList?: PropItem[],
+  groupList: PropGroup[],
+  blockList: PropBlock[],
+  itemList: PropItem[],
 
   rootGroupList?: PropGroup[]
 }
@@ -99,13 +99,13 @@ type ComponentInstance = {
   id: number,
   name: string,
   path?: string,
-  valueList: PropValue[],
+  propValueList: PropValue[],
 }
 
 type Release = {
   id: number,
   name: string,
-  lock: boolean
+  freeze: boolean
 }
 
 type PropValue = {
@@ -117,12 +117,10 @@ type PropValue = {
 type Component = {
   id: number,
   name: string,
-
   packageName: string,
-  moduleName: string,
   componentName: string,
-  isPage: boolean,
-  version?: ComponentVersion,
+  page: boolean,
+  version: ComponentVersion,
   instance?: ComponentInstance,
   release?: Release,
 }

@@ -73,14 +73,14 @@ const PropGroupStudio: React.FC<PropsType> = ({ group, innerTemplateBlock }) => 
     </Collapse>
     {
       model.settingMode ? (
-        <div style={{ padding: group.isRoot ? '16px' : '16px 0 0' }}>
-          <Button hidden={!group.isRoot} type="primary" ghost block onClick={() => {
+        <div style={{ padding: group.root ? '16px' : '16px 0 0' }}>
+          <Button hidden={!group.root} type="primary" ghost block onClick={() => {
             model.showPropBlockSettinngForCreate(group);
           }}>
             添加
           </Button>
 
-          <Button hidden={group.isRoot} disabled={!group.templateBlock?.propItemList.length} type="primary" ghost block onClick={() => {
+          <Button hidden={group.root} disabled={!group.templateBlock?.propItemList.length} type="primary" ghost block onClick={() => {
             model.addBlockFromTemplate(group.id)
           }}>
             添加
