@@ -1,38 +1,38 @@
 import { EntityManager, RequestContext, wrap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
-import { StudioBlock } from 'entities/StudioBlock';
-import { StudioGroup } from 'entities/StudioGroup';
-import { StudioItem, StudioItemType } from 'entities/StudioItem';
+import { PropBlock } from 'entities/PropBlock';
+import { PropGroup } from 'entities/PropGroup';
+import { PropItem, PropItemType } from 'entities/PropItem';
 import { pick } from 'util.ts/common';
 import { omitProps } from 'util.ts/ormUtil';
-import { StudioBlockService } from './StudioBlock.service';
-import { StudioGroupService } from './StudioGroup.service';
+import { PropBlockService } from './PropBlock.service';
+import { PropGroupService } from './PropGroup.service';
 
 
 @Injectable()
-export class StudioItemService {
+export class PropItemService {
 
   constructor(
-    private studioGroupService: StudioGroupService,
-    private studioBlockService: StudioBlockService
+    private propGroupService: PropGroupService,
+    private propBlockService: PropBlockService
   ) { }
 
-  async add(rawItem: StudioItem) {
+  async add(rawItem: PropItem) {
     const em = RequestContext.getEntityManager();
 
-    const block = await em.findOne(StudioBlock, rawItem.blockId);
+    const block = await em.findOne(PropBlock, rawItem.blockId);
     if (!block) {
       return;
     }
 
-    let newItem: StudioItem, valueOfGroup: StudioGroup, templateBlock: StudioBlock;
+    let newItem: PropItem, valueOfGroup: PropGroup, templateBlock: PropBlock;
 
     await em.begin();
 
     try {
-      const firstItem = await em.findOne(StudioItem, { block }, { orderBy: { order: 'DESC' } });
+      const firstItem = await em.findOne(PropItem, { block }, { orderBy: { order: 'DESC' } });
 
-      newItem = em.create(StudioItem, {
+      newItem = em.create(PropItem, {
         ...pick(rawItem, ['label', 'propKey', 'isRootPropKey', 'type', 'span', 'optionList']),
         block,
         group: block.group,
@@ -42,12 +42,12 @@ export class StudioItemService {
 
       await em.flush();
 
-      if (newItem.type === StudioItemType.ARRAY_OBJECT) {
+      if (newItem.type === PropItemType.ARRAY_OBJECT) {
         const rawGroup = {
           name: '关联分组',
           componentVersionId: block.componentVersion.id,
-        } as StudioGroup;
-        valueOfGroup = await this.studioGroupService.add(rawGroup, false);
+        } as PropGroup;
+        valueOfGroup = await this.propGroupService.add(rawGroup, false);
         newItem.valueOfGroup = valueOfGroup;
         valueOfGroup.relativeItem = newItem;
 
@@ -55,9 +55,9 @@ export class StudioItemService {
           name: '配置块模版',
           groupId: valueOfGroup.id,
           order: -1000
-        } as StudioBlock;
+        } as PropBlock;
 
-        templateBlock = await this.studioBlockService.add(rawBlock);
+        templateBlock = await this.propBlockService.add(rawBlock);
         newItem.templateBlock = templateBlock;
         templateBlock.relativeItem = newItem;
         valueOfGroup.templateBlock = templateBlock;
@@ -86,32 +86,32 @@ export class StudioItemService {
 
   private async clearSubBlockFromTemplate(groupId: number) {
     const em = RequestContext.getEntityManager();
-    const blockList = await em.find(StudioBlock, { group: groupId, order: { $gt: 0 } }, { fields: ['id'] });
+    const blockList = await em.find(PropBlock, { group: groupId, order: { $gt: 0 } }, { fields: ['id'] });
     for (let index = 0; index < blockList.length; index++) {
       const blockId = blockList[index].id;
-      await this.studioBlockService.remove(blockId);
+      await this.propBlockService.remove(blockId);
     }
   }
 
   async movePosition(originId: number, targetId: number) {
     const em = RequestContext.getEntityManager();
-    const originItem = await em.findOne(StudioItem, originId);
+    const originItem = await em.findOne(PropItem, originId);
 
     if (!originItem) {
       return;
     }
 
     if (!targetId) {
-      const firstItem = await em.findOne(StudioItem, { block: originItem.block }, { orderBy: { order: 'DESC' } });
+      const firstItem = await em.findOne(PropItem, { block: originItem.block }, { orderBy: { order: 'DESC' } });
 
       originItem.order = firstItem ? firstItem.order + 1000 : 1000;
     } else {
-      const targetItem = await em.findOne(StudioItem, targetId);
+      const targetItem = await em.findOne(PropItem, targetId);
       const targetOrder = targetItem.order;
       const originOrder = originItem.order;
       originItem.order = targetOrder;
 
-      const targetItemNext = await em.findOne(StudioItem, {
+      const targetItemNext = await em.findOne(PropItem, {
         order: { $gt: targetOrder },
         block: originItem.block,
       });
@@ -127,7 +127,7 @@ export class StudioItemService {
 
     await em.flush();
 
-    const block = await em.findOne(StudioBlock, originItem.block);
+    const block = await em.findOne(PropBlock, originItem.block);
     if (block.order < 0) {
       this.clearSubBlockFromTemplate((block.group as any) as number);
     }
@@ -136,28 +136,28 @@ export class StudioItemService {
   async remove(itemId: number) {
     const em = RequestContext.getEntityManager();
 
-    const item = await em.findOne(StudioItem, itemId, { populate: ['optionList'] });
+    const item = await em.findOne(PropItem, itemId, { populate: ['optionList'] });
 
     if (!item) {
       return;
     }
 
     await em.removeAndFlush(item);
-    if (item.type === StudioItemType.ARRAY_OBJECT) {
-      await this.studioGroupService.remove(item.valueOfGroup.id);
+    if (item.type === PropItemType.ARRAY_OBJECT) {
+      await this.propGroupService.remove(item.valueOfGroup.id);
     }
 
-    const block = await em.findOne(StudioBlock, item.block);
+    const block = await em.findOne(PropBlock, item.block);
     if (block.order < 0) {
       this.clearSubBlockFromTemplate((block.group as any) as number);
     }
 
   }
 
-  async update(rawItem: StudioItem) {
+  async update(rawItem: PropItem) {
     const em = RequestContext.getEntityManager();
 
-    const item = await em.findOne(StudioItem, rawItem.id, { populate: ['optionList'] });
+    const item = await em.findOne(PropItem, rawItem.id, { populate: ['optionList'] });
 
     pick(rawItem, ['label', 'propKey', 'isRootPropKey', 'type', 'span'], item);
 
@@ -169,7 +169,7 @@ export class StudioItemService {
 
     await em.flush();
 
-    const block = await em.findOne(StudioBlock, item.block);
+    const block = await em.findOne(PropBlock, item.block);
     if (block.order < 0) {
       this.clearSubBlockFromTemplate((block.group as any) as number);
     }

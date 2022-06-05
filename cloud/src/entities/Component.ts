@@ -23,7 +23,7 @@ export class Component extends BaseEntity {
   @Property()
   isPage = true;
 
-  @OneToMany(() => ComponentVersion, studio => studio.component)
+  @OneToMany(() => ComponentVersion, version => version.component)
   versionList = new Collection<ComponentVersion>(this);
 
   @OneToOne()

@@ -3,7 +3,7 @@ import { BaseEntity } from "./BaseEntity";
 import { Component } from "./Component";
 import { ComponentVersion } from "./ComponentVersion";
 import { Release } from "./Release";
-import { StudioValue } from "./StudioValue";
+import { PropValue } from "./PropValue";
 
 @Entity()
 export class ComponentInstance extends BaseEntity {
@@ -20,8 +20,8 @@ export class ComponentInstance extends BaseEntity {
   @Property()
   path?: string;
 
-  @OneToMany(() => StudioValue, studioValue => studioValue.componentInstance)
-  valueList = new Collection<StudioValue>(this);
+  @OneToMany(() => PropValue, propValue => propValue.componentInstance)
+  valueList = new Collection<PropValue>(this);
 
   @ManyToMany(() => Release, release => release.instanceList, { owner: true })
   releaseList = new Collection<Release>(this);

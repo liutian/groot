@@ -1,11 +1,11 @@
 import { Collection, Entity, ManyToOne, OneToMany, OneToOne, Property } from "@mikro-orm/core";
 import { BaseEntity } from "./BaseEntity";
 import { ComponentVersion } from "./ComponentVersion";
-import { StudioBlock } from "./StudioBlock";
-import { StudioItem } from "./StudioItem";
+import { PropBlock } from "./PropBlock";
+import { PropItem } from "./PropItem";
 
 @Entity()
-export class StudioGroup extends BaseEntity {
+export class PropGroup extends BaseEntity {
 
   @Property()
   name: string;
@@ -16,14 +16,14 @@ export class StudioGroup extends BaseEntity {
   @Property()
   propKey?: string;
 
-  @OneToMany(() => StudioBlock, block => block.group)
-  propBlockList = new Collection<StudioBlock>(this);
+  @OneToMany(() => PropBlock, block => block.group)
+  propBlockList = new Collection<PropBlock>(this);
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'relativeItemId' })
-  relativeItem?: StudioItem;
+  relativeItem?: PropItem;
 
   @OneToOne({ serializer: value => value?.id, serializedName: 'templateBlockId' })
-  templateBlock?: StudioBlock;
+  templateBlock?: PropBlock;
 
   @ManyToOne()
   componentVersion: ComponentVersion;

@@ -2,16 +2,16 @@ import { Entity, ManyToOne, Property } from "@mikro-orm/core";
 import { BaseEntity } from "./BaseEntity";
 import { ComponentInstance } from "./ComponentInstance";
 import { Release } from "./Release";
-import { StudioItem } from "./StudioItem";
+import { PropItem } from "./PropItem";
 
 @Entity()
-export class StudioValue extends BaseEntity {
+export class PropValue extends BaseEntity {
 
   @Property()
   keyChain?: string;
 
   @ManyToOne()
-  studioItem: StudioItem;
+  propItem: PropItem;
 
   @Property()
   value: string;

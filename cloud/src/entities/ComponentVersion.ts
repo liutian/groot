@@ -1,9 +1,9 @@
 import { Entity, ManyToOne, Property } from "@mikro-orm/core";
 import { BaseEntity } from "./BaseEntity";
 import { Component } from "./Component";
-import { StudioBlock } from "./StudioBlock";
-import { StudioGroup } from "./StudioGroup";
-import { StudioItem } from "./StudioItem";
+import { PropBlock } from "./PropBlock";
+import { PropGroup } from "./PropGroup";
+import { PropItem } from "./PropItem";
 
 @Entity()
 export class ComponentVersion extends BaseEntity {
@@ -18,11 +18,11 @@ export class ComponentVersion extends BaseEntity {
   publish = false;
 
   @Property({ persist: false })
-  groupList?: StudioGroup[];
+  groupList?: PropGroup[];
 
   @Property({ persist: false })
-  blockList?: StudioBlock[];
+  blockList?: PropBlock[];
 
   @Property({ persist: false })
-  itemList?: StudioItem[];
+  itemList?: PropItem[];
 }

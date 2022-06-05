@@ -5,9 +5,9 @@ import { ComponentInstance } from 'entities/ComponentInstance';
 import { ComponentVersion } from 'entities/ComponentVersion';
 import { Project } from 'entities/Project';
 import { Release } from 'entities/Release';
-import { StudioBlock } from 'entities/StudioBlock';
-import { StudioGroup } from 'entities/StudioGroup';
-import { StudioItem } from 'entities/StudioItem';
+import { PropBlock } from 'entities/PropBlock';
+import { PropGroup } from 'entities/PropGroup';
+import { PropItem } from 'entities/PropItem';
 import { omitProps } from 'util.ts/ormUtil';
 
 
@@ -41,16 +41,16 @@ export class ComponentService {
       componentVersion = instance.componentVersion;
     }
 
-    componentVersion.groupList = await em.find(StudioGroup, { componentVersion });
-    componentVersion.blockList = await em.find(StudioBlock, { componentVersion });
-    componentVersion.itemList = await em.find(StudioItem, { componentVersion }, { populate: ['optionList'] });
+    componentVersion.groupList = await em.find(PropGroup, { componentVersion });
+    componentVersion.blockList = await em.find(PropBlock, { componentVersion });
+    componentVersion.itemList = await em.find(PropItem, { componentVersion }, { populate: ['optionList'] });
 
     component.version = wrap(componentVersion).toObject() as any;
     omitProps(component.version, [
       'groupList.componentVersion',
       'blockList.componentVersion',
       'itemList.componentVersion',
-      'itemList.optionList.studioItem',
+      'itemList.optionList.propItem',
     ]);
 
     return component;

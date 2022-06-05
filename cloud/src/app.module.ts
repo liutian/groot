@@ -5,9 +5,9 @@ import { AppService } from './app.service';
 import config from 'config/mikro-orm.config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { StandardResultInterceptor } from 'config/standardResult.interceptor';
-import { StudioBlockService } from 'service/StudioBlock.service';
-import { StudioGroupService } from 'service/StudioGroup.service';
-import { StudioItemService } from 'service/StudioItem.service';
+import { PropBlockService } from 'service/PropBlock.service';
+import { PropGroupService } from 'service/PropGroup.service';
+import { PropItemService } from 'service/PropItem.service';
 import { ComponentService } from 'service/Component.service';
 @Module({
   imports: [
@@ -19,9 +19,9 @@ import { ComponentService } from 'service/Component.service';
       provide: APP_INTERCEPTOR,
       useClass: StandardResultInterceptor
     },
-    StudioItemService,
-    StudioBlockService,
-    StudioGroupService,
+    PropItemService,
+    PropBlockService,
+    PropGroupService,
     ComponentService,
     AppService,
   ],

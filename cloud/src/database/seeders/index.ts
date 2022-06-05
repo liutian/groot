@@ -2,13 +2,13 @@ import { EntityManager } from '@mikro-orm/core';
 import { Seeder } from '@mikro-orm/seeder';
 import { ComponentVersion } from '../../entities/ComponentVersion';
 import { Component } from '../../entities/Component';
-import { StudioItem, StudioItemType } from '../../entities/StudioItem';
-import { StudioBlock } from '../../entities/StudioBlock';
-import { StudioGroup } from '../../entities/StudioGroup';
+import { PropItem, PropItemType } from '../../entities/PropItem';
+import { PropBlock } from '../../entities/PropBlock';
+import { PropGroup } from '../../entities/PropGroup';
 import { Project } from '../../entities/Project';
 import { Release } from '../../entities/Release';
 import { ComponentInstance } from '../../entities/ComponentInstance';
-import { StudioValue } from '../../entities/StudioValue';
+import { PropValue } from '../../entities/PropValue';
 
 export class DatabaseSeeder extends Seeder {
 
@@ -45,14 +45,14 @@ export class DatabaseSeeder extends Seeder {
     component.currentVersion = componentVersion;
     await em.persistAndFlush(componentVersion);
 
-    const group = em.create(StudioGroup, {
+    const group = em.create(PropGroup, {
       name: '配置组',
       order: 1000,
       componentVersion
     });
     await em.persistAndFlush(group);
 
-    const block = em.create(StudioBlock, {
+    const block = em.create(PropBlock, {
       name: '配置块',
       group,
       componentVersion,
@@ -60,10 +60,10 @@ export class DatabaseSeeder extends Seeder {
     })
     await em.persistAndFlush(block);
 
-    const item = em.create(StudioItem, {
+    const item = em.create(PropItem, {
       label: '配置项',
       propKey: 'prop',
-      type: StudioItemType.INPUT,
+      type: PropItemType.INPUT,
       block,
       group,
       componentVersion,
@@ -80,12 +80,12 @@ export class DatabaseSeeder extends Seeder {
     instance.releaseList.add(release);
     await em.persistAndFlush(instance);
 
-    const studioValue = em.create(StudioValue, {
-      studioItem: item,
+    const propValue = em.create(PropValue, {
+      propItem: item,
       value: 'hello',
       componentInstance: instance,
       release
     });
-    await em.persistAndFlush(studioValue);
+    await em.persistAndFlush(propValue);
   }
 }

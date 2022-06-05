@@ -1,23 +1,22 @@
 import { RequestContext } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { ComponentVersion } from 'entities/ComponentVersion';
-import { StudioBlock } from 'entities/StudioBlock';
-import { StudioGroup } from 'entities/StudioGroup';
-import { StudioItem, StudioItemType } from 'entities/StudioItem';
+import { PropGroup } from 'entities/PropGroup';
+import { PropItemType } from 'entities/PropItem';
 import { pick } from 'util.ts/common';
 import { omitProps } from 'util.ts/ormUtil';
 
 
 @Injectable()
-export class StudioGroupService {
+export class PropGroupService {
 
-  async add(group: StudioGroup, isRoot = true) {
+  async add(group: PropGroup, isRoot = true) {
     const em = RequestContext.getEntityManager();
 
     const componentVersion = await em.findOne(ComponentVersion, group.componentVersionId);
-    const firstGroup = await em.findOne(StudioGroup, { componentVersion: componentVersion }, { orderBy: { order: 'DESC' } });
+    const firstGroup = await em.findOne(PropGroup, { componentVersion: componentVersion }, { orderBy: { order: 'DESC' } });
 
-    const newGroup = em.create(StudioGroup, {
+    const newGroup = em.create(PropGroup, {
       ...pick(group, ['name', 'propKey']),
       componentVersion,
       isRoot,
@@ -38,7 +37,7 @@ export class StudioGroupService {
   async remove(groupId: number) {
     const em = RequestContext.getEntityManager();
 
-    const group = await em.findOne(StudioGroup, groupId, {
+    const group = await em.findOne(PropGroup, groupId, {
       populate: [
         'propBlockList.propItemList'
       ]
@@ -59,7 +58,7 @@ export class StudioGroupService {
         for (let itemIndex = 0; itemIndex < itemList.length; itemIndex++) {
           const item = itemList[itemIndex];
           await em.removeAndFlush(item);
-          if (item.type === StudioItemType.ARRAY_OBJECT) {
+          if (item.type === PropItemType.ARRAY_OBJECT) {
             innerGroupIds.push(item.valueOfGroup.id);
           }
         }
@@ -82,10 +81,10 @@ export class StudioGroupService {
 
   }
 
-  async update(rawGroup: StudioGroup) {
+  async update(rawGroup: PropGroup) {
     const em = RequestContext.getEntityManager();
 
-    const group = await em.findOne(StudioGroup, rawGroup.id);
+    const group = await em.findOne(PropGroup, rawGroup.id);
 
     pick(rawGroup, ['name', 'propKey'], group);
 
@@ -94,23 +93,23 @@ export class StudioGroupService {
 
   async movePosition(originId: number, targetId?: number) {
     const em = RequestContext.getEntityManager();
-    const originGroup = await em.findOne(StudioGroup, originId);
+    const originGroup = await em.findOne(PropGroup, originId);
 
     if (!originGroup) {
       return;
     }
 
     if (!targetId) {
-      const firstGroup = await em.findOne(StudioGroup, { componentVersion: originGroup.componentVersion }, { orderBy: { order: 'DESC' } });
+      const firstGroup = await em.findOne(PropGroup, { componentVersion: originGroup.componentVersion }, { orderBy: { order: 'DESC' } });
 
       originGroup.order = firstGroup ? firstGroup.order + 1000 : 1000;
     } else {
-      const targetGroup = await em.findOne(StudioGroup, targetId);
+      const targetGroup = await em.findOne(PropGroup, targetId);
       const targetOrder = targetGroup.order;
       const originOrder = originGroup.order;
       originGroup.order = targetOrder;
 
-      const targetGroupNext = await em.findOne(StudioGroup, {
+      const targetGroupNext = await em.findOne(PropGroup, {
         order: { $gt: targetOrder },
         componentVersion: originGroup.componentVersion,
         isRoot: true

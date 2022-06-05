@@ -1,12 +1,12 @@
 import { Cascade, Collection, Entity, Enum, ManyToOne, OneToMany, OneToOne, Property } from "@mikro-orm/core";
 import { BaseEntity } from "./BaseEntity";
 import { ComponentVersion } from "./ComponentVersion";
-import { StudioBlock } from "./StudioBlock";
-import { StudioGroup } from "./StudioGroup";
-import { StudioOption } from "./StudioOption";
+import { PropBlock } from "./PropBlock";
+import { PropGroup } from "./PropGroup";
+import { PropValueOption } from "./PropValueOption";
 
 @Entity()
-export class StudioItem extends BaseEntity {
+export class PropItem extends BaseEntity {
 
   @Property()
   label: string;
@@ -15,28 +15,28 @@ export class StudioItem extends BaseEntity {
   propKey?: string;
 
   @Enum()
-  type: StudioItemType;
+  type: PropItemType;
 
   @Property({ length: 1024 })
   defaultValue?: string;
 
-  @OneToMany({ entity: () => StudioOption, mappedBy: option => option.studioItem, cascade: [Cascade.ALL] })
-  optionList = new Collection<StudioOption>(this);
+  @OneToMany({ entity: () => PropValueOption, mappedBy: option => option.propItem, cascade: [Cascade.ALL] })
+  optionList = new Collection<PropValueOption>(this);
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'blockId' })
-  block: StudioBlock;
+  block: PropBlock;
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'groupId' })
-  group: StudioGroup;
+  group: PropGroup;
 
   @Property()
   span = 24;
 
   @OneToOne({ serializer: value => value?.id, serializedName: 'valueOfGroupId' })
-  valueOfGroup?: StudioGroup;
+  valueOfGroup?: PropGroup;
 
   @OneToOne({ serializer: value => value?.id, serializedName: 'templateBlockId' })
-  templateBlock?: StudioBlock;
+  templateBlock?: PropBlock;
 
   @Property()
   isRootPropKey = false;
@@ -54,7 +54,7 @@ export class StudioItem extends BaseEntity {
   blockId?: number;
 }
 
-export enum StudioItemType {
+export enum PropItemType {
   INPUT = 'input',
   DATE_PICKER = 'date-picker',
   SWITCH = 'switch',

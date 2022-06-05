@@ -1,32 +1,32 @@
 import { RequestContext } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { LogicException, LogicExceptionCode } from 'config/Logic.exception';
-import { StudioBlock } from 'entities/StudioBlock';
-import { StudioGroup } from 'entities/StudioGroup';
-import { StudioItem, StudioItemType } from 'entities/StudioItem';
-import { StudioOption } from 'entities/StudioOption';
+import { PropBlock } from 'entities/PropBlock';
+import { PropGroup } from 'entities/PropGroup';
+import { PropItem, PropItemType } from 'entities/PropItem';
+import { PropValueOption } from 'entities/PropValueOption';
 import { pick } from 'util.ts/common';
 import { omitProps } from 'util.ts/ormUtil';
-import { StudioGroupService } from './StudioGroup.service';
+import { PropGroupService } from './PropGroup.service';
 
 
 @Injectable()
-export class StudioBlockService {
+export class PropBlockService {
 
-  constructor(private studioGroupService: StudioGroupService) { }
+  constructor(private propGroupService: PropGroupService) { }
 
-  async add(block: StudioBlock) {
+  async add(block: PropBlock) {
     const em = RequestContext.getEntityManager();
 
-    const group = await em.findOne(StudioGroup, block.groupId);
+    const group = await em.findOne(PropGroup, block.groupId);
     if (!group) {
       return;
     }
 
-    const firstBlock = await em.findOne(StudioBlock, { group: group, order: { $gt: 0 } }, { orderBy: { order: 'DESC' } });
+    const firstBlock = await em.findOne(PropBlock, { group: group, order: { $gt: 0 } }, { orderBy: { order: 'DESC' } });
     const order = block.order ? block.order : (firstBlock ? firstBlock.order + 1000 : 1000);
 
-    const newBlock = em.create(StudioBlock, {
+    const newBlock = em.create(PropBlock, {
       ...pick(block, ['name', 'propKey', 'isRootPropKey']),
       group,
       componentVersion: group.componentVersion,
@@ -49,7 +49,7 @@ export class StudioBlockService {
     await em.begin();
     try {
 
-      const group = await em.findOne(StudioGroup, groupId, {
+      const group = await em.findOne(PropGroup, groupId, {
         populate: [
           'templateBlock.propItemList.valueOfGroup',
           'templateBlock.propItemList.templateBlock',
@@ -61,8 +61,8 @@ export class StudioBlockService {
         throw new LogicException(`not found groupId:${groupId}`, LogicExceptionCode.NotFound);
       }
 
-      const firstBlock = await em.findOne(StudioBlock, { group: group, order: { $gt: 0 } }, { orderBy: { order: 'DESC' } });
-      const newBlock = em.create(StudioBlock, pick(group.templateBlock, [
+      const firstBlock = await em.findOne(PropBlock, { group: group, order: { $gt: 0 } }, { orderBy: { order: 'DESC' } });
+      const newBlock = em.create(PropBlock, pick(group.templateBlock, [
         'name', 'group', 'relativeItem', 'componentVersion'
       ]));
       newBlock.order = firstBlock ? firstBlock.order + 1000 : 1000;
@@ -72,19 +72,19 @@ export class StudioBlockService {
       const templateItemList = group.templateBlock.propItemList.getItems();
       for (let index = 0; index < templateItemList.length; index++) {
         const templateItem = templateItemList[index];
-        const newItem = em.create(StudioItem, pick(templateItem, [
+        const newItem = em.create(PropItem, pick(templateItem, [
           'label', 'propKey', 'type', 'defaultValue', 'block', 'group', 'span', 'componentVersion'
         ]));
         newItem.order = (index + 1) * 1000;
         newBlock.propItemList.add(newItem);
 
         templateItem.optionList.getItems().forEach((option) => {
-          const newOption = em.create(StudioOption, pick(option, ['label', 'value', 'studioItem']));
+          const newOption = em.create(PropValueOption, pick(option, ['label', 'value', 'propItem']));
           newItem.optionList.add(newOption);
         })
 
-        if (newItem.type === StudioItemType.ARRAY_OBJECT) {
-          const valueOfGroup = em.create(StudioGroup, {
+        if (newItem.type === PropItemType.ARRAY_OBJECT) {
+          const valueOfGroup = em.create(PropGroup, {
             isRoot: false,
             componentVersion: group.componentVersion,
             relativeItem: newItem,
@@ -115,23 +115,23 @@ export class StudioBlockService {
 
   async movePosition(originId: number, targetId?: number) {
     const em = RequestContext.getEntityManager();
-    const originBlock = await em.findOne(StudioBlock, originId);
+    const originBlock = await em.findOne(PropBlock, originId);
 
     if (!originBlock) {
       return;
     }
 
     if (!targetId) {
-      const firstBlock = await em.findOne(StudioBlock, { group: originBlock.group, order: { $gt: 0 } }, { orderBy: { order: 'DESC' } });
+      const firstBlock = await em.findOne(PropBlock, { group: originBlock.group, order: { $gt: 0 } }, { orderBy: { order: 'DESC' } });
 
       originBlock.order = firstBlock ? firstBlock.order + 1000 : 1000;
     } else {
-      const targetBlock = await em.findOne(StudioBlock, targetId);
+      const targetBlock = await em.findOne(PropBlock, targetId);
       const targetOrder = targetBlock.order;
       const originOrder = originBlock.order;
       originBlock.order = targetOrder;
 
-      const targetBlockNext = await em.findOne(StudioBlock, {
+      const targetBlockNext = await em.findOne(PropBlock, {
         order: { $gt: targetOrder },
         group: originBlock.group,
       });
@@ -151,7 +151,7 @@ export class StudioBlockService {
   async remove(blockId: number) {
     const em = RequestContext.getEntityManager();
 
-    const block = await em.findOne(StudioBlock, blockId, {
+    const block = await em.findOne(PropBlock, blockId, {
       populate: [
         'propItemList'
       ]
@@ -169,7 +169,7 @@ export class StudioBlockService {
       for (let itemIndex = 0; itemIndex < itemList.length; itemIndex++) {
         const item = itemList[itemIndex];
         await em.removeAndFlush(item);
-        if (item.type === StudioItemType.ARRAY_OBJECT) {
+        if (item.type === PropItemType.ARRAY_OBJECT) {
           innerGroupIds.push(item.valueOfGroup.id);
         }
       }
@@ -184,14 +184,14 @@ export class StudioBlockService {
 
     for (let index = 0; index < innerGroupIds.length; index++) {
       const groupId = innerGroupIds[index];
-      await this.studioGroupService.remove(groupId);
+      await this.propGroupService.remove(groupId);
     }
   }
 
-  async update(rawBlock: StudioBlock) {
+  async update(rawBlock: PropBlock) {
     const em = RequestContext.getEntityManager();
 
-    const block = await em.findOne(StudioBlock, rawBlock.id);
+    const block = await em.findOne(PropBlock, rawBlock.id);
 
     pick(rawBlock, ['name', 'propKey', 'isRootPropKey'], block);
 

@@ -1,17 +1,17 @@
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
-import { StudioBlock } from 'entities/StudioBlock';
-import { StudioGroup } from 'entities/StudioGroup';
-import { StudioItem } from 'entities/StudioItem';
+import { PropBlock } from 'entities/PropBlock';
+import { PropGroup } from 'entities/PropGroup';
+import { PropItem } from 'entities/PropItem';
 import { ComponentService } from 'service/Component.service';
-import { StudioBlockService } from 'service/StudioBlock.service';
-import { StudioGroupService } from 'service/StudioGroup.service';
-import { StudioItemService } from 'service/StudioItem.service';
+import { PropBlockService } from 'service/PropBlock.service';
+import { PropGroupService } from 'service/PropGroup.service';
+import { PropItemService } from 'service/PropItem.service';
 @Controller('/studio')
 export class AppController {
   constructor(
-    private readonly itemService: StudioItemService,
-    private readonly blockService: StudioBlockService,
-    private readonly groupService: StudioGroupService,
+    private readonly itemService: PropItemService,
+    private readonly blockService: PropBlockService,
+    private readonly groupService: PropGroupService,
     private readonly componentService: ComponentService,
   ) { }
 
@@ -21,7 +21,7 @@ export class AppController {
   }
 
   @Post('/group/add')
-  async groupAdd(@Body() group: StudioGroup) {
+  async groupAdd(@Body() group: PropGroup) {
     return this.groupService.add(group);
   }
 
@@ -31,7 +31,7 @@ export class AppController {
   }
 
   @Post('/group/update')
-  async groupUpdate(@Body() group: StudioGroup) {
+  async groupUpdate(@Body() group: PropGroup) {
     await this.groupService.update(group);
   }
 
@@ -48,7 +48,7 @@ export class AppController {
   }
 
   @Post('/block/add')
-  async blockAdd(@Body() block: StudioBlock) {
+  async blockAdd(@Body() block: PropBlock) {
     return this.blockService.add(block);
   }
 
@@ -63,12 +63,12 @@ export class AppController {
   }
 
   @Post('/block/update')
-  async blockUpdate(@Body() block: StudioBlock) {
+  async blockUpdate(@Body() block: PropBlock) {
     await this.blockService.update(block);
   }
 
   @Post('/item/add')
-  async itemAdd(@Body() item: StudioItem) {
+  async itemAdd(@Body() item: PropItem) {
     return this.itemService.add(item);
   }
 
@@ -78,7 +78,7 @@ export class AppController {
   }
 
   @Post('/item/update')
-  async itemUpdate(@Body() item: StudioItem) {
+  async itemUpdate(@Body() item: PropItem) {
     await this.itemService.update(item);
   }
 }
