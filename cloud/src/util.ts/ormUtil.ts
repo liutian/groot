@@ -1,4 +1,4 @@
-import { wrap } from '@mikro-orm/core';
+import { Utils, wrap } from '@mikro-orm/core';
 import { AutoPath } from '@mikro-orm/core/typings';
 
 export function omitProps<O, P extends string>(instance: O, propKeys: AutoPath<O, P>[]) {
@@ -97,7 +97,14 @@ export function omitProps<O, P extends string>(instance: O, propKeys: AutoPath<O
 
 function wrapToJSON(keys: string[]) {
   function toJSON(...args: any[]) {
-    const obj = wrap(this).toObject(...args);
+    let obj;
+
+    // 不需要处理 persist: false的实例
+    if (Utils.isEntity(this)) {
+      obj = wrap(this).toObject(...args);
+    } else {
+      obj = this;
+    }
 
     keys.forEach(key => {
       delete obj[key]
