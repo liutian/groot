@@ -6,13 +6,13 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import DraggableTabNode from "../DraggableTabNode";
 // import styles from './index.module.less';
 
-import StudioModel from '@model/Studio';
+import StudioModel from '@model/StudioModel';
 
 import { useModel } from '@util/robot';
-import StudioGroup from "../StudioGroup";
-import StudioGroupSetting from "../StudioGroupSetting";
-import StudioItemSetting from "../StudioItemSetting";
-import StudioBlockSetting from "../StudioBlockSetting";
+import PropGroupStudio from "../PropGroupStudio";
+import PropGroupSetting from "../PropGroupSetting";
+import PropItemSetting from "../PropItemSetting";
+import PropBlockSetting from "../PropBlockSetting";
 import ArrayObjectPanel from "../ArrayObjectPanel";
 import { autoIncrementForName } from "@util/utils";
 
@@ -24,7 +24,7 @@ function Studio() {
   const renderTabBar = (props: any, DefaultTabBar: React.ElementType) => (
     <DefaultTabBar {...props}>
       {(node: React.ReactElement) => (
-        <DraggableTabNode key={node.key} nodeKey={node.key as string} moveNode={model.moveStudioGroup}>
+        <DraggableTabNode key={node.key} nodeKey={node.key as string} moveNode={model.movePropGroup}>
           {node as any}
         </DraggableTabNode>
       )}
@@ -32,7 +32,7 @@ function Studio() {
   );
 
   // 自定义渲染Tab标题，实现右键菜单功能
-  const renderTabBarItem = (group: CodeMetaStudioGroup) => {
+  const renderTabBarItem = (group: PropGroup) => {
 
     const items: MenuProps['items'] = [
       {
@@ -52,7 +52,7 @@ function Studio() {
         onClick: (e) => {
           e.domEvent.stopPropagation();
           updateAction(() => {
-            model.currSettingStudioGroup = JSON.parse(JSON.stringify(group));
+            model.currSettingPropGroup = JSON.parse(JSON.stringify(group));
           });
         }
       }
@@ -74,12 +74,12 @@ function Studio() {
     updateAction(() => {
       const nameSuffix = autoIncrementForName(model.component!.version!.rootGroupList!.map(g => g.name));
       // 显示分组弹框
-      model.currSettingStudioGroup = {
+      model.currSettingPropGroup = {
         id: 0,
         name: `分组${nameSuffix}`,
         isRoot: true,
         propBlockList: [],
-        componentStudioId: model.component.id,
+        componentId: model.component.id,
         order: 0
       };
     })
@@ -102,7 +102,7 @@ function Studio() {
   const renderTabContent = () => {
     const list = model.component!.version!.rootGroupList!.map((group) => {
       return (<Tabs.TabPane key={group.id} tab={renderTabBarItem(group)} >
-        <StudioGroup group={group} />
+        <PropGroupStudio group={group} />
       </Tabs.TabPane>)
     })
 
@@ -121,11 +121,11 @@ function Studio() {
       </Tabs>
     </DndProvider>
 
-    <StudioGroupSetting />
-    <StudioBlockSetting />
-    <StudioItemSetting />
+    <PropGroupSetting />
+    <PropBlockSetting />
+    <PropItemSetting />
     {
-      model.handUpStudioItemStack.map(item => {
+      model.handUpPropItemStack.map(item => {
         return <ArrayObjectPanel key={item.id} item={item} />
       })
     }

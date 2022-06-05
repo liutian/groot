@@ -17,12 +17,18 @@ export class ComponentInstance extends BaseEntity {
   @ManyToOne()
   componentVersion: ComponentVersion;
 
+  /**
+   * 页面级组件对应页面地址
+   */
   @Property()
   path?: string;
 
-  @OneToMany(() => PropValue, propValue => propValue.componentInstance)
-  valueList = new Collection<PropValue>(this);
+  @ManyToMany(() => PropValue, propValue => propValue.componentInstanceList)
+  propValueList = new Collection<PropValue>(this);
 
+  /**
+   * 一个实例可以被多个迭代引用，相邻迭代大部分实例基本不会变动，降低数据占用
+   */
   @ManyToMany(() => Release, release => release.instanceList, { owner: true })
   releaseList = new Collection<Release>(this);
 

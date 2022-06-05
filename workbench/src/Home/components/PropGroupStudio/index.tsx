@@ -1,42 +1,42 @@
 import { useModel } from "@util/robot";
-import StudioModel from '@model/Studio';
+import StudioModel from '@model/StudioModel';
 import { Button, Collapse, Space, Typography } from "antd";
 import { CaretRightOutlined, DeleteOutlined, PlusOutlined, SettingOutlined, VerticalAlignBottomOutlined, VerticalAlignTopOutlined } from "@ant-design/icons";
-import StudioBlock from "../StudioBlock";
+import PropBlockStudio from "../PropBlockStudio";
 
 type PropsType = {
-  group: CodeMetaStudioGroup,
-  innerTemplateBlock?: CodeMetaStudioBlock
+  group: PropGroup,
+  innerTemplateBlock?: PropBlock
 }
 
-const StudioGroup: React.FC<PropsType> = ({ group, innerTemplateBlock }) => {
+const PropGroupStudio: React.FC<PropsType> = ({ group, innerTemplateBlock }) => {
   const [model, updateAction] = useModel<StudioModel>('studio');
 
-  const editBlock = (block: CodeMetaStudioBlock) => {
+  const editBlock = (block: PropBlock) => {
     updateAction(() => {
-      model.currSettingStudioBlock = JSON.parse(JSON.stringify(block));
+      model.currSettingPropBlock = JSON.parse(JSON.stringify(block));
     })
   }
 
-  const renderBlockSetting = (block: CodeMetaStudioBlock, blockIndex: number) => {
+  const renderBlockSetting = (block: PropBlock, blockIndex: number) => {
     if (!model.settingMode) return null;
 
     return (<Space size="small">
       <Typography.Link onClick={(e) => {
         e.stopPropagation();
-        model.showStudioItemSettinngForCreate(block);
+        model.showPropItemSettinngForCreate(block);
       }}>
         <PlusOutlined />
       </Typography.Link>
       <Typography.Link disabled={blockIndex === 0} onClick={(e) => {
         e.stopPropagation();
-        model.moveStudioBlock(group, blockIndex, true);
+        model.movePropBlock(group, blockIndex, true);
       }}>
         <VerticalAlignTopOutlined />
       </Typography.Link>
       <Typography.Link disabled={blockIndex === group.propBlockList.length - 1} onClick={(e) => {
         e.stopPropagation();
-        model.moveStudioBlock(group, blockIndex, false);
+        model.movePropBlock(group, blockIndex, false);
       }}>
         <VerticalAlignBottomOutlined />
       </Typography.Link>
@@ -66,7 +66,7 @@ const StudioGroup: React.FC<PropsType> = ({ group, innerTemplateBlock }) => {
       {
         group.propBlockList.map((block, blockIndex) => {
           return (<Collapse.Panel header={block.name} key={block.id} extra={renderBlockSetting(block, blockIndex)}>
-            <StudioBlock block={block} dynamic={!!innerTemplateBlock} />
+            <PropBlockStudio block={block} dynamic={!!innerTemplateBlock} />
           </Collapse.Panel>)
         })
       }
@@ -75,7 +75,7 @@ const StudioGroup: React.FC<PropsType> = ({ group, innerTemplateBlock }) => {
       model.settingMode ? (
         <div style={{ padding: group.isRoot ? '16px' : '16px 0 0' }}>
           <Button hidden={!group.isRoot} type="primary" ghost block onClick={() => {
-            model.showStudioBlockSettinngForCreate(group);
+            model.showPropBlockSettinngForCreate(group);
           }}>
             添加
           </Button>
@@ -92,4 +92,4 @@ const StudioGroup: React.FC<PropsType> = ({ group, innerTemplateBlock }) => {
   </>)
 };
 
-export default StudioGroup;
+export default PropGroupStudio;

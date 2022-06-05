@@ -2,7 +2,7 @@ import { autoIncrementForName, uuid } from "@util/utils";
 import { FormInstance } from "antd";
 import { serverPath } from "config";
 
-export default class Studio {
+export default class StudioModel {
   /**
    * tab激活的分组
    */
@@ -10,15 +10,15 @@ export default class Studio {
   /**
    * 当前配置组
    */
-  public currSettingStudioGroup?: CodeMetaStudioGroup;
+  public currSettingPropGroup?: PropGroup;
   /**
    * 当前配置块
    */
-  public currSettingStudioBlock?: CodeMetaStudioBlock;
+  public currSettingPropBlock?: PropBlock;
   /**
    * 当前配置项
    */
-  public currSettingStudioItem?: CodeMetaStudioItem;
+  public currSettingPropItem?: PropItem;
 
   /**
    * 当前组件配置对象
@@ -41,9 +41,9 @@ export default class Studio {
    */
   public notifyIframe?: Function;
 
-  public handUpStudioItemStack: CodeMetaStudioItem[] = [];
+  public handUpPropItemStack: PropItem[] = [];
 
-  public innerTempStudioGroupMap = new Map<number, CodeMetaStudioGroup>();
+  public innerTempPropGroupMap = new Map<number, PropGroup>();
 
   public init(component: Component) {
     this.component = component;
@@ -69,7 +69,7 @@ export default class Studio {
     this.notifyIframe!(JSON.stringify(props));
   }
 
-  public moveStudioBlock = (group: CodeMetaStudioGroup, originIndex: number, up: boolean) => {
+  public movePropBlock = (group: PropGroup, originIndex: number, up: boolean) => {
     const [moveBlock] = group.propBlockList.splice(originIndex, 1);
     fetch(`${serverPath}/move/position`, {
       body: JSON.stringify({
@@ -91,7 +91,7 @@ export default class Studio {
     });
   }
 
-  public moveStudioGroup = (dragId: string, hoverId: string) => {
+  public movePropGroup = (dragId: string, hoverId: string) => {
     if (dragId === hoverId) {
       return;
     }
@@ -135,7 +135,7 @@ export default class Studio {
     })
   }
 
-  public moveStudioItem = (block: CodeMetaStudioBlock, originIndex: number, up: boolean) => {
+  public movePropItem = (block: PropBlock, originIndex: number, up: boolean) => {
     const [moveItem] = block.propItemList.splice(originIndex, 1);
     fetch(`${serverPath}/move/position`, {
       body: JSON.stringify({
@@ -156,8 +156,8 @@ export default class Studio {
     });
   }
 
-  public updateOrAddStudioGroup = (group: CodeMetaStudioGroup) => {
-    const newGroup = Object.assign(this.currSettingStudioGroup, group);
+  public updateOrAddPropGroup = (group: PropGroup) => {
+    const newGroup = Object.assign(this.currSettingPropGroup, group);
 
     if (newGroup.id) {
       fetch(`${serverPath}/group/update`, {
@@ -187,12 +187,12 @@ export default class Studio {
       })
     }
 
-    this.currSettingStudioGroup = undefined;
+    this.currSettingPropGroup = undefined;
   }
 
-  public updateOrAddStudioBlock = (block: CodeMetaStudioBlock) => {
-    const newBlock = Object.assign(this.currSettingStudioBlock, block);
-    const group = this.getStudioGroup(newBlock.groupId)!;
+  public updateOrAddPropBlock = (block: PropBlock) => {
+    const newBlock = Object.assign(this.currSettingPropBlock, block);
+    const group = this.getPropGroup(newBlock.groupId)!;
 
     if (newBlock.id) {
       fetch(`${serverPath}/block/update`, {
@@ -217,7 +217,7 @@ export default class Studio {
       })
 
     }
-    this.currSettingStudioBlock = undefined;
+    this.currSettingPropBlock = undefined;
   }
 
   public addBlockFromTemplate = (groupId: number,) => {
@@ -230,13 +230,13 @@ export default class Studio {
         groupId
       })
     }).then(r => r.json()).then(({ data: blockData }) => {
-      const group = this.getStudioGroup(groupId)!;
+      const group = this.getPropGroup(groupId)!;
       group.propBlockList.push(blockData);
     })
   }
 
-  public updateOrAddStudioItem = (item: CodeMetaStudioItem) => {
-    const newItem = Object.assign(this.currSettingStudioItem, item);
+  public updateOrAddPropItem = (item: PropItem) => {
+    const newItem = Object.assign(this.currSettingPropItem, item);
 
     if (!['select', 'radio', 'checkbox'].includes(newItem.type)) {
       newItem.optionList = undefined;
@@ -251,19 +251,19 @@ export default class Studio {
         },
         body: JSON.stringify(newItem)
       }).then(r => r.json()).then(() => {
-        const block = this.getStudioBlock(newItem.blockId)!;
+        const block = this.getPropBlock(newItem.blockId)!;
         let itemIndex = block.propItemList.findIndex(item => item.id === newItem.id);
         block.propItemList.splice(itemIndex, 1, JSON.parse(JSON.stringify(newItem)));
       });
     } else {
-      const block = this.getStudioBlock(newItem.blockId)!;
+      const block = this.getPropBlock(newItem.blockId)!;
       fetch(`${serverPath}/item/add`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(newItem)
-      }).then(r => r.json()).then((result: { data: { newItem: CodeMetaStudioItem, valueOfGroup: CodeMetaStudioGroup, templateBlock: CodeMetaStudioBlock } }) => {
+      }).then(r => r.json()).then((result: { data: { newItem: PropItem, valueOfGroup: PropGroup, templateBlock: PropBlock } }) => {
         const resultItem = result.data.newItem;
 
         block.propItemList.push(resultItem);
@@ -279,7 +279,7 @@ export default class Studio {
       })
     }
 
-    this.currSettingStudioItem = undefined;
+    this.currSettingPropItem = undefined;
 
     setTimeout(() => {
       this.productStudioData();
@@ -298,14 +298,14 @@ export default class Studio {
     })
   }
 
-  public delBlock = (blockId: number, group: CodeMetaStudioGroup) => {
+  public delBlock = (blockId: number, group: PropGroup) => {
     fetch(`${serverPath}/block/remove/${blockId}`).then(() => {
       let blockIndex = group.propBlockList.findIndex(b => b.id === blockId);
       group.propBlockList.splice(blockIndex, 1);
     })
   }
 
-  public delItem = (itemId: number, block: CodeMetaStudioBlock) => {
+  public delItem = (itemId: number, block: PropBlock) => {
     fetch(`${serverPath}/item/remove/${itemId}`).then(() => {
       let itemIndex = block.propItemList.findIndex(item => item.id === itemId);
       block.propItemList.splice(itemIndex, 1);
@@ -343,27 +343,27 @@ export default class Studio {
     }
   }
 
-  public pushHandUpStudioItem = (item: CodeMetaStudioItem) => {
-    this.handUpStudioItemStack?.push(item);
+  public pushHandUpPropItem = (item: PropItem) => {
+    this.handUpPropItemStack?.push(item);
   }
 
-  public popHandUpStudioItem = (group: CodeMetaStudioGroup, templateBlockOfArrayObject: CodeMetaStudioBlock) => {
-    const item = this.handUpStudioItemStack.pop();
+  public popHandUpPropItem = (group: PropGroup, templateBlockOfArrayObject: PropBlock) => {
+    const item = this.handUpPropItemStack.pop();
     if (item) {
       item.valueOfGroup = JSON.parse(JSON.stringify(group));
       item.templateBlock = JSON.parse(JSON.stringify(templateBlockOfArrayObject));
     }
   }
 
-  public getStudioGroup = (groupId: number) => {
+  public getPropGroup = (groupId: number) => {
     let group = this.component!.version!.rootGroupList!.find((group) => {
       return group.id === groupId;
     })
 
-    return group || this.innerTempStudioGroupMap.get(groupId);
+    return group || this.innerTempPropGroupMap.get(groupId);
   }
 
-  public getStudioBlock = (blockId: number) => {
+  public getPropBlock = (blockId: number) => {
     for (let groupIndex = 0; groupIndex < this.component!.version!.rootGroupList!.length; groupIndex++) {
       const group = this.component!.version!.rootGroupList![groupIndex];
       for (let blockIndex = 0; blockIndex < group!.propBlockList.length; blockIndex++) {
@@ -374,7 +374,7 @@ export default class Studio {
       }
     }
 
-    const tempGroups = [...this.innerTempStudioGroupMap.values()];
+    const tempGroups = [...this.innerTempPropGroupMap.values()];
     for (let groupIndex = 0; groupIndex < tempGroups.length; groupIndex++) {
       const group = tempGroups[groupIndex];
 
@@ -393,10 +393,10 @@ export default class Studio {
     return undefined;
   }
 
-  public showStudioBlockSettinngForCreate = (group: CodeMetaStudioGroup) => {
+  public showPropBlockSettinngForCreate = (group: PropGroup) => {
     const nameSuffix = autoIncrementForName(group.propBlockList.map(b => b.name));
 
-    this.currSettingStudioBlock = {
+    this.currSettingPropBlock = {
       id: 0,
       name: `配置块${nameSuffix}`,
       groupId: group.id,
@@ -405,11 +405,11 @@ export default class Studio {
     };
   }
 
-  public showStudioItemSettinngForCreate = (block: CodeMetaStudioBlock) => {
+  public showPropItemSettinngForCreate = (block: PropBlock) => {
     const nameSuffix = autoIncrementForName(block.propItemList.map(item => item.label));
     const propSuffix = autoIncrementForName(block.propItemList.map(item => item.propKey));
 
-    this.currSettingStudioItem = {
+    this.currSettingPropItem = {
       id: 0,
       type: 'input',
       label: `配置项${nameSuffix}`,
@@ -430,7 +430,7 @@ export default class Studio {
     return codemetas;
   }
 
-  private createCodemetaFromGroup(group: CodeMetaStudioGroup, codemetas: CodeMeta[], contextKey = '') {
+  private createCodemetaFromGroup(group: PropGroup, codemetas: CodeMeta[], contextKey = '') {
     const blocks = group.propBlockList;
     const groupPropKey = group.propKey || '';
     for (let blockIndex = 0; blockIndex < blocks.length; blockIndex++) {
@@ -482,12 +482,12 @@ export default class Studio {
 
     for (let i = 0; i < rootGroupIds.length; i++) {
       const groupId = rootGroupIds[i]!;
-      const group = this.buildStudioGroup(groupId);
+      const group = this.buildPropGroup(groupId);
       this.component.version!.rootGroupList.push(group);
     }
   }
 
-  private buildStudioGroup(groupId: number) {
+  private buildPropGroup(groupId: number) {
     const group = this.component.version!.groupList!.find(g => g.id === groupId);
     if (!group) {
       throw new Error(`can not find group[${groupId}]`);
@@ -509,7 +509,7 @@ export default class Studio {
       for (let itemIndex = 0; itemIndex < items.length; itemIndex++) {
         const item = items[itemIndex]!;
         if (item.type === 'array-object') {
-          const relativeGroup = this.buildStudioGroup(item.valueOfGroupId!);
+          const relativeGroup = this.buildPropGroup(item.valueOfGroupId!);
           const templateBlock = relativeGroup.propBlockList.find(b => b.id === item.templateBlockId);
           relativeGroup.propBlockList = relativeGroup.propBlockList.filter(b => b.id !== item.templateBlockId);
           relativeGroup.templateBlock = templateBlock;

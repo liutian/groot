@@ -33,7 +33,7 @@ export class PropItemService {
       const firstItem = await em.findOne(PropItem, { block }, { orderBy: { order: 'DESC' } });
 
       newItem = em.create(PropItem, {
-        ...pick(rawItem, ['label', 'propKey', 'isRootPropKey', 'type', 'span', 'optionList']),
+        ...pick(rawItem, ['label', 'propKey', 'rootPropKey', 'type', 'span', 'optionList']),
         block,
         group: block.group,
         componentVersion: block.componentVersion,
@@ -159,7 +159,7 @@ export class PropItemService {
 
     const item = await em.findOne(PropItem, rawItem.id, { populate: ['optionList'] });
 
-    pick(rawItem, ['label', 'propKey', 'isRootPropKey', 'type', 'span'], item);
+    pick(rawItem, ['label', 'propKey', 'rootPropKey', 'type', 'span'], item);
 
     if (rawItem.optionList && rawItem.optionList.length) {
       wrap(item).assign({

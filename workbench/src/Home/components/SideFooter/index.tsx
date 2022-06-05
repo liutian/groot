@@ -4,7 +4,7 @@ import { Typography } from 'antd';
 import { HTMLAttributes } from 'react';
 import styles from './index.module.less';
 
-import WorkbenchModel from '@model/Workbench';
+import WorkbenchModel from '@model/WorkbenchModel';
 
 const SideFooter: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
   const [model, updateAction] = useModel<WorkbenchModel>('workbench');

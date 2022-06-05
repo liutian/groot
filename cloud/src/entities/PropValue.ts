@@ -1,8 +1,8 @@
-import { Entity, ManyToOne, Property } from "@mikro-orm/core";
+import { Collection, Entity, ManyToMany, ManyToOne, Property } from "@mikro-orm/core";
 import { BaseEntity } from "./BaseEntity";
 import { ComponentInstance } from "./ComponentInstance";
-import { Release } from "./Release";
 import { PropItem } from "./PropItem";
+import { Component } from "./Component";
 
 @Entity()
 export class PropValue extends BaseEntity {
@@ -16,9 +16,9 @@ export class PropValue extends BaseEntity {
   @Property()
   value: string;
 
-  @ManyToOne()
-  componentInstance: ComponentInstance;
+  @ManyToMany(() => ComponentInstance, instance => instance.propValueList, { owner: true })
+  componentInstanceList = new Collection<ComponentInstance>(this);
 
   @ManyToOne()
-  release: Release;
+  component: Component;
 }

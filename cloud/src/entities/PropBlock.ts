@@ -1,5 +1,6 @@
 import { Collection, Entity, ManyToOne, OneToMany, Property } from "@mikro-orm/core";
 import { BaseEntity } from "./BaseEntity";
+import { Component } from "./Component";
 import { ComponentVersion } from "./ComponentVersion";
 import { PropGroup } from "./PropGroup";
 import { PropItem } from "./PropItem";
@@ -23,13 +24,10 @@ export class PropBlock extends BaseEntity {
   relativeItem?: PropItem;
 
   @Property()
-  isRootPropKey = false;
+  rootPropKey = false;
 
   @ManyToOne()
   componentVersion: ComponentVersion;
-
-  @Property({ persist: false })
-  componentVersionId?: number;
 
   @Property({ persist: false })
   groupId?: number;
@@ -37,4 +35,7 @@ export class PropBlock extends BaseEntity {
   // 模版配置块order 为-1000，方便区分费模版配置块
   @Property({ columnType: 'double' })
   order: number;
+
+  @ManyToOne()
+  component: Component;
 }

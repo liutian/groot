@@ -1,4 +1,4 @@
-import { Collection, Entity, ManyToOne, OneToMany, OneToOne, Property } from "@mikro-orm/core";
+import { Collection, Entity, ManyToOne, OneToMany, Property } from "@mikro-orm/core";
 import { BaseEntity } from "./BaseEntity";
 import { Release } from "./Release";
 
@@ -9,16 +9,16 @@ export class Project extends BaseEntity {
   name: string;
 
   @ManyToOne()
-  devRelease?: Release;
+  devRelease?: Release;// 此处必须为可选，否则会造成release和project循环依赖
 
   @ManyToOne()
-  qaRelease?: Release;
+  qaRelease?: Release;// 此处必须为可选，否则会造成release和project循环依赖
 
   @ManyToOne()
-  plRelease?: Release;
+  plRelease?: Release;// 此处必须为可选，否则会造成release和project循环依赖
 
   @ManyToOne()
-  onlineRelease?: Release;
+  onlineRelease?: Release;// 此处必须为可选，否则会造成release和project循环依赖
 
   @OneToMany(() => Release, release => release.project)
   releaseList = new Collection<Release>(this);

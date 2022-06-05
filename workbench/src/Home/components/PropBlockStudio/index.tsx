@@ -1,26 +1,26 @@
 import { Button, Checkbox, Col, DatePicker, Form, Input, Radio, Row, Select, Space, Switch, Typography } from "antd";
 import { VerticalAlignTopOutlined, DeleteOutlined, VerticalAlignBottomOutlined, SettingOutlined } from '@ant-design/icons';
 import { useModel } from "@util/robot";
-import StudioModel from '@model/Studio';
-import ArrayObjectFormItem from "../ArrayObjectFormItem";
+import StudioModel from '@model/StudioModel';
+import PropItemStudioForArray from "../PropItemStudioForArray";
 import styles from './index.module.less';
 
 type PropType = {
-  block: CodeMetaStudioBlock,
+  block: PropBlock,
   dynamic?: boolean,
   templateMode?: boolean
 }
 
-function StudioBlock({ block, dynamic, templateMode }: PropType) {
+function PropBlockStudio({ block, dynamic, templateMode }: PropType) {
   const [model, updateAction] = useModel<StudioModel>('studio');
   const [form] = Form.useForm();
   model.blockFormInstanceMap.set(block.id!, form);
 
-  const renderItemLabel = (studioItem: CodeMetaStudioItem, itemIndex: number) => {
+  const renderItemLabel = (propItem: PropItem, itemIndex: number) => {
 
-    const editStudioItem = () => {
+    const editPropItem = () => {
       updateAction(() => {
-        model.currSettingStudioItem = JSON.parse(JSON.stringify(studioItem));
+        model.currSettingPropItem = JSON.parse(JSON.stringify(propItem));
       })
     }
 
@@ -31,42 +31,42 @@ function StudioBlock({ block, dynamic, templateMode }: PropType) {
       return (<Space size="small">
         <Typography.Link disabled={itemIndex === 0} onClick={(e) => {
           e.preventDefault();
-          model.moveStudioItem(block, itemIndex, true);
+          model.movePropItem(block, itemIndex, true);
         }}>
           <VerticalAlignTopOutlined />
         </Typography.Link>
         <Typography.Link disabled={itemIndex === block.propItemList.length - 1} onClick={(e) => {
           e.preventDefault();
-          model.moveStudioItem(block, itemIndex, false);
+          model.movePropItem(block, itemIndex, false);
         }}>
           <VerticalAlignBottomOutlined />
         </Typography.Link>
         <Typography.Link disabled={itemIndex === 0 && block.propItemList.length === 1} onClick={(e) => {
           e.preventDefault();
-          model.delItem(studioItem.id, block);
+          model.delItem(propItem.id, block);
         }} >
           <DeleteOutlined />
         </Typography.Link>
         <Typography.Link onClick={(e) => {
           e.preventDefault();
-          editStudioItem();
+          editPropItem();
         }}>
           <SettingOutlined />
         </Typography.Link>
       </Space>)
     }
 
-    return <div className={styles.studioItemHeader}>
-      <div className={styles.studioItemHeaderText}>
-        {studioItem.label}
+    return <div className={styles.propItemHeader}>
+      <div className={styles.propItemHeaderText}>
+        {propItem.label}
       </div>
-      <div className={styles.studioItemHeaderActions}>
+      <div className={styles.propItemHeaderActions}>
         {renderItemSetting()}
       </div>
     </div>
   }
 
-  const renderFormItem = (item: CodeMetaStudioItem) => {
+  const renderFormItem = (item: PropItem) => {
     if (item.type === 'input') {
       return <Input />;
     } else if (item.type === 'date-picker') {
@@ -80,7 +80,7 @@ function StudioBlock({ block, dynamic, templateMode }: PropType) {
     } else if (item.type === 'checkbox') {
       return <Checkbox.Group options={item.optionList} />
     } else if (item.type === 'array-object') {
-      return <ArrayObjectFormItem item={item}></ArrayObjectFormItem>
+      return <PropItemStudioForArray item={item} />
     }
 
     return <>not found item</>
@@ -92,7 +92,7 @@ function StudioBlock({ block, dynamic, templateMode }: PropType) {
         {
           block.propItemList.map((item, index) => {
             return <Col span={item.span} key={item.id} >
-              <Form.Item className={styles.studioItem} label={renderItemLabel(item, index)} name={item.propKey} preserve={false}
+              <Form.Item className={styles.propItem} label={renderItemLabel(item, index)} name={item.propKey} preserve={false}
                 valuePropName={item.type === 'switch' ? 'checked' : 'value'} initialValue={item.defaultValue}>
                 {renderFormItem(item)}
               </Form.Item>
@@ -104,7 +104,7 @@ function StudioBlock({ block, dynamic, templateMode }: PropType) {
     {
       templateMode ? (
         <Button type="dashed" block onClick={() => {
-          model.showStudioItemSettinngForCreate(block)
+          model.showPropItemSettinngForCreate(block)
         }}>
           添加
         </Button>
@@ -113,4 +113,4 @@ function StudioBlock({ block, dynamic, templateMode }: PropType) {
   </>
 }
 
-export default StudioBlock;
+export default PropBlockStudio;

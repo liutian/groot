@@ -11,23 +11,35 @@ export class Component extends BaseEntity {
   @Property()
   name: string;
 
+  /**
+   * 组件所属包名
+   */
   @Property()
   packageName: string;
 
-  @Property()
-  moduleName: string;
-
+  /**
+   * 组件名
+   */
   @Property()
   componentName: string;
 
+  /**
+   * 是否是页面级组件
+   */
   @Property()
-  isPage = true;
+  page = true;
 
+  /**
+   * 组件版本
+   */
   @OneToMany(() => ComponentVersion, version => version.component)
   versionList = new Collection<ComponentVersion>(this);
 
+  /**
+   * 组件最新版本
+   */
   @OneToOne()
-  currentVersion?: ComponentVersion;
+  currentVersion?: ComponentVersion;// 此处必须为可选，否则会造成component和version循环依赖
 
   @ManyToOne()
   project: Project;

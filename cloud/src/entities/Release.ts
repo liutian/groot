@@ -12,8 +12,11 @@ export class Release extends BaseEntity {
   @ManyToOne()
   project: Project;
 
+  /**
+   * 是否冻结，true组件实例不能在调整，online环境自动设置为true
+   */
   @Property()
-  lock = false;
+  freeze = false;
 
   @ManyToMany(() => ComponentInstance, componentInstance => componentInstance.releaseList)
   instanceList = new Collection<ComponentInstance>(this);

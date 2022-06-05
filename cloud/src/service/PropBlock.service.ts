@@ -27,7 +27,7 @@ export class PropBlockService {
     const order = block.order ? block.order : (firstBlock ? firstBlock.order + 1000 : 1000);
 
     const newBlock = em.create(PropBlock, {
-      ...pick(block, ['name', 'propKey', 'isRootPropKey']),
+      ...pick(block, ['name', 'propKey', 'rootPropKey']),
       group,
       componentVersion: group.componentVersion,
       order
@@ -85,7 +85,7 @@ export class PropBlockService {
 
         if (newItem.type === PropItemType.ARRAY_OBJECT) {
           const valueOfGroup = em.create(PropGroup, {
-            isRoot: false,
+            root: false,
             componentVersion: group.componentVersion,
             relativeItem: newItem,
             templateBlock: templateItem.templateBlock
@@ -193,7 +193,7 @@ export class PropBlockService {
 
     const block = await em.findOne(PropBlock, rawBlock.id);
 
-    pick(rawBlock, ['name', 'propKey', 'isRootPropKey'], block);
+    pick(rawBlock, ['name', 'propKey', 'rootPropKey'], block);
 
     await em.flush();
   }

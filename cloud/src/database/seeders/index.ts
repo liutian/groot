@@ -33,7 +33,6 @@ export class DatabaseSeeder extends Seeder {
       name: '列表查询',
       packageName: 'ant',
       componentName: 'Button',
-      moduleName: 'Button_demo',
       project
     });
     await em.persistAndFlush(component);
@@ -48,7 +47,8 @@ export class DatabaseSeeder extends Seeder {
     const group = em.create(PropGroup, {
       name: '配置组',
       order: 1000,
-      componentVersion
+      componentVersion,
+      component
     });
     await em.persistAndFlush(group);
 
@@ -56,7 +56,8 @@ export class DatabaseSeeder extends Seeder {
       name: '配置块',
       group,
       componentVersion,
-      order: 1000
+      order: 1000,
+      component
     })
     await em.persistAndFlush(block);
 
@@ -68,6 +69,7 @@ export class DatabaseSeeder extends Seeder {
       group,
       componentVersion,
       order: 1000,
+      component
     })
     await em.persistAndFlush(item);
 
@@ -83,9 +85,9 @@ export class DatabaseSeeder extends Seeder {
     const propValue = em.create(PropValue, {
       propItem: item,
       value: 'hello',
-      componentInstance: instance,
-      release
+      component
     });
+    propValue.componentInstanceList.add(instance);
     await em.persistAndFlush(propValue);
   }
 }

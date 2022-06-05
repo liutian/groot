@@ -1,7 +1,7 @@
 import { HTMLAttributes, useRef } from "react";
 
 import { useModel } from "@util/robot";
-import StudioModel from '@model/Studio';
+import StudioModel from '@model/StudioModel';
 
 import styles from './index.module.less';
 import SideHeader from "../SideHeader";
@@ -9,7 +9,7 @@ import SideToolBar from "../SideToolBar";
 import SideFooter from "../SideFooter";
 import Studio from "../Studio";
 import MouseFollow from "components/MouseFollow"
-import WorkbenchModel from '@model/Workbench';;
+import WorkbenchModel from '@model/WorkbenchModel';;
 
 const SidePanel: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
   // 使用页面全局实例

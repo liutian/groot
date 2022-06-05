@@ -1,4 +1,4 @@
-import { Entity, ManyToOne, Property } from "@mikro-orm/core";
+import { Collection, Entity, ManyToOne, OneToMany, Property } from "@mikro-orm/core";
 import { BaseEntity } from "./BaseEntity";
 import { Component } from "./Component";
 import { PropBlock } from "./PropBlock";
@@ -14,15 +14,18 @@ export class ComponentVersion extends BaseEntity {
   @ManyToOne()
   component: Component;
 
+  /**
+   * 组件版本发布之后，禁止修改配置
+   */
   @Property()
   publish = false;
 
-  @Property({ persist: false })
-  groupList?: PropGroup[];
+  @OneToMany(() => PropGroup, group => group.componentVersion)
+  groupList = new Collection<PropGroup>(this);
 
-  @Property({ persist: false })
-  blockList?: PropBlock[];
+  @OneToMany(() => PropBlock, block => block.componentVersion)
+  blockList = new Collection<PropBlock>(this);
 
-  @Property({ persist: false })
-  itemList?: PropItem[];
+  @OneToMany(() => PropItem, item => item.componentVersion)
+  itemList = new Collection<PropItem>(this);
 }

@@ -21,7 +21,7 @@ export class ComponentService {
     let componentVersion;
 
     if (versionId) {
-      componentVersion = await em.findOne(ComponentVersion, versionId);
+      componentVersion = await em.findOne(ComponentVersion, versionId, { populate: ['groupList', 'blockList', 'itemList.optionList'] });
     } else {
 
       let release;
@@ -29,28 +29,33 @@ export class ComponentService {
         const project = await em.findOne(Project, component.project.id, { populate: ['devRelease'] });
         release = project.devRelease;
       } else {
-        release = await em.findAndCount(Release, releaseId);
+        release = await em.findOne(Release, releaseId);
       }
       component.release = wrap(release).toObject() as any;
 
       const instance = await em.findOne(ComponentInstance, {
         component,
         releaseList: [releaseId]
-      }, { populate: ['componentVersion', 'valueList'] });
+      }, {
+        populate: [
+          'componentVersion.groupList',
+          'componentVersion.blockList',
+          'componentVersion.itemList.optionList',
+          'propValueList'
+        ]
+      });
       component.instance = wrap(instance).toObject() as any;
       componentVersion = instance.componentVersion;
     }
 
-    componentVersion.groupList = await em.find(PropGroup, { componentVersion });
-    componentVersion.blockList = await em.find(PropBlock, { componentVersion });
-    componentVersion.itemList = await em.find(PropItem, { componentVersion }, { populate: ['optionList'] });
-
     component.version = wrap(componentVersion).toObject() as any;
-    omitProps(component.version, [
-      'groupList.componentVersion',
-      'blockList.componentVersion',
-      'itemList.componentVersion',
-      'itemList.optionList.propItem',
+    omitProps(component, [
+      'currentVersion',
+      'instance.componentVersion',
+      'version.groupList.componentVersion',
+      'version.blockList.componentVersion',
+      'version.itemList.componentVersion',
+      'version.itemList.optionList.propItem',
     ]);
 
     return component;

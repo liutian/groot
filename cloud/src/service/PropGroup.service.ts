@@ -10,7 +10,7 @@ import { omitProps } from 'util.ts/ormUtil';
 @Injectable()
 export class PropGroupService {
 
-  async add(group: PropGroup, isRoot = true) {
+  async add(group: PropGroup, root = true) {
     const em = RequestContext.getEntityManager();
 
     const componentVersion = await em.findOne(ComponentVersion, group.componentVersionId);
@@ -19,7 +19,7 @@ export class PropGroupService {
     const newGroup = em.create(PropGroup, {
       ...pick(group, ['name', 'propKey']),
       componentVersion,
-      isRoot,
+      root,
       order: (firstGroup ? firstGroup.order : 0) + 1000
     });
 
@@ -112,7 +112,7 @@ export class PropGroupService {
       const targetGroupNext = await em.findOne(PropGroup, {
         order: { $gt: targetOrder },
         componentVersion: originGroup.componentVersion,
-        isRoot: true
+        root: true
       });
 
       if (!targetGroupNext) {

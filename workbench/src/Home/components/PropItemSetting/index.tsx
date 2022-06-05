@@ -1,31 +1,31 @@
 import { useModel } from "@util/robot";
 import { Form, Input, Modal, Radio, Select, Space, Typography } from "antd";
 import React, { useEffect } from "react";
-import StudioModel from '@model/Studio';
+import StudioModel from '@model/StudioModel';
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 
-const StudioItemSetting: React.FC = () => {
-  const [form] = Form.useForm<CodeMetaStudioItem>();
+const PropItemSetting: React.FC = () => {
+  const [form] = Form.useForm<PropItem>();
   const [model, updateAction] = useModel<StudioModel>('studio');
 
   const handleOk = async () => {
     const itemFormData = await form.validateFields();
     form.resetFields();
-    model.updateOrAddStudioItem(itemFormData);
+    model.updateOrAddPropItem(itemFormData);
   }
 
   const handleCancel = () => {
     updateAction(() => {
-      model.currSettingStudioItem = undefined;
+      model.currSettingPropItem = undefined;
     })
   }
 
   useEffect(() => {
-    if (model.currSettingStudioItem) {
+    if (model.currSettingPropItem) {
       form.resetFields();
-      form.setFieldsValue(model.currSettingStudioItem);
+      form.setFieldsValue(model.currSettingPropItem);
     }
-  }, [model.currSettingStudioItem]);
+  }, [model.currSettingPropItem]);
 
   const renderSelectFormItem = () => {
     return (
@@ -57,13 +57,13 @@ const StudioItemSetting: React.FC = () => {
     )
   }
 
-  return (<Modal mask={false} destroyOnClose width={450} title="配置项" visible={!!model.currSettingStudioItem} onOk={handleOk} onCancel={handleCancel}>
+  return (<Modal mask={false} destroyOnClose width={450} title="配置项" visible={!!model.currSettingPropItem} onOk={handleOk} onCancel={handleCancel}>
     <Form form={form} labelAlign="right" labelCol={{ span: 6 }} wrapperCol={{ span: 18 }} >
       <Form.Item name="label" label="名称" rules={[{ required: true }]}>
         <Input />
       </Form.Item>
       <Form.Item label="类型" name="type" rules={[{ required: true }]}>
-        <Select disabled={!!model.currSettingStudioItem?.id} options={[
+        <Select disabled={!!model.currSettingPropItem?.id} options={[
           { label: '文本', value: 'input' },
           { label: '日期', value: 'date-picker' },
           { label: '开关', value: 'switch' },
@@ -95,4 +95,4 @@ const StudioItemSetting: React.FC = () => {
   </Modal>)
 }
 
-export default StudioItemSetting;
+export default PropItemSetting;

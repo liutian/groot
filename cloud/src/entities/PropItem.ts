@@ -1,5 +1,6 @@
 import { Cascade, Collection, Entity, Enum, ManyToOne, OneToMany, OneToOne, Property } from "@mikro-orm/core";
 import { BaseEntity } from "./BaseEntity";
+import { Component } from "./Component";
 import { ComponentVersion } from "./ComponentVersion";
 import { PropBlock } from "./PropBlock";
 import { PropGroup } from "./PropGroup";
@@ -39,19 +40,19 @@ export class PropItem extends BaseEntity {
   templateBlock?: PropBlock;
 
   @Property()
-  isRootPropKey = false;
+  rootPropKey = false;
 
   @ManyToOne()
   componentVersion: ComponentVersion;
-
-  @Property({ persist: false })
-  componentVersionId?: number;
 
   @Property({ columnType: 'double' })
   order: number;
 
   @Property({ persist: false })
   blockId?: number;
+
+  @ManyToOne()
+  component: Component;
 }
 
 export enum PropItemType {

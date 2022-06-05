@@ -1,31 +1,31 @@
 import { LeftOutlined, SettingFilled, SettingOutlined } from '@ant-design/icons';
-import Studio from '@model/Studio';
+import StudioModel from '@model/StudioModel';
 import { useModel } from '@util/robot';
 import { Badge, Button, Col, Row } from 'antd';
 import { useEffect, useRef, useState } from 'react';
-import StudioBlock from '../StudioBlock';
-import StudioGroup from '../StudioGroup';
+import PropBlockStudio from '../PropBlockStudio';
+import PropGroupStudio from '../PropGroupStudio';
 import styles from './index.module.less';
 
 
 type PropsType = {
-  item: CodeMetaStudioItem
+  item: PropItem
 }
 
-const ArrayObjectPanel: React.FC<PropsType> = ({ item: studioItem }) => {
-  const [model] = useModel<Studio>('studio');
+const ArrayObjectPanel: React.FC<PropsType> = ({ item: propItem }) => {
+  const [model] = useModel<StudioModel>('studio');
   const [settingMode, setSettingMode] = useState(false);
 
-  const templateBlock = studioItem.templateBlock!;
+  const templateBlock = propItem.templateBlock!;
 
   const preTemplateBlockRef = useRef(JSON.stringify(templateBlock));
 
-  const studioGroup = studioItem.valueOfGroup!;
+  const propGroup = propItem.valueOfGroup!;
 
   useEffect(() => {
-    model.innerTempStudioGroupMap.set(studioGroup.id, studioGroup);
+    model.innerTempPropGroupMap.set(propGroup.id, propGroup);
     return () => {
-      model.innerTempStudioGroupMap.delete(studioGroup.id);
+      model.innerTempPropGroupMap.delete(propGroup.id);
     }
   }, [])
 
@@ -42,10 +42,10 @@ const ArrayObjectPanel: React.FC<PropsType> = ({ item: studioItem }) => {
 
       if (JSON.stringify(templateBlock) !== preTemplateBlockRef.current) {
         preTemplateBlockRef.current = JSON.stringify(templateBlock)
-        studioGroup.propBlockList = [];
+        propGroup.propBlockList = [];
       }
     } else {
-      studioGroup.propBlockList.forEach((block) => {
+      propGroup.propBlockList.forEach((block) => {
         const formInstance = model.blockFormInstanceMap.get(block.id);
         const formData = formInstance?.getFieldsValue();
         block.propItemList.forEach((item) => {
@@ -58,7 +58,7 @@ const ArrayObjectPanel: React.FC<PropsType> = ({ item: studioItem }) => {
   }
 
   const closePanel = () => {
-    model.popHandUpStudioItem(studioGroup, templateBlock);
+    model.popHandUpPropItem(propGroup, templateBlock);
   }
 
   return <div className={styles.container}>
@@ -66,10 +66,10 @@ const ArrayObjectPanel: React.FC<PropsType> = ({ item: studioItem }) => {
       <Row>
         <Col span={5} >
           <Button type="link" disabled={settingMode} icon={<LeftOutlined />} onClick={closePanel}></Button>
-          {model.handUpStudioItemStack.length > 1 ? <Badge count={model.handUpStudioItemStack.length} color="#aaa"></Badge> : null}
+          {model.handUpPropItemStack.length > 1 ? <Badge count={model.handUpPropItemStack.length} color="#aaa"></Badge> : null}
         </Col>
         <Col span={16} style={{ textAlign: 'center' }}>
-          {studioItem.label}
+          {propItem.label}
         </Col>
         <Col span={3} style={{ textAlign: 'right' }}>
           <Button type="link" icon={settingMode ? <SettingFilled /> : <SettingOutlined />} onClick={() => switchSettingMode()}></Button>
@@ -77,7 +77,7 @@ const ArrayObjectPanel: React.FC<PropsType> = ({ item: studioItem }) => {
       </Row>
     </div>
     <div className={styles.content}>
-      {settingMode ? <StudioBlock templateMode block={templateBlock} /> : <StudioGroup innerTemplateBlock={templateBlock} group={studioGroup} />}
+      {settingMode ? <PropBlockStudio templateMode block={templateBlock} /> : <PropGroupStudio innerTemplateBlock={templateBlock} group={propGroup} />}
     </div>
   </div>
 }

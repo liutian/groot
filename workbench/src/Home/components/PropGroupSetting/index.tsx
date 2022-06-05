@@ -1,9 +1,9 @@
 import { useModel } from "@util/robot";
 import { Form, Input, Modal } from "antd";
 import React, { useEffect, useRef } from "react";
-import StudioModel from '@model/Studio';
+import StudioModel from '@model/StudioModel';
 
-const StudioGroupSetting: React.FC = () => {
+const PropGroupSetting: React.FC = () => {
   const [form] = Form.useForm();
   const [model, updateAction] = useModel<StudioModel>('studio');
   const inputRef = useRef<any>(null);
@@ -11,27 +11,27 @@ const StudioGroupSetting: React.FC = () => {
   const handleOk = async () => {
     const groupFormData = await form.validateFields();
     form.resetFields();
-    model.updateOrAddStudioGroup(groupFormData);
+    model.updateOrAddPropGroup(groupFormData);
   }
 
   const handleCancel = () => {
     updateAction(() => {
-      model.currSettingStudioGroup = undefined;
+      model.currSettingPropGroup = undefined;
     })
   }
 
   useEffect(() => {
-    if (model.currSettingStudioGroup) {
+    if (model.currSettingPropGroup) {
       form.resetFields();
-      form.setFieldsValue(model.currSettingStudioGroup);
+      form.setFieldsValue(model.currSettingPropGroup);
 
       setTimeout(() => {
         inputRef.current.focus({ cursor: 'all' });
       }, 300)
     }
-  }, [model.currSettingStudioGroup]);
+  }, [model.currSettingPropGroup]);
 
-  return (<Modal mask={false} width={400} title="配置组" visible={!!model.currSettingStudioGroup} onOk={handleOk} onCancel={handleCancel}>
+  return (<Modal mask={false} width={400} title="配置组" visible={!!model.currSettingPropGroup} onOk={handleOk} onCancel={handleCancel}>
     <Form form={form} labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
       <Form.Item name="name" label="名称" rules={[{ required: true }]}>
         <Input ref={inputRef} />
@@ -44,4 +44,4 @@ const StudioGroupSetting: React.FC = () => {
 }
 
 
-export default StudioGroupSetting;
+export default PropGroupSetting;

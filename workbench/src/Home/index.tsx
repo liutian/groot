@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 
 import { registerModel, useModel } from '@util/robot';
-import StudioModel from '@model/Studio';
+import StudioModel from '@model/StudioModel';
 import { serverPath } from 'config';
 
 import styles from './index.module.less';
 import SidePanel from './components/SidePanel';
 import WidgetWindow from './components/WidgetWindow';
-import WorkbenchModel from '@model/Workbench';
+import WorkbenchModel from '@model/WorkbenchModel';
 import { useParams } from 'react-router-dom';
 
 const Home = () => {

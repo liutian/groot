@@ -20,41 +20,41 @@ interface Window {
 /**
  * 描述代码元数据配置的属性分组类型
  */
-type CodeMetaStudioGroup = {
+type PropGroup = {
   id: number,
   name: string,
   isRoot: boolean,
   propKey?: string,
-  propBlockList: CodeMetaStudioBlock[],
+  propBlockList: PropBlock[],
   relativeItemId?: number,
-  componentStudioId?: number,
+  componentId?: number,
   order: number,
-  templateBlock?: CodeMetaStudioBlock
+  templateBlock?: PropBlock
 }
 
 /**
  * 描述代码元数据配置的属性配置块类型
  */
-type CodeMetaStudioBlock = {
+type PropBlock = {
   id: number,
   name: string,
   propKey?: string,
-  propItemList: CodeMetaStudioItem[],
+  propItemList: PropItem[],
   groupId: number,
   relativeItemId?: number,
   isRootPropKey?: boolean,
-  componentStudioId?: number,
+  componentId?: number,
   order: number
 }
 
 /**
  * 描述代码元数据配置的属性配置项类型
  */
-type CodeMetaStudioItem = {
+type PropItem = {
   id: number,
   label: string,
   propKey: string,
-  type: StudioItemType,
+  type: PropItemType,
   defaultValue?: any,
   optionList?: [{
     label: string,
@@ -65,10 +65,10 @@ type CodeMetaStudioItem = {
   span?: number,
   isRootPropKey?: boolean,
   valueOfGroupId?: number,
-  valueOfGroup?: CodeMetaStudioGroup,
+  valueOfGroup?: PropGroup,
   templateBlockId?: number,
-  templateBlock?: CodeMetaStudioBlock,
-  componentStudioId?: number,
+  templateBlock?: PropBlock,
+  componentId?: number,
   order: number
 }
 
@@ -78,28 +78,28 @@ type CodeMeta = {
   id: number,
   key: string,
   defaultValue: any,
-  type: StudioItemType
+  type: PropItemType
 }
 
-type StudioItemType = 'input' | 'date-picker' | 'switch' | 'select' | 'radio' | 'checkbox' | 'array-object';
+type PropItemType = 'input' | 'date-picker' | 'switch' | 'select' | 'radio' | 'checkbox' | 'array-object';
 
 
 type ComponentVersion = {
   id: number,
   name: string,
   publish: boolean,
-  groupList?: CodeMetaStudioGroup[],
-  blockList?: CodeMetaStudioBlock[],
-  itemList?: CodeMetaStudioItem[],
+  groupList?: PropGroup[],
+  blockList?: PropBlock[],
+  itemList?: PropItem[],
 
-  rootGroupList?: CodeMetaStudioGroup[]
+  rootGroupList?: PropGroup[]
 }
 
 type ComponentInstance = {
   id: number,
   name: string,
   path?: string,
-  valueList: StudioValue[],
+  valueList: PropValue[],
 }
 
 type Release = {
@@ -108,7 +108,7 @@ type Release = {
   lock: boolean
 }
 
-type StudioValue = {
+type PropValue = {
   id: number,
   keyChain?: string,
   value: string,

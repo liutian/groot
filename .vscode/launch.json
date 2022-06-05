@@ -21,8 +21,7 @@
       "sourceMaps": true,
       "cwd": "${workspaceRoot}/cloud",
       "console": "integratedTerminal",
-      "protocol": "inspector",
-      "runtimeExecutable": "${env:HOME}/.nvm/versions/node/v16.14.2/bin/node",
+      "runtimeVersion": "16"
     }
   ]
 }
