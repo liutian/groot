@@ -85,20 +85,6 @@ function Studio() {
     })
   }
 
-  // tab右上角模式切换按钮
-  const renderSettingSwitchBtn = () => {
-    return <>
-      <Button type="link" icon={model.manualMode ? <EditFilled /> : <EditOutlined />} onClick={() => {
-        model.switchManualMode();
-      }}>
-      </Button>
-      <Button type="link" icon={model.editMode ? <SettingFilled /> : <SettingOutlined />} onClick={() => {
-        model.switchEditMode();
-      }}>
-      </Button>
-    </>
-  }
-
   const renderTabContent = () => {
     const list = model.component.version.rootGroupList!.map((group) => {
       return (<Tabs.TabPane key={group.id} tab={renderTabBarItem(group)} >
@@ -114,7 +100,7 @@ function Studio() {
   /////////////////////////////////////////////////////////////////////////////
   return <>
     <DndProvider backend={HTML5Backend}>
-      <Tabs type="card" size="small" className="studio-tabs" tabBarExtraContent={renderSettingSwitchBtn()} activeKey={model.activeGroupId?.toString()}
+      <Tabs size="small" className="studio-tabs" activeKey={model.activeGroupId?.toString()}
         onChange={tabOnChange}
         renderTabBar={renderTabBar} >
         {renderTabContent()}

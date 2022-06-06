@@ -26,7 +26,7 @@ const SidePanel: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
     <SideToolBar className={styles.navContainer} />
 
     <div className={styles.content}>
-      {model.manualMode ? <Studio /> : null}
+      {model.manualMode ? null : <Studio />}
     </div>
 
     <SideFooter className={styles.footerContainer} />

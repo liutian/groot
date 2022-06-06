@@ -33,6 +33,10 @@ export default class StudioModel {
    */
   public manualMode = false;
   /**
+   * json模式
+   */
+  public jsonMode = false;
+  /**
    * 配置块所属表单实例
    */
   public blockFormInstanceMap = new Map<number, FormInstance>();
@@ -332,6 +336,8 @@ export default class StudioModel {
   }
 
   public switchEditMode = () => {
+    this.jsonMode = false;
+    this.manualMode = false;
     if (this.editMode) {
       this.editMode = false;
       this.component.version.rootGroupList!.forEach((group) => {
@@ -348,10 +354,22 @@ export default class StudioModel {
   }
 
   public switchManualMode = () => {
+    this.jsonMode = false;
+    this.editMode = false;
     if (this.manualMode) {
       this.manualMode = false;
     } else {
       this.manualMode = true;
+    }
+  }
+
+  public switchJSONMode = () => {
+    this.manualMode = false;
+    this.editMode = false;
+    if (this.jsonMode) {
+      this.jsonMode = false;
+    } else {
+      this.jsonMode = true;
     }
   }
 

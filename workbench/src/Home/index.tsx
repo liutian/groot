@@ -33,7 +33,13 @@ const Home = () => {
     //   setPageName(`groot::{"path": "${pageData.path}","name":"${pageData.name}"}`);
     // });
 
-    let url = `${serverPath}/component?id=${componentId}`;
+    let url = `${serverPath}/component`;
+    if (studioModel.editMode) {
+      url = `${url}/edit?id=${componentId}`;
+    } else {
+      url = `${url}?id=${componentId}`;
+    }
+
     if (searchParams.get('releaseId')) {
       url += `&releaseId=${searchParams.get('releaseId')}`;
     } else if (searchParams.get('versionId')) {
