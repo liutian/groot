@@ -39,17 +39,20 @@ export class Component extends BaseEntity {
    * 组件最新版本
    */
   @OneToOne()
-  currentVersion?: ComponentVersion;// 此处必须为可选，否则会造成component和version循环依赖
+  recentVersion?: ComponentVersion;// 此处必须为可选，否则会造成component和version循环依赖
 
   @ManyToOne()
   project: Project;
 
   @Property({ persist: false })
-  version?: ComponentVersion;
+  version: ComponentVersion;
 
   @Property({ persist: false })
-  instance?: ComponentInstance;
+  instance: ComponentInstance;
 
   @Property({ persist: false })
-  release?: Release;
+  release: Release;
+
+  @Property({ persist: false })
+  releaseList: Release[];
 }

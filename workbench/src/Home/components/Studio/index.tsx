@@ -92,8 +92,8 @@ function Studio() {
         model.switchManualMode();
       }}>
       </Button>
-      <Button type="link" icon={model.settingMode ? <SettingFilled /> : <SettingOutlined />} onClick={() => {
-        model.switchSettingMode();
+      <Button type="link" icon={model.editMode ? <SettingFilled /> : <SettingOutlined />} onClick={() => {
+        model.switchEditMode();
       }}>
       </Button>
     </>
@@ -108,7 +108,7 @@ function Studio() {
 
     return <>
       {list}
-      {model.settingMode ? <Tabs.TabPane key="__add" tab={<PlusOutlined />}></Tabs.TabPane> : null}
+      {model.editMode ? <Tabs.TabPane key="__add" tab={<PlusOutlined />}></Tabs.TabPane> : null}
     </>
   }
   /////////////////////////////////////////////////////////////////////////////

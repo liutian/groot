@@ -42,7 +42,7 @@ const Home = () => {
     fetch(url).then(r => r.json()).then(({ data }: { data: Component }) => {
       workbenchUpdateAction(() => {
         workbenchModel.loadComponent = 'over';
-        studioModel.init(data);
+        studioModel.init(data, !!searchParams.get('editMode'));
       })
     })
 

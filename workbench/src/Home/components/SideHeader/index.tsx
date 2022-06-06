@@ -1,4 +1,6 @@
 import { BarsOutlined, LayoutOutlined, MenuOutlined, SyncOutlined } from "@ant-design/icons";
+import StudioModel from "@model/StudioModel";
+import { useModel } from "@util/robot";
 import { Button, Dropdown, Input, Menu, Radio, Tag, Typography } from "antd";
 import { HTMLAttributes, useState } from "react";
 
@@ -7,8 +9,9 @@ import styles from './index.module.less';
 const SideHeader: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
   // 搜索模式
   const [searchMode, setSearchMode] = useState(false);
+  const [studioModel] = useModel<StudioModel>('studio');
   // 搜索关键字
-  const [searchText, setSearchText] = useState('');
+  const [searchText, setSearchText] = useState(studioModel.component.name);
 
   // 搜索结果
   const renderSearchOverlay = () => {
@@ -46,7 +49,7 @@ const SideHeader: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
   const renderReleaseOverlay = () => {
     return <div className={styles.releaseOverlay}>
       <div className={styles.shortcutRelease}>
-        <Radio.Group >
+        <Radio.Group value={studioModel.currEnv}>
           <Radio.Button value="dev">dev</Radio.Button>
           <Radio.Button value="qa">qa</Radio.Button>
           <Radio.Button value="pl">pl</Radio.Button>
@@ -55,12 +58,21 @@ const SideHeader: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
       </div>
 
       <div className={styles.recentRelease}>
-        <div className={styles.releaseItem}>
-          <div className={styles.releaseItemText}>v0.0.1</div>
-          <div >
-            <Tag>dev</Tag>
-          </div>
-        </div>
+        {
+          studioModel.component.releaseList.map((release) => {
+            return (
+              <div className={styles.releaseItem} key={release.id}>
+                <div className={styles.releaseItemText}>{release.name}</div>
+                <div >
+                  <Tag hidden={studioModel.component.project.devRelease.id !== release.id}>dev</Tag>
+                  <Tag hidden={studioModel.component.project.qaRelease?.id !== release.id}>qa</Tag>
+                  <Tag hidden={studioModel.component.project.onlineRelease.id !== release.id}>online</Tag>
+                  <Tag hidden={studioModel.component.project.plRelease?.id !== release.id}>pl</Tag>
+                </div>
+              </div>
+            )
+          })
+        }
 
         <div className={`${styles.releaseItem} ${styles.releaseItemMore}`}>
           <a href="">查看所有</a>
@@ -95,14 +107,22 @@ const SideHeader: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
     ]} />
   }
 
-  return <div {...props}>
-    <div className={styles.currRelease}>
+  const renderCurrRelease = () => {
+    if (!studioModel.component.release) {
+      return null;
+    }
+
+    return <div className={styles.currRelease}>
       <Dropdown overlay={renderReleaseOverlay()} trigger={['click']} >
         <Button title="迭代" type="ghost">
-          v2.2.1
+          {studioModel.component.release.name}
         </Button>
       </Dropdown>
-    </div>
+    </div>;
+  }
+
+  return <div {...props}>
+    {renderCurrRelease()}
 
     <div className={`${styles.componentTitle} ${searchMode ? styles.searchMode : ''}`}>
       <Dropdown overlay={renderSearchOverlay()} visible={searchMode}>

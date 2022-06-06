@@ -41,7 +41,7 @@ export class DatabaseSeeder extends Seeder {
       name: 'v0.0.1',
       component
     });
-    component.currentVersion = componentVersion;
+    component.recentVersion = componentVersion;
     await em.persistAndFlush(componentVersion);
 
     const group = em.create(PropGroup, {

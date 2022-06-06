@@ -25,7 +25,7 @@ function PropBlockStudio({ block, dynamic, templateMode }: PropType) {
     }
 
     const renderItemSetting = () => {
-      if (!model.settingMode || dynamic === true) return null;
+      if (!model.editMode || dynamic === true) return null;
 
 
       return (<Space size="small">

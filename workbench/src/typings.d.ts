@@ -123,8 +123,15 @@ type Component = {
   version: ComponentVersion,
   instance?: ComponentInstance,
   release?: Release,
+  releaseList: Release[],
+  project: Project,
+  versionList: ComponentVersion[]
 }
 
 type Project = {
   name: string,
+  devRelease: Release;
+  qaRelease?: Release;
+  plRelease?: Release;
+  onlineRelease: Release;
 }

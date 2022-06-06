@@ -16,8 +16,13 @@ export class AppController {
   ) { }
 
   @Get('/component')
-  async getHello(@Query('id') id: number, @Query('versionId') versionId?: number, @Query('releaseId') releaseId?: number) {
-    return this.componentService.getComponent(id, versionId, releaseId);
+  async getComponent(@Query('id') id: number, @Query('releaseId') releaseId?: number) {
+    return this.componentService.getComponentForRelease(id, releaseId);
+  }
+
+  @Get('/component/edit')
+  async getComponentForEdit(@Query('id') id: number, @Query('versionId') versionId?: number) {
+    return this.componentService.getComponentForVersion(id, versionId);
   }
 
   @Post('/group/add')

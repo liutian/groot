@@ -19,7 +19,7 @@ const PropGroupStudio: React.FC<PropsType> = ({ group, innerTemplateBlock }) => 
   }
 
   const renderBlockSetting = (block: PropBlock, blockIndex: number) => {
-    if (!model.settingMode) return null;
+    if (!model.editMode) return null;
 
     return (<Space size="small">
       <Typography.Link onClick={(e) => {
@@ -72,7 +72,7 @@ const PropGroupStudio: React.FC<PropsType> = ({ group, innerTemplateBlock }) => 
       }
     </Collapse>
     {
-      model.settingMode ? (
+      model.editMode ? (
         <div style={{ padding: group.root ? '16px' : '16px 0 0' }}>
           <Button hidden={!group.root} type="primary" ghost block onClick={() => {
             model.showPropBlockSettinngForCreate(group);

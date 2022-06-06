@@ -27,7 +27,7 @@ export default class StudioModel {
   /**
    * 设置配置项模式
    */
-  public settingMode = false;
+  public editMode = false;
   /**
    * 手动编码配置模式
    */
@@ -45,11 +45,23 @@ export default class StudioModel {
 
   public innerTempPropGroupMap = new Map<number, PropGroup>();
 
-  public init(component: Component) {
+  public currEnv: 'dev' | 'qa' | 'pl' | 'online' = 'dev';
+
+  public init(component: Component, editMode = false) {
     this.component = component;
     this.buildPropGroups();
     this.activeGroupId = this.component.version.rootGroupList![0]?.id;
-    this.settingMode = true;
+    this.editMode = editMode;
+
+    if (this.component.release!.id === this.component.project.devRelease.id) {
+      this.currEnv = 'dev';
+    } else if (this.component.release!.id === this.component.project.qaRelease?.id) {
+      this.currEnv = 'qa';
+    } else if (this.component.release!.id === this.component.project.plRelease?.id) {
+      this.currEnv = 'pl';
+    } else if (this.component.release!.id === this.component.project.onlineRelease.id) {
+      this.currEnv = 'online';
+    }
   }
 
   // todo
@@ -319,9 +331,9 @@ export default class StudioModel {
     }
   }
 
-  public switchSettingMode = () => {
-    if (this.settingMode) {
-      this.settingMode = false;
+  public switchEditMode = () => {
+    if (this.editMode) {
+      this.editMode = false;
       this.component.version.rootGroupList!.forEach((group) => {
         group.propBlockList.forEach((block) => {
           const values = this.blockFormInstanceMap.get(block.id)?.getFieldsValue();
@@ -331,7 +343,7 @@ export default class StudioModel {
         })
       })
     } else {
-      this.settingMode = true;
+      this.editMode = true;
     }
   }
 

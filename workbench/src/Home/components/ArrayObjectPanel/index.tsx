@@ -14,7 +14,7 @@ type PropsType = {
 
 const ArrayObjectPanel: React.FC<PropsType> = ({ item: propItem }) => {
   const [model] = useModel<StudioModel>('studio');
-  const [settingMode, setSettingMode] = useState(false);
+  const [editMode, setEditMode] = useState(false);
 
   const templateBlock = propItem.templateBlock!;
 
@@ -29,9 +29,9 @@ const ArrayObjectPanel: React.FC<PropsType> = ({ item: propItem }) => {
     }
   }, [])
 
-  const switchSettingMode = () => {
+  const switchEditMode = () => {
     // 从设置转换为配置
-    if (settingMode) {
+    if (editMode) {
       const formInstance = model.blockFormInstanceMap.get(templateBlock.id)!;
       const defaultData = formInstance.getFieldsValue();
 
@@ -54,7 +54,7 @@ const ArrayObjectPanel: React.FC<PropsType> = ({ item: propItem }) => {
       })
     }
 
-    setSettingMode(mode => !mode);
+    setEditMode(mode => !mode);
   }
 
   const closePanel = () => {
@@ -65,19 +65,19 @@ const ArrayObjectPanel: React.FC<PropsType> = ({ item: propItem }) => {
     <div className={styles.header}>
       <Row>
         <Col span={5} >
-          <Button type="link" disabled={settingMode} icon={<LeftOutlined />} onClick={closePanel}></Button>
+          <Button type="link" disabled={editMode} icon={<LeftOutlined />} onClick={closePanel}></Button>
           {model.handUpPropItemStack.length > 1 ? <Badge count={model.handUpPropItemStack.length} color="#aaa"></Badge> : null}
         </Col>
         <Col span={16} style={{ textAlign: 'center' }}>
           {propItem.label}
         </Col>
         <Col span={3} style={{ textAlign: 'right' }}>
-          <Button type="link" icon={settingMode ? <SettingFilled /> : <SettingOutlined />} onClick={() => switchSettingMode()}></Button>
+          <Button type="link" icon={editMode ? <SettingFilled /> : <SettingOutlined />} onClick={() => switchEditMode()}></Button>
         </Col>
       </Row>
     </div>
     <div className={styles.content}>
-      {settingMode ? <PropBlockStudio templateMode block={templateBlock} /> : <PropGroupStudio innerTemplateBlock={templateBlock} group={propGroup} />}
+      {editMode ? <PropBlockStudio templateMode block={templateBlock} /> : <PropGroupStudio innerTemplateBlock={templateBlock} group={propGroup} />}
     </div>
   </div>
 }
