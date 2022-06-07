@@ -21,7 +21,7 @@ export class PropItem extends BaseEntity {
   @Property({ length: 1024 })
   defaultValue?: string;
 
-  @OneToMany({ entity: () => PropValueOption, mappedBy: option => option.propItem, cascade: [Cascade.ALL] })
+  @OneToMany({ entity: () => PropValueOption, mappedBy: option => option.propItem, cascade: [Cascade.ALL], orphanRemoval: true })
   optionList = new Collection<PropValueOption>(this);
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'blockId' })

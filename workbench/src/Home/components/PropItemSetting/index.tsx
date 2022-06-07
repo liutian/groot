@@ -30,7 +30,7 @@ const PropItemSetting: React.FC = () => {
   const renderSelectFormItem = () => {
     return (
       <Form.Item label="选项" >
-        <Form.List name="options" initialValue={[{}]} >
+        <Form.List name="optionList" initialValue={[{}]} >
           {(fields, { add, remove }) => {
             return <>
               {fields.map(({ key, name, ...restField }, index) => {

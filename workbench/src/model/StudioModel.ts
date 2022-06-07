@@ -276,7 +276,6 @@ export default class StudioModel {
       newItem.optionList = undefined;
     }
 
-
     if (newItem.id) {
       fetch(`${serverPath}/item/update`, {
         method: 'POST',

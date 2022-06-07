@@ -1,10 +1,10 @@
-import { EntityManager, RequestContext, wrap } from '@mikro-orm/core';
+import { RequestContext } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { PropBlock } from 'entities/PropBlock';
 import { PropGroup } from 'entities/PropGroup';
 import { PropItem, PropItemType } from 'entities/PropItem';
+import { PropValueOption } from 'entities/PropValueOption';
 import { pick } from 'util.ts/common';
-import { omitProps } from 'util.ts/ormUtil';
 import { PropBlockService } from './PropBlock.service';
 import { PropGroupService } from './PropGroup.service';
 
@@ -33,7 +33,7 @@ export class PropItemService {
       const firstItem = await em.findOne(PropItem, { block }, { orderBy: { order: 'DESC' } });
 
       newItem = em.create(PropItem, {
-        ...pick(rawItem, ['label', 'propKey', 'rootPropKey', 'type', 'span', 'optionList']),
+        ...pick(rawItem, ['label', 'propKey', 'rootPropKey', 'type', 'span']),
         block,
         group: block.group,
         component: block.component,
@@ -42,6 +42,18 @@ export class PropItemService {
       });
 
       await em.flush();
+
+      const optionList = rawItem.optionList as any as PropValueOption[] || [];
+      for (let optionIndex = 0; optionIndex < optionList.length; optionIndex++) {
+        const option = optionList[optionIndex];
+        em.create(PropValueOption, {
+          ...option,
+          componentVersion: block.componentVersion,
+          component: block.component,
+          propItem: newItem
+        });
+        await em.flush();
+      }
 
       if (newItem.type === PropItemType.ARRAY_OBJECT) {
         const rawGroup = {
@@ -157,19 +169,31 @@ export class PropItemService {
   async update(rawItem: PropItem) {
     const em = RequestContext.getEntityManager();
 
-    const item = await em.findOne(PropItem, rawItem.id, { populate: ['optionList'] });
+    const propItem = await em.findOne(PropItem, rawItem.id, { populate: ['optionList'] });
 
-    pick(rawItem, ['label', 'propKey', 'rootPropKey', 'type', 'span'], item);
-
-    if (rawItem.optionList && rawItem.optionList.length) {
-      wrap(item).assign({
-        optionList: [...rawItem.optionList]
-      })
-    }
+    pick(rawItem, ['label', 'propKey', 'rootPropKey', 'type', 'span'], propItem);
 
     await em.flush();
 
-    const block = await em.findOne(PropBlock, item.block);
+    if (rawItem.optionList && rawItem.optionList.length) {
+      propItem.optionList.removeAll();
+
+      await em.flush();
+
+      const optionList = rawItem.optionList as any as PropValueOption[] || [];
+      for (let optionIndex = 0; optionIndex < optionList.length; optionIndex++) {
+        const option = optionList[optionIndex];
+        em.create(PropValueOption, {
+          ...option,
+          componentVersion: propItem.componentVersion,
+          component: propItem.component,
+          propItem: propItem
+        });
+        await em.flush();
+      }
+    }
+
+    const block = await em.findOne(PropBlock, propItem.block);
     if (block.isTemplate) {
       this.clearSubBlockFromTemplate((block.group as any) as number);
     }

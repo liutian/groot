@@ -6,7 +6,6 @@ import { PropGroup } from 'entities/PropGroup';
 import { PropItem, PropItemType } from 'entities/PropItem';
 import { PropValueOption } from 'entities/PropValueOption';
 import { pick } from 'util.ts/common';
-import { omitProps } from 'util.ts/ormUtil';
 import { PropGroupService } from './PropGroup.service';
 
 
@@ -96,11 +95,6 @@ export class PropBlockService {
       }
 
       await em.commit();
-
-      omitProps(newBlock, [
-        'componentVersion',
-        'propItemList.componentVersion',
-      ]);
 
       return newBlock;
     } catch (e) {
