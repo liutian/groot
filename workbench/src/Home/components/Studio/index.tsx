@@ -1,5 +1,5 @@
-import { Button, Dropdown, Menu, MenuProps, Tabs } from "antd";
-import { EditFilled, EditOutlined, PlusOutlined, SettingFilled, SettingOutlined } from '@ant-design/icons';
+import { Dropdown, Menu, MenuProps, Tabs, Typography } from "antd";
+import { PlusOutlined } from '@ant-design/icons';
 import React from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -24,7 +24,7 @@ function Studio() {
   const renderTabBar = (props: any, DefaultTabBar: React.ElementType) => (
     <DefaultTabBar {...props}>
       {(node: React.ReactElement) => (
-        <DraggableTabNode key={node.key} nodeKey={node.key as string} moveNode={model.movePropGroup}>
+        <DraggableTabNode key={node.key} style={{ marginRight: '15px' }} nodeKey={node.key as string} moveNode={model.movePropGroup}>
           {node as any}
         </DraggableTabNode>
       )}
@@ -79,7 +79,6 @@ function Studio() {
         name: `分组${nameSuffix}`,
         root: true,
         propBlockList: [],
-        componentId: model.component.id,
         order: 0
       };
     })
@@ -94,7 +93,7 @@ function Studio() {
 
     return <>
       {list}
-      {model.editMode ? <Tabs.TabPane key="__add" tab={<PlusOutlined />}></Tabs.TabPane> : null}
+      {model.editMode ? <Tabs.TabPane key="__add" tab={<Typography.Link><PlusOutlined /></Typography.Link>}></Tabs.TabPane> : null}
     </>
   }
   /////////////////////////////////////////////////////////////////////////////

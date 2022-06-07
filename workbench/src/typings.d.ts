@@ -30,6 +30,7 @@ type PropGroup = {
   templateBlock?: PropBlock,
   order: number,
   componentId?: number,
+  componentVersionId?: number
 }
 
 /**

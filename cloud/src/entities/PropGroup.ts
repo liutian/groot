@@ -40,4 +40,7 @@ export class PropGroup extends BaseEntity {
 
   @ManyToOne()
   component: Component;
+
+  @Property({ persist: false })
+  componentId?: number;
 }

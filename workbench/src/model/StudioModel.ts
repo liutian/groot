@@ -192,6 +192,8 @@ export default class StudioModel {
 
   public updateOrAddPropGroup = (group: PropGroup) => {
     const newGroup = Object.assign(this.currSettingPropGroup, group);
+    newGroup.componentId = this.component.id;
+    newGroup.componentVersionId = this.component.version.id;
 
     if (newGroup.id) {
       fetch(`${serverPath}/group/update`, {
@@ -214,9 +216,7 @@ export default class StudioModel {
           body: JSON.stringify(newGroup)
         }
       ).then(r => r.json()).then(({ data: groupData }) => {
-
         this.component.version.rootGroupList!.push(JSON.parse(JSON.stringify(groupData)));
-
         this.activeGroupId = groupData.id;
       })
     }

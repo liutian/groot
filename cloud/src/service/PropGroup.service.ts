@@ -1,5 +1,6 @@
 import { RequestContext } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
+import { Component } from 'entities/Component';
 import { ComponentVersion } from 'entities/ComponentVersion';
 import { PropGroup } from 'entities/PropGroup';
 import { PropItemType } from 'entities/PropItem';
@@ -13,6 +14,7 @@ export class PropGroupService {
   async add(group: PropGroup, root = true) {
     const em = RequestContext.getEntityManager();
 
+    const component = await em.findOne(Component, group.componentId);
     const componentVersion = await em.findOne(ComponentVersion, group.componentVersionId);
     const firstGroup = await em.findOne(PropGroup, { componentVersion: componentVersion }, { orderBy: { order: 'DESC' } });
 
@@ -20,6 +22,7 @@ export class PropGroupService {
       ...pick(group, ['name', 'propKey']),
       componentVersion,
       root,
+      component,
       order: (firstGroup ? firstGroup.order : 0) + 1000
     });
 

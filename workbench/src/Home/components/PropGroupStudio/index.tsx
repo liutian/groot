@@ -80,6 +80,7 @@ const PropGroupStudio: React.FC<PropsType> = ({ group, innerTemplateBlock }) => 
             添加
           </Button>
 
+          {/* 内嵌模式  */}
           <Button hidden={group.root} disabled={!group.templateBlock?.propItemList.length} type="primary" ghost block onClick={() => {
             model.addBlockFromTemplate(group.id)
           }}>

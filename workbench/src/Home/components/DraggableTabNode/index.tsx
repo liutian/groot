@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { HTMLAttributes, useRef } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import './index.less'
 
@@ -8,9 +8,9 @@ type PramsType = {
   nodeKey: string,
   children: React.ReactChild,
   moveNode: (dragKey: string, hoverKey: string) => void
-}
+} & HTMLAttributes<HTMLDivElement>
 
-const DraggableTabNode: React.FC<PramsType> = ({ nodeKey, children, moveNode }) => {
+const DraggableTabNode: React.FC<PramsType> = ({ nodeKey, children, moveNode, ...props }) => {
   const ref = useRef({} as any);
 
   // 实在理解不动，拖拽这种强UI交互的逻辑代码用hook方式写
@@ -41,7 +41,7 @@ const DraggableTabNode: React.FC<PramsType> = ({ nodeKey, children, moveNode }) 
   drop(drag(ref));
 
   return (
-    <div ref={ref} className={isOver ? dropClassName : ''}>
+    <div ref={ref} {...props} className={isOver ? dropClassName : ''}>
       {children}
     </div>
   );
