@@ -27,18 +27,14 @@ export class PropBlockService {
     const order = block.order ? block.order : (firstBlock ? firstBlock.order + 1000 : 1000);
 
     const newBlock = em.create(PropBlock, {
-      ...pick(block, ['name', 'propKey', 'rootPropKey']),
+      ...pick(block, ['name', 'propKey', 'rootPropKey', 'isTemplate']),
       group,
+      component: group.component,
       componentVersion: group.componentVersion,
       order
     });
 
     await em.flush();
-
-    omitProps(newBlock, [
-      'componentVersion',
-      'propItemList.componentVersion',
-    ]);
 
     return newBlock;
   }
@@ -122,7 +118,7 @@ export class PropBlockService {
     }
 
     if (!targetId) {
-      const firstBlock = await em.findOne(PropBlock, { group: originBlock.group, order: { $gt: 0 } }, { orderBy: { order: 'DESC' } });
+      const firstBlock = await em.findOne(PropBlock, { group: originBlock.group, isTemplate: false }, { orderBy: { order: 'DESC' } });
 
       originBlock.order = firstBlock ? firstBlock.order + 1000 : 1000;
     } else {
@@ -153,7 +149,7 @@ export class PropBlockService {
 
     const block = await em.findOne(PropBlock, blockId, {
       populate: [
-        'propItemList'
+        'propItemList.optionList'
       ]
     });
 
@@ -168,6 +164,12 @@ export class PropBlockService {
       const itemList = block.propItemList.getItems();
       for (let itemIndex = 0; itemIndex < itemList.length; itemIndex++) {
         const item = itemList[itemIndex];
+
+        for (let optionIndex = 0; optionIndex < item.optionList.length; optionIndex++) {
+          const option = item.optionList[optionIndex];
+          await em.removeAndFlush(option);
+        }
+
         await em.removeAndFlush(item);
         if (item.type === PropItemType.ARRAY_OBJECT) {
           innerGroupIds.push(item.valueOfGroup.id);
@@ -175,7 +177,6 @@ export class PropBlockService {
       }
 
       await em.removeAndFlush(block);
-
       await em.commit();
     } catch (e) {
       await em.rollback();

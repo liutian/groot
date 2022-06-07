@@ -29,7 +29,7 @@ export class PropGroup extends BaseEntity {
   @OneToOne({ serializer: value => value?.id, serializedName: 'templateBlockId' })
   templateBlock?: PropBlock;
 
-  @ManyToOne()
+  @ManyToOne({ serializer: value => value?.id, serializedName: 'componentVersionId' })
   componentVersion: ComponentVersion;
 
   @Property({ persist: false })
@@ -38,7 +38,7 @@ export class PropGroup extends BaseEntity {
   @Property({ columnType: 'double' })
   order: number;
 
-  @ManyToOne()
+  @ManyToOne({ serializer: value => value?.id, serializedName: 'componentId' })
   component: Component;
 
   @Property({ persist: false })

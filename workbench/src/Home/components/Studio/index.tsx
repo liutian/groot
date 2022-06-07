@@ -58,9 +58,9 @@ function Studio() {
       }
     ];
 
-    return <Dropdown overlayStyle={{ minWidth: '5em' }} overlay={<Menu items={items} />} trigger={['contextMenu']}>
+    return model.editMode ? (<Dropdown overlayStyle={{ minWidth: '5em' }} overlay={<Menu items={items} />} trigger={['contextMenu']}>
       <div>{group.name}</div>
-    </Dropdown>
+    </Dropdown>) : <div>{group.name}</div>
   }
 
   // tab点击切换事件

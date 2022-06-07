@@ -42,7 +42,7 @@ export class PropItem extends BaseEntity {
   @Property()
   rootPropKey = false;
 
-  @ManyToOne()
+  @ManyToOne({ serializer: value => value?.id, serializedName: 'componentVersionId' })
   componentVersion: ComponentVersion;
 
   @Property({ columnType: 'double' })
@@ -51,7 +51,7 @@ export class PropItem extends BaseEntity {
   @Property({ persist: false })
   blockId?: number;
 
-  @ManyToOne()
+  @ManyToOne({ serializer: value => value?.id, serializedName: 'componentId' })
   component: Component;
 }
 

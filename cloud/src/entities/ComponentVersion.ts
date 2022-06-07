@@ -11,7 +11,7 @@ export class ComponentVersion extends BaseEntity {
   @Property()
   name: string;
 
-  @ManyToOne()
+  @ManyToOne({ serializer: value => value?.id, serializedName: 'componentId' })
   component: Component;
 
   /**

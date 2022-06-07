@@ -10,7 +10,7 @@ export class PropValue extends BaseEntity {
   @Property()
   keyChain?: string;
 
-  @ManyToOne()
+  @ManyToOne({ serializer: value => value?.id, serializedName: 'propItemId' })
   propItem: PropItem;
 
   @Property()
@@ -19,6 +19,6 @@ export class PropValue extends BaseEntity {
   @ManyToMany(() => ComponentInstance, instance => instance.propValueList, { owner: true })
   componentInstanceList = new Collection<ComponentInstance>(this);
 
-  @ManyToOne()
+  @ManyToOne({ serializer: value => value?.id, serializedName: 'componentId' })
   component: Component;
 }

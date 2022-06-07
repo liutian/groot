@@ -12,12 +12,12 @@ export class PropValueOption extends BaseEntity {
   @Property()
   value: string;
 
-  @ManyToOne()
+  @ManyToOne({ serializer: value => value?.id, serializedName: 'propItemId' })
   propItem: PropItem;
 
-  @ManyToOne()
+  @ManyToOne({ serializer: value => value?.id, serializedName: 'componentVersionId' })
   componentVersion: ComponentVersion;
 
-  @ManyToOne()
+  @ManyToOne({ serializer: value => value?.id, serializedName: 'componentId' })
   component: Component;
 }

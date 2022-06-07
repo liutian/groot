@@ -1,11 +1,8 @@
 import { RequestContext } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
-import { Component } from 'entities/Component';
-import { ComponentVersion } from 'entities/ComponentVersion';
 import { PropGroup } from 'entities/PropGroup';
 import { PropItemType } from 'entities/PropItem';
 import { pick } from 'util.ts/common';
-import { omitProps } from 'util.ts/ormUtil';
 
 
 @Injectable()
@@ -14,25 +11,20 @@ export class PropGroupService {
   async add(group: PropGroup, root = true) {
     const em = RequestContext.getEntityManager();
 
-    const component = await em.findOne(Component, group.componentId);
-    const componentVersion = await em.findOne(ComponentVersion, group.componentVersionId);
-    const firstGroup = await em.findOne(PropGroup, { componentVersion: componentVersion }, { orderBy: { order: 'DESC' } });
+    const firstGroup = await em.findOne(PropGroup, {
+      componentVersion: group.componentVersionId,
+      component: group.componentId,
+    }, { orderBy: { order: 'DESC' } });
 
     const newGroup = em.create(PropGroup, {
       ...pick(group, ['name', 'propKey']),
-      componentVersion,
+      componentVersion: group.componentVersionId,
       root,
-      component,
+      component: group.componentId,
       order: (firstGroup ? firstGroup.order : 0) + 1000
     });
 
     await em.flush();
-
-    omitProps(newGroup, [
-      'componentVersion',
-      'propBlockList.componentVersion',
-      'propBlockList.propItemList.componentVersion'
-    ]);
 
     return newGroup;
   }
@@ -42,7 +34,7 @@ export class PropGroupService {
 
     const group = await em.findOne(PropGroup, groupId, {
       populate: [
-        'propBlockList.propItemList'
+        'propBlockList.propItemList.optionList'
       ]
     });
 
@@ -60,6 +52,12 @@ export class PropGroupService {
         const itemList = block.propItemList.getItems();
         for (let itemIndex = 0; itemIndex < itemList.length; itemIndex++) {
           const item = itemList[itemIndex];
+
+          for (let optionIndex = 0; optionIndex < item.optionList.length; optionIndex++) {
+            const option = item.optionList[optionIndex];
+            await em.removeAndFlush(option);
+          }
+
           await em.removeAndFlush(item);
           if (item.type === PropItemType.ARRAY_OBJECT) {
             innerGroupIds.push(item.valueOfGroup.id);
@@ -103,7 +101,10 @@ export class PropGroupService {
     }
 
     if (!targetId) {
-      const firstGroup = await em.findOne(PropGroup, { componentVersion: originGroup.componentVersion }, { orderBy: { order: 'DESC' } });
+      const firstGroup = await em.findOne(PropGroup, {
+        componentVersion: originGroup.componentVersion,
+        component: originGroup.component,
+      }, { orderBy: { order: 'DESC' } });
 
       originGroup.order = firstGroup ? firstGroup.order + 1000 : 1000;
     } else {
@@ -115,7 +116,7 @@ export class PropGroupService {
       const targetGroupNext = await em.findOne(PropGroup, {
         order: { $gt: targetOrder },
         componentVersion: originGroup.componentVersion,
-        root: true
+        component: originGroup.component,
       });
 
       if (!targetGroupNext) {

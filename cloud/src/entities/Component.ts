@@ -38,7 +38,7 @@ export class Component extends BaseEntity {
   /**
    * 组件最新版本
    */
-  @OneToOne()
+  @OneToOne({ serializer: value => value?.id, serializedName: 'recentVersionId' })
   recentVersion?: ComponentVersion;// 此处必须为可选，否则会造成component和version循环依赖
 
   @ManyToOne()

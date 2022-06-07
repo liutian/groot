@@ -11,10 +11,10 @@ export class ComponentInstance extends BaseEntity {
   @Property()
   name: string;
 
-  @ManyToOne()
+  @ManyToOne({ serializer: value => value?.id, serializedName: 'componentId' })
   component: Component;
 
-  @ManyToOne()
+  @ManyToOne({ serializer: value => value?.id, serializedName: 'componentVersionId' })
   componentVersion: ComponentVersion;
 
   /**
@@ -35,6 +35,6 @@ export class ComponentInstance extends BaseEntity {
   @OneToMany(() => ComponentInstance, instance => instance.parentInstance)
   subInstanceList = new Collection<ComponentInstance>(this);
 
-  @ManyToOne()
+  @ManyToOne({ serializer: value => value?.id, serializedName: 'parentInstanceId' })
   parentInstance?: ComponentInstance;
 }

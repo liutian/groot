@@ -51,24 +51,6 @@ export class ComponentService {
     }, new Set<Release>());
     component.releaseList = [...releaseSet];
 
-    omitProps(component, [
-      'recentVersion.groupList',
-      'recentVersion.blockList',
-      'recentVersion.itemList',
-      'project.devRelease.project',
-      'project.qaRelease.project',
-      'project.plRelease.project',
-      'project.onlineRelease.project',
-      'release.project',
-      'releaseList.project',
-
-      'instance.componentVersion',
-      'version.groupList.componentVersion',
-      'version.blockList.componentVersion',
-      'version.itemList.componentVersion',
-      'version.itemList.optionList.propItem',
-    ]);
-
     return component;
   }
 

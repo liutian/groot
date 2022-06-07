@@ -26,7 +26,7 @@ export class PropBlock extends BaseEntity {
   @Property()
   rootPropKey = false;
 
-  @ManyToOne()
+  @ManyToOne({ serializer: value => value?.id, serializedName: 'componentVersionId' })
   componentVersion: ComponentVersion;
 
   @Property({ persist: false })
@@ -36,6 +36,9 @@ export class PropBlock extends BaseEntity {
   @Property({ columnType: 'double' })
   order: number;
 
-  @ManyToOne()
+  @ManyToOne({ serializer: value => value?.id, serializedName: 'componentId' })
   component: Component;
+
+  @Property()
+  isTemplate = false;
 }

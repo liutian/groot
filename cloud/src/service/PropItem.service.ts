@@ -36,6 +36,7 @@ export class PropItemService {
         ...pick(rawItem, ['label', 'propKey', 'rootPropKey', 'type', 'span', 'optionList']),
         block,
         group: block.group,
+        component: block.component,
         componentVersion: block.componentVersion,
         order: firstItem ? firstItem.order + 1000 : 1000,
       });
@@ -45,6 +46,7 @@ export class PropItemService {
       if (newItem.type === PropItemType.ARRAY_OBJECT) {
         const rawGroup = {
           name: '关联分组',
+          component: block.component,
           componentVersionId: block.componentVersion.id,
         } as PropGroup;
         valueOfGroup = await this.propGroupService.add(rawGroup, false);
@@ -54,7 +56,9 @@ export class PropItemService {
         const rawBlock = {
           name: '配置块模版',
           groupId: valueOfGroup.id,
-          order: -1000
+          component: block.component,
+          componentVersion: block.componentVersion,
+          isTemplate: true
         } as PropBlock;
 
         templateBlock = await this.propBlockService.add(rawBlock);
@@ -73,20 +77,16 @@ export class PropItemService {
       throw e;
     }
 
-    if (block.order < 0) {
+    if (block.isTemplate) {
       this.clearSubBlockFromTemplate((block.group as any) as number);
     }
-
-    omitProps(newItem, [
-      'componentVersion',
-    ]);
 
     return { newItem, valueOfGroup, templateBlock };
   }
 
   private async clearSubBlockFromTemplate(groupId: number) {
     const em = RequestContext.getEntityManager();
-    const blockList = await em.find(PropBlock, { group: groupId, order: { $gt: 0 } }, { fields: ['id'] });
+    const blockList = await em.find(PropBlock, { group: groupId, isTemplate: false }, { fields: ['id'] });
     for (let index = 0; index < blockList.length; index++) {
       const blockId = blockList[index].id;
       await this.propBlockService.remove(blockId);
@@ -128,7 +128,7 @@ export class PropItemService {
     await em.flush();
 
     const block = await em.findOne(PropBlock, originItem.block);
-    if (block.order < 0) {
+    if (block.isTemplate) {
       this.clearSubBlockFromTemplate((block.group as any) as number);
     }
   }
@@ -148,7 +148,7 @@ export class PropItemService {
     }
 
     const block = await em.findOne(PropBlock, item.block);
-    if (block.order < 0) {
+    if (block.isTemplate) {
       this.clearSubBlockFromTemplate((block.group as any) as number);
     }
 
@@ -170,7 +170,7 @@ export class PropItemService {
     await em.flush();
 
     const block = await em.findOne(PropBlock, item.block);
-    if (block.order < 0) {
+    if (block.isTemplate) {
       this.clearSubBlockFromTemplate((block.group as any) as number);
     }
   }

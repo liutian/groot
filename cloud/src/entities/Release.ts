@@ -9,7 +9,7 @@ export class Release extends BaseEntity {
   @Property({ length: 1024 })
   name: string;
 
-  @ManyToOne()
+  @ManyToOne({ serializer: value => value?.id, serializedName: 'projectId' })
   project: Project;
 
   /**
