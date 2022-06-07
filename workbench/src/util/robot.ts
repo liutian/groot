@@ -1,7 +1,19 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import 'zone.js';
 
 const store = new Map<string, ModelContainer>();
+
+export const useRegisterModel = <T>(key: string, model: T) => {
+  const [unregister] = useState(() => {
+    return registerModel(key, model);
+  });
+
+  useEffect(() => {
+    return unregister;
+  }, []);
+
+  return useModel<T>(key, true);
+}
 
 /**
  * 注册模型实例
@@ -18,7 +30,11 @@ export const registerModel = (key: string, model: any) => {
     fastUpdate: false,
     proxy: wrapper(key, model),
     // execTrigger: false
-  })
+  });
+
+  return () => {
+    store.delete(key);
+  }
 }
 
 /**

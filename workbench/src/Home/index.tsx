@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
+import { useParams, useSearchParams } from 'react-router-dom';
 
-import { registerModel, useModel } from '@util/robot';
+import { useRegisterModel } from '@util/robot';
 import StudioModel from '@model/StudioModel';
 import { serverPath } from 'config';
 
@@ -8,30 +9,20 @@ import styles from './index.module.less';
 import SidePanel from './components/SidePanel';
 import WidgetWindow from './components/WidgetWindow';
 import WorkbenchModel from '@model/WorkbenchModel';
-import { useParams, useSearchParams } from 'react-router-dom';
 
 const Home = () => {
   // 注册工作台页面全局数据实例，每次页面打开重新初始化
-  useState(() => registerModel('studio', new StudioModel()));
-  useState(() => registerModel('workbench', new WorkbenchModel()));
+  const [studioModel, updateAction] = useRegisterModel<StudioModel>('studio', new StudioModel());
+  const [workbenchModel, workbenchUpdateAction] = useRegisterModel<WorkbenchModel>('workbench', new WorkbenchModel());
+
   // 提供给iframe页面mock数据（正常情况需要iframe页面通过接口获取元数据信息）
   const [pageName, setPageName] = useState('');
-  const iframeRef = useRef({} as any);
-  // 使用页面全局实例
-  const [studioModel, updateAction] = useModel<StudioModel>('studio', true);
-  const [workbenchModel, workbenchUpdateAction] = useModel<WorkbenchModel>('workbench', true);
+  const iframeRef = useRef<HTMLIFrameElement>({} as any);
   let { componentId } = useParams();
   let [searchParams] = useSearchParams();
 
 
   useEffect(() => {
-    // // 加载页面组件配置器数据
-    // fetch(`${serverPath}/page/1`).then(r => r.json()).then(({ data: pageData }: { data: Page }) => {
-    //   PageDataRef.current = pageData;
-    //   studioModel.init(pageData.component.studio);
-    //   // todo
-    //   setPageName(`groot::{"path": "${pageData.path}","name":"${pageData.name}"}`);
-    // });
 
     let url = `${serverPath}/component`;
     if (studioModel.editMode) {
@@ -45,10 +36,13 @@ const Home = () => {
     } else if (searchParams.get('versionId')) {
       url += `&versionId=${searchParams.get('versionId')}`;
     }
+
     fetch(url).then(r => r.json()).then(({ data }: { data: Component }) => {
       workbenchUpdateAction(() => {
         workbenchModel.loadComponent = 'over';
-        studioModel.init(data, !!searchParams.get('editMode'));
+        studioModel.init(data, iframeRef, !!searchParams.get('editMode'));
+
+        setPageName(`groot::{"path": "${studioModel.component.instance!.path}","name":"${studioModel.component.name}"}`);
       })
     })
 
@@ -57,31 +51,12 @@ const Home = () => {
       // iframe页面准备就绪可以接受外部更新
       if (event.data === 'ok') {
         // 首次通知更新数据
-        notifyIframe();
+        // todo
+        studioModel.notifyIframe('todo');
       }
     });
   }, []);
 
-  // 通知iframe更新数据
-  const notifyIframe = (content?: string) => {
-    const props = content;
-
-    iframeRef.current.contentWindow.postMessage({
-      type: 'refresh',
-      path: studioModel.component.instance!.path,
-      metadata: {
-        moduleName: studioModel.component.componentName + '_module',
-        packageName: studioModel.component.packageName,
-        componentName: studioModel.component.componentName,
-        // todo
-        props
-      }
-    }, '*');
-  }
-
-  updateAction(() => {
-    studioModel.notifyIframe = notifyIframe;
-  }, false);
 
   const renderLoadProject = () => {
     if (workbenchModel.loadComponent === 'doing') {

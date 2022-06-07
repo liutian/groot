@@ -40,10 +40,6 @@ export default class StudioModel {
    * 配置块所属表单实例
    */
   public blockFormInstanceMap = new Map<number, FormInstance>();
-  /**
-   * 配置项变动通知iframe更新
-   */
-  public notifyIframe?: Function;
 
   public handUpPropItemStack: PropItem[] = [];
 
@@ -51,8 +47,11 @@ export default class StudioModel {
 
   public currEnv: 'dev' | 'qa' | 'pl' | 'online' = 'dev';
 
-  public init(component: Component, editMode = false) {
+  public iframeRef?: { current: HTMLIFrameElement };
+
+  public init(component: Component, iframeRef: { current: HTMLIFrameElement }, editMode = false) {
     this.component = component;
+    this.iframeRef = iframeRef;
     this.buildPropGroups();
     this.activeGroupId = this.component.version.rootGroupList![0]?.id;
     this.editMode = editMode;
@@ -66,6 +65,25 @@ export default class StudioModel {
     } else if (this.component.release!.id === this.component.project.onlineRelease.id) {
       this.currEnv = 'online';
     }
+  }
+
+  /**
+ * 配置项变动通知iframe更新
+ */
+  public notifyIframe = (content: string) => {
+    const props = content;
+
+    this.iframeRef?.current?.contentWindow?.postMessage({
+      type: 'refresh',
+      path: this.component.instance!.path,
+      metadata: {
+        moduleName: this.component.componentName + '_module',
+        packageName: this.component.packageName,
+        componentName: this.component.componentName,
+        // todo
+        props
+      }
+    }, '*');
   }
 
   // todo
