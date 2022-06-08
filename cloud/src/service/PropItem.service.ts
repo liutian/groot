@@ -58,7 +58,7 @@ export class PropItemService {
       if (newItem.type === PropItemType.ARRAY_OBJECT) {
         const rawGroup = {
           name: '关联分组',
-          component: block.component,
+          componentId: block.component.id,
           componentVersionId: block.componentVersion.id,
         } as PropGroup;
         valueOfGroup = await this.propGroupService.add(rawGroup, false);

@@ -72,7 +72,11 @@ const ArrayObjectPanel: React.FC<PropsType> = ({ item: propItem }) => {
           {propItem.label}
         </Col>
         <Col span={3} style={{ textAlign: 'right' }}>
-          <Button type="link" icon={editMode ? <SettingFilled /> : <SettingOutlined />} onClick={() => switchEditMode()}></Button>
+          {
+            model.editMode ?
+              <Button type="link" icon={editMode ? <SettingFilled /> : <SettingOutlined />} onClick={() => switchEditMode()}></Button>
+              : null
+          }
         </Col>
       </Row>
     </div>
