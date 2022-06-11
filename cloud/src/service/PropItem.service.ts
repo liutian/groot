@@ -79,7 +79,7 @@ export class PropItemService {
         valueOfGroup.templateBlock = templateBlock;
       }
 
-      block.propItemList.add(newItem);
+      // block.propItemList.add(newItem);
 
       await em.flush();
 
