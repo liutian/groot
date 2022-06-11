@@ -6,10 +6,10 @@ import PropBlockStudio from "../PropBlockStudio";
 
 type PropsType = {
   group: PropGroup,
-  innerTemplateBlock?: PropBlock
+  templateBlock?: PropBlock
 }
 
-const PropGroupStudio: React.FC<PropsType> = ({ group, innerTemplateBlock }) => {
+const PropGroupStudio: React.FC<PropsType> = ({ group, templateBlock }) => {
   const [model, updateAction] = useModel<StudioModel>('studio');
 
   const editBlock = (block: PropBlock) => {
@@ -47,7 +47,7 @@ const PropGroupStudio: React.FC<PropsType> = ({ group, innerTemplateBlock }) => 
         <DeleteOutlined />
       </Typography.Link>
       {
-        !!innerTemplateBlock ? null : (
+        !!templateBlock ? null : (
           <Typography.Link onClick={(e) => {
             e.stopPropagation();
             editBlock(block);
@@ -66,27 +66,32 @@ const PropGroupStudio: React.FC<PropsType> = ({ group, innerTemplateBlock }) => 
       {
         group.propBlockList.map((block, blockIndex) => {
           return (<Collapse.Panel header={block.name} key={block.id} extra={renderBlockSetting(block, blockIndex)}>
-            <PropBlockStudio block={block} dynamic={!!innerTemplateBlock} />
+            <PropBlockStudio block={block} freezeSetting={!!templateBlock} />
           </Collapse.Panel>)
         })
       }
     </Collapse>
     {
-      model.editMode ? (
-        <div style={{ padding: group.root ? '16px' : '16px 0 0' }}>
-          <Button hidden={!group.root} type="primary" ghost block onClick={() => {
+      model.editMode && group.root ? (
+        <div style={{ padding: '16px' }}>
+          <Button type="primary" ghost block onClick={() => {
             model.showPropBlockSettinngForCreate(group);
           }}>
-            添加
+            添加配置块
           </Button>
+        </div>
+      ) : null
+    }
 
+    {
+      !group.root ? (
+        <div style={{ padding: '16px 0 0' }}>
           {/* 内嵌模式  */}
-          <Button hidden={group.root} disabled={!group.templateBlock?.propItemList.length} type="primary" ghost block onClick={() => {
+          <Button disabled={!templateBlock?.propItemList.length} type="primary" ghost block onClick={() => {
             model.addBlockFromTemplate(group.id)
           }}>
-            添加
+            复制模版
           </Button>
-
         </div>
       ) : null
     }

@@ -22,13 +22,6 @@ const ArrayObjectPanel: React.FC<PropsType> = ({ item: propItem }) => {
 
   const propGroup = propItem.valueOfGroup!;
 
-  useEffect(() => {
-    model.innerTempPropGroupMap.set(propGroup.id, propGroup);
-    return () => {
-      model.innerTempPropGroupMap.delete(propGroup.id);
-    }
-  }, [])
-
   const switchEditMode = () => {
     // 从设置转换为配置
     if (editMode) {

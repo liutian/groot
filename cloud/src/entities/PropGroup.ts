@@ -26,7 +26,7 @@ export class PropGroup extends BaseEntity {
   @ManyToOne({ serializer: value => value?.id, serializedName: 'relativeItemId' })
   relativeItem?: PropItem;
 
-  @OneToOne({ serializer: value => value?.id, serializedName: 'templateBlockId' })
+  @ManyToOne({ serializer: value => value?.id, serializedName: 'templateBlockId' })
   templateBlock?: PropBlock;
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'componentVersionId' })

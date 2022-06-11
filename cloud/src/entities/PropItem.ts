@@ -36,7 +36,7 @@ export class PropItem extends BaseEntity {
   @OneToOne({ serializer: value => value?.id, serializedName: 'valueOfGroupId' })
   valueOfGroup?: PropGroup;
 
-  @OneToOne({ serializer: value => value?.id, serializedName: 'templateBlockId' })
+  @ManyToOne({ serializer: value => value?.id, serializedName: 'templateBlockId' })
   templateBlock?: PropBlock;
 
   @Property()

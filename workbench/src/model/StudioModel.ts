@@ -43,7 +43,7 @@ export default class StudioModel {
 
   public handUpPropItemStack: PropItem[] = [];
 
-  public innerTempPropGroupMap = new Map<number, PropGroup>();
+  private noRootPropGroupMap = new Map<number, PropGroup>();
 
   public currEnv: 'dev' | 'qa' | 'pl' | 'online' = 'dev';
 
@@ -215,9 +215,10 @@ export default class StudioModel {
           },
           body: JSON.stringify(newGroup)
         }
-      ).then(r => r.json()).then(({ data: groupData }) => {
-        this.component.version.rootGroupList!.push(JSON.parse(JSON.stringify(groupData)));
-        this.activeGroupId = groupData.id;
+      ).then(r => r.json()).then((result: { data: PropGroup }) => {
+        this.component.version.rootGroupList!.push(result.data);
+        // this.component.version.groupList.push(result.data);
+        this.activeGroupId = result.data.id;
       })
     }
 
@@ -246,8 +247,9 @@ export default class StudioModel {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(newBlock)
-      }).then(r => r.json()).then(({ data: blockData }) => {
-        group?.propBlockList.push(blockData);
+      }).then(r => r.json()).then((result: { data: PropBlock }) => {
+        group.propBlockList.push(result.data);
+        // this.component.version.blockList.push(result.data);
       })
 
     }
@@ -263,9 +265,17 @@ export default class StudioModel {
       body: JSON.stringify({
         groupId
       })
-    }).then(r => r.json()).then(({ data: blockData }) => {
+    }).then(r => r.json()).then((result: { data: { groupList: PropGroup[], blockList: PropBlock[], itemList: PropItem[] } }) => {
       const group = this.getPropGroup(groupId)!;
-      group.propBlockList.push(blockData);
+      result.data.groupList.forEach((group) => {
+        this.noRootPropGroupMap.set(group.id, group);
+      });
+
+      this.buildPropGroup(group, {
+        groupList: result.data.groupList,
+        blockList: result.data.blockList,
+        itemList: result.data.itemList
+      });
     })
   }
 
@@ -300,14 +310,19 @@ export default class StudioModel {
         const resultItem = result.data.newItem;
 
         block.propItemList.push(resultItem);
+        // this.component.version.itemList.push(resultItem);
         if (newItem.type === 'array-object') {
           const valueOfGroup = result.data.valueOfGroup;
           const templateBlock = result.data.templateBlock;
+          this.noRootPropGroupMap.set(valueOfGroup.id, valueOfGroup);
 
           valueOfGroup.propBlockList = valueOfGroup.propBlockList.filter(b => b.id !== templateBlock.id);
           valueOfGroup.templateBlock = templateBlock;
           resultItem.templateBlock = templateBlock;
           resultItem.valueOfGroup = valueOfGroup;
+
+          // this.component.version.groupList.push(valueOfGroup);
+          // this.component.version.blockList.push(templateBlock);
         }
       })
     }
@@ -407,7 +422,7 @@ export default class StudioModel {
       return group.id === groupId;
     })
 
-    return group || this.innerTempPropGroupMap.get(groupId);
+    return group || this.noRootPropGroupMap.get(groupId);
   }
 
   public getPropBlock = (blockId: number) => {
@@ -421,7 +436,7 @@ export default class StudioModel {
       }
     }
 
-    const tempGroups = [...this.innerTempPropGroupMap.values()];
+    const tempGroups = [...this.noRootPropGroupMap.values()];
     for (let groupIndex = 0; groupIndex < tempGroups.length; groupIndex++) {
       const group = tempGroups[groupIndex];
 
@@ -534,30 +549,48 @@ export default class StudioModel {
     }
   }
 
-  private buildPropGroup(groupId: number) {
-    const group = this.component.version.groupList.find(g => g.id === groupId);
-    if (!group) {
-      throw new Error(`can not find group[${groupId}]`);
+  private buildPropGroup(groupIdOrObj: number | PropGroup,
+    store: { groupList: PropGroup[], blockList: PropBlock[], itemList: PropItem[] } = this.component.version) {
+    let group: PropGroup;
+    if (typeof groupIdOrObj === 'number') {
+      group = store.groupList.find(g => g.id === groupIdOrObj)!;
+      if (!group) {
+        throw new Error(`can not find group[${groupIdOrObj}]`);
+      }
+    } else {
+      group = groupIdOrObj;
     }
 
-    const blocks = this.component.version.blockList
-      .filter(b => b.groupId === groupId)
+    const blocks = store.blockList
+      .filter(b => b.groupId === group.id)
       .sort((a, b) => a.order - b.order)
 
-    group.propBlockList = blocks;
+    if (group.propBlockList?.length) {
+      group.propBlockList.push(...blocks);
+    } else {
+      group.propBlockList = blocks;
+    }
     for (let blockIndex = 0; blockIndex < blocks.length; blockIndex++) {
       const block = blocks[blockIndex]!;
-      const items = this.component.version.itemList
-        .filter(i => i.groupId === groupId && i.blockId === block.id)
+      const items = store.itemList
+        .filter(i => i.groupId === group.id && i.blockId === block.id)
         .sort((a, b) => a.order - b.order)
 
-      block.propItemList = items;
+      if (block.propItemList?.length) {
+        block.propItemList.push(...items);
+      } else {
+        block.propItemList = items;
+      }
 
       for (let itemIndex = 0; itemIndex < items.length; itemIndex++) {
         const item = items[itemIndex]!;
         if (item.type === 'array-object') {
-          const relativeGroup = this.buildPropGroup(item.valueOfGroupId!);
-          const templateBlock = relativeGroup.propBlockList.find(b => b.id === item.templateBlockId);
+          const relativeGroup = this.buildPropGroup(item.valueOfGroupId!, store);
+          this.noRootPropGroupMap.set(relativeGroup.id, relativeGroup);
+          let templateBlock = relativeGroup.propBlockList.find(b => b.id === item.templateBlockId);
+          if (!templateBlock) {
+            templateBlock = this.getPropBlock(item.templateBlockId!);
+          }
           relativeGroup.propBlockList = relativeGroup.propBlockList.filter(b => b.id !== item.templateBlockId);
           relativeGroup.templateBlock = templateBlock;
 
