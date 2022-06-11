@@ -46,6 +46,7 @@ type PropBlock = {
   rootPropKey?: boolean,
   order: number,
   componentId?: number,
+  isTemplate?: boolean
 }
 
 /**

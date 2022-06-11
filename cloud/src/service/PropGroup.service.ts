@@ -8,19 +8,19 @@ import { pick } from 'util.ts/common';
 @Injectable()
 export class PropGroupService {
 
-  async add(group: PropGroup, root = true) {
+  async add(rawGroup: PropGroup, root = true) {
     const em = RequestContext.getEntityManager();
 
     const firstGroup = await em.findOne(PropGroup, {
-      componentVersion: group.componentVersionId,
-      component: group.componentId,
+      componentVersion: rawGroup.componentVersionId,
+      component: rawGroup.componentId,
     }, { orderBy: { order: 'DESC' } });
 
     const newGroup = em.create(PropGroup, {
-      ...pick(group, ['name', 'propKey']),
-      componentVersion: group.componentVersionId,
+      ...pick(rawGroup, ['name', 'propKey']),
+      componentVersion: rawGroup.componentVersionId,
       root,
-      component: group.componentId,
+      component: rawGroup.componentId,
       order: (firstGroup ? firstGroup.order : 0) + 1000
     });
 

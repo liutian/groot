@@ -81,7 +81,7 @@ const ArrayObjectPanel: React.FC<PropsType> = ({ item: propItem }) => {
       </Row>
     </div>
     <div className={styles.content}>
-      {editMode ? <PropBlockStudio templateMode block={templateBlock} /> : <PropGroupStudio innerTemplateBlock={templateBlock} group={propGroup} />}
+      {editMode ? <PropBlockStudio templateMode block={templateBlock} /> : <PropGroupStudio templateBlock={templateBlock} group={propGroup} />}
     </div>
   </div>
 }

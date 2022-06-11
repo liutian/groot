@@ -7,11 +7,11 @@ import styles from './index.module.less';
 
 type PropType = {
   block: PropBlock,
-  dynamic?: boolean,
+  freezeSetting?: boolean,
   templateMode?: boolean
 }
 
-function PropBlockStudio({ block, dynamic, templateMode }: PropType) {
+function PropBlockStudio({ block, freezeSetting, templateMode }: PropType) {
   const [model, updateAction] = useModel<StudioModel>('studio');
   const [form] = Form.useForm();
   model.blockFormInstanceMap.set(block.id!, form);
@@ -25,7 +25,7 @@ function PropBlockStudio({ block, dynamic, templateMode }: PropType) {
     }
 
     const renderItemSetting = () => {
-      if (!model.editMode || dynamic === true) return null;
+      if (!model.editMode || freezeSetting === true) return null;
 
 
       return (<Space size="small">
