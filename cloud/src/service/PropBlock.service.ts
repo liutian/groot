@@ -112,7 +112,11 @@ export class PropBlockService {
     newBlock.relativeItem = group.relativeItem;
     newBlock.order = childrenBlock.length ? childrenBlock[0].order + 1000 : 1000;
     newBlock.group = group;
-    // group.propBlockList.add(newBlock);
+    if (copyBlock.imagePropBlock) {
+      newBlock.imagePropBlock = copyBlock.imagePropBlock;
+    } else {
+      newBlock.imagePropBlock = copyBlock;
+    }
     await em.flush();
     blockIdList.push(newBlock.id);
 
@@ -120,19 +124,22 @@ export class PropBlockService {
     for (let itemIndex = 0; itemIndex < copyItemList.length; itemIndex++) {
       const copyItem = copyItemList[itemIndex];
       const newItem = em.create(PropItem, pick(copyItem, [
-        'label', 'propKey', 'type', 'defaultValue', 'span', 'componentVersion', 'component',
+        'label', 'propKey', 'type', 'defaultValue', 'span', 'componentVersion', 'component'
       ]));
       newItem.block = newBlock;
       newItem.order = (itemIndex + 1) * 1000;
       newItem.group = group;
-      // newBlock.propItemList.add(newItem);
+      if (copyItem.imagePropItem) {
+        newItem.imagePropItem = copyItem.imagePropItem;
+      } else {
+        newItem.imagePropItem = copyItem;
+      }
 
       const copyOptionList = copyItem.optionList.getItems();
       for (let optionIndex = 0; optionIndex < copyOptionList.length; optionIndex++) {
         const copyOption = copyOptionList[optionIndex];
         const newOption = em.create(PropValueOption, pick(copyOption, ['label', 'value', 'componentVersion', 'component']));
         newOption.propItem = newItem;
-        // newItem.optionList.add(newOption);
       }
       await em.flush();
       itemIdList.push(newItem.id);

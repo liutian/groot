@@ -53,6 +53,9 @@ export class PropItem extends BaseEntity {
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'componentId' })
   component: Component;
+
+  @ManyToOne({ serializer: value => value?.id, serializedName: 'imagePropItemId' })
+  imagePropItem?: PropItem;
 }
 
 export enum PropItemType {

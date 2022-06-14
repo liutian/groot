@@ -41,4 +41,7 @@ export class PropBlock extends BaseEntity {
 
   @Property()
   isTemplate = false;
+
+  @ManyToOne({ serializer: value => value?.id, serializedName: 'imagePropBlockId' })
+  imagePropBlock?: PropBlock;
 }

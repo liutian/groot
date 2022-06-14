@@ -43,7 +43,7 @@ function PropBlockStudio({ block, freezeSetting, templateMode }: PropType) {
         </Typography.Link>
         <Typography.Link disabled={itemIndex === 0 && block.propItemList.length === 1} onClick={(e) => {
           e.preventDefault();
-          model.delItem(propItem.id, block);
+          model.delItem(propItem.id);
         }} >
           <DeleteOutlined />
         </Typography.Link>

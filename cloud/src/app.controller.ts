@@ -44,11 +44,11 @@ export class AppController {
   async movePosition(@Body() data: { originId: number, targetId: number, type: 'group' | 'block' | 'item' }) {
     // 将 origin 移动至 target位置，target 向后一一位
     if (data.type === 'group') {
-      await this.groupService.movePosition(data.originId, data.targetId);
+      return await this.groupService.movePosition(data.originId, data.targetId);
     } else if (data.type === 'block') {
-      await this.blockService.movePosition(data.originId, data.targetId);
+      return await this.blockService.movePosition(data.originId, data.targetId);
     } else if (data.type === 'item') {
-      await this.itemService.movePosition(data.originId, data.targetId);
+      return await this.itemService.movePosition(data.originId, data.targetId);
     }
   }
 
@@ -79,11 +79,11 @@ export class AppController {
 
   @Get('/item/remove/:itemId')
   async itemRemove(@Param('itemId') itemId: number) {
-    await this.itemService.remove(itemId);
+    return await this.itemService.remove(itemId);
   }
 
   @Post('/item/update')
   async itemUpdate(@Body() item: PropItem) {
-    await this.itemService.update(item);
+    return await this.itemService.update(item);
   }
 }

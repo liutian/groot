@@ -24,20 +24,7 @@ const ArrayObjectPanel: React.FC<PropsType> = ({ item: propItem }) => {
 
   const switchEditMode = () => {
     // 从设置转换为配置
-    if (editMode) {
-      const formInstance = model.blockFormInstanceMap.get(templateBlock.id)!;
-      const defaultData = formInstance.getFieldsValue();
-
-      templateBlock.propItemList.forEach((item) => {
-        const itemValue = defaultData[item.propKey];
-        item.defaultValue = itemValue;
-      })
-
-      if (JSON.stringify(templateBlock) !== preTemplateBlockRef.current) {
-        preTemplateBlockRef.current = JSON.stringify(templateBlock)
-        propGroup.propBlockList = [];
-      }
-    } else {
+    if (!editMode) {
       propGroup.propBlockList.forEach((block) => {
         const formInstance = model.blockFormInstanceMap.get(block.id);
         const formData = formInstance?.getFieldsValue();
@@ -50,15 +37,11 @@ const ArrayObjectPanel: React.FC<PropsType> = ({ item: propItem }) => {
     setEditMode(mode => !mode);
   }
 
-  const closePanel = () => {
-    model.popHandUpPropItem(propGroup, templateBlock);
-  }
-
   return <div className={styles.container}>
     <div className={styles.header}>
       <Row>
         <Col span={5} >
-          <Button type="link" disabled={editMode} icon={<LeftOutlined />} onClick={closePanel}></Button>
+          <Button type="link" disabled={editMode} icon={<LeftOutlined />} onClick={() => model.popHandUpPropItem()}></Button>
           {model.handUpPropItemStack.length > 1 ? <Badge count={model.handUpPropItemStack.length} color="#aaa"></Badge> : null}
         </Col>
         <Col span={16} style={{ textAlign: 'center' }}>

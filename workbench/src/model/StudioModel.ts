@@ -170,10 +170,10 @@ export default class StudioModel {
   }
 
   public movePropItem = (block: PropBlock, originIndex: number, up: boolean) => {
-    const [moveItem] = block.propItemList.splice(originIndex, 1);
+    const origin = block.propItemList[originIndex]!;
     fetch(`${serverPath}/move/position`, {
       body: JSON.stringify({
-        originId: moveItem!.id,
+        originId: origin.id,
         targetId: up ? block.propItemList[originIndex - 1]!.id : block.propItemList[originIndex + 1]?.id,
         type: 'item'
       }),
@@ -181,11 +181,16 @@ export default class StudioModel {
       headers: {
         'Content-Type': 'application/json'
       },
-    }).then(r => r.json()).then(() => {
-      if (up) {
-        block.propItemList.splice(originIndex - 1, 0, moveItem!);
-      } else {
-        block.propItemList.splice(originIndex + 1, 0, moveItem!);
+    }).then(r => r.json()).then((result: { data: { originId: number, targetId: number, blockId: number }[] }) => {
+      for (let index = 0; index < result.data.length; index++) {
+        const { blockId } = result.data[index]!;
+        const block = this.getPropBlock(blockId)!;
+        const [moveItem] = block.propItemList.splice(originIndex, 1);
+        if (up) {
+          block.propItemList.splice(originIndex - 1, 0, moveItem!);
+        } else {
+          block.propItemList.splice(originIndex + 1, 0, moveItem!);
+        }
       }
     });
   }
@@ -238,7 +243,7 @@ export default class StudioModel {
         body: JSON.stringify(newBlock)
       }).then(r => r.json()).then(() => {
         let blockIndex = group.propBlockList.findIndex(b => b.id === newBlock.id);
-        group.propBlockList.splice(blockIndex, 1, JSON.parse(JSON.stringify(newBlock)));
+        group.propBlockList.splice(blockIndex, 1, newBlock);
       });
     } else {
       fetch(`${serverPath}/block/add`, {
@@ -293,37 +298,27 @@ export default class StudioModel {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(newItem)
-      }).then(r => r.json()).then(() => {
-        const block = this.getPropBlock(newItem.blockId)!;
-        let itemIndex = block.propItemList.findIndex(item => item.id === newItem.id);
-        block.propItemList.splice(itemIndex, 1, JSON.parse(JSON.stringify(newItem)));
+      }).then(r => r.json()).then((result: { data: PropItem[] }) => {
+        for (let index = 0; index < result.data.length; index++) {
+          const propItem = result.data[index]!;
+          const block = this.getPropBlock(propItem.blockId)!;
+          let itemIndex = block.propItemList.findIndex(item => item.id === propItem.id);
+          block.propItemList.splice(itemIndex, 1, propItem);
+        }
       });
     } else {
-      const block = this.getPropBlock(newItem.blockId)!;
       fetch(`${serverPath}/item/add`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(newItem)
-      }).then(r => r.json()).then((result: { data: { newItem: PropItem, valueOfGroup: PropGroup, templateBlock: PropBlock } }) => {
-        const resultItem = result.data.newItem;
-
-        block.propItemList.push(resultItem);
-        // this.component.version.itemList.push(resultItem);
-        if (newItem.type === 'array-object') {
-          const valueOfGroup = result.data.valueOfGroup;
-          const templateBlock = result.data.templateBlock;
-          this.noRootPropGroupMap.set(valueOfGroup.id, valueOfGroup);
-
-          valueOfGroup.propBlockList = valueOfGroup.propBlockList.filter(b => b.id !== templateBlock.id);
-          valueOfGroup.templateBlock = templateBlock;
-          resultItem.templateBlock = templateBlock;
-          resultItem.valueOfGroup = valueOfGroup;
-
-          // this.component.version.groupList.push(valueOfGroup);
-          // this.component.version.blockList.push(templateBlock);
+      }).then(r => r.json()).then((result: { data: { newItem: PropItem, valueOfGroup: PropGroup, templateBlock: PropBlock }[] }) => {
+        for (let index = 0; index < result.data.length; index++) {
+          const data = result.data[index]!;
+          this.addPropItemFn(data);
         }
+        console.dir(this.component.version.rootGroupList);
       })
     }
 
@@ -332,6 +327,21 @@ export default class StudioModel {
     setTimeout(() => {
       this.productStudioData();
     }, 100)
+  }
+
+  private addPropItemFn = (data: { newItem: PropItem, valueOfGroup: PropGroup, templateBlock: PropBlock }) => {
+    const block = this.getPropBlock(data.newItem.blockId)!;
+    block.propItemList.push(data.newItem);
+    if (data.newItem.type === 'array-object') {
+      const valueOfGroup = data.valueOfGroup;
+      const templateBlock = data.templateBlock;
+      this.noRootPropGroupMap.set(data.valueOfGroup.id, valueOfGroup);
+
+      valueOfGroup.propBlockList = valueOfGroup.propBlockList.filter(b => b.id !== templateBlock.id);
+      valueOfGroup.templateBlock = templateBlock;
+      data.newItem.templateBlock = templateBlock;
+      data.newItem.valueOfGroup = valueOfGroup;
+    }
   }
 
   public delGroup = (groupId: number) => {
@@ -353,10 +363,14 @@ export default class StudioModel {
     })
   }
 
-  public delItem = (itemId: number, block: PropBlock) => {
-    fetch(`${serverPath}/item/remove/${itemId}`).then(() => {
-      let itemIndex = block.propItemList.findIndex(item => item.id === itemId);
-      block.propItemList.splice(itemIndex, 1);
+  public delItem = (itemId: number) => {
+    fetch(`${serverPath}/item/remove/${itemId}`).then(r => r.json()).then((result: { data: PropItem[] }) => {
+      for (let index = 0; index < result.data.length; index++) {
+        const itemData = result.data[index]!;
+        const block = this.getPropBlock(itemData.blockId)!;
+        let itemIndex = block.propItemList.findIndex(item => item.id === itemData.id);
+        block.propItemList.splice(itemIndex, 1);
+      }
     })
   }
 
@@ -409,12 +423,8 @@ export default class StudioModel {
     this.handUpPropItemStack?.push(item);
   }
 
-  public popHandUpPropItem = (group: PropGroup, templateBlockOfArrayObject: PropBlock) => {
-    const item = this.handUpPropItemStack.pop();
-    if (item) {
-      item.valueOfGroup = JSON.parse(JSON.stringify(group));
-      item.templateBlock = JSON.parse(JSON.stringify(templateBlockOfArrayObject));
-    }
+  public popHandUpPropItem = () => {
+    this.handUpPropItemStack.pop();
   }
 
   public getPropGroup = (groupId: number) => {
