@@ -196,7 +196,7 @@ export default class StudioModel {
   }
 
   public updateOrAddPropGroup = (group: PropGroup) => {
-    const newGroup = Object.assign(this.currSettingPropGroup, group);
+    const newGroup = Object.assign(this.currSettingPropGroup!, group);
     newGroup.componentId = this.component.id;
     newGroup.componentVersionId = this.component.version.id;
 
@@ -231,7 +231,7 @@ export default class StudioModel {
   }
 
   public updateOrAddPropBlock = (block: PropBlock) => {
-    const newBlock = Object.assign(this.currSettingPropBlock, block);
+    const newBlock = Object.assign(this.currSettingPropBlock!, block);
     const group = this.getPropGroup(newBlock.groupId)!;
 
     if (newBlock.id) {
@@ -285,7 +285,7 @@ export default class StudioModel {
   }
 
   public updateOrAddPropItem = (item: PropItem) => {
-    const newItem = Object.assign(this.currSettingPropItem, item);
+    const newItem = Object.assign(this.currSettingPropItem!, item);
 
     if (!['select', 'radio', 'checkbox'].includes(newItem.type)) {
       newItem.optionList = undefined;
