@@ -26,15 +26,15 @@ const SidePanel: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
     <SideHeader className={styles.headerContainer} />
     <SideToolBar className={styles.navContainer} />
 
-    <div className={`${styles.gridItemContainer}`}>
-      <div className={`${styles.gridItem}  `}>
+    <div className={`${styles.studioContainer} `}>
+      <div className={`${styles.studio}  `}>
         {model.manualMode ? null : <Studio />}
       </div>
 
       {
         model.propItemStack.map(item => {
           return (
-            <div key={item.id} className={`${styles.gridItem} ${styles.gridItemSub} `}>
+            <div key={item.id} className={`${styles.studio} ${styles.cascaderStudio} `}>
               <ArrayCascaderStudio key={item.id} item={item} />
             </div>
           )

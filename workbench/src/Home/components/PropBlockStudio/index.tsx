@@ -87,7 +87,7 @@ function PropBlockStudio({ block, freezeSetting, templateMode }: PropType) {
     return <>not found item</>
   }
 
-  return <>
+  return <div className={templateMode ? styles.containerWrap : ''}>
     <Form form={form} layout="vertical" className="studio-form" onValuesChange={() => model.productStudioData()}>
       <Row gutter={6}>
         {
@@ -111,7 +111,7 @@ function PropBlockStudio({ block, freezeSetting, templateMode }: PropType) {
         </Button>
       ) : null
     }
-  </>
+  </div>
 }
 
 export default PropBlockStudio;

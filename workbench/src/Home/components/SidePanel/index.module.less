@@ -11,7 +11,7 @@
   border-bottom: dashed 1px #cacaca;
 }
 
-.gridItemContainer {
+.studioContainer {
   display: flex;
   flex-grow: 1;
   overflow: auto;
@@ -34,11 +34,24 @@
   width: 10px;
 }
 
-.gridItem {
+.studio {
   flex: 1;
   min-width: var(--grid-item-min-width);
 
-  &.gridItemSub {
+  :global(.ant-tabs .ant-tabs-nav) {
+    margin-bottom: 0 !important;
+    padding: 0 10px;
+  }
+
+  :global(.ant-collapse) {
+    background-color: transparent;
+
+    :global(.ant-collapse-item) {
+      border-bottom: 1px solid #efefef;
+    }
+  }
+
+  &.cascaderStudio {
     border-left: solid 1px #efefef;
   }
 }

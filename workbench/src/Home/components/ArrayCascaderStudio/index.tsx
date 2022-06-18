@@ -42,7 +42,7 @@ const ArrayCascaderStudio: React.FC<PropsType> = ({ item: propItem }) => {
   }
 
   return <div className={styles.container} ref={containerRef}>
-    <div className={styles.header}>
+    <div className={`${styles.header} ${editMode ? styles.editMode : ''}`}>
       <Row>
         <Col span={5} >
           <Button type="link" disabled={editMode} icon={<CloseOutlined />} onClick={() => model.popHandUpPropItem(propItem)}></Button>
