@@ -62,10 +62,7 @@ const SidePanel: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
 
         if (width <= 480) {
           sideWidth = 480;
-        } else if (width >= 1024) {
-          sideWidth = 1024;
         }
-
         containerRef.current.parentElement!.style.setProperty('--side-width', `${sideWidth}px`);
       }}
       end={() => {
