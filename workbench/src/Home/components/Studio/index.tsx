@@ -10,10 +10,6 @@ import StudioModel from '@model/StudioModel';
 
 import { useModel } from '@util/robot';
 import PropGroupStudio from "../PropGroupStudio";
-import PropGroupSetting from "../PropGroupSetting";
-import PropItemSetting from "../PropItemSetting";
-import PropBlockSetting from "../PropBlockSetting";
-import ArrayObjectPanel from "../ArrayObjectPanel";
 import { autoIncrementForName } from "@util/utils";
 
 function Studio() {
@@ -106,14 +102,6 @@ function Studio() {
       </Tabs>
     </DndProvider>
 
-    <PropGroupSetting />
-    <PropBlockSetting />
-    <PropItemSetting />
-    {
-      model.handUpPropItemStack.map(item => {
-        return <ArrayObjectPanel key={item.id} item={item} />
-      })
-    }
   </>
 }
 

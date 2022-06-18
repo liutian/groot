@@ -12,7 +12,7 @@ import WorkbenchModel from '@model/WorkbenchModel';
 
 const Home = () => {
   // 注册工作台页面全局数据实例，每次页面打开重新初始化
-  const [studioModel, updateAction] = useRegisterModel<StudioModel>('studio', new StudioModel());
+  const [studioModel] = useRegisterModel<StudioModel>('studio', new StudioModel());
   const [workbenchModel, workbenchUpdateAction] = useRegisterModel<WorkbenchModel>('workbench', new WorkbenchModel());
 
   // 提供给iframe页面mock数据（正常情况需要iframe页面通过接口获取元数据信息）
@@ -20,7 +20,6 @@ const Home = () => {
   const iframeRef = useRef<HTMLIFrameElement>({} as any);
   let { componentId } = useParams();
   let [searchParams] = useSearchParams();
-
 
   useEffect(() => {
 
@@ -57,24 +56,23 @@ const Home = () => {
     });
   }, []);
 
+  if (workbenchModel.loadComponent === 'doing') {
+    return <>loading</>
+  } else if (workbenchModel.loadComponent === 'notfound') {
+    return <>notfound component</>
+  } else {
+    return (<div className={styles.container} >
+      <div className={styles.mainView}>
+        <iframe ref={iframeRef} name={pageName} src={studioModel.component.instance?.path}></iframe>
+        <div className="drag-mask"></div>
+      </div>
 
-  const renderLoadProject = () => {
-    if (workbenchModel.loadComponent === 'doing') {
-      return <>loading</>
-    } else {
-      return <>notfound</>
-    }
+      <WidgetWindow />
+
+      <SidePanel className={styles.sidePanel} />
+    </div>);
   }
 
-  return workbenchModel.loadComponent === 'over' ? (<div className={styles.container} style={{ '--side-width': `${workbenchModel.sideWidth}px` } as any}>
-    <div className={styles.mainView}>
-      {workbenchModel.loadComponent === 'over' ? <iframe ref={iframeRef} name={pageName} src={studioModel.component.instance!.path}></iframe> : null}
-    </div>
-
-    <WidgetWindow />
-
-    <SidePanel className={styles.sidePanel} />
-  </div>) : renderLoadProject();
 }
 
 export default Home;

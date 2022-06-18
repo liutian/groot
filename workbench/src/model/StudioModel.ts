@@ -41,7 +41,7 @@ export default class StudioModel {
    */
   public blockFormInstanceMap = new Map<number, FormInstance>();
 
-  public handUpPropItemStack: PropItem[] = [];
+  public propItemStack: PropItem[] = [];
 
   private noRootPropGroupMap = new Map<number, PropGroup>();
 
@@ -420,11 +420,11 @@ export default class StudioModel {
   }
 
   public pushHandUpPropItem = (item: PropItem) => {
-    this.handUpPropItemStack?.push(item);
+    this.propItemStack?.push(item);
   }
 
   public popHandUpPropItem = () => {
-    this.handUpPropItemStack.pop();
+    this.propItemStack.pop();
   }
 
   public getPropGroup = (groupId: number) => {

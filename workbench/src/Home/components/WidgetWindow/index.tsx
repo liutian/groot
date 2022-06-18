@@ -14,7 +14,7 @@ const tabBarStyles = {
 
 const WidgetWindow: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
   const [model, updateAction] = useModel<WorkbenchModel>('workbench');
-  const containerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>({} as any);
 
   let middleBtn: ReactNode;
 
@@ -25,6 +25,7 @@ const WidgetWindow: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
       <Button type="text" icon={<FullscreenOutlined onClick={() => updateAction(() => model.widgetWindowRect = 'full')} />} />
       <MouseFollow
         start={() => {
+          containerRef.current.parentElement!.classList.add('drag-active');
           return containerRef.current!.getBoundingClientRect();
         }}
         move={(x, y, originData) => {
@@ -32,6 +33,9 @@ const WidgetWindow: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
           const left = originData.left + x;
           containerRef.current!.style.top = `${top}px`;
           containerRef.current!.style.left = `${left}px`;
+        }}
+        end={() => {
+          containerRef.current.parentElement!.classList.remove('drag-active');
         }}
       >
         <Button type="text" icon={<DragOutlined />} />;

@@ -2,7 +2,7 @@ import { LeftOutlined, SettingFilled, SettingOutlined } from '@ant-design/icons'
 import StudioModel from '@model/StudioModel';
 import { useModel } from '@util/robot';
 import { Badge, Button, Col, Row } from 'antd';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import PropBlockStudio from '../PropBlockStudio';
 import PropGroupStudio from '../PropGroupStudio';
 import styles from './index.module.less';
@@ -42,7 +42,7 @@ const ArrayObjectPanel: React.FC<PropsType> = ({ item: propItem }) => {
       <Row>
         <Col span={5} >
           <Button type="link" disabled={editMode} icon={<LeftOutlined />} onClick={() => model.popHandUpPropItem()}></Button>
-          {model.handUpPropItemStack.length > 1 ? <Badge count={model.handUpPropItemStack.length} color="#aaa"></Badge> : null}
+          {model.propItemStack.length > 1 ? <Badge count={model.propItemStack.length} color="#aaa"></Badge> : null}
         </Col>
         <Col span={16} style={{ textAlign: 'center' }}>
           {propItem.label}
