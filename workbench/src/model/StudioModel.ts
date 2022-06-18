@@ -423,8 +423,9 @@ export default class StudioModel {
     this.propItemStack?.push(item);
   }
 
-  public popHandUpPropItem = () => {
-    this.propItemStack.pop();
+  public popHandUpPropItem = (propItem: PropItem) => {
+    const index = this.propItemStack.findIndex(item => item.id === propItem.id);
+    this.propItemStack.length = index;
   }
 
   public getPropGroup = (groupId: number) => {

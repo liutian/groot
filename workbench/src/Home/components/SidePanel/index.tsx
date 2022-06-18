@@ -12,7 +12,7 @@ import MouseFollow from "components/MouseFollow"
 import PropGroupSetting from "../PropGroupSetting";
 import PropItemSetting from "../PropItemSetting";
 import PropBlockSetting from "../PropBlockSetting";
-import ArrayObjectPanel from "../ArrayObjectPanel";
+import ArrayCascaderStudio from "../ArrayCascaderStudio";
 
 
 const SidePanel: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
@@ -35,7 +35,7 @@ const SidePanel: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
         model.propItemStack.map(item => {
           return (
             <div key={item.id} className={`${styles.gridItem} ${styles.gridItemSub} `}>
-              <ArrayObjectPanel key={item.id} item={item} />
+              <ArrayCascaderStudio key={item.id} item={item} />
             </div>
           )
         })

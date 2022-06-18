@@ -2,7 +2,6 @@ import { Button, Checkbox, Col, DatePicker, Form, Input, Radio, Row, Select, Spa
 import { VerticalAlignTopOutlined, DeleteOutlined, VerticalAlignBottomOutlined, SettingOutlined } from '@ant-design/icons';
 import { useModel } from "@util/robot";
 import StudioModel from '@model/StudioModel';
-import PropItemStudioForArray from "../PropItemStudioForArray";
 import styles from './index.module.less';
 
 type PropType = {
@@ -80,7 +79,9 @@ function PropBlockStudio({ block, freezeSetting, templateMode }: PropType) {
     } else if (item.type === 'checkbox') {
       return <Checkbox.Group options={item.optionList} />
     } else if (item.type === 'array-object') {
-      return <PropItemStudioForArray item={item} />
+      return <Button block onClick={() => {
+        model.pushHandUpPropItem(item)
+      }}>列表{item.valueOfGroup?.propBlockList?.length}</Button>
     }
 
     return <>not found item</>

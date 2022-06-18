@@ -1,7 +1,7 @@
 import { CloseOutlined, SettingFilled, SettingOutlined } from '@ant-design/icons';
 import StudioModel from '@model/StudioModel';
 import { useModel } from '@util/robot';
-import { Badge, Button, Col, Row } from 'antd';
+import { Button, Col, Row } from 'antd';
 import { useEffect, useRef, useState } from 'react';
 import PropBlockStudio from '../PropBlockStudio';
 import PropGroupStudio from '../PropGroupStudio';
@@ -12,7 +12,7 @@ type PropsType = {
   item: PropItem
 }
 
-const ArrayObjectPanel: React.FC<PropsType> = ({ item: propItem }) => {
+const ArrayCascaderStudio: React.FC<PropsType> = ({ item: propItem }) => {
   const [model] = useModel<StudioModel>('studio');
   const [editMode, setEditMode] = useState(false);
 
@@ -45,7 +45,7 @@ const ArrayObjectPanel: React.FC<PropsType> = ({ item: propItem }) => {
     <div className={styles.header}>
       <Row>
         <Col span={5} >
-          <Button type="link" disabled={editMode} icon={<CloseOutlined />} onClick={() => model.popHandUpPropItem()}></Button>
+          <Button type="link" disabled={editMode} icon={<CloseOutlined />} onClick={() => model.popHandUpPropItem(propItem)}></Button>
         </Col>
         <Col span={16} style={{ textAlign: 'center' }}>
           {propItem.label}
@@ -65,4 +65,4 @@ const ArrayObjectPanel: React.FC<PropsType> = ({ item: propItem }) => {
   </div>
 }
 
-export default ArrayObjectPanel;
+export default ArrayCascaderStudio;
