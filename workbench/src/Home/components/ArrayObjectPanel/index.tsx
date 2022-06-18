@@ -1,8 +1,8 @@
-import { LeftOutlined, SettingFilled, SettingOutlined } from '@ant-design/icons';
+import { CloseOutlined, SettingFilled, SettingOutlined } from '@ant-design/icons';
 import StudioModel from '@model/StudioModel';
 import { useModel } from '@util/robot';
 import { Badge, Button, Col, Row } from 'antd';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import PropBlockStudio from '../PropBlockStudio';
 import PropGroupStudio from '../PropGroupStudio';
 import styles from './index.module.less';
@@ -18,9 +18,13 @@ const ArrayObjectPanel: React.FC<PropsType> = ({ item: propItem }) => {
 
   const templateBlock = propItem.templateBlock!;
 
-  const preTemplateBlockRef = useRef(JSON.stringify(templateBlock));
+  const containerRef = useRef<HTMLDivElement>({} as any);
 
   const propGroup = propItem.valueOfGroup!;
+
+  useEffect(() => {
+    containerRef.current.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'end' });
+  }, []);
 
   const switchEditMode = () => {
     // 从设置转换为配置
@@ -37,12 +41,11 @@ const ArrayObjectPanel: React.FC<PropsType> = ({ item: propItem }) => {
     setEditMode(mode => !mode);
   }
 
-  return <div className={styles.container}>
+  return <div className={styles.container} ref={containerRef}>
     <div className={styles.header}>
       <Row>
         <Col span={5} >
-          <Button type="link" disabled={editMode} icon={<LeftOutlined />} onClick={() => model.popHandUpPropItem()}></Button>
-          {model.propItemStack.length > 1 ? <Badge count={model.propItemStack.length} color="#aaa"></Badge> : null}
+          <Button type="link" disabled={editMode} icon={<CloseOutlined />} onClick={() => model.popHandUpPropItem()}></Button>
         </Col>
         <Col span={16} style={{ textAlign: 'center' }}>
           {propItem.label}
