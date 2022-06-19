@@ -36,6 +36,8 @@ const ArrayCascaderStudio: React.FC<PropsType> = ({ item: propItem }) => {
           item.defaultValue = formData[item.propKey];
         });
       })
+    } else {
+      model.pushHandUpPropItem(propItem);
     }
 
     setEditMode(mode => !mode);
@@ -45,7 +47,7 @@ const ArrayCascaderStudio: React.FC<PropsType> = ({ item: propItem }) => {
     <div className={`${styles.header} ${editMode ? styles.editMode : ''}`}>
       <Row>
         <Col span={5} >
-          <Button type="link" disabled={editMode} icon={<CloseOutlined />} onClick={() => model.popHandUpPropItem(propItem)}></Button>
+          <Button type="link" icon={<CloseOutlined />} onClick={() => model.popHandUpPropItem(propItem)}></Button>
         </Col>
         <Col span={16} style={{ textAlign: 'center' }}>
           {propItem.label}

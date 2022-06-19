@@ -420,7 +420,21 @@ export default class StudioModel {
   }
 
   public pushHandUpPropItem = (item: PropItem) => {
-    this.propItemStack?.push(item);
+    for (let index = 0; index < this.propItemStack.length; index++) {
+      const { id: itemId, groupId } = this.propItemStack[index]!;
+      if (item.id === itemId) {
+        this.propItemStack.length = index + 1;
+        return;
+      }
+
+      if (item.groupId === groupId) {
+        this.propItemStack.length = index;
+        this.propItemStack.push(item);
+        return;
+      }
+    }
+
+    this.propItemStack.push(item);
   }
 
   public popHandUpPropItem = (propItem: PropItem) => {
