@@ -422,24 +422,39 @@ export default class StudioModel {
   public pushHandUpPropItem = (item: PropItem) => {
     for (let index = 0; index < this.propItemStack.length; index++) {
       const { id: itemId, groupId } = this.propItemStack[index]!;
+
       if (item.id === itemId) {
-        this.propItemStack.length = index + 1;
+        this.cancelHighlightCascaderStudio(this.propItemStack.splice(index + 1));
         return;
       }
 
       if (item.groupId === groupId) {
-        this.propItemStack.length = index;
+        this.cancelHighlightCascaderStudio(this.propItemStack.splice(index));
+        item.highlight = true;
+        this.getPropBlock(item.blockId)!.highlight = true;
+        this.getPropGroup(item.groupId)!.highlight = true;
         this.propItemStack.push(item);
         return;
       }
     }
 
+    item.highlight = true;
+    this.getPropBlock(item.blockId)!.highlight = true;
+    this.getPropGroup(item.groupId)!.highlight = true;
     this.propItemStack.push(item);
   }
 
   public popHandUpPropItem = (propItem: PropItem) => {
     const index = this.propItemStack.findIndex(item => item.id === propItem.id);
-    this.propItemStack.length = index;
+    this.cancelHighlightCascaderStudio(this.propItemStack.splice(index));
+  }
+
+  private cancelHighlightCascaderStudio(itemList: PropItem[]) {
+    itemList.forEach(item => {
+      item.highlight = false;
+      this.getPropBlock(item.blockId)!.highlight = false;
+      this.getPropGroup(item.groupId)!.highlight = false;
+    })
   }
 
   public getPropGroup = (groupId: number) => {

@@ -30,7 +30,8 @@ type PropGroup = {
   templateBlock?: PropBlock,
   order: number,
   componentId?: number,
-  componentVersionId?: number
+  componentVersionId?: number,
+  highlight?: boolean
 }
 
 /**
@@ -46,7 +47,8 @@ type PropBlock = {
   rootPropKey?: boolean,
   order: number,
   componentId?: number,
-  isTemplate?: boolean
+  isTemplate?: boolean,
+  highlight?: boolean
 }
 
 /**
@@ -72,6 +74,7 @@ type PropItem = {
   rootPropKey?: boolean,
   order: number,
   componentId?: number,
+  highlight?: boolean
 }
 
 

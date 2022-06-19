@@ -58,6 +58,7 @@ function PropBlockStudio({ block, freezeSetting, templateMode }: PropType) {
     return <div className={styles.propItemHeader}>
       <div className={styles.propItemHeaderText}>
         {propItem.label}
+        <i className="highlight" hidden={!propItem.highlight} />
       </div>
       <div className={styles.propItemHeaderActions}>
         {renderItemSetting()}
