@@ -9,6 +9,7 @@
   display: flex;
   padding: 5px 0;
   border-bottom: dashed 1px #cacaca;
+  background-color: #f8f8f8;
 }
 
 .studioContainer {
@@ -18,12 +19,19 @@
 }
 
 .footerContainer {
+  --bg-color: #0095ff;
+  --bg-color-darken: darken(#0095ff, 10%);
   display: flex;
   padding: 0 5px;
   line-height: 28px;
   height: 28px;
   color: #fff;
-  background-color: #0095ff;
+  background-color: var(--bg-color);
+
+  &.editMode {
+    --bg-color: #cc6633;
+    --bg-color-darken: darken(#cc6633, 10%);
+  }
 }
 
 .moveHandle {

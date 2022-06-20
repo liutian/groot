@@ -43,7 +43,7 @@ const SidePanel: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
     </div>
 
 
-    <SideFooter className={styles.footerContainer} />
+    <SideFooter className={`${styles.footerContainer} ${model.editMode ? styles.editMode : ''}`} />
 
     <PropGroupSetting />
     <PropBlockSetting />
