@@ -11,6 +11,8 @@ import StudioModel from '@model/StudioModel';
 import { useModel } from '@util/robot';
 import PropGroupStudio from "../PropGroupStudio";
 import { autoIncrementForName } from "@util/utils";
+import PropBlockStudio from "../PropBlockStudio";
+import PropGroupToolBar from "../PropGroupToolBar";
 
 function Studio() {
 
@@ -29,34 +31,7 @@ function Studio() {
 
   // 自定义渲染Tab标题，实现右键菜单功能
   const renderTabBarItem = (group: PropGroup) => {
-
-    const items: MenuProps['items'] = [
-      {
-        key: 'del',
-        disabled: model.component.version.rootGroupList!.length === 0,
-        onClick: (e) => {
-          e.domEvent.stopPropagation();
-          model.delGroup(group.id);
-        },
-        label: '删除'
-      }, {
-        key: 'copy',
-        label: '复制'
-      }, {
-        key: 'setting',
-        label: '配置',
-        onClick: (e) => {
-          e.domEvent.stopPropagation();
-          updateAction(() => {
-            model.currSettingPropGroup = JSON.parse(JSON.stringify(group));
-          });
-        }
-      }
-    ];
-
-    return model.editMode ? (<Dropdown overlayStyle={{ minWidth: '5em' }} overlay={<Menu items={items} />} trigger={['contextMenu']}>
-      <div>{group.name}<i className="highlight" hidden={!group.highlight} /></div>
-    </Dropdown>) : <div>{group.name}<i className="highlight" hidden={!group.highlight} /></div>
+    return <div>{group.name}<i className="highlight" hidden={!group.highlight} /></div>;
   }
 
   // tab点击切换事件
@@ -75,33 +50,38 @@ function Studio() {
         name: `分组${nameSuffix}`,
         root: true,
         propBlockList: [],
-        order: 0
+        order: 0,
+        struct: 'Default'
       };
     })
   }
 
   const renderTabContent = () => {
     const list = model.component.version.rootGroupList!.map((group) => {
+      let content = <PropGroupStudio group={group} />;
+      if (group.struct === 'List') {
+        content = model.activeGroupEditMode ? <PropBlockStudio templateMode block={group.templateBlock!} /> : <PropGroupStudio templateBlock={group.templateBlock!} group={group} />;
+      }
+
       return (<Tabs.TabPane key={group.id} tab={renderTabBarItem(group)} >
-        <PropGroupStudio group={group} />
+        {content}
       </Tabs.TabPane>)
     })
 
     return <>
       {list}
-      {model.editMode ? <Tabs.TabPane key="__add" tab={<Typography.Link><PlusOutlined /></Typography.Link>}></Tabs.TabPane> : null}
+      {model.editMode && <Tabs.TabPane key="__add" tab={<Typography.Link><PlusOutlined /></Typography.Link>}></Tabs.TabPane>}
     </>
   }
+
   /////////////////////////////////////////////////////////////////////////////
   return <>
     <DndProvider backend={HTML5Backend}>
       <Tabs size="small" className="studio-tabs" activeKey={model.activeGroupId?.toString()}
-        onChange={tabOnChange}
-        renderTabBar={renderTabBar} >
+        onChange={tabOnChange} renderTabBar={renderTabBar} tabBarExtraContent={<PropGroupToolBar />}>
         {renderTabContent()}
       </Tabs>
     </DndProvider>
-
   </>
 }
 

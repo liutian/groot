@@ -1,5 +1,5 @@
 import { useModel } from "@util/robot";
-import { Form, Input, Modal } from "antd";
+import { Form, Input, Modal, Radio } from "antd";
 import React, { useEffect, useRef } from "react";
 import StudioModel from '@model/StudioModel';
 
@@ -35,6 +35,13 @@ const PropGroupSetting: React.FC = () => {
     <Form form={form} labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
       <Form.Item name="name" label="名称" rules={[{ required: true }]}>
         <Input ref={inputRef} />
+      </Form.Item>
+      <Form.Item name="struct" label="结构" rules={[{ required: true }]}>
+        <Radio.Group >
+          <Radio value="Default">默认</Radio>
+          <Radio value="List">列表</Radio>
+          <Radio value="Map">键值对</Radio>
+        </Radio.Group>
       </Form.Item>
       <Form.Item label="属性映射" name="propKey">
         <Input />

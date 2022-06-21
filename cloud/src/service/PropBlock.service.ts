@@ -1,5 +1,5 @@
 import { EntityManager, RequestContext } from '@mikro-orm/core';
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { LogicException, LogicExceptionCode } from 'config/Logic.exception';
 import { PropBlock } from 'entities/PropBlock';
 import { PropGroup } from 'entities/PropGroup';
@@ -13,7 +13,10 @@ import { PropGroupService } from './PropGroup.service';
 @Injectable()
 export class PropBlockService {
 
-  constructor(private propGroupService: PropGroupService) { }
+  constructor(
+    @Inject(forwardRef(() => PropGroupService))
+    private propGroupService: PropGroupService
+  ) { }
 
   async add(rawBlock: PropBlock) {
     const em = RequestContext.getEntityManager();

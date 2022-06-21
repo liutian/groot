@@ -43,4 +43,7 @@ export class PropGroup extends BaseEntity {
 
   @Property({ persist: false })
   componentId?: number;
+
+  @Property()
+  struct: 'List' | 'Map' | 'Default' = 'Default';
 }

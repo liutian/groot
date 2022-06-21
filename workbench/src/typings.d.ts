@@ -28,10 +28,12 @@ type PropGroup = {
   propBlockList: PropBlock[],
   relativeItemId?: number,
   templateBlock?: PropBlock,
+  templateBlockId?: number,
   order: number,
   componentId?: number,
   componentVersionId?: number,
-  highlight?: boolean
+  highlight?: boolean,
+  struct: 'List' | 'Map' | 'Default'
 }
 
 /**

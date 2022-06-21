@@ -74,7 +74,7 @@ const PropGroupStudio: React.FC<PropsType> = ({ group, templateBlock }) => {
       }
     </Collapse>
     {
-      model.editMode && group.root ? (
+      model.editMode && !group.templateBlock ? (
         <div style={{ padding: '16px' }}>
           <Button type="primary" ghost block onClick={() => {
             model.showPropBlockSettinngForCreate(group);
@@ -86,7 +86,7 @@ const PropGroupStudio: React.FC<PropsType> = ({ group, templateBlock }) => {
     }
 
     {
-      !group.root ? (
+      group.templateBlock ? (
         <div style={{ padding: '16px 0 0' }}>
           {/* 内嵌模式  */}
           <Button disabled={!templateBlock?.propItemList.length} type="primary" ghost block onClick={() => {

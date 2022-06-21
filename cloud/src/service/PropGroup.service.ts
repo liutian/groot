@@ -1,12 +1,19 @@
 import { RequestContext } from '@mikro-orm/core';
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { PropBlock } from 'entities/PropBlock';
 import { PropGroup } from 'entities/PropGroup';
 import { PropItemType } from 'entities/PropItem';
 import { pick } from 'util.ts/common';
+import { PropBlockService } from './PropBlock.service';
 
 
 @Injectable()
 export class PropGroupService {
+
+  constructor(
+    @Inject(forwardRef(() => PropBlockService))
+    private propBlockService: PropBlockService
+  ) { }
 
   async add(rawGroup: PropGroup, root = true) {
     const em = RequestContext.getEntityManager();
@@ -17,7 +24,7 @@ export class PropGroupService {
     }, { orderBy: { order: 'DESC' } });
 
     const newGroup = em.create(PropGroup, {
-      ...pick(rawGroup, ['name', 'propKey']),
+      ...pick(rawGroup, ['name', 'propKey', 'struct']),
       componentVersion: rawGroup.componentVersionId,
       root,
       component: rawGroup.componentId,
@@ -25,6 +32,21 @@ export class PropGroupService {
     });
 
     await em.flush();
+
+    if (newGroup.struct === 'List') {
+      const rawBlock = {
+        name: '配置块模版',
+        groupId: newGroup.id,
+        component: newGroup.component,
+        componentVersion: newGroup.componentVersion,
+        isTemplate: true
+      } as PropBlock;
+
+      const templateBlock = await this.propBlockService.add(rawBlock);
+      newGroup.templateBlock = templateBlock;
+
+      await em.flush();
+    }
 
     return newGroup;
   }

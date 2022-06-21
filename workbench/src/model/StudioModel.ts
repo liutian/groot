@@ -49,6 +49,8 @@ export default class StudioModel {
 
   public iframeRef?: { current: HTMLIFrameElement };
 
+  public activeGroupEditMode = false;
+
   public init(component: Component, iframeRef: { current: HTMLIFrameElement }, editMode = false) {
     this.component = component;
     this.iframeRef = iframeRef;
@@ -67,9 +69,13 @@ export default class StudioModel {
     }
   }
 
+  public toggleActiveGroupEditMode = () => {
+    this.activeGroupEditMode = !this.activeGroupEditMode;
+  }
+
   /**
- * 配置项变动通知iframe更新
- */
+   * 配置项变动通知iframe更新
+   */
   public notifyIframe = (content: string) => {
     const props = content;
 
@@ -221,9 +227,15 @@ export default class StudioModel {
           body: JSON.stringify(newGroup)
         }
       ).then(r => r.json()).then((result: { data: PropGroup }) => {
-        this.component.version.rootGroupList!.push(result.data);
+        const groupDB = result.data;
+        this.component.version.rootGroupList!.push(groupDB);
         // this.component.version.groupList.push(result.data);
-        this.activeGroupId = result.data.id;
+        this.activeGroupId = groupDB.id;
+
+        if (newGroup.struct === 'List') {
+          groupDB.templateBlock = groupDB.propBlockList.find(b => b.id === groupDB.templateBlockId);
+          groupDB.propBlockList.length = 0;
+        }
       })
     }
 
@@ -318,7 +330,6 @@ export default class StudioModel {
           const data = result.data[index]!;
           this.addPropItemFn(data);
         }
-        console.dir(this.component.version.rootGroupList);
       })
     }
 
@@ -378,6 +389,7 @@ export default class StudioModel {
     const activeItem = this.component.version.rootGroupList!.find(g => g.id === id);
     if (activeItem) {
       this.activeGroupId = id;
+      this.activeGroupEditMode = false;
     }
   }
 
@@ -467,12 +479,15 @@ export default class StudioModel {
 
   public getPropBlock = (blockId: number) => {
     for (let groupIndex = 0; groupIndex < this.component.version.rootGroupList!.length; groupIndex++) {
-      const group = this.component.version.rootGroupList![groupIndex];
+      const group = this.component.version.rootGroupList![groupIndex]!;
       for (let blockIndex = 0; blockIndex < group!.propBlockList.length; blockIndex++) {
         const block = group?.propBlockList[blockIndex];
         if (block?.id === blockId) {
           return block;
         }
+      }
+      if (group.struct === 'List' && blockId === group.templateBlock?.id) {
+        return group.templateBlock;
       }
     }
 
@@ -605,11 +620,19 @@ export default class StudioModel {
       .filter(b => b.groupId === group.id)
       .sort((a, b) => a.order - b.order)
 
+    const propBlockList = blocks.filter(b => b.id !== group.templateBlockId);
+
     if (group.propBlockList?.length) {
-      group.propBlockList.push(...blocks);
+      group.propBlockList.push(...propBlockList);
     } else {
-      group.propBlockList = blocks;
+      group.propBlockList = propBlockList;
     }
+
+    const templateBlock = blocks.find(b => b.id === group.templateBlockId);
+    if (group.struct === 'List' && templateBlock) {
+      group.templateBlock = templateBlock;
+    }
+
     for (let blockIndex = 0; blockIndex < blocks.length; blockIndex++) {
       const block = blocks[blockIndex]!;
       const items = store.itemList
