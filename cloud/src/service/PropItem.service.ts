@@ -94,21 +94,12 @@ export class PropItemService {
           struct: 'List'
         } as PropGroup;
         valueOfGroup = await this.propGroupService.add(rawGroup, false);
+
+        templateBlock = valueOfGroup.templateBlock;
         newItem.valueOfGroup = valueOfGroup;
-        valueOfGroup.relativeItem = newItem;
-
-        const rawBlock = {
-          name: '配置块模版',
-          groupId: valueOfGroup.id,
-          component: block.component,
-          componentVersion: block.componentVersion,
-          isTemplate: true
-        } as PropBlock;
-
-        templateBlock = await this.propBlockService.add(rawBlock);
-        templateBlock.relativeItem = newItem;
         newItem.templateBlock = templateBlock;
-        valueOfGroup.templateBlock = templateBlock;
+        valueOfGroup.relativeItem = newItem;
+        templateBlock.relativeItem = newItem;
       }
 
       await em.flush();

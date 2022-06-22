@@ -650,15 +650,9 @@ export default class StudioModel {
         if (item.type === 'array-object') {
           const relativeGroup = this.buildPropGroup(item.valueOfGroupId!, store);
           this.noRootPropGroupMap.set(relativeGroup.id, relativeGroup);
-          let templateBlock = relativeGroup.propBlockList.find(b => b.id === item.templateBlockId);
-          if (!templateBlock) {
-            templateBlock = this.getPropBlock(item.templateBlockId!);
-          }
-          relativeGroup.propBlockList = relativeGroup.propBlockList.filter(b => b.id !== item.templateBlockId);
-          relativeGroup.templateBlock = templateBlock;
 
           item.valueOfGroup = relativeGroup;
-          item.templateBlock = templateBlock;
+          item.templateBlock = relativeGroup.templateBlock;
         }
       }
     }
