@@ -91,6 +91,7 @@ export class PropItemService {
           name: '关联分组',
           componentId: block.component.id,
           componentVersionId: block.componentVersion.id,
+          struct: 'List'
         } as PropGroup;
         valueOfGroup = await this.propGroupService.add(rawGroup, false);
         newItem.valueOfGroup = valueOfGroup;

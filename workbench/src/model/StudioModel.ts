@@ -493,15 +493,15 @@ export default class StudioModel {
 
     const tempGroups = [...this.noRootPropGroupMap.values()];
     for (let groupIndex = 0; groupIndex < tempGroups.length; groupIndex++) {
-      const group = tempGroups[groupIndex];
+      const group = tempGroups[groupIndex]!;
 
-      if (group?.templateBlock!.id === blockId) {
-        return group?.templateBlock;
+      if (group.templateBlock!.id === blockId) {
+        return group.templateBlock;
       }
 
-      for (let blockIndex = 0; blockIndex < group!.propBlockList.length; blockIndex++) {
-        const block = group!.propBlockList[blockIndex];
-        if (block?.id === blockId) {
+      for (let blockIndex = 0; blockIndex < group.propBlockList.length; blockIndex++) {
+        const block = group.propBlockList[blockIndex]!;
+        if (block.id === blockId) {
           return block;
         }
       }

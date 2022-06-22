@@ -19,7 +19,7 @@ const PropGroupStudio: React.FC<PropsType> = ({ group, templateBlock }) => {
   }
 
   const renderBlockSetting = (block: PropBlock, blockIndex: number) => {
-    if (!model.editMode) return null;
+    if (!model.editMode || templateBlock) return null;
 
     return (<Space size="small">
       <Typography.Link onClick={(e) => {
@@ -46,16 +46,12 @@ const PropGroupStudio: React.FC<PropsType> = ({ group, templateBlock }) => {
       }} >
         <DeleteOutlined />
       </Typography.Link>
-      {
-        !!templateBlock ? null : (
-          <Typography.Link onClick={(e) => {
-            e.stopPropagation();
-            editBlock(block);
-          }}>
-            <SettingOutlined />
-          </Typography.Link>
-        )
-      }
+      <Typography.Link onClick={(e) => {
+        e.stopPropagation();
+        editBlock(block);
+      }}>
+        <SettingOutlined />
+      </Typography.Link>
     </Space>)
   }
 
@@ -65,16 +61,17 @@ const PropGroupStudio: React.FC<PropsType> = ({ group, templateBlock }) => {
       expandIconPosition="right" expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}>
       {
         group.propBlockList.map((block, blockIndex) => {
-          return (<Collapse.Panel header={<>
-            {block.name}<i className="highlight" hidden={!block.highlight} />
-          </>} key={block.id} extra={renderBlockSetting(block, blockIndex)}>
+          return (<Collapse.Panel key={block.id} extra={renderBlockSetting(block, blockIndex)}
+            header={<>
+              {block.name}<i className="highlight" hidden={!block.highlight} />
+            </>} >
             <PropBlockStudio block={block} freezeSetting={!!templateBlock} />
           </Collapse.Panel>)
         })
       }
     </Collapse>
     {
-      model.editMode && !group.templateBlock ? (
+      model.editMode && !templateBlock ? (
         <div style={{ padding: '16px' }}>
           <Button type="primary" ghost block onClick={() => {
             model.showPropBlockSettinngForCreate(group);
@@ -86,7 +83,7 @@ const PropGroupStudio: React.FC<PropsType> = ({ group, templateBlock }) => {
     }
 
     {
-      group.templateBlock ? (
+      templateBlock ? (
         <div style={{ padding: '16px 0 0' }}>
           {/* 内嵌模式  */}
           <Button disabled={!templateBlock?.propItemList.length} type="primary" ghost block onClick={() => {
