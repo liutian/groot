@@ -46,6 +46,15 @@ export class PropGroupService {
       newGroup.templateBlock = templateBlock;
 
       await em.flush();
+    } else if (newGroup.struct === 'Map') {
+      const rawBlock = {
+        name: '配置块模版',
+        groupId: newGroup.id,
+        component: newGroup.component,
+        componentVersion: newGroup.componentVersion,
+      } as PropBlock;
+
+      await this.propBlockService.add(rawBlock);
     }
 
     return newGroup;
@@ -81,7 +90,7 @@ export class PropGroupService {
           }
 
           await em.removeAndFlush(item);
-          if (item.type === PropItemType.ARRAY_OBJECT) {
+          if (item.type === PropItemType.LIST) {
             innerGroupIds.push(item.valueOfGroup.id);
           }
         }

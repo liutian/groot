@@ -6,7 +6,6 @@ import { PropGroup } from 'entities/PropGroup';
 import { PropItem, PropItemType } from 'entities/PropItem';
 import { PropValueOption } from 'entities/PropValueOption';
 import { pick } from 'util.ts/common';
-import { PropBlockService } from './PropBlock.service';
 import { PropGroupService } from './PropGroup.service';
 
 
@@ -15,7 +14,6 @@ export class PropItemService {
 
   constructor(
     private propGroupService: PropGroupService,
-    private propBlockService: PropBlockService
   ) { }
 
   async add(rawItem: PropItem) {
@@ -86,7 +84,7 @@ export class PropItemService {
         await em.flush();
       }
 
-      if (newItem.type === PropItemType.ARRAY_OBJECT) {
+      if (newItem.type === PropItemType.LIST) {
         const rawGroup = {
           name: '关联分组',
           componentId: block.component.id,
@@ -100,6 +98,17 @@ export class PropItemService {
         newItem.templateBlock = templateBlock;
         valueOfGroup.relativeItem = newItem;
         templateBlock.relativeItem = newItem;
+      } else if (newItem.type === PropItemType.MAP) {
+        const rawGroup = {
+          name: '关联分组',
+          componentId: block.component.id,
+          componentVersionId: block.componentVersion.id,
+          struct: 'Map'
+        } as PropGroup;
+        valueOfGroup = await this.propGroupService.add(rawGroup, false);
+        newItem.valueOfGroup = valueOfGroup;
+        valueOfGroup.relativeItem = newItem;
+        newItem.directBlock = valueOfGroup.propBlockList[0];
       }
 
       await em.flush();
@@ -185,7 +194,7 @@ export class PropItemService {
     }
 
     await em.removeAndFlush(propItem);
-    if (propItem.type === PropItemType.ARRAY_OBJECT) {
+    if (propItem.type === PropItemType.LIST) {
       await this.propGroupService.remove(propItem.valueOfGroup.id);
     }
 

@@ -61,6 +61,8 @@ function Studio() {
       let content = <PropGroupStudio group={group} />;
       if (group.struct === 'List') {
         content = model.activeGroupEditMode ? <PropBlockStudio templateMode block={group.templateBlock!} /> : <PropGroupStudio templateBlock={group.templateBlock!} group={group} />;
+      } else if (group.struct === 'Map') {
+        content = <PropBlockStudio noWrapMode block={group.propBlockList[0]!} />;
       }
 
       return (<Tabs.TabPane key={group.id} tab={renderTabBarItem(group)} >

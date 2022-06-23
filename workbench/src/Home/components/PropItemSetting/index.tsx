@@ -70,7 +70,8 @@ const PropItemSetting: React.FC = () => {
           { label: '下拉框', value: 'select' },
           { label: '多选', value: 'checkbox' },
           { label: '单选', value: 'radio' },
-          { label: '数组', value: 'array-object' }
+          { label: '列表', value: 'list' },
+          { label: '键值对', value: 'map' }
         ]} />
       </Form.Item>
       <Form.Item label="属性映射" rules={[{ required: true }]} name="propKey">

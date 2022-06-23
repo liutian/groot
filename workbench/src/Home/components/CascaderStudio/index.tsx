@@ -12,7 +12,7 @@ type PropsType = {
   item: PropItem
 }
 
-const ArrayCascaderStudio: React.FC<PropsType> = ({ item: propItem }) => {
+const CascaderStudio: React.FC<PropsType> = ({ item: propItem }) => {
   const [model] = useModel<StudioModel>('studio');
   const [editMode, setEditMode] = useState(false);
 
@@ -52,19 +52,22 @@ const ArrayCascaderStudio: React.FC<PropsType> = ({ item: propItem }) => {
         <Col span={16} style={{ textAlign: 'center' }}>
           {propItem.label}
         </Col>
-        <Col span={3} style={{ textAlign: 'right' }}>
+        <Col span={3} style={{ textAlign: 'right' }} >
           {
-            model.editMode ?
-              <Button type="link" icon={editMode ? <SettingFilled /> : <SettingOutlined />} onClick={() => switchEditMode()}></Button>
-              : null
+            propItem.type === 'list' && model.editMode &&
+            (<Button type="link" icon={editMode ? <SettingFilled /> : <SettingOutlined />} onClick={() => switchEditMode()}></Button>)
           }
         </Col>
       </Row>
     </div>
-    <div className={styles.content}>
+    <div className={styles.content} hidden={propItem.type !== 'list'}>
       {editMode ? <PropBlockStudio templateMode block={templateBlock} /> : <PropGroupStudio templateBlock={templateBlock} group={propGroup} />}
+    </div>
+
+    <div className={styles.content} hidden={propItem.type !== 'map'}>
+      <PropBlockStudio noWrapMode block={propItem.directBlock!} />
     </div>
   </div>
 }
 
-export default ArrayCascaderStudio;
+export default CascaderStudio;

@@ -76,7 +76,8 @@ type PropItem = {
   rootPropKey?: boolean,
   order: number,
   componentId?: number,
-  highlight?: boolean
+  highlight?: boolean,
+  directBlock?: PropBlock
 }
 
 
@@ -88,7 +89,7 @@ type CodeMeta = {
   type: PropItemType
 }
 
-type PropItemType = 'input' | 'date-picker' | 'switch' | 'select' | 'radio' | 'checkbox' | 'array-object';
+type PropItemType = 'input' | 'date-picker' | 'switch' | 'select' | 'radio' | 'checkbox' | 'list' | 'map';
 
 
 type ComponentVersion = {

@@ -39,6 +39,9 @@ export class PropItem extends BaseEntity {
   @ManyToOne({ serializer: value => value?.id, serializedName: 'templateBlockId' })
   templateBlock?: PropBlock;
 
+  @ManyToOne({ serializer: value => value?.id, serializedName: 'directBlockId' })
+  directBlock?: PropBlock;
+
   @Property()
   rootPropKey = false;
 
@@ -65,5 +68,6 @@ export enum PropItemType {
   SELECT = 'select',
   RADIO = 'radio',
   CHECKBOX = 'checkbox',
-  ARRAY_OBJECT = 'array-object'
+  LIST = 'list',
+  MAP = 'map'
 }

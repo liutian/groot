@@ -7,10 +7,11 @@ import styles from './index.module.less';
 type PropType = {
   block: PropBlock,
   freezeSetting?: boolean,
-  templateMode?: boolean
+  templateMode?: boolean,
+  noWrapMode?: boolean
 }
 
-function PropBlockStudio({ block, freezeSetting, templateMode }: PropType) {
+function PropBlockStudio({ block, freezeSetting, templateMode, noWrapMode }: PropType) {
   const [model, updateAction] = useModel<StudioModel>('studio');
   const [form] = Form.useForm();
   model.blockFormInstanceMap.set(block.id!, form);
@@ -24,7 +25,7 @@ function PropBlockStudio({ block, freezeSetting, templateMode }: PropType) {
     }
 
     const renderItemSetting = () => {
-      if (!model.editMode || freezeSetting === true) return null;
+      if (!model.editMode || freezeSetting) return null;
 
 
       return (<Space size="small">
@@ -79,7 +80,7 @@ function PropBlockStudio({ block, freezeSetting, templateMode }: PropType) {
       return <Radio.Group options={item.optionList} />
     } else if (item.type === 'checkbox') {
       return <Checkbox.Group options={item.optionList} />
-    } else if (item.type === 'array-object') {
+    } else if (item.type === 'list' || item.type === 'map') {
       return <Button block onClick={() => {
         model.pushHandUpPropItem(item)
       }}>列表{item.valueOfGroup?.propBlockList?.length}</Button>
@@ -88,7 +89,7 @@ function PropBlockStudio({ block, freezeSetting, templateMode }: PropType) {
     return <>not found item</>
   }
 
-  return <div className={templateMode ? styles.containerWrap : ''}>
+  return <div className={templateMode || noWrapMode ? styles.containerWrap : ''}>
     <Form form={form} layout="vertical" className="studio-form" onValuesChange={() => model.productStudioData()}>
       <Row gutter={6}>
         {
@@ -104,7 +105,7 @@ function PropBlockStudio({ block, freezeSetting, templateMode }: PropType) {
       </Row>
     </Form>
     {
-      templateMode ? (
+      templateMode || (model.editMode && noWrapMode) ? (
         <Button type="dashed" block onClick={() => {
           model.showPropItemSettinngForCreate(block)
         }}>

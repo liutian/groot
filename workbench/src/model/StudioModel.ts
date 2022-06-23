@@ -343,7 +343,7 @@ export default class StudioModel {
   private addPropItemFn = (data: { newItem: PropItem, valueOfGroup: PropGroup, templateBlock: PropBlock }) => {
     const block = this.getPropBlock(data.newItem.blockId)!;
     block.propItemList.push(data.newItem);
-    if (data.newItem.type === 'array-object') {
+    if (data.newItem.type === 'list') {
       const valueOfGroup = data.valueOfGroup;
       const templateBlock = data.templateBlock;
       this.noRootPropGroupMap.set(data.valueOfGroup.id, valueOfGroup);
@@ -351,6 +351,11 @@ export default class StudioModel {
       valueOfGroup.propBlockList = valueOfGroup.propBlockList.filter(b => b.id !== templateBlock.id);
       valueOfGroup.templateBlock = templateBlock;
       data.newItem.templateBlock = templateBlock;
+      data.newItem.valueOfGroup = valueOfGroup;
+    } else if (data.newItem.type === 'map') {
+      const valueOfGroup = data.valueOfGroup;
+      this.noRootPropGroupMap.set(data.valueOfGroup.id, valueOfGroup);
+      data.newItem.directBlock = valueOfGroup.propBlockList[0];
       data.newItem.valueOfGroup = valueOfGroup;
     }
   }
@@ -495,7 +500,7 @@ export default class StudioModel {
     for (let groupIndex = 0; groupIndex < tempGroups.length; groupIndex++) {
       const group = tempGroups[groupIndex]!;
 
-      if (group.templateBlock!.id === blockId) {
+      if (group.struct === 'List' && group.templateBlock!.id === blockId) {
         return group.templateBlock;
       }
 
@@ -583,7 +588,7 @@ export default class StudioModel {
           type: item.type,
           defaultValue: item.defaultValue
         });
-        if (item.type === 'array-object') {
+        if (item.type === 'list') {
           this.createCodemetaFromGroup(item.valueOfGroup!, codemetas, key);
         }
       }
@@ -647,12 +652,18 @@ export default class StudioModel {
 
       for (let itemIndex = 0; itemIndex < items.length; itemIndex++) {
         const item = items[itemIndex]!;
-        if (item.type === 'array-object') {
+        if (item.type === 'list') {
           const relativeGroup = this.buildPropGroup(item.valueOfGroupId!, store);
           this.noRootPropGroupMap.set(relativeGroup.id, relativeGroup);
 
           item.valueOfGroup = relativeGroup;
           item.templateBlock = relativeGroup.templateBlock;
+        } else if (item.type === 'map') {
+          const relativeGroup = this.buildPropGroup(item.valueOfGroupId!, store);
+          this.noRootPropGroupMap.set(relativeGroup.id, relativeGroup);
+
+          item.valueOfGroup = relativeGroup;
+          item.directBlock = relativeGroup.propBlockList[0];
         }
       }
     }

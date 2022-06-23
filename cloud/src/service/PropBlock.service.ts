@@ -147,7 +147,7 @@ export class PropBlockService {
       await em.flush();
       itemIdList.push(newItem.id);
 
-      if (newItem.type === PropItemType.ARRAY_OBJECT) {
+      if (newItem.type === PropItemType.LIST) {
         const innnerTemplateBlock = await em.findOne(PropBlock, copyItem.templateBlock,
           { populate: ['propItemList.optionList'] }
         );
@@ -241,7 +241,7 @@ export class PropBlockService {
         }
 
         await em.removeAndFlush(item);
-        if (item.type === PropItemType.ARRAY_OBJECT) {
+        if (item.type === PropItemType.LIST) {
           innerGroupIds.push(item.valueOfGroup.id);
         }
       }
