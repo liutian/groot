@@ -4,11 +4,11 @@ import { StudioController } from './studio.controller';
 import { AppService } from './app.service';
 import config from 'config/mikro-orm.config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
-import { StandardResultInterceptor } from 'config/standardResult.interceptor';
-import { PropBlockService } from 'service/PropBlock.service';
-import { PropGroupService } from 'service/PropGroup.service';
-import { PropItemService } from 'service/PropItem.service';
-import { ComponentService } from 'service/Component.service';
+import { StandardResultInterceptor } from 'config/standard-result.interceptor';
+import { PropBlockService } from 'service/prop-block.service';
+import { PropGroupService } from 'service/prop-group.service';
+import { PropItemService } from 'service/prop-item.service';
+import { ComponentService } from 'service/component.service';
 @Module({
   imports: [
     MikroOrmModule.forRoot(config)

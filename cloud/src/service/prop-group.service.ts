@@ -4,7 +4,7 @@ import { PropBlock } from 'entities/PropBlock';
 import { PropGroup } from 'entities/PropGroup';
 import { PropItemType } from 'entities/PropItem';
 import { pick } from 'util.ts/common';
-import { PropBlockService } from './PropBlock.service';
+import { PropBlockService } from './prop-block.service';
 
 
 @Injectable()

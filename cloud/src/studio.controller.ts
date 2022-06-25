@@ -2,10 +2,10 @@ import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { PropBlock } from 'entities/PropBlock';
 import { PropGroup } from 'entities/PropGroup';
 import { PropItem } from 'entities/PropItem';
-import { ComponentService } from 'service/Component.service';
-import { PropBlockService } from 'service/PropBlock.service';
-import { PropGroupService } from 'service/PropGroup.service';
-import { PropItemService } from 'service/PropItem.service';
+import { ComponentService } from 'service/component.service';
+import { PropBlockService } from 'service/prop-block.service';
+import { PropGroupService } from 'service/prop-group.service';
+import { PropItemService } from 'service/prop-item.service';
 @Controller('/studio')
 export class StudioController {
   constructor(

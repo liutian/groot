@@ -1,6 +1,6 @@
 import { MikroORM, RequestContext } from '@mikro-orm/core';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
-import { AllExceptionsFilter } from 'config/AllExceptions.filter';
+import { AllExceptionsFilter } from 'config/all-exceptions.filter';
 import { AppModule } from './app.module';
 
 
