@@ -96,7 +96,7 @@ export function omitProps<O, P extends string>(instance: O, propKeys: AutoPath<O
 
 
 function wrapToJSON(keys: string[]) {
-  function toJSON(...args: any[]) {
+  function toJSON(this: any, ...args: any[]) {
     let obj;
 
     // 不需要处理 persist: false的实例

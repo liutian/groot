@@ -8,4 +8,4 @@
 - 不去破坏组件的通用性，组件不是为 `groot` 特制的
 
 ### 贡献代码
-安装 `examples/webpack` 之后需要删除该目录下的 `node_modules/react` 否则无法进行本地调试 `@grootio/runtime` 
+`react` `typescript` 为项目公共依赖库，在根目录默认安装，根目录 `base.tsconfig.json` 作为各个项目通用ts配置

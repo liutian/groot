@@ -190,7 +190,7 @@ export class PropItemService {
     const propItem = await em.findOne(PropItem, itemId);
 
     if (!propItem) {
-      return;
+      return null;
     }
 
     await em.removeAndFlush(propItem);

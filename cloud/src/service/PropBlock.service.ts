@@ -23,7 +23,7 @@ export class PropBlockService {
 
     const group = await em.findOne(PropGroup, rawBlock.groupId);
     if (!group) {
-      return;
+      return null;
     }
 
     const firstBlock = await em.findOne(PropBlock, { group: group, order: { $gt: 0 } }, { orderBy: { order: 'DESC' } });
