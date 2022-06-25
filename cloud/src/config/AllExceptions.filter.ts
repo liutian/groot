@@ -16,6 +16,7 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
 
+    // 自定义业务异常响应结果格式
     if (exception instanceof LogicException) {
       response.status(HttpStatus.OK).json({
         code: exception.code,

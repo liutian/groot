@@ -7,7 +7,7 @@ import { PropBlockService } from 'service/PropBlock.service';
 import { PropGroupService } from 'service/PropGroup.service';
 import { PropItemService } from 'service/PropItem.service';
 @Controller('/studio')
-export class AppController {
+export class StudioController {
   constructor(
     private readonly itemService: PropItemService,
     private readonly blockService: PropBlockService,

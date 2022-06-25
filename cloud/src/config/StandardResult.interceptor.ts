@@ -7,6 +7,7 @@ import { isDevMode } from 'util.ts/common';
 export class StandardResultInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     return next.handle().pipe(
+      // 开发阶段延长超时时间，方便调试接口
       timeout(isDevMode() ? 1000 * 60 * 5 : 1000 * 60),
       map(value => value === null || value === undefined ? '' : value),
       map((value) => {
@@ -25,6 +26,7 @@ export class StandardResultInterceptor implements NestInterceptor {
         }
       }),
       catchError(err => {
+        // 捕获rxjs超时异常，返回统一响应格式
         if (err instanceof TimeoutError) {
           return throwError(() => new RequestTimeoutException());
         }

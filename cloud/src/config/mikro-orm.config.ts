@@ -14,7 +14,9 @@ export default {
   persistOnCreate: true,
   highlighter: new SqlHighlighter(),
   schemaGenerator: {
+    // 取消外键约束校验
     disableForeignKeys: false,
+    // 取消创建外键约束
     createForeignKeyConstraints: false,
   },
   seeder: {

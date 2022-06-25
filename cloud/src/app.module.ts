@@ -1,6 +1,6 @@
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
+import { StudioController } from './studio.controller';
 import { AppService } from './app.service';
 import config from 'config/mikro-orm.config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
@@ -13,10 +13,11 @@ import { ComponentService } from 'service/Component.service';
   imports: [
     MikroOrmModule.forRoot(config)
   ],
-  controllers: [AppController],
+  controllers: [StudioController],
   providers: [
     {
       provide: APP_INTERCEPTOR,
+      // 格式化响应结果
       useClass: StandardResultInterceptor
     },
     PropItemService,
