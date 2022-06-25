@@ -10,7 +10,7 @@
     "@grootio/core": "0.0.1"
   },
   "peerDependencies": {
-    "react": "18.0.0"
+    "react": "18.2.0"
   },
   "engines": {
     "node": ">=14.0.0"
