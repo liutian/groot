@@ -4,6 +4,17 @@ import React, { useEffect } from "react";
 import StudioModel from '@model/StudioModel';
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 
+const optionList = [
+  { label: '文本', value: 'Input' },
+  { label: '日期', value: 'Date_Picker' },
+  { label: '开关', value: 'Switch' },
+  { label: '下拉框', value: 'Select' },
+  { label: '多选', value: 'Checkbox' },
+  { label: '单选', value: 'Radio' },
+  { label: '列表', value: 'List' },
+  { label: '键值对', value: 'Item' }
+];
+
 const PropItemSetting: React.FC = () => {
   const [form] = Form.useForm<PropItem>();
   const [model, updateAction] = useModel<StudioModel>('studio');
@@ -63,16 +74,7 @@ const PropItemSetting: React.FC = () => {
         <Input />
       </Form.Item>
       <Form.Item label="类型" name="type" rules={[{ required: true }]}>
-        <Select disabled={!!model.currSettingPropItem?.id} options={[
-          { label: '文本', value: 'input' },
-          { label: '日期', value: 'date-picker' },
-          { label: '开关', value: 'switch' },
-          { label: '下拉框', value: 'select' },
-          { label: '多选', value: 'checkbox' },
-          { label: '单选', value: 'radio' },
-          { label: '列表', value: 'list' },
-          { label: '键值对', value: 'map' }
-        ]} />
+        <Select disabled={!!model.currSettingPropItem?.id} options={optionList} />
       </Form.Item>
       <Form.Item label="属性映射" rules={[{ required: true }]} name="propKey">
         <Input />

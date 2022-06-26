@@ -54,17 +54,17 @@ const CascaderStudio: React.FC<PropsType> = ({ item: propItem }) => {
         </Col>
         <Col span={3} style={{ textAlign: 'right' }} >
           {
-            propItem.type === 'list' && model.editMode &&
+            propItem.type === 'List' && model.editMode &&
             (<Button type="link" icon={editMode ? <SettingFilled /> : <SettingOutlined />} onClick={() => switchEditMode()}></Button>)
           }
         </Col>
       </Row>
     </div>
-    <div className={styles.content} hidden={propItem.type !== 'list'}>
+    <div className={styles.content} hidden={propItem.type !== 'List'}>
       {editMode ? <PropBlockStudio templateMode block={templateBlock} /> : <PropGroupStudio templateBlock={templateBlock} group={propGroup} />}
     </div>
 
-    <div className={styles.content} hidden={propItem.type !== 'map'}>
+    <div className={styles.content} hidden={propItem.type !== 'Item'}>
       <PropBlockStudio noWrapMode block={propItem.directBlock!} />
     </div>
   </div>

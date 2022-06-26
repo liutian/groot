@@ -68,19 +68,19 @@ function PropBlockStudio({ block, freezeSetting, templateMode, noWrapMode }: Pro
   }
 
   const renderFormItem = (item: PropItem) => {
-    if (item.type === 'input') {
+    if (item.type === 'Input') {
       return <Input />;
-    } else if (item.type === 'date-picker') {
+    } else if (item.type === 'Date_Picker') {
       return <DatePicker />;
-    } else if (item.type === 'switch') {
+    } else if (item.type === 'Switch') {
       return <Switch />
-    } else if (item.type === 'select') {
+    } else if (item.type === 'Select') {
       return <Select options={item.optionList} />
-    } else if (item.type === 'radio') {
+    } else if (item.type === 'Radio') {
       return <Radio.Group options={item.optionList} />
-    } else if (item.type === 'checkbox') {
+    } else if (item.type === 'Checkbox') {
       return <Checkbox.Group options={item.optionList} />
-    } else if (item.type === 'list' || item.type === 'map') {
+    } else if (item.type === 'List' || item.type === 'Item') {
       return <Button block onClick={() => {
         model.pushHandUpPropItem(item)
       }}>列表{item.valueOfGroup?.propBlockList?.length}</Button>
@@ -96,7 +96,7 @@ function PropBlockStudio({ block, freezeSetting, templateMode, noWrapMode }: Pro
           block.propItemList.map((item, index) => {
             return <Col span={item.span} key={item.id} >
               <Form.Item className={styles.propItem} label={renderItemLabel(item, index)} name={item.propKey} preserve={false}
-                valuePropName={item.type === 'switch' ? 'checked' : 'value'} initialValue={item.defaultValue}>
+                valuePropName={item.type === 'Switch' ? 'checked' : 'value'} initialValue={item.defaultValue}>
                 {renderFormItem(item)}
               </Form.Item>
             </Col>

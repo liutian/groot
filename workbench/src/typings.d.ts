@@ -21,66 +21,75 @@ interface Window {
  * 描述代码元数据配置的属性分组类型
  */
 type PropGroup = {
-  id: number,
-  name: string,
-  root: boolean,
-  propKey?: string,
   propBlockList: PropBlock[],
-  relativeItemId?: number,
   templateBlock?: PropBlock,
+
+  relativeItemId?: number,
   templateBlockId?: number,
-  order: number,
-  componentId?: number,
-  componentVersionId?: number,
+
+  // 分割线下面时界面属性
   highlight?: boolean,
-  struct: 'List' | 'Map' | 'Default'
-}
+} & Omit<import("../../cloud/src/entities/PropGroup").PropGroup, 'propBlockList' | 'templateBlock'>;
 
 /**
  * 描述代码元数据配置的属性配置块类型
  */
 type PropBlock = {
-  id: number,
-  name: string,
-  propKey?: string,
   propItemList: PropItem[],
-  groupId: number,
-  relativeItemId?: number,
-  rootPropKey?: boolean,
-  order: number,
-  componentId?: number,
-  isTemplate?: boolean,
+  // 分割线下面时界面属性
   highlight?: boolean
-}
+} & Omit<import("../../cloud/src/entities/PropBlock").PropBlock, 'propItemList'>;
 
 /**
  * 描述代码元数据配置的属性配置项类型
  */
 type PropItem = {
-  id: number,
-  label: string,
-  propKey: string,
-  type: PropItemType,
-  defaultValue?: any,
-  optionList?: [{
-    label: string,
-    value: string
-  }],
-  blockId: number,
-  groupId: number,
-  span?: number,
-  valueOfGroupId?: number,
   valueOfGroup?: PropGroup,
-  templateBlockId?: number,
   templateBlock?: PropBlock,
-  rootPropKey?: boolean,
-  order: number,
-  componentId?: number,
+  directBlock?: PropBlock,
+  optionList: PropValueOption[],
+
+  groupId: number,
+  valueOfGroupId?: number,
+
+  // 分割线下面时界面属性
   highlight?: boolean,
-  directBlock?: PropBlock
-}
+} & Omit<import("../../cloud/src/entities/PropItem").PropItem, 'valueOfGroup' | 'templateBlock' | 'directBlock' | 'optionList'>;
 
+type PropValueOption = {
+  label: string,
+  value: PropItemType
+};
 
+type ComponentVersion = {
+  groupList: PropGroup[],
+  blockList: PropBlock[],
+  itemList: PropItem[],
+
+  rootGroupList?: PropGroup[]
+} & Omit<import("../../cloud/src/entities/ComponentVersion").ComponentVersion, 'groupList' | 'blockList' | 'itemList'>;
+
+type ComponentInstance = {
+
+} & Omit<import("../../cloud/src/entities/ComponentInstance").ComponentInstance, ''>;
+
+type Release = {
+
+} & Omit<import("../../cloud/src/entities/Release").Release, ''>;
+
+type PropValue = {
+
+} & Omit<import("../../cloud/src/entities/PropValue").PropValue, ''>;
+
+type Component = {
+  version: ComponentVersion,
+
+  versionList: ComponentVersion[]
+} & Omit<import("../../cloud/src/entities/Component").Component, 'version'>;
+
+type Project = {
+
+} & Omit<import("../../cloud/src/entities/Project").Project, ''>;
 
 type CodeMeta = {
   id: number,
@@ -89,57 +98,5 @@ type CodeMeta = {
   type: PropItemType
 }
 
-type PropItemType = 'input' | 'date-picker' | 'switch' | 'select' | 'radio' | 'checkbox' | 'list' | 'map';
+type PropItemType = import("../../cloud/src/entities/PropItem").PropItemType;
 
-
-type ComponentVersion = {
-  id: number,
-  name: string,
-  publish: boolean,
-  groupList: PropGroup[],
-  blockList: PropBlock[],
-  itemList: PropItem[],
-
-  rootGroupList?: PropGroup[]
-}
-
-type ComponentInstance = {
-  id: number,
-  name: string,
-  path?: string,
-  propValueList: PropValue[],
-}
-
-type Release = {
-  id: number,
-  name: string,
-  freeze: boolean
-}
-
-type PropValue = {
-  id: number,
-  keyChain?: string,
-  value: string,
-}
-
-type Component = {
-  id: number,
-  name: string,
-  packageName: string,
-  componentName: string,
-  page: boolean,
-  version: ComponentVersion,
-  instance?: ComponentInstance,
-  release?: Release,
-  releaseList: Release[],
-  project: Project,
-  versionList: ComponentVersion[]
-}
-
-type Project = {
-  name: string,
-  devRelease: Release;
-  qaRelease?: Release;
-  plRelease?: Release;
-  onlineRelease: Release;
-}

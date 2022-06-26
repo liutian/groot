@@ -8,7 +8,7 @@ import { PropItem } from "./PropItem";
 @Entity()
 export class ComponentVersion extends BaseEntity {
 
-  @Property()
+  @Property({ length: 100 })
   name: string;
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'componentId' })

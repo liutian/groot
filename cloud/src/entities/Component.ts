@@ -8,19 +8,19 @@ import { Release } from "./Release";
 @Entity()
 export class Component extends BaseEntity {
 
-  @Property()
+  @Property({ length: 100 })
   name: string;
 
   /**
    * 组件所属包名
    */
-  @Property()
+  @Property({ length: 100 })
   packageName: string;
 
   /**
    * 组件名
    */
-  @Property()
+  @Property({ length: 100 })
   componentName: string;
 
   /**
@@ -30,7 +30,7 @@ export class Component extends BaseEntity {
   page = true;
 
   /**
-   * 组件版本
+   * 组件版本列表
    */
   @OneToMany(() => ComponentVersion, version => version.component)
   versionList = new Collection<ComponentVersion>(this);
@@ -39,7 +39,7 @@ export class Component extends BaseEntity {
    * 组件最新版本
    */
   @OneToOne({ serializer: value => value?.id, serializedName: 'recentVersionId' })
-  recentVersion?: ComponentVersion;// 此处必须为可选，否则会造成component和version循环依赖
+  recentVersion?: ComponentVersion;// 此处必须为可选，否则创建组建会引发recentVersion非空校验
 
   @ManyToOne()
   project: Project;

@@ -7,13 +7,16 @@ import { Component } from "./Component";
 @Entity()
 export class PropValue extends BaseEntity {
 
-  @Property()
-  keyChain?: string;
+  /**
+   * 属性链
+   */
+  @Property({ length: 100 })
+  keyChain: string;
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'propItemId' })
   propItem: PropItem;
 
-  @Property()
+  @Property({ length: 1024 })
   value: string;
 
   @ManyToMany(() => ComponentInstance, instance => instance.propValueList, { owner: true })

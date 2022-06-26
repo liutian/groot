@@ -6,10 +6,10 @@ import { PropItem } from './PropItem';
 @Entity()
 export class PropValueOption extends BaseEntity {
 
-  @Property()
+  @Property({ length: 50 })
   label: string;
 
-  @Property()
+  @Property({ length: 100 })
   value: string;
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'propItemId' })

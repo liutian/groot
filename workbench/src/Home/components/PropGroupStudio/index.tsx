@@ -58,7 +58,7 @@ const PropGroupStudio: React.FC<PropsType> = ({ group, templateBlock }) => {
 
   return (<>
     <Collapse defaultActiveKey={group.propBlockList.map(b => b.id)} bordered={false}
-      expandIconPosition="right" expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}>
+      expandIconPosition="end" expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}>
       {
         group.propBlockList.map((block, blockIndex) => {
           return (<Collapse.Panel key={block.id} extra={renderBlockSetting(block, blockIndex)}

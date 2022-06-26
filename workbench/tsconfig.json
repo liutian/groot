@@ -6,6 +6,7 @@
     "outDir": "dist",
     "jsx": "react-jsx",
     "sourceMap": true,
+    "experimentalDecorators": true,
     "paths": {
       "@model/*": [
         "model/*"

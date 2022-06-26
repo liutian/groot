@@ -343,7 +343,7 @@ export default class StudioModel {
   private addPropItemFn = (data: { newItem: PropItem, valueOfGroup: PropGroup, templateBlock: PropBlock }) => {
     const block = this.getPropBlock(data.newItem.blockId)!;
     block.propItemList.push(data.newItem);
-    if (data.newItem.type === 'list') {
+    if (data.newItem.type === 'List') {
       const valueOfGroup = data.valueOfGroup;
       const templateBlock = data.templateBlock;
       this.noRootPropGroupMap.set(data.valueOfGroup.id, valueOfGroup);
@@ -352,7 +352,7 @@ export default class StudioModel {
       valueOfGroup.templateBlock = templateBlock;
       data.newItem.templateBlock = templateBlock;
       data.newItem.valueOfGroup = valueOfGroup;
-    } else if (data.newItem.type === 'map') {
+    } else if (data.newItem.type === 'Item') {
       const valueOfGroup = data.valueOfGroup;
       this.noRootPropGroupMap.set(data.valueOfGroup.id, valueOfGroup);
       data.newItem.directBlock = valueOfGroup.propBlockList[0];
@@ -524,7 +524,7 @@ export default class StudioModel {
       groupId: group.id,
       propItemList: [],
       order: 0
-    };
+    } as PropBlock;
   }
 
   public showPropItemSettinngForCreate = (block: PropBlock) => {
@@ -533,14 +533,14 @@ export default class StudioModel {
 
     this.currSettingPropItem = {
       id: 0,
-      type: 'input',
+      type: 'Input',
       label: `配置项${nameSuffix}`,
       propKey: `prop${propSuffix}`,
       blockId: block.id,
       groupId: block.groupId,
       span: 24,
       order: 0
-    }
+    } as PropItem;
   }
 
   public createCodemeta(component: Component) {
@@ -585,10 +585,10 @@ export default class StudioModel {
         codemetas.push({
           id: uuid(),
           key,
-          type: item.type,
+          type: item.type as any,
           defaultValue: item.defaultValue
         });
-        if (item.type === 'list') {
+        if (item.type === 'List') {
           this.createCodemetaFromGroup(item.valueOfGroup!, codemetas, key);
         }
       }
@@ -652,13 +652,13 @@ export default class StudioModel {
 
       for (let itemIndex = 0; itemIndex < items.length; itemIndex++) {
         const item = items[itemIndex]!;
-        if (item.type === 'list') {
+        if (item.type === 'List') {
           const relativeGroup = this.buildPropGroup(item.valueOfGroupId!, store);
           this.noRootPropGroupMap.set(relativeGroup.id, relativeGroup);
 
           item.valueOfGroup = relativeGroup;
           item.templateBlock = relativeGroup.templateBlock;
-        } else if (item.type === 'map') {
+        } else if (item.type === 'Item') {
           const relativeGroup = this.buildPropGroup(item.valueOfGroupId!, store);
           this.noRootPropGroupMap.set(relativeGroup.id, relativeGroup);
 

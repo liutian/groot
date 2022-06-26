@@ -98,12 +98,12 @@ export class PropItemService {
         newItem.templateBlock = templateBlock;
         valueOfGroup.relativeItem = newItem;
         templateBlock.relativeItem = newItem;
-      } else if (newItem.type === PropItemType.MAP) {
+      } else if (newItem.type === PropItemType.ITEM) {
         const rawGroup = {
           name: '关联分组',
           componentId: block.component.id,
           componentVersionId: block.componentVersion.id,
-          struct: 'Map'
+          struct: 'Item'
         } as PropGroup;
         valueOfGroup = await this.propGroupService.add(rawGroup, false);
         newItem.valueOfGroup = valueOfGroup;

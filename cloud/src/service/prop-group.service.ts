@@ -46,7 +46,7 @@ export class PropGroupService {
       newGroup.templateBlock = templateBlock;
 
       await em.flush();
-    } else if (newGroup.struct === 'Map') {
+    } else if (newGroup.struct === 'Item') {
       const rawBlock = {
         name: '配置块模版',
         groupId: newGroup.id,

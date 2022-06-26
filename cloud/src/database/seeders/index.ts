@@ -85,7 +85,8 @@ export class DatabaseSeeder extends Seeder {
     const propValue = em.create(PropValue, {
       propItem: item,
       value: 'hello',
-      component
+      component,
+      keyChain: ''
     });
     propValue.componentInstanceList.add(instance);
     await em.persistAndFlush(propValue);

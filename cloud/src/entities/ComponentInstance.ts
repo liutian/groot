@@ -8,7 +8,7 @@ import { PropValue } from "./PropValue";
 @Entity()
 export class ComponentInstance extends BaseEntity {
 
-  @Property()
+  @Property({ length: 100 })
   name: string;
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'componentId' })
@@ -18,9 +18,9 @@ export class ComponentInstance extends BaseEntity {
   componentVersion: ComponentVersion;
 
   /**
-   * 页面级组件对应页面地址
+   * 页面类型组件对应页面地址
    */
-  @Property()
+  @Property({ length: 100 })
   path?: string;
 
   @ManyToMany(() => PropValue, propValue => propValue.componentInstanceList)

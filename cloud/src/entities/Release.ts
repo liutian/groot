@@ -6,7 +6,7 @@ import { Project } from "./Project";
 @Entity()
 export class Release extends BaseEntity {
 
-  @Property({ length: 1024 })
+  @Property({ length: 100 })
   name: string;
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'projectId' })
