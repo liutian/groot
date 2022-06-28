@@ -1,4 +1,4 @@
-import { Dropdown, Menu, MenuProps, Tabs, Typography } from "antd";
+import { Tabs, Typography } from "antd";
 import { PlusOutlined } from '@ant-design/icons';
 import React from "react";
 import { DndProvider } from "react-dnd";
@@ -13,10 +13,12 @@ import PropGroupStudio from "../PropGroupStudio";
 import { autoIncrementForName } from "@util/utils";
 import PropBlockStudio from "../PropBlockStudio";
 import PropGroupToolBar from "../PropGroupToolBar";
+import WorkbenchModel from "@model/WorkbenchModel";
 
 function Studio() {
 
   const [model, updateAction] = useModel<StudioModel>('studio');
+  const [workbenchModel] = useModel<WorkbenchModel>('workbench');
 
   // 自定义渲染TabBar，实现拖拽功能
   const renderTabBar = (props: any, DefaultTabBar: React.ElementType) => (
@@ -43,7 +45,7 @@ function Studio() {
     }
 
     updateAction(() => {
-      const nameSuffix = autoIncrementForName(model.component.version.rootGroupList!.map(g => g.name));
+      const nameSuffix = autoIncrementForName(workbenchModel.component.version.rootGroupList.map(g => g.name));
       // 显示分组弹框
       model.currSettingPropGroup = {
         id: 0,
@@ -57,7 +59,7 @@ function Studio() {
   }
 
   const renderTabContent = () => {
-    const list = model.component.version.rootGroupList!.map((group) => {
+    const list = workbenchModel.component.version.rootGroupList.map((group) => {
       let content = <PropGroupStudio group={group} />;
       if (group.struct === 'List') {
         content = model.activeGroupEditMode ? <PropBlockStudio templateMode block={group.templateBlock!} /> : <PropGroupStudio templateBlock={group.templateBlock!} group={group} />;
@@ -72,7 +74,7 @@ function Studio() {
 
     return <>
       {list}
-      {model.editMode && <Tabs.TabPane key="__add" tab={<Typography.Link><PlusOutlined /></Typography.Link>}></Tabs.TabPane>}
+      {model.workbench.stageMode && <Tabs.TabPane key="__add" tab={<Typography.Link><PlusOutlined /></Typography.Link>}></Tabs.TabPane>}
     </>
   }
 

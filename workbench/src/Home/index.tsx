@@ -11,7 +11,6 @@ import WidgetWindow from './components/WidgetWindow';
 import WorkbenchModel from '@model/WorkbenchModel';
 
 const Home = () => {
-  // 注册工作台页面全局数据实例，每次页面打开重新初始化
   const [studioModel] = useRegisterModel<StudioModel>('studio', new StudioModel());
   const [workbenchModel, workbenchUpdateAction] = useRegisterModel<WorkbenchModel>('workbench', new WorkbenchModel());
 
@@ -22,38 +21,45 @@ const Home = () => {
   let [searchParams] = useSearchParams();
 
   useEffect(() => {
-
     let url = `${serverPath}/component`;
-    if (studioModel.editMode) {
-      url = `${url}/edit?id=${componentId}`;
+    const stageMode = searchParams.has('stage');
+
+    // 确定请求地址
+    if (stageMode) {
+      url = `${url}/prototype?id=${componentId}&versionId=${searchParams.get('versionId')}`;
     } else {
-      url = `${url}?id=${componentId}`;
+      url = `${url}/instance?id=${componentId}&releaseId=${searchParams.get('releaseId')}`;
     }
 
-    if (searchParams.get('releaseId')) {
-      url += `&releaseId=${searchParams.get('releaseId')}`;
-    } else if (searchParams.get('versionId')) {
-      url += `&versionId=${searchParams.get('versionId')}`;
-    }
-
+    // 获取组件信息
     fetch(url).then(r => r.json()).then(({ data }: { data: Component }) => {
+      workbenchModel.init(data, iframeRef, stageMode);
+      studioModel.init(workbenchModel);
+      // todo
+      // setPageName(`groot::{"path": "${workbenchModel.component.instance.path}","name":"${workbenchModel.component.name}"}`);
+    }, () => {
       workbenchUpdateAction(() => {
-        workbenchModel.loadComponent = 'over';
-        studioModel.init(data, iframeRef, !!searchParams.get('editMode'));
-
-        setPageName(`groot::{"path": "${studioModel.component.instance!.path}","name":"${studioModel.component.name}"}`);
-      })
+        workbenchModel.loadComponent = 'notfound';
+      });
     })
+  }, []);
 
-    // 监听iframe页面，进行通信
-    window.self.addEventListener('message', (event: any) => {
+  useEffect(() => {
+    const onMessage = (event: MessageEvent) => {
       // iframe页面准备就绪可以接受外部更新
       if (event.data === 'ok') {
         // 首次通知更新数据
         // todo
-        studioModel.notifyIframe('todo');
+        workbenchModel.notifyIframe('todo');
       }
-    });
+    }
+
+    // 在iframe页面加载完成之后，自动进行首次数据推送
+    window.self.addEventListener('message', onMessage);
+
+    return () => {
+      window.self.removeEventListener('message', onMessage);
+    }
   }, []);
 
   if (workbenchModel.loadComponent === 'doing') {
@@ -62,8 +68,9 @@ const Home = () => {
     return <>notfound component</>
   } else {
     return (<div className={styles.container} >
-      <div className={styles.mainView}>
-        <iframe ref={iframeRef} name={pageName} src={studioModel.component.instance?.path}></iframe>
+      <div className={styles.preview}>
+        <iframe ref={iframeRef} name={pageName} src={workbenchModel.iframePath}></iframe>
+        {/* 防止拖拽缩放过程中由于鼠标移入iframe中丢失鼠标移动事件 */}
         <div className="drag-mask"></div>
       </div>
 

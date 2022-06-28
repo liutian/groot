@@ -1,6 +1,6 @@
 import { autoIncrementForName, uuid } from "@util/utils";
-import { FormInstance } from "antd";
 import { serverPath } from "config";
+import WorkbenchModel from "./WorkbenchModel";
 
 export default class StudioModel {
   /**
@@ -20,93 +20,35 @@ export default class StudioModel {
    */
   public currSettingPropItem?: PropItem;
 
-  /**
-   * 当前组件配置对象
-   */
-  public component = {} as Component;
-  /**
-   * 设置配置项模式
-   */
-  public editMode = false;
-  /**
-   * 手动编码配置模式
-   */
-  public manualMode = false;
-  /**
-   * json模式
-   */
-  public jsonMode = false;
-  /**
-   * 配置块所属表单实例
-   */
-  public blockFormInstanceMap = new Map<number, FormInstance>();
-
   public propItemStack: PropItem[] = [];
-
-  private noRootPropGroupMap = new Map<number, PropGroup>();
 
   public currEnv: 'dev' | 'qa' | 'pl' | 'online' = 'dev';
 
-  public iframeRef?: { current: HTMLIFrameElement };
-
   public activeGroupEditMode = false;
 
-  public init(component: Component, iframeRef: { current: HTMLIFrameElement }, editMode = false) {
-    this.component = component;
-    this.iframeRef = iframeRef;
-    this.buildPropGroups();
-    this.activeGroupId = this.component.version.rootGroupList![0]?.id;
-    this.editMode = editMode;
+  public workbench: WorkbenchModel;
 
-    if (this.component.release!.id === this.component.project.devRelease.id) {
-      this.currEnv = 'dev';
-    } else if (this.component.release!.id === this.component.project.qaRelease?.id) {
-      this.currEnv = 'qa';
-    } else if (this.component.release!.id === this.component.project.plRelease?.id) {
-      this.currEnv = 'pl';
-    } else if (this.component.release!.id === this.component.project.onlineRelease.id) {
-      this.currEnv = 'online';
+  public init(workbench: WorkbenchModel) {
+    this.workbench = workbench;
+    this.activeGroupId = this.workbench.component.version.rootGroupList[0].id;
+
+    if (!workbench.stageMode) {
+      const releaseId = this.workbench.component.release.id;
+      const project = this.workbench.component.project;
+      if (releaseId === project.devRelease.id) {
+        this.currEnv = 'dev';
+      } else if (releaseId === project.qaRelease.id) {
+        this.currEnv = 'qa';
+      } else if (releaseId === project.plRelease.id) {
+        this.currEnv = 'pl';
+      } else if (releaseId === project.onlineRelease.id) {
+        this.currEnv = 'online';
+      }
     }
   }
 
   public toggleActiveGroupEditMode = () => {
     this.activeGroupEditMode = !this.activeGroupEditMode;
-  }
-
-  /**
-   * 配置项变动通知iframe更新
-   */
-  public notifyIframe = (content: string) => {
-    const props = content;
-
-    this.iframeRef?.current?.contentWindow?.postMessage({
-      type: 'refresh',
-      path: this.component.instance!.path,
-      metadata: {
-        moduleName: this.component.componentName + '_module',
-        packageName: this.component.packageName,
-        componentName: this.component.componentName,
-        // todo
-        props
-      }
-    }, '*');
-  }
-
-  // todo
-  public productStudioData = () => {
-    const props: any[] = [];
-    this.component.version.rootGroupList!.forEach((group) => {
-      group.propBlockList.forEach((block) => {
-        const values = this.blockFormInstanceMap.get(block.id)?.getFieldsValue();
-        block.propItemList.forEach((item) => {
-          props.push({
-            key: item.propKey,
-            defaultValue: values ? values[item.propKey] : item.defaultValue
-          })
-        })
-      })
-    })
-    this.notifyIframe!(JSON.stringify(props));
   }
 
   public movePropBlock = (group: PropGroup, originIndex: number, up: boolean) => {
@@ -147,7 +89,7 @@ export default class StudioModel {
         'Content-Type': 'application/json'
       },
     }).then(r => r.json()).then(() => {
-      const groups = this.component.version.rootGroupList!;
+      const groups = this.workbench.component.version.rootGroupList;
 
       const drag = groups.find(g => g.id === +dragId)!;
       const hoverIndex = hoverId === '__add' ? groups.length : groups.findIndex(g => g.id === +hoverId);
@@ -190,7 +132,7 @@ export default class StudioModel {
     }).then(r => r.json()).then((result: { data: { originId: number, targetId: number, blockId: number }[] }) => {
       for (let index = 0; index < result.data.length; index++) {
         const { blockId } = result.data[index]!;
-        const block = this.getPropBlock(blockId)!;
+        const block = this.workbench.getPropBlock(blockId);
         const [moveItem] = block.propItemList.splice(originIndex, 1);
         if (up) {
           block.propItemList.splice(originIndex - 1, 0, moveItem!);
@@ -203,8 +145,8 @@ export default class StudioModel {
 
   public updateOrAddPropGroup = (group: PropGroup) => {
     const newGroup = Object.assign(this.currSettingPropGroup!, group);
-    newGroup.componentId = this.component.id;
-    newGroup.componentVersionId = this.component.version.id;
+    newGroup.componentId = this.workbench.component.id;
+    newGroup.componentVersionId = this.workbench.component.version.id;
 
     if (newGroup.id) {
       fetch(`${serverPath}/group/update`, {
@@ -214,8 +156,8 @@ export default class StudioModel {
         },
         body: JSON.stringify(newGroup)
       }).then(r => r.json()).then(() => {
-        let groupIndex = this.component.version.rootGroupList!.findIndex(g => g.id === newGroup.id);
-        this.component.version.rootGroupList!.splice(groupIndex, 1, newGroup);
+        let groupIndex = this.workbench.component.version.rootGroupList!.findIndex(g => g.id === newGroup.id);
+        this.workbench.component.version.rootGroupList!.splice(groupIndex, 1, newGroup);
       })
     } else {
       fetch(`${serverPath}/group/add`,
@@ -228,7 +170,7 @@ export default class StudioModel {
         }
       ).then(r => r.json()).then((result: { data: PropGroup }) => {
         const groupDB = result.data;
-        this.component.version.rootGroupList!.push(groupDB);
+        this.workbench.component.version.rootGroupList!.push(groupDB);
         // this.component.version.groupList.push(result.data);
         this.activeGroupId = groupDB.id;
 
@@ -244,7 +186,7 @@ export default class StudioModel {
 
   public updateOrAddPropBlock = (block: PropBlock) => {
     const newBlock = Object.assign(this.currSettingPropBlock!, block);
-    const group = this.getPropGroup(newBlock.groupId)!;
+    const group = this.workbench.getPropGroup(newBlock.groupId);
 
     if (newBlock.id) {
       fetch(`${serverPath}/block/update`, {
@@ -283,12 +225,8 @@ export default class StudioModel {
         groupId
       })
     }).then(r => r.json()).then((result: { data: { groupList: PropGroup[], blockList: PropBlock[], itemList: PropItem[] } }) => {
-      const group = this.getPropGroup(groupId)!;
-      result.data.groupList.forEach((group) => {
-        this.noRootPropGroupMap.set(group.id, group);
-      });
-
-      this.buildPropGroup(group, {
+      const group = this.workbench.getPropGroup(groupId);
+      this.workbench.buildPropGroup(group, {
         groupList: result.data.groupList,
         blockList: result.data.blockList,
         itemList: result.data.itemList
@@ -313,7 +251,7 @@ export default class StudioModel {
       }).then(r => r.json()).then((result: { data: PropItem[] }) => {
         for (let index = 0; index < result.data.length; index++) {
           const propItem = result.data[index]!;
-          const block = this.getPropBlock(propItem.blockId)!;
+          const block = this.workbench.getPropBlock(propItem.blockId);
           let itemIndex = block.propItemList.findIndex(item => item.id === propItem.id);
           block.propItemList.splice(itemIndex, 1, propItem);
         }
@@ -336,17 +274,16 @@ export default class StudioModel {
     this.currSettingPropItem = undefined;
 
     setTimeout(() => {
-      this.productStudioData();
+      this.workbench.productStudioData();
     }, 100)
   }
 
   private addPropItemFn = (data: { newItem: PropItem, valueOfGroup: PropGroup, templateBlock: PropBlock }) => {
-    const block = this.getPropBlock(data.newItem.blockId)!;
+    const block = this.workbench.getPropBlock(data.newItem.blockId);
     block.propItemList.push(data.newItem);
     if (data.newItem.type === 'List') {
       const valueOfGroup = data.valueOfGroup;
       const templateBlock = data.templateBlock;
-      this.noRootPropGroupMap.set(data.valueOfGroup.id, valueOfGroup);
 
       valueOfGroup.propBlockList = valueOfGroup.propBlockList.filter(b => b.id !== templateBlock.id);
       valueOfGroup.templateBlock = templateBlock;
@@ -354,7 +291,6 @@ export default class StudioModel {
       data.newItem.valueOfGroup = valueOfGroup;
     } else if (data.newItem.type === 'Item') {
       const valueOfGroup = data.valueOfGroup;
-      this.noRootPropGroupMap.set(data.valueOfGroup.id, valueOfGroup);
       data.newItem.directBlock = valueOfGroup.propBlockList[0];
       data.newItem.valueOfGroup = valueOfGroup;
     }
@@ -362,12 +298,12 @@ export default class StudioModel {
 
   public delGroup = (groupId: number) => {
     fetch(`${serverPath}/group/remove/${groupId}`).then(() => {
-      const index = this.component.version.rootGroupList!.findIndex(g => g.id === groupId);
+      const index = this.workbench.component.version.rootGroupList!.findIndex(g => g.id === groupId);
 
-      this.component.version.rootGroupList!.splice(index, 1);
+      this.workbench.component.version.rootGroupList!.splice(index, 1);
 
       if (this.activeGroupId === groupId) {
-        this.activeGroupId = this.component.version.rootGroupList![0]?.id;
+        this.activeGroupId = this.workbench.component.version.rootGroupList![0]?.id;
       }
     })
   }
@@ -383,7 +319,7 @@ export default class StudioModel {
     fetch(`${serverPath}/item/remove/${itemId}`).then(r => r.json()).then((result: { data: PropItem[] }) => {
       for (let index = 0; index < result.data.length; index++) {
         const itemData = result.data[index]!;
-        const block = this.getPropBlock(itemData.blockId)!;
+        const block = this.workbench.getPropBlock(itemData.blockId);
         let itemIndex = block.propItemList.findIndex(item => item.id === itemData.id);
         block.propItemList.splice(itemIndex, 1);
       }
@@ -391,7 +327,7 @@ export default class StudioModel {
   }
 
   public switchActiveGroup = (id: number) => {
-    const activeItem = this.component.version.rootGroupList!.find(g => g.id === id);
+    const activeItem = this.workbench.component.version.rootGroupList!.find(g => g.id === id);
     if (activeItem) {
       this.activeGroupId = id;
       this.activeGroupEditMode = false;
@@ -399,40 +335,40 @@ export default class StudioModel {
   }
 
   public switchEditMode = () => {
-    this.jsonMode = false;
-    this.manualMode = false;
-    if (this.editMode) {
-      this.editMode = false;
-      this.component.version.rootGroupList!.forEach((group) => {
+    this.workbench.jsonMode = false;
+    this.workbench.manualMode = false;
+    if (this.workbench.stageMode) {
+      this.workbench.stageMode = false;
+      this.workbench.component.version.rootGroupList!.forEach((group) => {
         group.propBlockList.forEach((block) => {
-          const values = this.blockFormInstanceMap.get(block.id)?.getFieldsValue();
+          const values = this.workbench.blockFormInstanceMap.get(block.id).getFieldsValue();
           block.propItemList.forEach((item) => {
             item.defaultValue = values[item.propKey];
           });
         })
       })
     } else {
-      this.editMode = true;
+      this.workbench.stageMode = true;
     }
   }
 
   public switchManualMode = () => {
-    this.jsonMode = false;
-    this.editMode = false;
-    if (this.manualMode) {
-      this.manualMode = false;
+    this.workbench.jsonMode = false;
+    this.workbench.stageMode = false;
+    if (this.workbench.manualMode) {
+      this.workbench.manualMode = false;
     } else {
-      this.manualMode = true;
+      this.workbench.manualMode = true;
     }
   }
 
   public switchJSONMode = () => {
-    this.manualMode = false;
-    this.editMode = false;
-    if (this.jsonMode) {
-      this.jsonMode = false;
+    this.workbench.manualMode = false;
+    this.workbench.stageMode = false;
+    if (this.workbench.jsonMode) {
+      this.workbench.jsonMode = false;
     } else {
-      this.jsonMode = true;
+      this.workbench.jsonMode = true;
     }
   }
 
@@ -448,16 +384,16 @@ export default class StudioModel {
       if (item.groupId === groupId) {
         this.cancelHighlightCascaderStudio(this.propItemStack.splice(index));
         item.highlight = true;
-        this.getPropBlock(item.blockId)!.highlight = true;
-        this.getPropGroup(item.groupId)!.highlight = true;
+        this.workbench.getPropBlock(item.blockId).highlight = true;
+        this.workbench.getPropGroup(item.groupId).highlight = true;
         this.propItemStack.push(item);
         return;
       }
     }
 
     item.highlight = true;
-    this.getPropBlock(item.blockId)!.highlight = true;
-    this.getPropGroup(item.groupId)!.highlight = true;
+    this.workbench.getPropBlock(item.blockId).highlight = true;
+    this.workbench.getPropGroup(item.groupId).highlight = true;
     this.propItemStack.push(item);
   }
 
@@ -469,50 +405,9 @@ export default class StudioModel {
   private cancelHighlightCascaderStudio(itemList: PropItem[]) {
     itemList.forEach(item => {
       item.highlight = false;
-      this.getPropBlock(item.blockId)!.highlight = false;
-      this.getPropGroup(item.groupId)!.highlight = false;
+      this.workbench.getPropBlock(item.blockId).highlight = false;
+      this.workbench.getPropGroup(item.groupId).highlight = false;
     })
-  }
-
-  public getPropGroup = (groupId: number) => {
-    let group = this.component.version.rootGroupList!.find((group) => {
-      return group.id === groupId;
-    })
-
-    return group || this.noRootPropGroupMap.get(groupId);
-  }
-
-  public getPropBlock = (blockId: number) => {
-    for (let groupIndex = 0; groupIndex < this.component.version.rootGroupList!.length; groupIndex++) {
-      const group = this.component.version.rootGroupList![groupIndex]!;
-      for (let blockIndex = 0; blockIndex < group!.propBlockList.length; blockIndex++) {
-        const block = group?.propBlockList[blockIndex];
-        if (block?.id === blockId) {
-          return block;
-        }
-      }
-      if (group.struct === 'List' && blockId === group.templateBlock?.id) {
-        return group.templateBlock;
-      }
-    }
-
-    const tempGroups = [...this.noRootPropGroupMap.values()];
-    for (let groupIndex = 0; groupIndex < tempGroups.length; groupIndex++) {
-      const group = tempGroups[groupIndex]!;
-
-      if (group.struct === 'List' && group.templateBlock!.id === blockId) {
-        return group.templateBlock;
-      }
-
-      for (let blockIndex = 0; blockIndex < group.propBlockList.length; blockIndex++) {
-        const block = group.propBlockList[blockIndex]!;
-        if (block.id === blockId) {
-          return block;
-        }
-      }
-    }
-
-    return undefined;
   }
 
   public showPropBlockSettinngForCreate = (group: PropGroup) => {
@@ -595,80 +490,6 @@ export default class StudioModel {
     }
   }
 
-  private buildPropGroups() {
-    this.component.version.rootGroupList = [];
-    const rootGroupIds = this.component.version.groupList
-      .filter(g => g.root)
-      .sort((a, b) => a.order - b.order)
-      .map(g => g.id);
 
-    for (let i = 0; i < rootGroupIds.length; i++) {
-      const groupId = rootGroupIds[i]!;
-      const group = this.buildPropGroup(groupId);
-      this.component.version.rootGroupList.push(group);
-    }
-  }
-
-  private buildPropGroup(groupIdOrObj: number | PropGroup,
-    store: { groupList: PropGroup[], blockList: PropBlock[], itemList: PropItem[] } = this.component.version) {
-    let group: PropGroup;
-    if (typeof groupIdOrObj === 'number') {
-      group = store.groupList.find(g => g.id === groupIdOrObj)!;
-      if (!group) {
-        throw new Error(`can not find group[${groupIdOrObj}]`);
-      }
-    } else {
-      group = groupIdOrObj;
-    }
-
-    const blocks = store.blockList
-      .filter(b => b.groupId === group.id)
-      .sort((a, b) => a.order - b.order)
-
-    const propBlockList = blocks.filter(b => b.id !== group.templateBlockId);
-
-    if (group.propBlockList?.length) {
-      group.propBlockList.push(...propBlockList);
-    } else {
-      group.propBlockList = propBlockList;
-    }
-
-    const templateBlock = blocks.find(b => b.id === group.templateBlockId);
-    if (group.struct === 'List' && templateBlock) {
-      group.templateBlock = templateBlock;
-    }
-
-    for (let blockIndex = 0; blockIndex < blocks.length; blockIndex++) {
-      const block = blocks[blockIndex]!;
-      const items = store.itemList
-        .filter(i => i.groupId === group.id && i.blockId === block.id)
-        .sort((a, b) => a.order - b.order)
-
-      if (block.propItemList?.length) {
-        block.propItemList.push(...items);
-      } else {
-        block.propItemList = items;
-      }
-
-      for (let itemIndex = 0; itemIndex < items.length; itemIndex++) {
-        const item = items[itemIndex]!;
-        if (item.type === 'List') {
-          const relativeGroup = this.buildPropGroup(item.valueOfGroupId!, store);
-          this.noRootPropGroupMap.set(relativeGroup.id, relativeGroup);
-
-          item.valueOfGroup = relativeGroup;
-          item.templateBlock = relativeGroup.templateBlock;
-        } else if (item.type === 'Item') {
-          const relativeGroup = this.buildPropGroup(item.valueOfGroupId!, store);
-          this.noRootPropGroupMap.set(relativeGroup.id, relativeGroup);
-
-          item.valueOfGroup = relativeGroup;
-          item.directBlock = relativeGroup.propBlockList[0];
-        }
-      }
-    }
-
-    return group;
-  }
 
 }

@@ -3,6 +3,7 @@ import { VerticalAlignTopOutlined, DeleteOutlined, VerticalAlignBottomOutlined, 
 import { useModel } from "@util/robot";
 import StudioModel from '@model/StudioModel';
 import styles from './index.module.less';
+import WorkbenchModel from "@model/WorkbenchModel";
 
 type PropType = {
   block: PropBlock,
@@ -13,8 +14,9 @@ type PropType = {
 
 function PropBlockStudio({ block, freezeSetting, templateMode, noWrapMode }: PropType) {
   const [model, updateAction] = useModel<StudioModel>('studio');
+  const [workbenchModel] = useModel<WorkbenchModel>('workbench');
   const [form] = Form.useForm();
-  model.blockFormInstanceMap.set(block.id!, form);
+  workbenchModel.blockFormInstanceMap.set(block.id, form);
 
   const renderItemLabel = (propItem: PropItem, itemIndex: number) => {
 
@@ -25,7 +27,7 @@ function PropBlockStudio({ block, freezeSetting, templateMode, noWrapMode }: Pro
     }
 
     const renderItemSetting = () => {
-      if (!model.editMode || freezeSetting) return null;
+      if (!model.workbench.stageMode || freezeSetting) return null;
 
 
       return (<Space size="small">
@@ -83,14 +85,14 @@ function PropBlockStudio({ block, freezeSetting, templateMode, noWrapMode }: Pro
     } else if (item.type === 'List' || item.type === 'Item') {
       return <Button block onClick={() => {
         model.pushHandUpPropItem(item)
-      }}>列表{item.valueOfGroup?.propBlockList?.length}</Button>
+      }}>列表{item.valueOfGroup.propBlockList.length}</Button>
     }
 
     return <>not found item</>
   }
 
   return <div className={templateMode || noWrapMode ? styles.containerWrap : ''}>
-    <Form form={form} layout="vertical" className="studio-form" onValuesChange={() => model.productStudioData()}>
+    <Form form={form} layout="vertical" className="studio-form" onValuesChange={() => workbenchModel.productStudioData()}>
       <Row gutter={6}>
         {
           block.propItemList.map((item, index) => {
@@ -105,7 +107,7 @@ function PropBlockStudio({ block, freezeSetting, templateMode, noWrapMode }: Pro
       </Row>
     </Form>
     {
-      templateMode || (model.editMode && noWrapMode) ? (
+      templateMode || (model.workbench.stageMode && noWrapMode) ? (
         <Button type="dashed" block onClick={() => {
           model.showPropItemSettinngForCreate(block)
         }}>

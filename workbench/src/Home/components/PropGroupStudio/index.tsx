@@ -19,7 +19,7 @@ const PropGroupStudio: React.FC<PropsType> = ({ group, templateBlock }) => {
   }
 
   const renderBlockSetting = (block: PropBlock, blockIndex: number) => {
-    if (!model.editMode || templateBlock) return null;
+    if (!model.workbench.stageMode || templateBlock) return null;
 
     return (<Space size="small">
       <Typography.Link onClick={(e) => {
@@ -71,7 +71,7 @@ const PropGroupStudio: React.FC<PropsType> = ({ group, templateBlock }) => {
       }
     </Collapse>
     {
-      model.editMode && !templateBlock ? (
+      model.workbench.stageMode && !templateBlock ? (
         <div style={{ padding: '16px' }}>
           <Button type="primary" ghost block onClick={() => {
             model.showPropBlockSettinngForCreate(group);

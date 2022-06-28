@@ -13,11 +13,13 @@ import PropGroupSetting from "../PropGroupSetting";
 import PropItemSetting from "../PropItemSetting";
 import PropBlockSetting from "../PropBlockSetting";
 import CascaderStudio from "../CascaderStudio";
+import WorkbenchModel from "@model/WorkbenchModel";
 
 
 const SidePanel: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
   // 使用页面全局实例
   const [model] = useModel<StudioModel>('studio');
+  const [workbenchModel] = useModel<WorkbenchModel>('workbench');
 
   const containerRef = useRef<HTMLDivElement>({} as any);
 
@@ -28,7 +30,7 @@ const SidePanel: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
 
     <div className={`${styles.studioContainer} `}>
       <div className={`${styles.studio}  `}>
-        {model.manualMode ? null : <Studio />}
+        {workbenchModel.manualMode ? null : <Studio />}
       </div>
 
       {
@@ -43,7 +45,7 @@ const SidePanel: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
     </div>
 
 
-    <SideFooter className={`${styles.footerContainer} ${model.editMode ? styles.editMode : ''}`} />
+    <SideFooter className={`${styles.footerContainer} ${model.workbench.stageMode ? styles.editMode : ''}`} />
 
     <PropGroupSetting />
     <PropBlockSetting />
@@ -60,8 +62,8 @@ const SidePanel: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
         const width = originData - x;
         let sideWidth = width;
 
-        if (width <= 480) {
-          sideWidth = 480;
+        if (width <= workbenchModel.minSideWidth) {
+          sideWidth = workbenchModel.minSideWidth;
         }
         containerRef.current.parentElement!.style.setProperty('--side-width', `${sideWidth}px`);
       }}

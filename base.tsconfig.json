@@ -10,6 +10,8 @@
     "esModuleInterop": true,
     "declaration": true,
     "noImplicitReturns": true,
+    "strictPropertyInitialization": false,
+    "skipLibCheck": true,
     "strictNullChecks": false,
     "noImplicitAny": false
   }

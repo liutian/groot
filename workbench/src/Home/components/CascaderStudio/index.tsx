@@ -1,5 +1,6 @@
 import { CloseOutlined, SettingFilled, SettingOutlined } from '@ant-design/icons';
 import StudioModel from '@model/StudioModel';
+import WorkbenchModel from '@model/WorkbenchModel';
 import { useModel } from '@util/robot';
 import { Button, Col, Row } from 'antd';
 import { useEffect, useRef, useState } from 'react';
@@ -14,6 +15,7 @@ type PropsType = {
 
 const CascaderStudio: React.FC<PropsType> = ({ item: propItem }) => {
   const [model] = useModel<StudioModel>('studio');
+  const [workbenchModel] = useModel<WorkbenchModel>('workbench');
   const [editMode, setEditMode] = useState(false);
 
   const templateBlock = propItem.templateBlock!;
@@ -30,8 +32,8 @@ const CascaderStudio: React.FC<PropsType> = ({ item: propItem }) => {
     // 从设置转换为配置
     if (!editMode) {
       propGroup.propBlockList.forEach((block) => {
-        const formInstance = model.blockFormInstanceMap.get(block.id);
-        const formData = formInstance?.getFieldsValue();
+        const formInstance = workbenchModel.blockFormInstanceMap.get(block.id);
+        const formData = formInstance.getFieldsValue();
         block.propItemList.forEach((item) => {
           item.defaultValue = formData[item.propKey];
         });
@@ -54,7 +56,7 @@ const CascaderStudio: React.FC<PropsType> = ({ item: propItem }) => {
         </Col>
         <Col span={3} style={{ textAlign: 'right' }} >
           {
-            propItem.type === 'List' && model.editMode &&
+            propItem.type === 'List' && model.workbench.stageMode &&
             (<Button type="link" icon={editMode ? <SettingFilled /> : <SettingOutlined />} onClick={() => switchEditMode()}></Button>)
           }
         </Col>

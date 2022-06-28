@@ -15,12 +15,12 @@ export class StudioController {
     private readonly componentService: ComponentService,
   ) { }
 
-  @Get('/component')
+  @Get('/component/instance')
   async getComponent(@Query('id') id: number, @Query('releaseId') releaseId?: number) {
     return this.componentService.getComponentForRelease(id, releaseId);
   }
 
-  @Get('/component/edit')
+  @Get('/component/prototype')
   async getComponentForEdit(@Query('id') id: number, @Query('versionId') versionId?: number) {
     return this.componentService.getComponentForVersion(id, versionId);
   }

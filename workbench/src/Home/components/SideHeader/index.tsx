@@ -1,5 +1,6 @@
 import { BarsOutlined, LayoutOutlined, MenuOutlined, SyncOutlined } from "@ant-design/icons";
 import StudioModel from "@model/StudioModel";
+import WorkbenchModel from "@model/WorkbenchModel";
 import { useModel } from "@util/robot";
 import { Button, Dropdown, Input, Menu, Radio, Tag, Typography } from "antd";
 import { HTMLAttributes, useState } from "react";
@@ -10,8 +11,9 @@ const SideHeader: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
   // 搜索模式
   const [searchMode, setSearchMode] = useState(false);
   const [studioModel] = useModel<StudioModel>('studio');
+  const [workbenchModel] = useModel<WorkbenchModel>('workbench');
   // 搜索关键字
-  const [searchText, setSearchText] = useState(studioModel.component.name);
+  const [searchText, setSearchText] = useState(workbenchModel.component.name);
 
   // 搜索结果
   const renderSearchOverlay = () => {
@@ -59,15 +61,15 @@ const SideHeader: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
 
       <div className={styles.recentRelease}>
         {
-          studioModel.component.releaseList.map((release) => {
+          workbenchModel.component.releaseList.map((release) => {
             return (
               <div className={styles.releaseItem} key={release.id}>
                 <div className={styles.releaseItemText}>{release.name}</div>
                 <div >
-                  <Tag hidden={studioModel.component.project.devRelease.id !== release.id}>dev</Tag>
-                  <Tag hidden={studioModel.component.project.qaRelease?.id !== release.id}>qa</Tag>
-                  <Tag hidden={studioModel.component.project.onlineRelease.id !== release.id}>online</Tag>
-                  <Tag hidden={studioModel.component.project.plRelease?.id !== release.id}>pl</Tag>
+                  <Tag hidden={workbenchModel.component.project.devRelease.id !== release.id}>dev</Tag>
+                  <Tag hidden={workbenchModel.component.project.qaRelease.id !== release.id}>qa</Tag>
+                  <Tag hidden={workbenchModel.component.project.onlineRelease.id !== release.id}>online</Tag>
+                  <Tag hidden={workbenchModel.component.project.plRelease.id !== release.id}>pl</Tag>
                 </div>
               </div>
             )
@@ -108,14 +110,14 @@ const SideHeader: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
   }
 
   const renderCurrRelease = () => {
-    if (!studioModel.component.release) {
+    if (!workbenchModel.component.release) {
       return null;
     }
 
     return <div className={styles.currRelease}>
       <Dropdown overlay={renderReleaseOverlay()} trigger={['click']} >
         <Button title="迭代" type="ghost">
-          {studioModel.component.release.name}
+          {workbenchModel.component.release.name}
         </Button>
       </Dropdown>
     </div>;

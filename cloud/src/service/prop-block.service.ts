@@ -26,7 +26,7 @@ export class PropBlockService {
       return null;
     }
 
-    const firstBlock = await em.findOne(PropBlock, { group: group, order: { $gt: 0 } }, { orderBy: { order: 'DESC' } });
+    const firstBlock = await em.findOne(PropBlock, { group, order: { $gt: 0 } }, { orderBy: { order: 'DESC' } });
     const order = rawBlock.order ? rawBlock.order : (firstBlock ? firstBlock.order + 1000 : 1000);
 
     const newBlock = em.create(PropBlock, {
@@ -43,11 +43,11 @@ export class PropBlockService {
   }
 
   async addFromTemplate(groupId: number) {
-    const em = RequestContext.getEntityManager();
+    const em = RequestContext.getEntityManager()!;
 
-    const groupIdList = [];
-    const blockIdList = [];
-    const itemIdList = [];
+    const groupIdList: number[] = [];
+    const blockIdList: number[] = [];
+    const itemIdList: number[] = [];
 
     await em.begin();
     try {
@@ -71,13 +71,18 @@ export class PropBlockService {
       throw e;
     }
 
-    const groupList = [];
-    const blockList = [];
-    const itemList = [];
+    const groupList: PropGroup[] = [];
+    const blockList: PropBlock[] = [];
+    const itemList: PropItem[] = [];
 
     for (let groupIdIndex = 0; groupIdIndex < groupIdList.length; groupIdIndex++) {
       const groupId = groupIdList[groupIdIndex];
       const group = await em.findOne(PropGroup, groupId);
+
+      if (!group) {
+        throw new LogicException(`not found group id: ${groupId}`, LogicExceptionCode.NotFound);
+      }
+
       omitProps(group, [
         'propBlockList',
       ]);
@@ -87,6 +92,11 @@ export class PropBlockService {
     for (let blockIdIndex = 0; blockIdIndex < blockIdList.length; blockIdIndex++) {
       const blockId = blockIdList[blockIdIndex];
       const block = await em.findOne(PropBlock, blockId);
+
+      if (!block) {
+        throw new LogicException(`not found block id:${blockId}`, LogicExceptionCode.NotFound);
+      }
+
       omitProps(block, [
         'propItemList',
       ]);
@@ -96,6 +106,11 @@ export class PropBlockService {
     for (let itemIdIndex = 0; itemIdIndex < itemIdList.length; itemIdIndex++) {
       const itemId = itemIdList[itemIdIndex];
       const item = await em.findOne(PropItem, itemId, { populate: ['optionList'] });
+
+      if (!item) {
+        throw new LogicException(`not found item id:${itemId}`, LogicExceptionCode.NotFound);
+      }
+
       itemList.push(item);
     }
 
@@ -129,6 +144,7 @@ export class PropBlockService {
       const newItem = em.create(PropItem, pick(copyItem, [
         'label', 'propKey', 'type', 'defaultValue', 'span', 'componentVersion', 'component'
       ]));
+
       newItem.block = newBlock;
       newItem.order = (itemIndex + 1) * 1000;
       newItem.group = group;
@@ -151,6 +167,10 @@ export class PropBlockService {
         const innnerTemplateBlock = await em.findOne(PropBlock, copyItem.templateBlock,
           { populate: ['propItemList.optionList'] }
         );
+
+        if (!innnerTemplateBlock) {
+          throw new LogicException(`not found block id:${copyItem.templateBlock!.id}`, LogicExceptionCode.NotFound);
+        }
 
         const valueOfGroup = em.create(PropGroup, {
           name: '关联分组',
@@ -193,6 +213,11 @@ export class PropBlockService {
       originBlock.order = firstBlock ? firstBlock.order + 1000 : 1000;
     } else {
       const targetBlock = await em.findOne(PropBlock, targetId);
+
+      if (!targetBlock) {
+        throw new LogicException(`not found block id:${targetId}`, LogicExceptionCode.NotFound);
+      }
+
       const targetOrder = targetBlock.order;
       const originOrder = originBlock.order;
       originBlock.order = targetOrder;
@@ -227,7 +252,7 @@ export class PropBlockService {
       return;
     }
 
-    const innerGroupIds = [];
+    const innerGroupIds: number[] = [];
 
     await em.begin();
     try {
@@ -242,7 +267,7 @@ export class PropBlockService {
 
         await em.removeAndFlush(item);
         if (item.type === PropItemType.LIST) {
-          innerGroupIds.push(item.valueOfGroup.id);
+          innerGroupIds.push(item.valueOfGroup!.id);
         }
       }
 

@@ -1,5 +1,6 @@
 import { CodeFilled, CodeOutlined, DashboardFilled, DashboardOutlined, HomeOutlined, SendOutlined, SettingFilled, SettingOutlined } from "@ant-design/icons";
 import StudioModel from "@model/StudioModel";
+import WorkbenchModel from "@model/WorkbenchModel";
 import { useModel } from "@util/robot";
 import { Breadcrumb, Button } from "antd";
 import { HTMLAttributes } from "react";
@@ -8,6 +9,7 @@ import styles from './index.module.less';
 
 const SideToolBar: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
   const [model] = useModel<StudioModel>('studio');
+  const [workbenchModel] = useModel<WorkbenchModel>('workbench');
 
   return <div {...props}>
     <div className={styles.breadcrumb}>
@@ -21,9 +23,9 @@ const SideToolBar: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
     </div>
     <div className={styles.actions} >
       <Button type="link" title="部署" icon={<SendOutlined />} />
-      <Button type="link" title="源码" icon={model.manualMode ? <CodeFilled /> : <CodeOutlined />} onClick={() => model.switchManualMode()} />
-      <Button type="link" title="json" icon={model.jsonMode ? <DashboardFilled /> : <DashboardOutlined />} onClick={() => model.switchJSONMode()} />
-      <Button type="link" title="设置" icon={model.editMode ? <SettingFilled /> : <SettingOutlined />} onClick={() => model.switchEditMode()} />
+      <Button type="link" title="源码" icon={workbenchModel.manualMode ? <CodeFilled /> : <CodeOutlined />} onClick={() => model.switchManualMode()} />
+      <Button type="link" title="json" icon={workbenchModel.jsonMode ? <DashboardFilled /> : <DashboardOutlined />} onClick={() => model.switchJSONMode()} />
+      <Button type="link" title="设置" icon={model.workbench.stageMode ? <SettingFilled /> : <SettingOutlined />} onClick={() => model.switchEditMode()} />
     </div>
   </div>
 }

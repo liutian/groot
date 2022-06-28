@@ -9,7 +9,7 @@ import StudioModel from '@model/StudioModel';
 
 const SideFooter: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
   const [model, updateAction] = useModel<WorkbenchModel>('workbench');
-  const [studioModel] = useModel<StudioModel>('studio');
+  const [workbenchModel] = useModel<WorkbenchModel>('workbench');
 
   const switchWidgetWidnwo = () => {
     updateAction(() => {
@@ -25,7 +25,7 @@ const SideFooter: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
     <div >
       <div className={styles.actionItem}>
         <BranchesOutlined title="版本" />
-        <span>{studioModel.component.version.name}</span>
+        <span>{workbenchModel.component.version.name}</span>
       </div>
     </div>
     <Typography.Text ellipsis={{ tooltip: 'columns.[].form.lable' }} className={styles.content} >
