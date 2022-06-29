@@ -72,7 +72,7 @@ const PropGroupStudio: React.FC<PropsType> = ({ group, templateBlock }) => {
     </Collapse>
     {
       model.workbench.stageMode && !templateBlock ? (
-        <div style={{ padding: '16px' }}>
+        <div style={{ padding: 'var(--studio-padding-x)' }}>
           <Button type="primary" ghost block onClick={() => {
             model.showPropBlockSettinngForCreate(group);
           }}>

@@ -22,8 +22,6 @@ export default class StudioModel {
 
   public propItemStack: PropItem[] = [];
 
-  public currEnv: 'dev' | 'qa' | 'pl' | 'online' = 'dev';
-
   public activeGroupEditMode = false;
 
   public workbench: WorkbenchModel;
@@ -31,20 +29,6 @@ export default class StudioModel {
   public init(workbench: WorkbenchModel) {
     this.workbench = workbench;
     this.activeGroupId = this.workbench.component.version.rootGroupList[0].id;
-
-    if (!workbench.stageMode) {
-      const releaseId = this.workbench.component.release.id;
-      const project = this.workbench.component.project;
-      if (releaseId === project.devRelease.id) {
-        this.currEnv = 'dev';
-      } else if (releaseId === project.qaRelease.id) {
-        this.currEnv = 'qa';
-      } else if (releaseId === project.plRelease.id) {
-        this.currEnv = 'pl';
-      } else if (releaseId === project.onlineRelease.id) {
-        this.currEnv = 'online';
-      }
-    }
   }
 
   public toggleActiveGroupEditMode = () => {
@@ -489,7 +473,4 @@ export default class StudioModel {
       }
     }
   }
-
-
-
 }

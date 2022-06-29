@@ -1,13 +1,13 @@
 .headerContainer {
   display: flex;
-  padding: 10px 0;
+  padding: var(--studio-padding-y) var(--studio-padding-x);
   border-bottom: solid 1px #ddd;
   background-color: #f3f3f3;
 }
 
-.navContainer {
+.toolBar {
   display: flex;
-  padding: 5px 0;
+  padding: 0 var(--studio-padding-x);
   border-bottom: dashed 1px #cacaca;
   background-color: #f8f8f8;
 }
@@ -22,7 +22,7 @@
   --bg-color: #0095ff;
   --bg-color-darken: darken(#0095ff, 10%);
   display: flex;
-  padding: 0 5px;
+  padding: 0 var(--studio-padding-x);
   line-height: 28px;
   height: 28px;
   color: #fff;
@@ -48,7 +48,7 @@
 
   :global(.ant-tabs .ant-tabs-nav) {
     margin-bottom: 0 !important;
-    padding: 0 10px;
+    padding: 0 var(--studio-padding-x);
   }
 
   :global(.ant-collapse) {

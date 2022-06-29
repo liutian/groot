@@ -2,18 +2,19 @@ import { HTMLAttributes, useRef } from "react";
 
 import { useModel } from "@util/robot";
 import StudioModel from '@model/StudioModel';
+import WorkbenchModel from "@model/WorkbenchModel";
+import MouseFollow from "components/MouseFollow";
 
 import styles from './index.module.less';
 import SideHeader from "../SideHeader";
 import SideToolBar from "../SideToolBar";
 import SideFooter from "../SideFooter";
 import Studio from "../Studio";
-import MouseFollow from "components/MouseFollow"
 import PropGroupSetting from "../PropGroupSetting";
 import PropItemSetting from "../PropItemSetting";
 import PropBlockSetting from "../PropBlockSetting";
 import CascaderStudio from "../CascaderStudio";
-import WorkbenchModel from "@model/WorkbenchModel";
+
 
 
 const SidePanel: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
@@ -26,7 +27,7 @@ const SidePanel: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
   return <div {...props} ref={containerRef}>
 
     <SideHeader className={styles.headerContainer} />
-    <SideToolBar className={styles.navContainer} />
+    <SideToolBar className={styles.toolBar} />
 
     <div className={`${styles.studioContainer} `}>
       <div className={`${styles.studio}  `}>
@@ -55,7 +56,7 @@ const SidePanel: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
       cursor="col-resize"
       className={styles.moveHandle}
       start={() => {
-        containerRef.current.parentElement!.classList.add('drag-active');
+        containerRef.current.parentElement.classList.add('drag-active');
         return containerRef.current.getBoundingClientRect().width;
       }}
       move={(x, _y, originData) => {
@@ -68,7 +69,7 @@ const SidePanel: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
         containerRef.current.parentElement!.style.setProperty('--side-width', `${sideWidth}px`);
       }}
       end={() => {
-        containerRef.current.parentElement!.classList.remove('drag-active');
+        containerRef.current.parentElement.classList.remove('drag-active');
       }}
     />
   </div>

@@ -22,7 +22,7 @@ const SideFooter: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
   }
 
   return <div {...props}>
-    <div >
+    <div style={{ marginLeft: '-8px' }}>
       <div className={styles.actionItem}>
         <BranchesOutlined title="版本" />
         <span>{workbenchModel.component.version.name}</span>
@@ -32,7 +32,7 @@ const SideFooter: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
       <NumberOutlined />&nbsp;
       <span>columns.[].form.lable</span>
     </Typography.Text>
-    <div>
+    <div style={{ marginRight: '-8px' }}>
       <div className={styles.actionItem} onClick={switchWidgetWidnwo}>
         <BlockOutlined title="窗口" />
       </div>

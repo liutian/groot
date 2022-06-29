@@ -1,5 +1,4 @@
 import { BarsOutlined, LayoutOutlined, MenuOutlined, SyncOutlined } from "@ant-design/icons";
-import StudioModel from "@model/StudioModel";
 import WorkbenchModel from "@model/WorkbenchModel";
 import { useModel } from "@util/robot";
 import { Button, Dropdown, Input, Menu, Radio, Tag, Typography } from "antd";
@@ -10,7 +9,6 @@ import styles from './index.module.less';
 const SideHeader: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
   // 搜索模式
   const [searchMode, setSearchMode] = useState(false);
-  const [studioModel] = useModel<StudioModel>('studio');
   const [workbenchModel] = useModel<WorkbenchModel>('workbench');
   // 搜索关键字
   const [searchText, setSearchText] = useState(workbenchModel.component.name);
@@ -51,7 +49,7 @@ const SideHeader: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
   const renderReleaseOverlay = () => {
     return <div className={styles.releaseOverlay}>
       <div className={styles.shortcutRelease}>
-        <Radio.Group value={studioModel.currEnv}>
+        <Radio.Group value={workbenchModel.currEnv}>
           <Radio.Button value="dev">dev</Radio.Button>
           <Radio.Button value="qa">qa</Radio.Button>
           <Radio.Button value="pl">pl</Radio.Button>
