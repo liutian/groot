@@ -1,36 +1,60 @@
 import { FormInstance } from "antd";
 
 export default class WorkbenchModel {
-  public widgetWindowRect: 'min' | 'full' | 'normal' | 'none' | { x?: number, y?: number, width?: number, height?: number } = 'min';
-  public minSideWidth = 480;
   public loadComponent: 'doing' | 'notfound' | 'over' = 'doing';
+  /**
+   * 窗口部件缩放大小
+   */
+  public widgetWindowRect: 'min' | 'full' | 'normal' | 'none' | { x?: number, y?: number, width?: number, height?: number } = 'min';
+  /**
+   * 侧边栏最小拖拽最小宽度
+   */
+  public minSideWidth = 480;
   public iframeRef?: { current: HTMLIFrameElement };
-  public component: Component;
   public iframePath = '';
   /**
- * 手动编码配置模式
- */
+   * 组件信息
+   */
+  public component: Component;
+  /**
+   * 配置块关联表单实例，方便统一搜集所有配置项信息
+   */
+  public blockFormInstanceMap = new Map<number, FormInstance>();
+  /**
+   * 组件设计模式
+   */
+  public stageMode = false;
+  /**
+    * 编码配置模式
+    */
   public manualMode = false;
   /**
    * json模式
    */
   public jsonMode = false;
-  /**
-   * 配置块关联表单实例
-   */
-  public blockFormInstanceMap = new Map<number, FormInstance>();
 
-  /**
-   * 设计模式
-   */
-  public stageMode = false;
+  public currEnv: 'dev' | 'qa' | 'pl' | 'online' = 'dev';
 
-  init = (component: Component, iframeRef: { current: HTMLIFrameElement }, stageMode: boolean) => {
+  public init = (component: Component, iframeRef: { current: HTMLIFrameElement }, stageMode: boolean) => {
     this.loadComponent = 'over';
     this.iframeRef = iframeRef;
     this.component = component;
     this.stageMode = stageMode
-    this.buildPropGroups();
+    this.buildPropTree();
+
+    if (!stageMode) {
+      const releaseId = this.component.release.id;
+      const project = this.component.project;
+      if (releaseId === project.devRelease.id) {
+        this.currEnv = 'dev';
+      } else if (releaseId === project.qaRelease.id) {
+        this.currEnv = 'qa';
+      } else if (releaseId === project.plRelease.id) {
+        this.currEnv = 'pl';
+      } else if (releaseId === project.onlineRelease.id) {
+        this.currEnv = 'online';
+      }
+    }
   }
 
   /**
@@ -69,7 +93,10 @@ export default class WorkbenchModel {
     this.notifyIframe(JSON.stringify(props));
   }
 
-  private buildPropGroups() {
+  /**
+   * 构建属性树
+   */
+  private buildPropTree() {
     this.component.version.rootGroupList = [];
     const rootGroupIds = this.component.version.groupList
       .filter(g => g.root)
@@ -83,6 +110,12 @@ export default class WorkbenchModel {
     }
   }
 
+  /**
+   * 构建一个属性配置分组
+   * @param groupIdOrObj 分组ID或者组对象
+   * @param store 数据源
+   * @returns 构建好的配置分组
+   */
   public buildPropGroup(groupIdOrObj: number | PropGroup,
     store: { groupList: PropGroup[], blockList: PropBlock[], itemList: PropItem[] } = this.component.version) {
     let group: PropGroup;
@@ -143,6 +176,11 @@ export default class WorkbenchModel {
     return group;
   }
 
+  /**
+   * 根据ID在属性树中查找对应配置块对象
+   * @param blockId 配置块id
+   * @returns 配置块对象
+   */
   getPropBlock = (blockId: number): PropBlock => {
     const rootGroupList = this.component.version.rootGroupList;
     for (let index = 0; index < rootGroupList.length; index++) {
@@ -156,6 +194,11 @@ export default class WorkbenchModel {
     return null;
   }
 
+  /**
+   * 根据ID在属性树中查找对应配置组对象
+   * @param groupId 配置组ID
+   * @returns 配置组对象
+   */
   getPropGroup = (groupId: number): PropGroup => {
     const rootGroupList = this.component.version.rootGroupList;
     for (let index = 0; index < rootGroupList.length; index++) {
@@ -169,7 +212,7 @@ export default class WorkbenchModel {
     return null;
   }
 
-  getProp = <T>(id: number, type: 'block' | 'group' | 'item', group: PropGroup): T => {
+  private getProp = <T>(id: number, type: 'block' | 'group' | 'item', group: PropGroup): T => {
     if (type === 'group' && group.id === id) {
       return group as any as T;
     }
