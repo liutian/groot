@@ -17,26 +17,26 @@ const optionList = [
 
 const PropItemSetting: React.FC = () => {
   const [form] = Form.useForm<PropItem>();
-  const [model, updateAction] = useModel<StudioModel>('studio');
+  const [studioModel, updateAction] = useModel<StudioModel>('studio');
 
   const handleOk = async () => {
     const itemFormData = await form.validateFields();
     form.resetFields();
-    model.updateOrAddPropItem(itemFormData);
+    studioModel.updateOrAddPropItem(itemFormData);
   }
 
   const handleCancel = () => {
     updateAction(() => {
-      model.currSettingPropItem = undefined;
+      studioModel.currSettingPropItem = undefined;
     })
   }
 
   useEffect(() => {
-    if (model.currSettingPropItem) {
+    if (studioModel.currSettingPropItem) {
       form.resetFields();
-      form.setFieldsValue(model.currSettingPropItem);
+      form.setFieldsValue(studioModel.currSettingPropItem);
     }
-  }, [model.currSettingPropItem]);
+  }, [studioModel.currSettingPropItem]);
 
   const renderSelectFormItem = () => {
     return (
@@ -68,13 +68,13 @@ const PropItemSetting: React.FC = () => {
     )
   }
 
-  return (<Modal mask={false} destroyOnClose width={450} title="配置项" visible={!!model.currSettingPropItem} onOk={handleOk} onCancel={handleCancel}>
+  return (<Modal mask={false} destroyOnClose width={450} title="配置项" visible={!!studioModel.currSettingPropItem} onOk={handleOk} onCancel={handleCancel}>
     <Form form={form} labelAlign="right" labelCol={{ span: 6 }} wrapperCol={{ span: 18 }} >
       <Form.Item name="label" label="名称" rules={[{ required: true }]}>
         <Input />
       </Form.Item>
       <Form.Item label="类型" name="type" rules={[{ required: true }]}>
-        <Select disabled={!!model.currSettingPropItem?.id} options={optionList} />
+        <Select disabled={!!studioModel.currSettingPropItem?.id} options={optionList} />
       </Form.Item>
       <Form.Item label="属性映射" rules={[{ required: true }]} name="propKey">
         <Input />

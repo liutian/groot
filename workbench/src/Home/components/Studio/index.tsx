@@ -17,14 +17,14 @@ import WorkbenchModel from "@model/WorkbenchModel";
 
 function Studio() {
 
-  const [model, updateAction] = useModel<StudioModel>('studio');
+  const [studioModel, updateAction] = useModel<StudioModel>('studio');
   const [workbenchModel] = useModel<WorkbenchModel>('workbench');
 
-  // 自定义渲染TabBar，实现拖拽功能
+  // 自定义渲染TabBar，实现拖拽功能 todo 自己做一个
   const renderTabBar = (props: any, DefaultTabBar: React.ElementType) => (
     <DefaultTabBar {...props}>
       {(node: React.ReactElement) => (
-        <DraggableTabNode key={node.key} style={{ marginRight: '15px' }} nodeKey={node.key as string} moveNode={model.movePropGroup}>
+        <DraggableTabNode key={node.key} style={{ marginRight: '15px' }} nodeKey={node.key as string} moveNode={studioModel.movePropGroup}>
           {node as any}
         </DraggableTabNode>
       )}
@@ -40,15 +40,14 @@ function Studio() {
   const tabOnChange = (activeKey: string) => {
     if (activeKey !== '__add') {
       // 选中某个分组
-      model.switchActiveGroup(parseInt(activeKey));
+      studioModel.switchActiveGroup(parseInt(activeKey));
       return;
     }
 
     updateAction(() => {
       const nameSuffix = autoIncrementForName(workbenchModel.component.version.rootGroupList.map(g => g.name));
       // 显示分组弹框
-      model.currSettingPropGroup = {
-        id: 0,
+      studioModel.currSettingPropGroup = {
         name: `分组${nameSuffix}`,
         root: true,
         propBlockList: [],
@@ -62,7 +61,7 @@ function Studio() {
     const list = workbenchModel.component.version.rootGroupList.map((group) => {
       let content = <PropGroupStudio group={group} />;
       if (group.struct === 'List') {
-        content = model.activeGroupEditMode ? <PropBlockStudio templateMode block={group.templateBlock!} /> : <PropGroupStudio templateBlock={group.templateBlock!} group={group} />;
+        content = studioModel.activeGroupEditMode ? <PropBlockStudio templateMode block={group.templateBlock!} /> : <PropGroupStudio templateBlock={group.templateBlock!} group={group} />;
       } else if (group.struct === 'Item') {
         content = <PropBlockStudio noWrapMode block={group.propBlockList[0]!} />;
       }
@@ -74,14 +73,14 @@ function Studio() {
 
     return <>
       {list}
-      {model.workbench.stageMode && <Tabs.TabPane key="__add" tab={<Typography.Link><PlusOutlined /></Typography.Link>}></Tabs.TabPane>}
+      {workbenchModel.stageMode && <Tabs.TabPane key="__add" tab={<Typography.Link><PlusOutlined /></Typography.Link>}></Tabs.TabPane>}
     </>
   }
 
   /////////////////////////////////////////////////////////////////////////////
   return <>
     <DndProvider backend={HTML5Backend}>
-      <Tabs size="small" className="studio-tabs" activeKey={model.activeGroupId?.toString()}
+      <Tabs size="small" className="studio-tabs" activeKey={studioModel.activeGroupId?.toString()}
         onChange={tabOnChange} renderTabBar={renderTabBar} tabBarExtraContent={<PropGroupToolBar />}>
         {renderTabContent()}
       </Tabs>

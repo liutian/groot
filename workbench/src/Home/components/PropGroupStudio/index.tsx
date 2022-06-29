@@ -3,6 +3,7 @@ import StudioModel from '@model/StudioModel';
 import { Button, Collapse, Space, Typography } from "antd";
 import { CaretRightOutlined, DeleteOutlined, PlusOutlined, SettingOutlined, VerticalAlignBottomOutlined, VerticalAlignTopOutlined } from "@ant-design/icons";
 import PropBlockStudio from "../PropBlockStudio";
+import WorkbenchModel from "@model/WorkbenchModel";
 
 type PropsType = {
   group: PropGroup,
@@ -10,39 +11,40 @@ type PropsType = {
 }
 
 const PropGroupStudio: React.FC<PropsType> = ({ group, templateBlock }) => {
-  const [model, updateAction] = useModel<StudioModel>('studio');
+  const [studioModel, updateAction] = useModel<StudioModel>('studio');
+  const [workbenchModel] = useModel<WorkbenchModel>('workbench');
 
   const editBlock = (block: PropBlock) => {
     updateAction(() => {
-      model.currSettingPropBlock = JSON.parse(JSON.stringify(block));
+      studioModel.currSettingPropBlock = JSON.parse(JSON.stringify(block));
     })
   }
 
   const renderBlockSetting = (block: PropBlock, blockIndex: number) => {
-    if (!model.workbench.stageMode || templateBlock) return null;
+    if (!workbenchModel.stageMode || templateBlock) return null;
 
     return (<Space size="small">
       <Typography.Link onClick={(e) => {
         e.stopPropagation();
-        model.showPropItemSettinngForCreate(block);
+        studioModel.showPropItemSettinngForCreate(block);
       }}>
         <PlusOutlined />
       </Typography.Link>
       <Typography.Link disabled={blockIndex === 0} onClick={(e) => {
         e.stopPropagation();
-        model.movePropBlock(group, blockIndex, true);
+        studioModel.movePropBlock(group, blockIndex, true);
       }}>
         <VerticalAlignTopOutlined />
       </Typography.Link>
       <Typography.Link disabled={blockIndex === group.propBlockList.length - 1} onClick={(e) => {
         e.stopPropagation();
-        model.movePropBlock(group, blockIndex, false);
+        studioModel.movePropBlock(group, blockIndex, false);
       }}>
         <VerticalAlignBottomOutlined />
       </Typography.Link>
       <Typography.Link disabled={blockIndex === 0 && group.propBlockList.length === 1} onClick={(e) => {
         e.stopPropagation();
-        model.delBlock(block.id, group);
+        studioModel.delBlock(block.id, group);
       }} >
         <DeleteOutlined />
       </Typography.Link>
@@ -71,10 +73,10 @@ const PropGroupStudio: React.FC<PropsType> = ({ group, templateBlock }) => {
       }
     </Collapse>
     {
-      model.workbench.stageMode && !templateBlock ? (
+      workbenchModel.stageMode && !templateBlock ? (
         <div style={{ padding: 'var(--studio-padding-x)' }}>
           <Button type="primary" ghost block onClick={() => {
-            model.showPropBlockSettinngForCreate(group);
+            studioModel.showPropBlockSettinngForCreate(group);
           }}>
             添加配置块
           </Button>
@@ -87,7 +89,7 @@ const PropGroupStudio: React.FC<PropsType> = ({ group, templateBlock }) => {
         <div style={{ padding: '16px 0 0' }}>
           {/* 内嵌模式  */}
           <Button disabled={!templateBlock?.propItemList.length} type="primary" ghost block onClick={() => {
-            model.addBlockFromTemplate(group.id)
+            studioModel.addBlockFromTemplate(group.id)
           }}>
             复制模版
           </Button>

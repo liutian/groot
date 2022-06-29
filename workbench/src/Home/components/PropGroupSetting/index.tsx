@@ -5,33 +5,33 @@ import StudioModel from '@model/StudioModel';
 
 const PropGroupSetting: React.FC = () => {
   const [form] = Form.useForm();
-  const [model, updateAction] = useModel<StudioModel>('studio');
+  const [studioModel, updateAction] = useModel<StudioModel>('studio');
   const inputRef = useRef<any>(null);
 
   const handleOk = async () => {
     const groupFormData = await form.validateFields();
     form.resetFields();
-    model.updateOrAddPropGroup(groupFormData);
+    studioModel.updateOrAddPropGroup(groupFormData);
   }
 
   const handleCancel = () => {
     updateAction(() => {
-      model.currSettingPropGroup = undefined;
+      studioModel.currSettingPropGroup = undefined;
     })
   }
 
   useEffect(() => {
-    if (model.currSettingPropGroup) {
+    if (studioModel.currSettingPropGroup) {
       form.resetFields();
-      form.setFieldsValue(model.currSettingPropGroup);
+      form.setFieldsValue(studioModel.currSettingPropGroup);
 
       setTimeout(() => {
         inputRef.current.focus({ cursor: 'all' });
       }, 300)
     }
-  }, [model.currSettingPropGroup]);
+  }, [studioModel.currSettingPropGroup]);
 
-  return (<Modal mask={false} width={400} title="配置组" visible={!!model.currSettingPropGroup} onOk={handleOk} onCancel={handleCancel}>
+  return (<Modal mask={false} width={400} title="配置组" visible={!!studioModel.currSettingPropGroup} onOk={handleOk} onCancel={handleCancel}>
     <Form form={form} labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
       <Form.Item name="name" label="名称" rules={[{ required: true }]}>
         <Input ref={inputRef} />

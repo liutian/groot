@@ -14,7 +14,7 @@ type PropsType = {
 }
 
 const CascaderStudio: React.FC<PropsType> = ({ item: propItem }) => {
-  const [model] = useModel<StudioModel>('studio');
+  const [studioModel] = useModel<StudioModel>('studio');
   const [workbenchModel] = useModel<WorkbenchModel>('workbench');
   const [editMode, setEditMode] = useState(false);
 
@@ -39,7 +39,7 @@ const CascaderStudio: React.FC<PropsType> = ({ item: propItem }) => {
         });
       })
     } else {
-      model.pushHandUpPropItem(propItem);
+      studioModel.pushHandUpPropItem(propItem);
     }
 
     setEditMode(mode => !mode);
@@ -49,14 +49,14 @@ const CascaderStudio: React.FC<PropsType> = ({ item: propItem }) => {
     <div className={`${styles.header} ${editMode ? styles.editMode : ''}`}>
       <Row>
         <Col span={5} >
-          <Button type="link" icon={<CloseOutlined />} onClick={() => model.popHandUpPropItem(propItem)}></Button>
+          <Button type="link" icon={<CloseOutlined />} onClick={() => studioModel.popHandUpPropItem(propItem)}></Button>
         </Col>
         <Col span={16} style={{ textAlign: 'center' }}>
           {propItem.label}
         </Col>
         <Col span={3} style={{ textAlign: 'right' }} >
           {
-            propItem.type === 'List' && model.workbench.stageMode &&
+            propItem.type === 'List' && workbenchModel.stageMode &&
             (<Button type="link" icon={editMode ? <SettingFilled /> : <SettingOutlined />} onClick={() => switchEditMode()}></Button>)
           }
         </Col>

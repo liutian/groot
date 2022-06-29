@@ -6,38 +6,38 @@ import { Space, Typography } from "antd";
 import { useEffect, useState } from "react";
 
 const PropGroupToolBar: React.FC = () => {
-  const [model, updateAction] = useModel<StudioModel>('studio');
+  const [studioModel, updateAction] = useModel<StudioModel>('studio');
   const [workbenchModel] = useModel<WorkbenchModel>('workbench');
   const [listStructGroup, setListStructGroup] = useState(false);
   const [group, setGroup] = useState<PropGroup>();
 
   useEffect(() => {
-    const group = workbenchModel.getPropGroup(model.activeGroupId);
+    const group = workbenchModel.getPropGroup(studioModel.activeGroupId);
     setGroup(group);
     setListStructGroup(group.struct === 'List');
-  }, [model.activeGroupId]);
+  }, [studioModel.activeGroupId]);
 
-  if (!model.workbench.stageMode || !group) {
+  if (!workbenchModel.stageMode || !group) {
     return null;
   }
 
   return <Space>
     {
       listStructGroup && (
-        <Typography.Link onClick={() => model.toggleActiveGroupEditMode()}>
-          {model.activeGroupEditMode ? <SettingFilled /> : <SettingOutlined />}
+        <Typography.Link onClick={() => studioModel.toggleActiveGroupEditMode()}>
+          {studioModel.activeGroupEditMode ? <SettingFilled /> : <SettingOutlined />}
         </Typography.Link>
       )
     }
     <Typography.Link onClick={() => {
-      model.delGroup(group.id);
+      studioModel.delGroup(group.id);
     }}>
       <DeleteOutlined />
     </Typography.Link>
 
     <Typography.Link onClick={() => {
       updateAction(() => {
-        model.currSettingPropGroup = JSON.parse(JSON.stringify(group));
+        studioModel.currSettingPropGroup = JSON.parse(JSON.stringify(group));
       });
     }}>
       <EditOutlined />

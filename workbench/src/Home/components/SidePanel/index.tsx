@@ -19,7 +19,7 @@ import CascaderStudio from "../CascaderStudio";
 
 const SidePanel: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
   // 使用页面全局实例
-  const [model] = useModel<StudioModel>('studio');
+  const [studioModel] = useModel<StudioModel>('studio');
   const [workbenchModel] = useModel<WorkbenchModel>('workbench');
 
   const containerRef = useRef<HTMLDivElement>({} as any);
@@ -30,14 +30,14 @@ const SidePanel: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
     <SideToolBar className={styles.toolBar} />
 
     <div className={`${styles.studioContainer} `}>
-      <div className={`${styles.studio}  `}>
-        {workbenchModel.manualMode ? null : <Studio />}
+      <div className={`${styles.studioItem}  `}>
+        <Studio />
       </div>
 
       {
-        model.propItemStack.map(item => {
+        studioModel.propItemStack.map(item => {
           return (
-            <div key={item.id} className={`${styles.studio} ${styles.cascaderStudio} `}>
+            <div key={item.id} className={`${styles.studioItem} ${styles.cascaderStudio} `}>
               <CascaderStudio key={item.id} item={item} />
             </div>
           )
@@ -45,8 +45,7 @@ const SidePanel: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
       }
     </div>
 
-
-    <SideFooter className={`${styles.footerContainer} ${model.workbench.stageMode ? styles.editMode : ''}`} />
+    <SideFooter className={`${styles.footerContainer} ${workbenchModel.stageMode ? styles.editMode : ''}`} />
 
     <PropGroupSetting />
     <PropBlockSetting />

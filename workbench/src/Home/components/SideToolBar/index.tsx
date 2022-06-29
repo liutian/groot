@@ -8,7 +8,7 @@ import { HTMLAttributes } from "react";
 import styles from './index.module.less';
 
 const SideToolBar: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
-  const [model] = useModel<StudioModel>('studio');
+  const [studioModel] = useModel<StudioModel>('studio');
   const [workbenchModel] = useModel<WorkbenchModel>('workbench');
 
   return <div {...props}>
@@ -23,9 +23,9 @@ const SideToolBar: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
     </div>
     <div className={styles.actions} >
       <Button type="link" title="部署" icon={<SendOutlined />} />
-      <Button type="link" title="源码" icon={workbenchModel.manualMode ? <CodeFilled /> : <CodeOutlined />} onClick={() => model.switchManualMode()} />
-      <Button type="link" title="json" icon={workbenchModel.jsonMode ? <DashboardFilled /> : <DashboardOutlined />} onClick={() => model.switchJSONMode()} />
-      <Button type="link" title="设置" icon={model.workbench.stageMode ? <SettingFilled /> : <SettingOutlined />} onClick={() => model.switchEditMode()} />
+      <Button type="link" title="源码" icon={workbenchModel.manualMode ? <CodeFilled /> : <CodeOutlined />} onClick={() => studioModel.switchManualMode()} />
+      <Button type="link" title="json" icon={workbenchModel.jsonMode ? <DashboardFilled /> : <DashboardOutlined />} onClick={() => studioModel.switchJSONMode()} />
+      <Button type="link" title="设置" icon={workbenchModel.stageMode ? <SettingFilled /> : <SettingOutlined />} onClick={() => studioModel.switchEditMode()} />
     </div>
   </div>
 }

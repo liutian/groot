@@ -1,15 +1,12 @@
 @import 'styles/util.less';
 
-
 .settings {
   margin: 0 -8px 0 8px;
 }
 
 .currRelease {
-  margin: 0 8px 0 -8px;
-}
+  margin: 0 8px 0 0;
 
-.currRelease {
   >:global(.ant-btn) {
     padding-left: 8px;
     padding-right: 8px;
@@ -36,7 +33,7 @@
   display: flex;
   height: 35px;
   line-height: 35px;
-  padding-left: 10px;
+  padding: 0 10px;
   cursor: pointer;
 
   &:not(:last-of-type) {
@@ -50,16 +47,39 @@
   &.releaseItemMore {
     justify-content: center;
   }
+
+  :global(.ant-tag) {
+    margin-right: 0;
+    margin-left: 6px;
+  }
 }
 
 .releaseItemText {
   flex-grow: 1;
 }
 
+
+.componentTitle {
+  flex-grow: 1;
+
+  &:not(.searchMode) {
+    background-color: #efefef;
+
+    :global(.ant-input-affix-wrapper) {
+      background-color: transparent;
+      border-color: transparent;
+
+      input {
+        background-color: transparent;
+      }
+    }
+  }
+}
+
 .releaseSearchOverlay {
   background-color: #fff;
-  .box-shadow;
   padding: 2px 0;
+  .box-shadow;
 }
 
 .releaseSearchContainer {
@@ -68,8 +88,8 @@
 }
 
 .releaseSearchItem {
-  padding: 0 10px;
   display: flex;
+  padding: 0 10px;
   height: 35px;
   line-height: 35px;
 
@@ -95,23 +115,5 @@
 
   :global(.actions) {
     flex-grow: 1;
-  }
-}
-
-
-.componentTitle {
-  flex-grow: 1;
-
-  &:not(.searchMode) {
-    background-color: #efefef;
-
-    :global(.ant-input-affix-wrapper) {
-      background-color: transparent;
-      border-color: transparent;
-
-      input {
-        background-color: transparent;
-      }
-    }
   }
 }

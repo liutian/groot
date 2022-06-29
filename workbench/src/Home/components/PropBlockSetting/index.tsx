@@ -5,33 +5,33 @@ import StudioModel from '@model/StudioModel';
 
 const PropBlockSetting: React.FC = () => {
   const [form] = Form.useForm();
-  const [model, updateAction] = useModel<StudioModel>('studio');
+  const [studioModel, updateAction] = useModel<StudioModel>('studio');
   const inputRef = useRef<any>(null);
 
   const handleOk = async () => {
     const blockFormData = await form.validateFields();
     form.resetFields();
-    model.updateOrAddPropBlock(blockFormData);
+    studioModel.updateOrAddPropBlock(blockFormData);
   }
 
   const handleCancel = () => {
     updateAction(() => {
-      model.currSettingPropBlock = undefined;
+      studioModel.currSettingPropBlock = undefined;
     })
   }
 
   useEffect(() => {
-    if (model.currSettingPropBlock) {
+    if (studioModel.currSettingPropBlock) {
       form.resetFields();
-      form.setFieldsValue(model.currSettingPropBlock);
+      form.setFieldsValue(studioModel.currSettingPropBlock);
 
       setTimeout(() => {
         inputRef.current.focus({ cursor: 'all' });
       }, 300)
     }
-  }, [model.currSettingPropBlock]);
+  }, [studioModel.currSettingPropBlock]);
 
-  return (<Modal mask={false} width={400} title="配置块" visible={!!model.currSettingPropBlock} onOk={handleOk} onCancel={handleCancel}>
+  return (<Modal mask={false} width={400} title="配置块" visible={!!studioModel.currSettingPropBlock} onOk={handleOk} onCancel={handleCancel}>
     <Form form={form} labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
       <Form.Item name="name" label="名称" rules={[{ required: true }]}>
         <Input ref={inputRef} />

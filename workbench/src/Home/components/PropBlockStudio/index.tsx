@@ -13,7 +13,7 @@ type PropType = {
 }
 
 function PropBlockStudio({ block, freezeSetting, templateMode, noWrapMode }: PropType) {
-  const [model, updateAction] = useModel<StudioModel>('studio');
+  const [studioModel, updateAction] = useModel<StudioModel>('studio');
   const [workbenchModel] = useModel<WorkbenchModel>('workbench');
   const [form] = Form.useForm();
   workbenchModel.blockFormInstanceMap.set(block.id, form);
@@ -22,30 +22,30 @@ function PropBlockStudio({ block, freezeSetting, templateMode, noWrapMode }: Pro
 
     const editPropItem = () => {
       updateAction(() => {
-        model.currSettingPropItem = JSON.parse(JSON.stringify(propItem));
+        studioModel.currSettingPropItem = JSON.parse(JSON.stringify(propItem));
       })
     }
 
     const renderItemSetting = () => {
-      if (!model.workbench.stageMode || freezeSetting) return null;
+      if (!workbenchModel.stageMode || freezeSetting) return null;
 
 
       return (<Space size="small">
         <Typography.Link disabled={itemIndex === 0} onClick={(e) => {
           e.preventDefault();
-          model.movePropItem(block, itemIndex, true);
+          studioModel.movePropItem(block, itemIndex, true);
         }}>
           <VerticalAlignTopOutlined />
         </Typography.Link>
         <Typography.Link disabled={itemIndex === block.propItemList.length - 1} onClick={(e) => {
           e.preventDefault();
-          model.movePropItem(block, itemIndex, false);
+          studioModel.movePropItem(block, itemIndex, false);
         }}>
           <VerticalAlignBottomOutlined />
         </Typography.Link>
         <Typography.Link disabled={itemIndex === 0 && block.propItemList.length === 1} onClick={(e) => {
           e.preventDefault();
-          model.delItem(propItem.id);
+          studioModel.delItem(propItem.id);
         }} >
           <DeleteOutlined />
         </Typography.Link>
@@ -84,7 +84,7 @@ function PropBlockStudio({ block, freezeSetting, templateMode, noWrapMode }: Pro
       return <Checkbox.Group options={item.optionList} />
     } else if (item.type === 'List' || item.type === 'Item') {
       return <Button block onClick={() => {
-        model.pushHandUpPropItem(item)
+        studioModel.pushHandUpPropItem(item)
       }}>列表{item.valueOfGroup.propBlockList.length}</Button>
     }
 
@@ -107,9 +107,9 @@ function PropBlockStudio({ block, freezeSetting, templateMode, noWrapMode }: Pro
       </Row>
     </Form>
     {
-      templateMode || (model.workbench.stageMode && noWrapMode) ? (
+      templateMode || (workbenchModel.stageMode && noWrapMode) ? (
         <Button type="dashed" block onClick={() => {
-          model.showPropItemSettinngForCreate(block)
+          studioModel.showPropItemSettinngForCreate(block)
         }}>
           添加
         </Button>

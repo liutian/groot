@@ -5,24 +5,23 @@ import { HTMLAttributes } from 'react';
 import styles from './index.module.less';
 
 import WorkbenchModel from '@model/WorkbenchModel';
-import StudioModel from '@model/StudioModel';
 
 const SideFooter: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
-  const [model, updateAction] = useModel<WorkbenchModel>('workbench');
+  const [studioModel, updateAction] = useModel<WorkbenchModel>('workbench');
   const [workbenchModel] = useModel<WorkbenchModel>('workbench');
 
   const switchWidgetWidnwo = () => {
     updateAction(() => {
-      if (model.widgetWindowRect === 'none') {
-        model.widgetWindowRect = 'normal';
+      if (studioModel.widgetWindowRect === 'none') {
+        studioModel.widgetWindowRect = 'normal';
       } else {
-        model.widgetWindowRect = 'none';
+        studioModel.widgetWindowRect = 'none';
       }
     });
   }
 
   return <div {...props}>
-    <div style={{ marginLeft: '-8px' }}>
+    <div >
       <div className={styles.actionItem}>
         <BranchesOutlined title="版本" />
         <span>{workbenchModel.component.version.name}</span>
@@ -32,7 +31,7 @@ const SideFooter: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
       <NumberOutlined />&nbsp;
       <span>columns.[].form.lable</span>
     </Typography.Text>
-    <div style={{ marginRight: '-8px' }}>
+    <div >
       <div className={styles.actionItem} onClick={switchWidgetWidnwo}>
         <BlockOutlined title="窗口" />
       </div>

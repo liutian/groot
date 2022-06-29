@@ -7,29 +7,28 @@ import { HTMLAttributes, useState } from "react";
 import styles from './index.module.less';
 
 const SideHeader: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
+  const [workbenchModel] = useModel<WorkbenchModel>('workbench');
   // 搜索模式
   const [searchMode, setSearchMode] = useState(false);
-  const [workbenchModel] = useModel<WorkbenchModel>('workbench');
   // 搜索关键字
   const [searchText, setSearchText] = useState(workbenchModel.component.name);
+  // 搜索结果
+  const [componentList] = useState([{}, {}, {}]);
 
   // 搜索结果
   const renderSearchOverlay = () => {
     return <div className={styles.releaseSearchOverlay}>
       <div className={styles.releaseSearchContainer}>
 
-        <div className={styles.releaseSearchItem}>
-          <div className="name">搜索结果</div>
-          <div className="path">/user/list</div>
-        </div>
-        <div className={styles.releaseSearchItem}>
-          <div className="name">搜索结果</div>
-          <div className="path">/user/list</div>
-        </div>
-        <div className={styles.releaseSearchItem}>
-          <div className="name">搜索结果</div>
-          <div className="path">/user/list</div>
-        </div>
+        {
+          componentList.map(() => {
+            return (<div className={styles.releaseSearchItem}>
+              <div className="name">搜索结果</div>
+              <div className="path">/user/list</div>
+            </div>)
+          })
+        }
+
       </div>
 
       <div className={`${styles.releaseSearchItem} ${styles.releaseSearchMoreSetting}`} >
@@ -108,7 +107,7 @@ const SideHeader: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
   }
 
   const renderCurrRelease = () => {
-    if (!workbenchModel.component.release) {
+    if (workbenchModel.stageMode) {
       return null;
     }
 

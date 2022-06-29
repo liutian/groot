@@ -13,16 +13,16 @@ const tabBarStyles = {
 }
 
 const WidgetWindow: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
-  const [model, updateAction] = useModel<WorkbenchModel>('workbench');
+  const [studioModel, updateAction] = useModel<WorkbenchModel>('workbench');
   const containerRef = useRef<HTMLDivElement>({} as any);
 
   let middleBtn: ReactNode;
 
-  if (model.widgetWindowRect === 'full') {
-    middleBtn = <Button type="text" icon={<FullscreenExitOutlined />} onClick={() => updateAction(() => model.widgetWindowRect = 'normal')} />;
-  } else if (model.widgetWindowRect === 'normal') {
+  if (studioModel.widgetWindowRect === 'full') {
+    middleBtn = <Button type="text" icon={<FullscreenExitOutlined />} onClick={() => updateAction(() => studioModel.widgetWindowRect = 'normal')} />;
+  } else if (studioModel.widgetWindowRect === 'normal') {
     middleBtn = <>
-      <Button type="text" icon={<FullscreenOutlined onClick={() => updateAction(() => model.widgetWindowRect = 'full')} />} />
+      <Button type="text" icon={<FullscreenOutlined onClick={() => updateAction(() => studioModel.widgetWindowRect = 'full')} />} />
       <MouseFollow
         start={() => {
           containerRef.current.parentElement!.classList.add('drag-active');
@@ -44,11 +44,11 @@ const WidgetWindow: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
   }
 
   useEffect(() => {
-    if (model.widgetWindowRect === 'normal') {
+    if (studioModel.widgetWindowRect === 'normal') {
       containerRef.current!.style.top = '';
       containerRef.current!.style.left = '';
     }
-  }, [model.widgetWindowRect]);
+  }, [studioModel.widgetWindowRect]);
 
   useEffect(() => {
     const originOverflow = document.body.style.overflow;
@@ -61,11 +61,11 @@ const WidgetWindow: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
   const renderTabs = () => {
     return <Tabs tabBarStyle={tabBarStyles} tabBarExtraContent={
       <>
-        <Button type="text" icon={<LineOutlined />} onClick={() => updateAction(() => model.widgetWindowRect = 'min')} />
+        <Button type="text" icon={<LineOutlined />} onClick={() => updateAction(() => studioModel.widgetWindowRect = 'min')} />
 
         {middleBtn}
 
-        <Button type="text" icon={<CloseOutlined />} onClick={() => updateAction(() => model.widgetWindowRect = 'none')} />
+        <Button type="text" icon={<CloseOutlined />} onClick={() => updateAction(() => studioModel.widgetWindowRect = 'none')} />
       </>
     }>
       <Tabs.TabPane tab="Tab 1" key="1">1</Tabs.TabPane>
@@ -75,14 +75,14 @@ const WidgetWindow: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
     </Tabs>
   }
 
-  return <div {...props} ref={containerRef} className={`${styles.widgetWindow} ${typeof model.widgetWindowRect === 'string' ? model.widgetWindowRect : ''}`}>
+  return <div {...props} ref={containerRef} className={`${styles.widgetWindow} ${typeof studioModel.widgetWindowRect === 'string' ? studioModel.widgetWindowRect : ''}`}>
     {
-      model.widgetWindowRect !== 'min' ? renderTabs() : <>
-        <Typography.Text ellipsis className={styles.minText} onClick={() => updateAction(() => model.widgetWindowRect = 'normal')}>
+      studioModel.widgetWindowRect !== 'min' ? renderTabs() : <>
+        <Typography.Text ellipsis className={styles.minText} onClick={() => updateAction(() => studioModel.widgetWindowRect = 'normal')}>
           组件源码
         </Typography.Text>
-        <Button className={styles.actionItem} type="text" icon={<FullscreenOutlined />} onClick={() => updateAction(() => model.widgetWindowRect = 'normal')} />
-        <Button className={styles.actionItem} type="text" icon={<CloseOutlined />} onClick={() => updateAction(() => model.widgetWindowRect = 'none')} />
+        <Button className={styles.actionItem} type="text" icon={<FullscreenOutlined />} onClick={() => updateAction(() => studioModel.widgetWindowRect = 'normal')} />
+        <Button className={styles.actionItem} type="text" icon={<CloseOutlined />} onClick={() => updateAction(() => studioModel.widgetWindowRect = 'none')} />
       </>
     }
   </div>
