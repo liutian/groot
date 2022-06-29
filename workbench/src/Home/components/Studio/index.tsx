@@ -61,7 +61,11 @@ function Studio() {
     const list = workbenchModel.component.version.rootGroupList.map((group) => {
       let content = <PropGroupStudio group={group} />;
       if (group.struct === 'List') {
-        content = studioModel.activeGroupEditMode ? <PropBlockStudio templateMode block={group.templateBlock!} /> : <PropGroupStudio templateBlock={group.templateBlock!} group={group} />;
+        if (studioModel.activeGroupEditMode) {
+          content = <PropBlockStudio templateMode block={group.templateBlock!} />
+        } else {
+          content = <PropGroupStudio templateBlock={group.templateBlock!} group={group} />;
+        }
       } else if (group.struct === 'Item') {
         content = <PropBlockStudio noWrapMode block={group.propBlockList[0]!} />;
       }

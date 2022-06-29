@@ -13,23 +13,20 @@ type PropsType = {
   item: PropItem
 }
 
-const CascaderStudio: React.FC<PropsType> = ({ item: propItem }) => {
+const SubStudio: React.FC<PropsType> = ({ item: propItem }) => {
   const [studioModel] = useModel<StudioModel>('studio');
   const [workbenchModel] = useModel<WorkbenchModel>('workbench');
   const [editMode, setEditMode] = useState(false);
-
-  const templateBlock = propItem.templateBlock!;
-
+  const templateBlock = propItem.templateBlock;
+  const propGroup = propItem.valueOfGroup;
   const containerRef = useRef<HTMLDivElement>({} as any);
-
-  const propGroup = propItem.valueOfGroup!;
 
   useEffect(() => {
     containerRef.current.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'end' });
   }, []);
 
   const switchEditMode = () => {
-    // 从设置转换为配置
+    // 从配置转为设计模式
     if (!editMode) {
       propGroup.propBlockList.forEach((block) => {
         const formInstance = workbenchModel.blockFormInstanceMap.get(block.id);
@@ -72,4 +69,4 @@ const CascaderStudio: React.FC<PropsType> = ({ item: propItem }) => {
   </div>
 }
 
-export default CascaderStudio;
+export default SubStudio;

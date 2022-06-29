@@ -13,7 +13,7 @@ import Studio from "../Studio";
 import PropGroupSetting from "../PropGroupSetting";
 import PropItemSetting from "../PropItemSetting";
 import PropBlockSetting from "../PropBlockSetting";
-import CascaderStudio from "../CascaderStudio";
+import SubStudio from "../SubStudio";
 
 
 
@@ -38,7 +38,7 @@ const SidePanel: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
         studioModel.propItemStack.map(item => {
           return (
             <div key={item.id} className={`${styles.studioItem} ${styles.cascaderStudio} `}>
-              <CascaderStudio key={item.id} item={item} />
+              <SubStudio key={item.id} item={item} />
             </div>
           )
         })
