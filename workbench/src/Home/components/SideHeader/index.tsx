@@ -13,7 +13,7 @@ const SideHeader: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
   // 搜索关键字
   const [searchText, setSearchText] = useState(workbenchModel.component.name);
   // 搜索结果
-  const [componentList] = useState([{}, {}, {}]);
+  const [componentList] = useState([{ id: 1 }, { id: 2 }, { id: 3 }]);
 
   // 搜索结果
   const renderSearchOverlay = () => {
@@ -21,8 +21,8 @@ const SideHeader: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
       <div className={styles.releaseSearchContainer}>
 
         {
-          componentList.map(() => {
-            return (<div className={styles.releaseSearchItem}>
+          componentList.map((item) => {
+            return (<div key={item.id} className={styles.releaseSearchItem}>
               <div className="name">搜索结果</div>
               <div className="path">/user/list</div>
             </div>)

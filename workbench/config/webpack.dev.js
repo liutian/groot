@@ -7,7 +7,7 @@ module.exports = (env, args) => {
     mode: "development",
     output: {
     },
-    devtool: 'inline-source-map',
+    devtool: 'source-map',
     cache: {
       type: 'filesystem',
     },

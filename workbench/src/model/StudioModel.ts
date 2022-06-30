@@ -356,41 +356,50 @@ export default class StudioModel {
     }
   }
 
-  public pushHandUpPropItem = (item: PropItem) => {
-    for (let index = 0; index < this.propItemStack.length; index++) {
-      const { id: itemId, groupId } = this.propItemStack[index]!;
-
-      if (item.id === itemId) {
-        this.cancelHighlightCascaderStudio(this.propItemStack.splice(index + 1));
-        return;
-      }
-
-      if (item.groupId === groupId) {
-        this.cancelHighlightCascaderStudio(this.propItemStack.splice(index));
-        item.highlight = true;
-        this.workbench.getPropBlock(item.blockId).highlight = true;
-        this.workbench.getPropGroup(item.groupId).highlight = true;
-        this.propItemStack.push(item);
-        return;
-      }
+  /**
+   * 向堆栈中追加item
+   * @param item 追加的PropItem
+   */
+  public pushPropItemStack = (item: PropItem) => {
+    if (this.propItemStack.length) {
+      // 重置item所在分组高亮
+      const resetItem = this.propItemStack[this.propItemStack.length - 1];
+      this.cancelHighlightStudioChain([resetItem]);
     }
 
+    const group = this.workbench.getPropGroup(item.groupId);
+    group.highlight = true;
+    const block = group.propBlockList.find(b => b.id === item.blockId);
+    block.highlight = true;
     item.highlight = true;
-    this.workbench.getPropBlock(item.blockId).highlight = true;
-    this.workbench.getPropGroup(item.groupId).highlight = true;
+
     this.propItemStack.push(item);
   }
 
-  public popHandUpPropItem = (propItem: PropItem) => {
+  /**
+   * 从堆栈中弹出配置项
+   * @param propItem 从当前propItem开始之后所有item
+   * @param clearSelf 是否弹出当前propItem
+   */
+  public popPropItemStack = (propItem: PropItem, clearSelf: boolean) => {
     const index = this.propItemStack.findIndex(item => item.id === propItem.id);
-    this.cancelHighlightCascaderStudio(this.propItemStack.splice(index));
+    if (index !== -1) {
+      const isolateItemList = this.propItemStack.splice(clearSelf ? index : index + 1);
+      this.cancelHighlightStudioChain(isolateItemList);
+    }
   }
 
-  private cancelHighlightCascaderStudio(itemList: PropItem[]) {
+  /**
+   * 取消多个item高亮
+   * @param itemList 数组
+   */
+  private cancelHighlightStudioChain(itemList: PropItem[]) {
     itemList.forEach(item => {
       item.highlight = false;
-      this.workbench.getPropBlock(item.blockId).highlight = false;
-      this.workbench.getPropGroup(item.groupId).highlight = false;
+      const group = this.workbench.getPropGroup(item.groupId);
+      group.highlight = false;
+      const block = group.propBlockList.find(b => b.id === item.blockId);
+      block.highlight = false;
     })
   }
 

@@ -84,7 +84,7 @@ function PropBlockStudio({ block, freezeSetting, templateMode, noWrapMode }: Pro
       return <Checkbox.Group options={item.optionList} />
     } else if (item.type === 'List' || item.type === 'Item') {
       return <Button block onClick={() => {
-        studioModel.pushHandUpPropItem(item)
+        studioModel.pushPropItemStack(item)
       }}>列表{item.valueOfGroup.propBlockList.length}</Button>
     }
 

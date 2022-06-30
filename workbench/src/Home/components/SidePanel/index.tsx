@@ -18,7 +18,6 @@ import SubStudio from "../SubStudio";
 
 
 const SidePanel: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
-  // 使用页面全局实例
   const [studioModel] = useModel<StudioModel>('studio');
   const [workbenchModel] = useModel<WorkbenchModel>('workbench');
 
