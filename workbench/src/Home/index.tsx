@@ -26,9 +26,9 @@ const Home = () => {
 
     // 确定请求地址
     if (stageMode) {
-      url = `${url}/prototype?id=${componentId}&versionId=${searchParams.get('versionId')}`;
+      url = `${url}/prototype?id=${componentId}&versionId=${searchParams.get('versionId') || ''}`;
     } else {
-      url = `${url}/instance?id=${componentId}&releaseId=${searchParams.get('releaseId')}`;
+      url = `${url}/instance?id=${componentId}&releaseId=${searchParams.get('releaseId') || ''}`;
     }
 
     // 获取组件信息

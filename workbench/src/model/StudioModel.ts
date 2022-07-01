@@ -28,7 +28,7 @@ export default class StudioModel {
 
   public init(workbench: WorkbenchModel) {
     this.workbench = workbench;
-    this.activeGroupId = this.workbench.component.version.rootGroupList[0].id;
+    this.activeGroupId = this.workbench.rootGroupList[0].id;
   }
 
   public toggleActiveGroupEditMode = () => {
@@ -73,7 +73,7 @@ export default class StudioModel {
         'Content-Type': 'application/json'
       },
     }).then(r => r.json()).then(() => {
-      const groups = this.workbench.component.version.rootGroupList;
+      const groups = this.workbench.rootGroupList;
 
       const drag = groups.find(g => g.id === +dragId)!;
       const hoverIndex = hoverId === '__add' ? groups.length : groups.findIndex(g => g.id === +hoverId);
@@ -140,8 +140,8 @@ export default class StudioModel {
         },
         body: JSON.stringify(newGroup)
       }).then(r => r.json()).then(() => {
-        let groupIndex = this.workbench.component.version.rootGroupList!.findIndex(g => g.id === newGroup.id);
-        this.workbench.component.version.rootGroupList!.splice(groupIndex, 1, newGroup);
+        let groupIndex = this.workbench.rootGroupList.findIndex(g => g.id === newGroup.id);
+        this.workbench.rootGroupList.splice(groupIndex, 1, newGroup);
       })
     } else {
       fetch(`${serverPath}/group/add`,
@@ -154,7 +154,7 @@ export default class StudioModel {
         }
       ).then(r => r.json()).then((result: { data: PropGroup }) => {
         const groupDB = result.data;
-        this.workbench.component.version.rootGroupList!.push(groupDB);
+        this.workbench.rootGroupList.push(groupDB);
         // this.component.version.groupList.push(result.data);
         this.activeGroupId = groupDB.id;
 
@@ -282,12 +282,12 @@ export default class StudioModel {
 
   public delGroup = (groupId: number) => {
     fetch(`${serverPath}/group/remove/${groupId}`).then(() => {
-      const index = this.workbench.component.version.rootGroupList!.findIndex(g => g.id === groupId);
+      const index = this.workbench.rootGroupList.findIndex(g => g.id === groupId);
 
-      this.workbench.component.version.rootGroupList!.splice(index, 1);
+      this.workbench.rootGroupList.splice(index, 1);
 
       if (this.activeGroupId === groupId) {
-        this.activeGroupId = this.workbench.component.version.rootGroupList![0]?.id;
+        this.activeGroupId = this.workbench.rootGroupList[0]?.id;
       }
     })
   }
@@ -311,7 +311,7 @@ export default class StudioModel {
   }
 
   public switchActiveGroup = (id: number) => {
-    const activeItem = this.workbench.component.version.rootGroupList!.find(g => g.id === id);
+    const activeItem = this.workbench.rootGroupList.find(g => g.id === id);
     if (activeItem) {
       this.activeGroupId = id;
       this.activeGroupEditMode = false;
@@ -323,7 +323,7 @@ export default class StudioModel {
     this.workbench.manualMode = false;
     if (this.workbench.stageMode) {
       this.workbench.stageMode = false;
-      this.workbench.component.version.rootGroupList!.forEach((group) => {
+      this.workbench.rootGroupList.forEach((group) => {
         group.propBlockList.forEach((block) => {
           const values = this.workbench.blockFormInstanceMap.get(block.id).getFieldsValue();
           block.propItemList.forEach((item) => {
@@ -433,8 +433,8 @@ export default class StudioModel {
 
   public createCodemeta(component: Component) {
     const codemetas = [] as CodeMeta[];
-    for (let groupIndex = 0; groupIndex < component.version.rootGroupList!.length; groupIndex++) {
-      const group = component.version.rootGroupList![groupIndex]!;
+    for (let groupIndex = 0; groupIndex < this.workbench.rootGroupList.length; groupIndex++) {
+      const group = this.workbench.rootGroupList[groupIndex]!;
       this.createCodemetaFromGroup(group, codemetas, '');
     }
     return codemetas;

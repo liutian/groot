@@ -33,6 +33,8 @@ export default class WorkbenchModel {
    */
   public jsonMode = false;
 
+  public rootGroupList: PropGroup[] = [];
+
   public currEnv: 'dev' | 'qa' | 'pl' | 'online' = 'dev';
 
   public init = (component: Component, iframeRef: { current: HTMLIFrameElement }, stageMode: boolean) => {
@@ -79,7 +81,7 @@ export default class WorkbenchModel {
   // todo
   public productStudioData = () => {
     const props: any[] = [];
-    this.component.version.rootGroupList.forEach((group) => {
+    this.rootGroupList.forEach((group) => {
       group.propBlockList.forEach((block) => {
         const values = this.blockFormInstanceMap.get(block.id).getFieldsValue();
         block.propItemList.forEach((item) => {
@@ -97,7 +99,6 @@ export default class WorkbenchModel {
    * 构建属性树
    */
   private buildPropTree() {
-    this.component.version.rootGroupList = [];
     const rootGroupIds = this.component.version.groupList
       .filter(g => g.root)
       .sort((a, b) => a.order - b.order)
@@ -106,7 +107,7 @@ export default class WorkbenchModel {
     for (let i = 0; i < rootGroupIds.length; i++) {
       const groupId = rootGroupIds[i];
       const group = this.buildPropGroup(groupId);
-      this.component.version.rootGroupList.push(group);
+      this.rootGroupList.push(group);
     }
   }
 
@@ -182,9 +183,8 @@ export default class WorkbenchModel {
    * @returns 配置块对象
    */
   getPropBlock = (blockId: number): PropBlock => {
-    const rootGroupList = this.component.version.rootGroupList;
-    for (let index = 0; index < rootGroupList.length; index++) {
-      const rootGroup = rootGroupList[index];
+    for (let index = 0; index < this.rootGroupList.length; index++) {
+      const rootGroup = this.rootGroupList[index];
       const result = this.getProp<PropBlock>(blockId, 'block', rootGroup);
       if (result) {
         return result;
@@ -200,9 +200,8 @@ export default class WorkbenchModel {
    * @returns 配置组对象
    */
   getPropGroup = (groupId: number): PropGroup => {
-    const rootGroupList = this.component.version.rootGroupList;
-    for (let index = 0; index < rootGroupList.length; index++) {
-      const rootGroup = rootGroupList[index];
+    for (let index = 0; index < this.rootGroupList.length; index++) {
+      const rootGroup = this.rootGroupList[index];
       const result = this.getProp<PropGroup>(groupId, 'group', rootGroup);
       if (result) {
         return result;

@@ -66,6 +66,12 @@ export class ComponentService {
     return component;
   }
 
+  /**
+   * 获取组件某个版本的配置信息
+   * @param id 组件ID
+   * @param versionId 组件版本
+   * @returns 组件信息
+   */
   async getComponentForVersion(id: number, versionId?: number) {
     const em = RequestContext.getEntityManager();
     const component = await em.findOne(Component, id, { populate: ['versionList'] });
@@ -74,7 +80,7 @@ export class ComponentService {
       throw new LogicException(`not found component id: ${id}`, LogicExceptionCode.NotFound);
     }
 
-    if (!versionId && component.recentVersion?.id) {
+    if (!versionId && !component.recentVersion?.id) {
       throw new LogicException('not found component version id', LogicExceptionCode.NotFound);
     }
 

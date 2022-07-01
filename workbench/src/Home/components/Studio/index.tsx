@@ -45,7 +45,7 @@ function Studio() {
     }
 
     updateAction(() => {
-      const nameSuffix = autoIncrementForName(workbenchModel.component.version.rootGroupList.map(g => g.name));
+      const nameSuffix = autoIncrementForName(workbenchModel.rootGroupList.map(g => g.name));
       // 显示分组弹框
       studioModel.currSettingPropGroup = {
         name: `分组${nameSuffix}`,
@@ -58,7 +58,7 @@ function Studio() {
   }
 
   const renderTabContent = () => {
-    const list = workbenchModel.component.version.rootGroupList.map((group) => {
+    const list = workbenchModel.rootGroupList.map((group) => {
       let content = <PropGroupStudio group={group} />;
       if (group.struct === 'List') {
         if (studioModel.activeGroupEditMode) {

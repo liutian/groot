@@ -65,8 +65,6 @@ type ComponentVersion = {
   groupList: PropGroup[],
   blockList: PropBlock[],
   itemList: PropItem[],
-
-  rootGroupList?: PropGroup[]
 } & Omit<import("../../cloud/src/entities/ComponentVersion").ComponentVersion, 'groupList' | 'blockList' | 'itemList'>;
 
 type ComponentInstance = {
