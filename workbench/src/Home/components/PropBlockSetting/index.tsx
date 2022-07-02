@@ -31,7 +31,8 @@ const PropBlockSetting: React.FC = () => {
     }
   }, [studioModel.currSettingPropBlock]);
 
-  return (<Modal mask={false} width={400} title="配置块" visible={!!studioModel.currSettingPropBlock} onOk={handleOk} onCancel={handleCancel}>
+  return (<Modal mask={false} width={400} title="配置块" confirmLoading={studioModel.settingModalLoading}
+    visible={!!studioModel.currSettingPropBlock} onOk={handleOk} onCancel={handleCancel}>
     <Form form={form} labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
       <Form.Item name="name" label="名称" rules={[{ required: true }]}>
         <Input ref={inputRef} />

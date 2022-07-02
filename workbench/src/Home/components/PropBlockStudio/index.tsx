@@ -1,5 +1,5 @@
 import { Button, Checkbox, Col, DatePicker, Form, Input, Radio, Row, Select, Space, Switch, Typography } from "antd";
-import { VerticalAlignTopOutlined, DeleteOutlined, VerticalAlignBottomOutlined, SettingOutlined } from '@ant-design/icons';
+import { VerticalAlignTopOutlined, DeleteOutlined, VerticalAlignBottomOutlined, EditOutlined } from '@ant-design/icons';
 import { useModel } from "@util/robot";
 import StudioModel from '@model/StudioModel';
 import styles from './index.module.less';
@@ -29,31 +29,45 @@ function PropBlockStudio({ block, freezeSetting, templateMode, noWrapMode }: Pro
     const renderItemSetting = () => {
       if (!workbenchModel.designMode || freezeSetting) return null;
 
-
       return (<Space size="small">
-        <Typography.Link disabled={itemIndex === 0} onClick={(e) => {
-          e.preventDefault();
-          studioModel.movePropItem(block, itemIndex, true);
-        }}>
-          <VerticalAlignTopOutlined />
-        </Typography.Link>
-        <Typography.Link disabled={itemIndex === block.propItemList.length - 1} onClick={(e) => {
-          e.preventDefault();
-          studioModel.movePropItem(block, itemIndex, false);
-        }}>
-          <VerticalAlignBottomOutlined />
-        </Typography.Link>
-        <Typography.Link disabled={itemIndex === 0 && block.propItemList.length === 1} onClick={(e) => {
-          e.preventDefault();
-          studioModel.delItem(propItem.id);
-        }} >
-          <DeleteOutlined />
-        </Typography.Link>
+        {
+          itemIndex > 0 && (
+            <Typography.Link onClick={(e) => {
+              e.preventDefault();
+              studioModel.movePropItem(block, itemIndex, true);
+            }}>
+              <VerticalAlignTopOutlined />
+            </Typography.Link>
+          )
+        }
+
+        {
+          itemIndex < block.propItemList.length - 1 && (
+            <Typography.Link onClick={(e) => {
+              e.preventDefault();
+              studioModel.movePropItem(block, itemIndex, false);
+            }}>
+              <VerticalAlignBottomOutlined />
+            </Typography.Link>
+          )
+        }
+
+        {
+          block.propItemList.length > 1 && (
+            <Typography.Link onClick={(e) => {
+              e.preventDefault();
+              studioModel.delItem(propItem.id);
+            }} >
+              <DeleteOutlined />
+            </Typography.Link>
+          )
+        }
+
         <Typography.Link onClick={(e) => {
           e.preventDefault();
           editPropItem();
         }}>
-          <SettingOutlined />
+          <EditOutlined />
         </Typography.Link>
       </Space>)
     }
@@ -110,10 +124,10 @@ function PropBlockStudio({ block, freezeSetting, templateMode, noWrapMode }: Pro
     </Form>
     {
       templateMode || (workbenchModel.designMode && noWrapMode) ? (
-        <Button type="dashed" block onClick={() => {
+        <Button type="primary" ghost block onClick={() => {
           studioModel.showPropItemSettinngForCreate(block)
         }}>
-          添加
+          添加配置项
         </Button>
       ) : null
     }

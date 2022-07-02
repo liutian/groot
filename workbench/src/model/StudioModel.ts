@@ -40,11 +40,13 @@ export default class StudioModel {
   }
 
   public movePropBlock = (group: PropGroup, originIndex: number, up: boolean) => {
-    const [moveBlock] = group.propBlockList.splice(originIndex, 1);
+    const originBlock = group.propBlockList[originIndex];
+    const targetId = up ? group.propBlockList[originIndex - 1].id : group.propBlockList[originIndex + 1].id;
+
     fetch(`${serverPath}/move/position`, {
       body: JSON.stringify({
-        originId: moveBlock!.id,
-        targetId: up ? group.propBlockList[originIndex - 1]!.id : group.propBlockList[originIndex + 1]?.id,
+        originId: originBlock.id,
+        targetId,
         type: 'block'
       }),
       method: 'POST',
@@ -52,11 +54,14 @@ export default class StudioModel {
         'Content-Type': 'application/json'
       },
     }).then(r => r.json()).then(() => {
-
       if (up) {
-        group.propBlockList.splice(originIndex - 1, 0, moveBlock!);
+        const targetBlock = group.propBlockList[originIndex - 1];
+        group.propBlockList[originIndex - 1] = originBlock;
+        group.propBlockList[originIndex] = targetBlock;
       } else {
-        group.propBlockList.splice(originIndex + 1, 0, moveBlock!);
+        const targetBlock = group.propBlockList[originIndex + 1];
+        group.propBlockList[originIndex + 1] = originBlock;
+        group.propBlockList[originIndex] = targetBlock;
       }
     });
   }
@@ -87,10 +92,9 @@ export default class StudioModel {
       groups.splice(hoverIndex, 0, drag);
 
       if (hoverIndex < dragIndex) {
-
         groups.splice(dragIndex + 1, 1);
         if (currentIndex >= hoverIndex && currentIndex < dragIndex) {
-          this.activeGroupId = groups[currentIndex + 1]?.id;
+          this.activeGroupId = groups[currentIndex + 1].id;
         } else if (currentIndex === dragIndex) {
           this.activeGroupId = +hoverId;
         }
@@ -106,11 +110,13 @@ export default class StudioModel {
   }
 
   public movePropItem = (block: PropBlock, originIndex: number, up: boolean) => {
-    const origin = block.propItemList[originIndex]!;
+    const originItem = block.propItemList[originIndex];
+    const targetId = up ? block.propItemList[originIndex - 1].id : block.propItemList[originIndex + 1].id;
+
     fetch(`${serverPath}/move/position`, {
       body: JSON.stringify({
-        originId: origin.id,
-        targetId: up ? block.propItemList[originIndex - 1]!.id : block.propItemList[originIndex + 1]?.id,
+        originId: originItem.id,
+        targetId,
         type: 'item'
       }),
       method: 'POST',
@@ -119,18 +125,25 @@ export default class StudioModel {
       },
     }).then(r => r.json()).then((result: { data: { originId: number, targetId: number, blockId: number }[] }) => {
       for (let index = 0; index < result.data.length; index++) {
-        const { blockId } = result.data[index]!;
+        const { blockId } = result.data[index];
         const block = this.workbench.getPropBlock(blockId);
-        const [moveItem] = block.propItemList.splice(originIndex, 1);
         if (up) {
-          block.propItemList.splice(originIndex - 1, 0, moveItem!);
+          const targetItem = block.propItemList[originIndex - 1];
+          block.propItemList[originIndex - 1] = originItem;
+          block.propItemList[originIndex] = targetItem;
         } else {
-          block.propItemList.splice(originIndex + 1, 0, moveItem!);
+          const targetItem = block.propItemList[originIndex + 1];
+          block.propItemList[originIndex + 1] = originItem;
+          block.propItemList[originIndex] = targetItem;
         }
       }
     });
   }
 
+  /**
+   * 添加或者更新配置组
+   * @param group 配置组
+   */
   public updateOrAddPropGroup = (group: PropGroup) => {
     const newGroup = Object.assign(this.currSettingPropGroup, group);
     newGroup.componentId = this.workbench.component.id;
@@ -162,7 +175,6 @@ export default class StudioModel {
       ).then(r => r.json()).then((result: { data: PropGroup }) => {
         const groupDB = result.data;
         this.workbench.rootGroupList.push(groupDB);
-        // this.component.version.groupList.push(result.data);
         this.activeGroupId = groupDB.id;
 
         if (newGroup.struct === 'List') {
@@ -177,9 +189,10 @@ export default class StudioModel {
   }
 
   public updateOrAddPropBlock = (block: PropBlock) => {
-    const newBlock = Object.assign(this.currSettingPropBlock!, block);
+    const newBlock = Object.assign(this.currSettingPropBlock, block);
     const group = this.workbench.getPropGroup(newBlock.groupId);
 
+    this.settingModalLoading = true;
     if (newBlock.id) {
       fetch(`${serverPath}/block/update`, {
         method: 'POST',
@@ -190,6 +203,8 @@ export default class StudioModel {
       }).then(r => r.json()).then(() => {
         let blockIndex = group.propBlockList.findIndex(b => b.id === newBlock.id);
         group.propBlockList.splice(blockIndex, 1, newBlock);
+        this.settingModalLoading = false;
+        this.currSettingPropBlock = undefined;
       });
     } else {
       fetch(`${serverPath}/block/add`, {
@@ -200,11 +215,12 @@ export default class StudioModel {
         body: JSON.stringify(newBlock)
       }).then(r => r.json()).then((result: { data: PropBlock }) => {
         group.propBlockList.push(result.data);
-        // this.component.version.blockList.push(result.data);
+
+        this.settingModalLoading = false;
+        this.currSettingPropBlock = undefined;
       })
 
     }
-    this.currSettingPropBlock = undefined;
   }
 
   public addBlockFromTemplate = (groupId: number,) => {
@@ -227,12 +243,13 @@ export default class StudioModel {
   }
 
   public updateOrAddPropItem = (item: PropItem) => {
-    const newItem = Object.assign(this.currSettingPropItem!, item);
+    const newItem = Object.assign(this.currSettingPropItem, item);
 
-    if (!['select', 'radio', 'checkbox'].includes(newItem.type)) {
+    if (!['Select', 'Radio', 'Checkbox'].includes(newItem.type)) {
       newItem.optionList = undefined;
     }
 
+    this.settingModalLoading = true;
     if (newItem.id) {
       fetch(`${serverPath}/item/update`, {
         method: 'POST',
@@ -242,11 +259,14 @@ export default class StudioModel {
         body: JSON.stringify(newItem)
       }).then(r => r.json()).then((result: { data: PropItem[] }) => {
         for (let index = 0; index < result.data.length; index++) {
-          const propItem = result.data[index]!;
+          const propItem = result.data[index];
           const block = this.workbench.getPropBlock(propItem.blockId);
           let itemIndex = block.propItemList.findIndex(item => item.id === propItem.id);
           block.propItemList.splice(itemIndex, 1, propItem);
         }
+
+        this.settingModalLoading = false;
+        this.currSettingPropItem = undefined;
       });
     } else {
       fetch(`${serverPath}/item/add`, {
@@ -260,10 +280,11 @@ export default class StudioModel {
           const data = result.data[index]!;
           this.addPropItemFn(data);
         }
+
+        this.settingModalLoading = false;
+        this.currSettingPropItem = undefined;
       })
     }
-
-    this.currSettingPropItem = undefined;
 
     setTimeout(() => {
       this.workbench.productStudioData();
@@ -415,7 +436,6 @@ export default class StudioModel {
     const nameSuffix = autoIncrementForName(group.propBlockList.map(b => b.name));
 
     this.currSettingPropBlock = {
-      id: 0,
       name: `配置块${nameSuffix}`,
       groupId: group.id,
       propItemList: [],

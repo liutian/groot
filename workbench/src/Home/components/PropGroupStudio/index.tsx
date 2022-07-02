@@ -1,7 +1,7 @@
 import { useModel } from "@util/robot";
 import StudioModel from '@model/StudioModel';
 import { Button, Collapse, Space, Typography } from "antd";
-import { CaretRightOutlined, DeleteOutlined, PlusOutlined, SettingOutlined, VerticalAlignBottomOutlined, VerticalAlignTopOutlined } from "@ant-design/icons";
+import { CaretRightOutlined, DeleteOutlined, EditOutlined, PlusOutlined, VerticalAlignBottomOutlined, VerticalAlignTopOutlined } from "@ant-design/icons";
 import PropBlockStudio from "../PropBlockStudio";
 import WorkbenchModel from "@model/WorkbenchModel";
 
@@ -32,29 +32,45 @@ const PropGroupStudio: React.FC<PropsType> = ({ group, templateBlock }) => {
       }}>
         <PlusOutlined />
       </Typography.Link>
-      <Typography.Link disabled={blockIndex === 0} onClick={(e) => {
-        e.stopPropagation();
-        studioModel.movePropBlock(group, blockIndex, true);
-      }}>
-        <VerticalAlignTopOutlined />
-      </Typography.Link>
-      <Typography.Link disabled={blockIndex === group.propBlockList.length - 1} onClick={(e) => {
-        e.stopPropagation();
-        studioModel.movePropBlock(group, blockIndex, false);
-      }}>
-        <VerticalAlignBottomOutlined />
-      </Typography.Link>
-      <Typography.Link disabled={blockIndex === 0 && group.propBlockList.length === 1} onClick={(e) => {
-        e.stopPropagation();
-        studioModel.delBlock(block.id, group);
-      }} >
-        <DeleteOutlined />
-      </Typography.Link>
+
+      {
+        blockIndex > 0 && (
+          <Typography.Link onClick={(e) => {
+            e.stopPropagation();
+            studioModel.movePropBlock(group, blockIndex, true);
+          }}>
+            <VerticalAlignTopOutlined />
+          </Typography.Link>
+        )
+      }
+
+      {
+        blockIndex < group.propBlockList.length - 1 && (
+          <Typography.Link onClick={(e) => {
+            e.stopPropagation();
+            studioModel.movePropBlock(group, blockIndex, false);
+          }}>
+            <VerticalAlignBottomOutlined />
+          </Typography.Link>
+        )
+      }
+
+      {
+        group.propBlockList.length > 1 && (
+          <Typography.Link onClick={(e) => {
+            e.stopPropagation();
+            studioModel.delBlock(block.id, group);
+          }} >
+            <DeleteOutlined />
+          </Typography.Link>
+        )
+      }
+
       <Typography.Link onClick={(e) => {
         e.stopPropagation();
         editBlock(block);
       }}>
-        <SettingOutlined />
+        <EditOutlined />
       </Typography.Link>
     </Space>)
   }

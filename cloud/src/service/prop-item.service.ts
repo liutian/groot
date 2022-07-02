@@ -39,7 +39,7 @@ export class PropItemService {
   private async cascadeAdd(rawItem: PropItem, em: EntityManager, imagePropItem?: PropItem): Promise<{ newItem: PropItem, valueOfGroup?: PropGroup, templateBlock?: PropBlock }> {
     const block = await em.findOne(PropBlock, rawItem.blockId);
     if (!block) {
-      throw new LogicException('配置块未找到', LogicExceptionCode.NotFound);
+      throw new LogicException(`not found block id: ${rawItem.blockId}`, LogicExceptionCode.NotFound);
     }
 
     if (imagePropItem) {
@@ -147,7 +147,7 @@ export class PropItemService {
     const originItem = await em.findOne(PropItem, originId);
 
     if (!originItem) {
-      throw new LogicException('配置项未找到', LogicExceptionCode.NotFound);
+      throw new LogicException(`not found item id: ${originId}`, LogicExceptionCode.NotFound);
     }
 
     if (!origin) {
@@ -162,22 +162,14 @@ export class PropItemService {
     }
 
     const targetItem = await em.findOne(PropItem, targetId);
-    const targetOrder = targetItem.order;
-    const originOrder = originItem.order;
-    originItem.order = targetOrder;
 
-    const targetItemNext = await em.findOne(PropItem, {
-      order: { $gt: targetOrder },
-      block: originItem.block,
-    });
-
-    if (!targetItemNext) {
-      targetItem.order = targetOrder + 1000;
-    } else if (targetItemNext === originItem) {
-      targetItem.order = originOrder;
-    } else {
-      targetItem.order = (targetItemNext.order + targetOrder) / 2;
+    if (!targetItem) {
+      throw new LogicException(`not found item id:${targetId}`, LogicExceptionCode.NotFound);
     }
+
+    const order = targetItem.order;
+    targetItem.order = originItem.order;
+    originItem.order = order;
 
     await em.flush();
 

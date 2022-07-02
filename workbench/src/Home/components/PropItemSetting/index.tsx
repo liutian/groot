@@ -47,7 +47,7 @@ const PropItemSetting: React.FC = () => {
               {fields.map(({ key, name, ...restField }, index) => {
                 return <Space key={key} align="baseline">
                   <Form.Item name={[name, 'label']} {...restField} rules={[{ required: true }]}>
-                    <Input placeholder="请输入标签" />
+                    <Input placeholder="请输入名称" />
                   </Form.Item>
                   :
                   <Form.Item name={[name, 'value']} {...restField} rules={[{ required: true }]}>
@@ -68,7 +68,8 @@ const PropItemSetting: React.FC = () => {
     )
   }
 
-  return (<Modal mask={false} destroyOnClose width={450} title="配置项" visible={!!studioModel.currSettingPropItem} onOk={handleOk} onCancel={handleCancel}>
+  return (<Modal mask={false} destroyOnClose width={450} title="配置项" confirmLoading={studioModel.settingModalLoading}
+    visible={!!studioModel.currSettingPropItem} onOk={handleOk} onCancel={handleCancel}>
     <Form form={form} labelAlign="right" labelCol={{ span: 6 }} wrapperCol={{ span: 18 }} >
       <Form.Item name="label" label="名称" rules={[{ required: true }]}>
         <Input />
@@ -89,7 +90,7 @@ const PropItemSetting: React.FC = () => {
       <Form.Item dependencies={['type']} noStyle >
         {({ getFieldValue }) => {
           const type = getFieldValue('type');
-          const hasOption = ['select', 'radio', 'checkbox'].includes(type);
+          const hasOption = ['Select', 'Radio', 'Checkbox'].includes(type);
 
           return hasOption ? renderSelectFormItem() : null
         }}

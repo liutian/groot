@@ -199,42 +199,23 @@ export class PropBlockService {
     }
   }
 
-  async movePosition(originId: number, targetId?: number) {
+  async movePosition(originId: number, targetId: number) {
     const em = RequestContext.getEntityManager();
     const originBlock = await em.findOne(PropBlock, originId);
 
     if (!originBlock) {
-      return;
+      throw new LogicException(`not found block id: ${originId}`, LogicExceptionCode.NotFound);
     }
 
-    if (!targetId) {
-      const firstBlock = await em.findOne(PropBlock, { group: originBlock.group, isTemplate: false }, { orderBy: { order: 'DESC' } });
+    const targetBlock = await em.findOne(PropBlock, targetId);
 
-      originBlock.order = firstBlock ? firstBlock.order + 1000 : 1000;
-    } else {
-      const targetBlock = await em.findOne(PropBlock, targetId);
-
-      if (!targetBlock) {
-        throw new LogicException(`not found block id:${targetId}`, LogicExceptionCode.NotFound);
-      }
-
-      const targetOrder = targetBlock.order;
-      const originOrder = originBlock.order;
-      originBlock.order = targetOrder;
-
-      const targetBlockNext = await em.findOne(PropBlock, {
-        order: { $gt: targetOrder },
-        group: originBlock.group,
-      });
-
-      if (!targetBlockNext) {
-        targetBlock.order = targetOrder + 1000;
-      } else if (targetBlockNext === originBlock) {
-        targetBlock.order = originOrder;
-      } else {
-        targetBlock.order = (targetBlockNext.order + targetOrder) / 2;
-      }
+    if (!targetBlock) {
+      throw new LogicException(`not found block id:${targetId}`, LogicExceptionCode.NotFound);
     }
+
+    const order = targetBlock.order;
+    targetBlock.order = originBlock.order;
+    originBlock.order = order;
 
     await em.flush();
   }
@@ -249,7 +230,7 @@ export class PropBlockService {
     });
 
     if (!block) {
-      return;
+      throw new LogicException(`not found block id : ${blockId}`, LogicExceptionCode.NotFound);
     }
 
     const innerGroupIds: number[] = [];

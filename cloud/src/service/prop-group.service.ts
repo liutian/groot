@@ -71,7 +71,7 @@ export class PropGroupService {
     });
 
     if (!group) {
-      return;
+      throw new LogicException(`not found group id: ${groupId}`, LogicExceptionCode.NotFound);
     }
 
     const innerGroupIds = [];
@@ -133,7 +133,7 @@ export class PropGroupService {
     const originGroup = await em.findOne(PropGroup, originId);
 
     if (!originGroup) {
-      return;
+      throw new LogicException(`not found group id: ${originId}`, LogicExceptionCode.NotFound);
     }
 
     if (!targetId) {
@@ -145,6 +145,11 @@ export class PropGroupService {
       originGroup.order = firstGroup ? firstGroup.order + 1000 : 1000;
     } else {
       const targetGroup = await em.findOne(PropGroup, targetId);
+
+      if (!targetGroup) {
+        throw new LogicException(`not found group id: ${targetId}`, LogicExceptionCode.NotFound);
+      }
+
       const targetOrder = targetGroup.order;
       const originOrder = originGroup.order;
       originGroup.order = targetOrder;
