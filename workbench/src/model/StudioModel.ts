@@ -4,9 +4,13 @@ import WorkbenchModel from "./WorkbenchModel";
 
 export default class StudioModel {
   /**
-   * tab激活的分组
+   * 当前激活分组的ID
    */
   public activeGroupId?: number;
+  /**
+   * 当前激活分组是否是编辑状态
+   */
+  public activeGroupDesignMode = false;
   /**
    * 当前配置组
    */
@@ -22,7 +26,7 @@ export default class StudioModel {
 
   public propItemStack: PropItem[] = [];
 
-  public activeGroupEditMode = false;
+
 
   public workbench: WorkbenchModel;
 
@@ -31,8 +35,8 @@ export default class StudioModel {
     this.activeGroupId = this.workbench.rootGroupList[0].id;
   }
 
-  public toggleActiveGroupEditMode = () => {
-    this.activeGroupEditMode = !this.activeGroupEditMode;
+  public toggleActiveGroupDesignMode = () => {
+    this.activeGroupDesignMode = !this.activeGroupDesignMode;
   }
 
   public movePropBlock = (group: PropGroup, originIndex: number, up: boolean) => {
@@ -314,15 +318,15 @@ export default class StudioModel {
     const activeItem = this.workbench.rootGroupList.find(g => g.id === id);
     if (activeItem) {
       this.activeGroupId = id;
-      this.activeGroupEditMode = false;
+      this.activeGroupDesignMode = false;
     }
   }
 
-  public switchEditMode = () => {
+  public switchDesignMode = () => {
     this.workbench.jsonMode = false;
     this.workbench.manualMode = false;
-    if (this.workbench.stageMode) {
-      this.workbench.stageMode = false;
+    if (this.workbench.designMode) {
+      this.workbench.designMode = false;
       this.workbench.rootGroupList.forEach((group) => {
         group.propBlockList.forEach((block) => {
           const values = this.workbench.blockFormInstanceMap.get(block.id).getFieldsValue();
@@ -332,13 +336,13 @@ export default class StudioModel {
         })
       })
     } else {
-      this.workbench.stageMode = true;
+      this.workbench.designMode = true;
     }
   }
 
   public switchManualMode = () => {
     this.workbench.jsonMode = false;
-    this.workbench.stageMode = false;
+    this.workbench.designMode = false;
     if (this.workbench.manualMode) {
       this.workbench.manualMode = false;
     } else {
@@ -348,7 +352,7 @@ export default class StudioModel {
 
   public switchJSONMode = () => {
     this.workbench.manualMode = false;
-    this.workbench.stageMode = false;
+    this.workbench.designMode = false;
     if (this.workbench.jsonMode) {
       this.workbench.jsonMode = false;
     } else {

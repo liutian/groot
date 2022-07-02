@@ -27,7 +27,7 @@ function PropBlockStudio({ block, freezeSetting, templateMode, noWrapMode }: Pro
     }
 
     const renderItemSetting = () => {
-      if (!workbenchModel.stageMode || freezeSetting) return null;
+      if (!workbenchModel.designMode || freezeSetting) return null;
 
 
       return (<Space size="small">
@@ -107,7 +107,7 @@ function PropBlockStudio({ block, freezeSetting, templateMode, noWrapMode }: Pro
       </Row>
     </Form>
     {
-      templateMode || (workbenchModel.stageMode && noWrapMode) ? (
+      templateMode || (workbenchModel.designMode && noWrapMode) ? (
         <Button type="dashed" block onClick={() => {
           studioModel.showPropItemSettinngForCreate(block)
         }}>

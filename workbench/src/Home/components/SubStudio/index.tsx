@@ -2,7 +2,7 @@ import { CloseOutlined, SettingFilled, SettingOutlined } from '@ant-design/icons
 import StudioModel from '@model/StudioModel';
 import WorkbenchModel from '@model/WorkbenchModel';
 import { useModel } from '@util/robot';
-import { Button, Col, Row } from 'antd';
+import { Button } from 'antd';
 import { useEffect, useRef, useState } from 'react';
 
 import PropBlockStudio from '../PropBlockStudio';
@@ -17,7 +17,7 @@ type PropsType = {
 const SubStudio: React.FC<PropsType> = ({ item: propItem }) => {
   const [studioModel] = useModel<StudioModel>('studio');
   const [workbenchModel] = useModel<WorkbenchModel>('workbench');
-  const [templateMode, setTemplateMode] = useState(false);
+  const [designMode, setDesignMode] = useState(false);
   const templateBlock = propItem.templateBlock;
   const propGroup = propItem.valueOfGroup;
   const containerRef = useRef<HTMLDivElement>({} as any);
@@ -27,8 +27,8 @@ const SubStudio: React.FC<PropsType> = ({ item: propItem }) => {
   }, []);
 
   const switchMode = () => {
-    // 从配置转为模版模式
-    if (templateMode) {
+    // 从配置转为编辑模式
+    if (designMode) {
       studioModel.popPropItemStack(propItem, false);
     } else {
       // propGroup.propBlockList.forEach((block) => {
@@ -40,25 +40,25 @@ const SubStudio: React.FC<PropsType> = ({ item: propItem }) => {
       // })
     }
 
-    setTemplateMode(mode => !mode);
+    setDesignMode(mode => !mode);
   }
 
   const renderContent = () => {
     if (propItem.type === 'List') {
-      if (templateMode) {
+      if (designMode) {
         return <PropBlockStudio templateMode block={templateBlock} />;
       } else {
         return <PropGroupStudio templateBlock={templateBlock} group={propGroup} />;
       }
     } else if (propItem.type === 'Item') {
-      return <PropBlockStudio noWrapMode block={propItem.directBlock!} />;
+      return <PropBlockStudio noWrapMode block={propItem.directBlock} />;
     } else {
       return null;
     }
   }
 
   return <div className={styles.container} ref={containerRef}>
-    <div className={`${styles.header} ${templateMode ? styles.templateMode : ''} clearfix`}>
+    <div className={`${styles.header} ${designMode ? styles.templateMode : ''} clearfix`}>
       <div className="pull-left">
         <Button type="link" icon={<CloseOutlined />} onClick={() => studioModel.popPropItemStack(propItem, true)}></Button>
       </div>
@@ -67,8 +67,8 @@ const SubStudio: React.FC<PropsType> = ({ item: propItem }) => {
       </div>
       <div className="pull-right">
         {
-          propItem.type === 'List' && workbenchModel.stageMode &&
-          (<Button type="link" icon={templateMode ? <SettingFilled /> : <SettingOutlined />} onClick={() => switchMode()}></Button>)
+          propItem.type === 'List' && workbenchModel.designMode &&
+          (<Button type="link" icon={designMode ? <SettingFilled /> : <SettingOutlined />} onClick={() => switchMode()}></Button>)
         }
       </div>
     </div>

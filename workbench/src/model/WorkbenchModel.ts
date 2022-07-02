@@ -23,7 +23,7 @@ export default class WorkbenchModel {
   /**
    * 组件设计模式
    */
-  public stageMode = false;
+  public designMode = false;
   /**
     * 编码配置模式
     */
@@ -37,14 +37,14 @@ export default class WorkbenchModel {
 
   public currEnv: 'dev' | 'qa' | 'pl' | 'online' = 'dev';
 
-  public init = (component: Component, iframeRef: { current: HTMLIFrameElement }, stageMode: boolean) => {
+  public init = (component: Component, iframeRef: { current: HTMLIFrameElement }, designMode: boolean) => {
     this.loadComponent = 'over';
     this.iframeRef = iframeRef;
     this.component = component;
-    this.stageMode = stageMode
+    this.designMode = designMode
     this.buildPropTree();
 
-    if (!stageMode) {
+    if (!designMode) {
       const releaseId = this.component.release.id;
       const project = this.component.project;
       if (releaseId === project.devRelease.id) {

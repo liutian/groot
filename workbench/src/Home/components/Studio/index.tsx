@@ -61,13 +61,13 @@ function Studio() {
     const list = workbenchModel.rootGroupList.map((group) => {
       let content = <PropGroupStudio group={group} />;
       if (group.struct === 'List') {
-        if (studioModel.activeGroupEditMode) {
-          content = <PropBlockStudio templateMode block={group.templateBlock!} />
+        if (studioModel.activeGroupDesignMode) {
+          content = <PropBlockStudio templateMode block={group.templateBlock} />
         } else {
-          content = <PropGroupStudio templateBlock={group.templateBlock!} group={group} />;
+          content = <PropGroupStudio templateBlock={group.templateBlock} group={group} />;
         }
       } else if (group.struct === 'Item') {
-        content = <PropBlockStudio noWrapMode block={group.propBlockList[0]!} />;
+        content = <PropBlockStudio noWrapMode block={group.propBlockList[0]} />;
       }
 
       return (<Tabs.TabPane key={group.id} tab={renderTabBarItem(group)} >
@@ -77,7 +77,7 @@ function Studio() {
 
     return <>
       {list}
-      {workbenchModel.stageMode && <Tabs.TabPane key="__add" tab={<Typography.Link><PlusOutlined /></Typography.Link>}></Tabs.TabPane>}
+      {workbenchModel.designMode && <Tabs.TabPane key="__add" tab={<Typography.Link><PlusOutlined /></Typography.Link>}></Tabs.TabPane>}
     </>
   }
 

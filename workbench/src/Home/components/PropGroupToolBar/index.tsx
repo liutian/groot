@@ -19,7 +19,7 @@ const PropGroupToolBar: React.FC = () => {
     setListStructGroup(group.struct === 'List');
   }, [studioModel.activeGroupId]);
 
-  if (!group || !workbenchModel.stageMode) {
+  if (!group || !workbenchModel.designMode) {
     return null;
   }
 
@@ -42,8 +42,8 @@ const PropGroupToolBar: React.FC = () => {
 
       {
         listStructGroup && (
-          <Typography.Link onClick={() => studioModel.toggleActiveGroupEditMode()}>
-            {studioModel.activeGroupEditMode ? <SettingFilled /> : <SettingOutlined />}
+          <Typography.Link onClick={() => studioModel.toggleActiveGroupDesignMode()}>
+            {studioModel.activeGroupDesignMode ? <SettingFilled /> : <SettingOutlined />}
           </Typography.Link>
         )
       }

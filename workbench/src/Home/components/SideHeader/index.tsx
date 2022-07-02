@@ -107,7 +107,7 @@ const SideHeader: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
   }
 
   const renderCurrRelease = () => {
-    if (workbenchModel.stageMode) {
+    if (workbenchModel.designMode) {
       return null;
     }
 

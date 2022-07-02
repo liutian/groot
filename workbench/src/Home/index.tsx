@@ -22,10 +22,10 @@ const Home = () => {
 
   useEffect(() => {
     let url = `${serverPath}/component`;
-    const stageMode = searchParams.has('stage');
+    const designMode = searchParams.has('design');
 
     // 确定请求地址
-    if (stageMode) {
+    if (designMode) {
       url = `${url}/prototype?id=${componentId}&versionId=${searchParams.get('versionId') || ''}`;
     } else {
       url = `${url}/instance?id=${componentId}&releaseId=${searchParams.get('releaseId') || ''}`;
@@ -33,7 +33,7 @@ const Home = () => {
 
     // 获取组件信息
     fetch(url).then(r => r.json()).then(({ data }: { data: Component }) => {
-      workbenchModel.init(data, iframeRef, stageMode);
+      workbenchModel.init(data, iframeRef, designMode);
       studioModel.init(workbenchModel);
       // todo
       // setPageName(`groot::{"path": "${workbenchModel.component.instance.path}","name":"${workbenchModel.component.name}"}`);
