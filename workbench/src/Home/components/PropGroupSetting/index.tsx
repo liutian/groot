@@ -40,7 +40,7 @@ const PropGroupSetting: React.FC = () => {
         <Radio.Group >
           <Radio value="Default">默认</Radio>
           <Radio value="List">列表</Radio>
-          <Radio value="Map">键值对</Radio>
+          <Radio value="Item">配置项</Radio>
         </Radio.Group>
       </Form.Item>
       <Form.Item label="属性映射" name="propKey">

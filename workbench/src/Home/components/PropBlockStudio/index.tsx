@@ -87,7 +87,7 @@ function PropBlockStudio({ block, freezeSetting, templateMode, noWrapMode }: Pro
         列表{item.valueOfGroup.propBlockList.length}
       </Button>
     } else if (item.type === 'Item') {
-      return <Button block onClick={() => { studioModel.pushPropItemStack(item) }}>键值</Button>
+      return <Button block onClick={() => { studioModel.pushPropItemStack(item) }}>配置项</Button>
     }
 
     return <>not found item</>
