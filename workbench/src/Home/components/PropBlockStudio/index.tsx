@@ -82,10 +82,12 @@ function PropBlockStudio({ block, freezeSetting, templateMode, noWrapMode }: Pro
       return <Radio.Group options={item.optionList} />
     } else if (item.type === 'Checkbox') {
       return <Checkbox.Group options={item.optionList} />
-    } else if (item.type === 'List' || item.type === 'Item') {
-      return <Button block onClick={() => {
-        studioModel.pushPropItemStack(item)
-      }}>列表{item.valueOfGroup.propBlockList.length}</Button>
+    } else if (item.type === 'List') {
+      return <Button block onClick={() => { studioModel.pushPropItemStack(item) }}>
+        列表{item.valueOfGroup.propBlockList.length}
+      </Button>
+    } else if (item.type === 'Item') {
+      return <Button block onClick={() => { studioModel.pushPropItemStack(item) }}>键值</Button>
     }
 
     return <>not found item</>

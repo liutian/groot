@@ -90,7 +90,7 @@ const PropGroupStudio: React.FC<PropsType> = ({ group, templateBlock }) => {
           <Button disabled={!templateBlock?.propItemList.length} type="primary" ghost block onClick={() => {
             studioModel.addBlockFromTemplate(group.id)
           }}>
-            复制模版
+            复制配置块
           </Button>
         )
       }
