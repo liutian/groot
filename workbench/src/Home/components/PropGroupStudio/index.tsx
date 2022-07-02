@@ -5,6 +5,8 @@ import { CaretRightOutlined, DeleteOutlined, PlusOutlined, SettingOutlined, Vert
 import PropBlockStudio from "../PropBlockStudio";
 import WorkbenchModel from "@model/WorkbenchModel";
 
+import styles from './index.module.less';
+
 type PropsType = {
   group: PropGroup,
   templateBlock?: PropBlock
@@ -72,30 +74,28 @@ const PropGroupStudio: React.FC<PropsType> = ({ group, templateBlock }) => {
         })
       }
     </Collapse>
-    {
-      workbenchModel.designMode && !templateBlock ? (
-        <div style={{ padding: 'var(--studio-padding-x)' }}>
+    <div className={styles.footerAction}>
+      {
+        workbenchModel.designMode && !templateBlock && (
           <Button type="primary" ghost block onClick={() => {
             studioModel.showPropBlockSettinngForCreate(group);
           }}>
             添加配置块
           </Button>
-        </div>
-      ) : null
-    }
+        )
+      }
 
-    {
-      templateBlock ? (
-        <div style={{ padding: '16px 0 0' }}>
-          {/* 内嵌模式  */}
+      {
+        templateBlock && (
           <Button disabled={!templateBlock?.propItemList.length} type="primary" ghost block onClick={() => {
             studioModel.addBlockFromTemplate(group.id)
           }}>
             复制模版
           </Button>
-        </div>
-      ) : null
-    }
+        )
+      }
+    </div>
+
   </>)
 };
 
