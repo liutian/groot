@@ -63,19 +63,19 @@ export default class WorkbenchModel {
    * 配置项变动通知iframe更新
    */
   notifyIframe = (content: string) => {
-    const props = content;
+    // const props = content;
 
-    this.iframeRef.current.contentWindow.postMessage({
-      type: 'refresh',
-      path: this.component.instance.path,
-      metadata: {
-        moduleName: this.component.componentName + '_module',
-        packageName: this.component.packageName,
-        componentName: this.component.componentName,
-        // todo
-        props
-      }
-    }, '*');
+    // this.iframeRef.current.contentWindow.postMessage({
+    //   type: 'refresh',
+    //   path: this.component.instance.path,
+    //   metadata: {
+    //     moduleName: this.component.componentName + '_module',
+    //     packageName: this.component.packageName,
+    //     componentName: this.component.componentName,
+    //     // todo
+    //     props
+    //   }
+    // }, '*');
   }
 
   // todo
