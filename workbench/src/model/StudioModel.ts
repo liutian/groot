@@ -174,6 +174,8 @@ export default class StudioModel {
         }
       ).then(r => r.json()).then((result: { data: PropGroup }) => {
         const groupDB = result.data;
+        // todo
+        groupDB.expandBlockIdList = [];
         this.workbench.rootGroupList.push(groupDB);
         this.activeGroupId = groupDB.id;
 
@@ -215,6 +217,8 @@ export default class StudioModel {
         body: JSON.stringify(newBlock)
       }).then(r => r.json()).then((result: { data: PropBlock }) => {
         group.propBlockList.push(result.data);
+        // todo
+        group.expandBlockIdList.push(result.data.id);
 
         this.settingModalLoading = false;
         this.currSettingPropBlock = undefined;

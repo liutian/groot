@@ -29,6 +29,7 @@ type PropGroup = {
 
   // 分割线下面时界面属性
   highlight?: boolean,
+  expandBlockIdList: number[]
 } & Omit<import("../../cloud/src/entities/PropGroup").PropGroup, 'propBlockList' | 'templateBlock'>;
 
 /**

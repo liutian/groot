@@ -137,8 +137,10 @@ export default class WorkbenchModel {
 
     if (group.propBlockList?.length) {
       group.propBlockList.push(...propBlockList);
+      group.expandBlockIdList.push(...propBlockList.map(b => b.id));
     } else {
       group.propBlockList = propBlockList;
+      group.expandBlockIdList = propBlockList.map(b => b.id);
     }
 
     const templateBlock = blocks.find(b => b.id === group.templateBlockId);

@@ -6,6 +6,7 @@ import PropBlockStudio from "../PropBlockStudio";
 import WorkbenchModel from "@model/WorkbenchModel";
 
 import styles from './index.module.less';
+import { useState } from "react";
 
 type PropsType = {
   group: PropGroup,
@@ -15,11 +16,21 @@ type PropsType = {
 const PropGroupStudio: React.FC<PropsType> = ({ group, templateBlock }) => {
   const [studioModel, updateAction] = useModel<StudioModel>('studio');
   const [workbenchModel] = useModel<WorkbenchModel>('workbench');
+  const [, refresh] = useState(0);
 
   const editBlock = (block: PropBlock) => {
     updateAction(() => {
       studioModel.currSettingPropBlock = JSON.parse(JSON.stringify(block));
     })
+  }
+
+  const onChangeCollapse = (key: string | string[]) => {
+    if (Array.isArray(key)) {
+      group.expandBlockIdList = key.map(k => +k);
+    } else {
+      group.expandBlockIdList = [+key];
+    }
+    refresh(c => ++c);
   }
 
   const renderBlockSetting = (block: PropBlock, blockIndex: number) => {
@@ -75,9 +86,8 @@ const PropGroupStudio: React.FC<PropsType> = ({ group, templateBlock }) => {
     </Space>)
   }
 
-
   return (<>
-    <Collapse defaultActiveKey={group.propBlockList.map(b => b.id)} bordered={false}
+    <Collapse activeKey={group.expandBlockIdList} onChange={onChangeCollapse} bordered={false}
       expandIconPosition="end" expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}>
       {
         group.propBlockList.map((block, blockIndex) => {
