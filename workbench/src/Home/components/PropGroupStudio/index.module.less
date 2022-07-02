@@ -1,3 +1,13 @@
+.blockContainer {
+  :global(.ant-collapse-extra) {
+    opacity: 0;
+  }
+
+  &:hover :global(.ant-collapse-extra) {
+    opacity: 1;
+  }
+}
+
 .footerAction {
   padding: var(--studio-padding-y) var(--studio-padding-x);
 }

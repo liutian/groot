@@ -25,7 +25,7 @@ const PropGroupStudio: React.FC<PropsType> = ({ group, templateBlock }) => {
   const renderBlockSetting = (block: PropBlock, blockIndex: number) => {
     if (!workbenchModel.designMode || templateBlock) return null;
 
-    return (<Space size="small">
+    return (<Space size="small" >
       <Typography.Link onClick={(e) => {
         e.stopPropagation();
         studioModel.showPropItemSettinngForCreate(block);
@@ -81,7 +81,7 @@ const PropGroupStudio: React.FC<PropsType> = ({ group, templateBlock }) => {
       expandIconPosition="end" expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}>
       {
         group.propBlockList.map((block, blockIndex) => {
-          return (<Collapse.Panel key={block.id} extra={renderBlockSetting(block, blockIndex)}
+          return (<Collapse.Panel key={block.id} className={styles.blockContainer} extra={renderBlockSetting(block, blockIndex)}
             header={<>
               {block.name}<i className="highlight" hidden={!block.highlight} />
             </>} >
