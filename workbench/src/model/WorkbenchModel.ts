@@ -225,14 +225,14 @@ export default class WorkbenchModel {
     const blockList = group.propBlockList;
     for (let index = 0; index < blockList.length; index++) {
       const block = blockList[index];
-      if (type === 'block') {
+      if (type === 'block' && block.id === id) {
         return block as any as T;
       }
 
       const itemList = block.propItemList;
       for (let itemIndex = 0; itemIndex < itemList.length; itemIndex++) {
         const item = itemList[itemIndex];
-        if (type === 'item') {
+        if (type === 'item' && item.id === id) {
           return item as any as T;
         }
 
