@@ -1,5 +1,6 @@
 import { RequestContext } from '@mikro-orm/core';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { LogicException, LogicExceptionCode } from 'config/logic.exception';
 import { PropBlock } from 'entities/PropBlock';
 import { PropGroup } from 'entities/PropGroup';
 import { PropItemType } from 'entities/PropItem';
@@ -26,8 +27,8 @@ export class PropGroupService {
     const newGroup = em.create(PropGroup, {
       ...pick(rawGroup, ['name', 'propKey', 'struct']),
       componentVersion: rawGroup.componentVersionId,
-      root,
       component: rawGroup.componentId,
+      root,
       order: (firstGroup ? firstGroup.order : 0) + 1000
     });
 
@@ -117,6 +118,10 @@ export class PropGroupService {
     const em = RequestContext.getEntityManager();
 
     const group = await em.findOne(PropGroup, rawGroup.id);
+
+    if (!group) {
+      throw new LogicException(`not found group id: ${rawGroup.id}`, LogicExceptionCode.NotFound);
+    }
 
     pick(rawGroup, ['name', 'propKey'], group);
 

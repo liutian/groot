@@ -31,13 +31,14 @@ const PropGroupSetting: React.FC = () => {
     }
   }, [studioModel.currSettingPropGroup]);
 
-  return (<Modal mask={false} width={400} title="配置组" visible={!!studioModel.currSettingPropGroup} onOk={handleOk} onCancel={handleCancel}>
+  return (<Modal mask={false} width={400} title="配置组" confirmLoading={studioModel.settingModalLoading}
+    visible={!!studioModel.currSettingPropGroup} onOk={handleOk} onCancel={handleCancel}>
     <Form form={form} labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
       <Form.Item name="name" label="名称" rules={[{ required: true }]}>
         <Input ref={inputRef} />
       </Form.Item>
       <Form.Item name="struct" label="结构" rules={[{ required: true }]}>
-        <Radio.Group >
+        <Radio.Group disabled={!!studioModel.currSettingPropGroup?.id}>
           <Radio value="Default">默认</Radio>
           <Radio value="List">列表</Radio>
           <Radio value="Item">配置项</Radio>

@@ -17,7 +17,7 @@ const PropGroupToolBar: React.FC = () => {
     const group = workbenchModel.getPropGroup(studioModel.activeGroupId);
     setGroup(group);
     setListStructGroup(group.struct === 'List');
-  }, [studioModel.activeGroupId]);
+  }, [studioModel.activeGroupId, studioModel.settingModalLoading]);
 
   if (!group || !workbenchModel.designMode) {
     return null;

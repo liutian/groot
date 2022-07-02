@@ -23,7 +23,7 @@ export class PropBlockService {
 
     const group = await em.findOne(PropGroup, rawBlock.groupId);
     if (!group) {
-      return null;
+      throw new LogicException(`not found group id: ${rawBlock.groupId}`, LogicExceptionCode.NotFound);
     }
 
     const firstBlock = await em.findOne(PropBlock, { group, order: { $gt: 0 } }, { orderBy: { order: 'DESC' } });
@@ -31,9 +31,9 @@ export class PropBlockService {
 
     const newBlock = em.create(PropBlock, {
       ...pick(rawBlock, ['name', 'propKey', 'rootPropKey', 'isTemplate']),
-      group,
       component: group.component,
       componentVersion: group.componentVersion,
+      group,
       order
     });
 

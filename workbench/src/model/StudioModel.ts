@@ -26,7 +26,7 @@ export default class StudioModel {
 
   public propItemStack: PropItem[] = [];
 
-
+  public settingModalLoading = false;
 
   public workbench: WorkbenchModel;
 
@@ -132,10 +132,11 @@ export default class StudioModel {
   }
 
   public updateOrAddPropGroup = (group: PropGroup) => {
-    const newGroup = Object.assign(this.currSettingPropGroup!, group);
+    const newGroup = Object.assign(this.currSettingPropGroup, group);
     newGroup.componentId = this.workbench.component.id;
     newGroup.componentVersionId = this.workbench.component.version.id;
 
+    this.settingModalLoading = true;
     if (newGroup.id) {
       fetch(`${serverPath}/group/update`, {
         method: 'POST',
@@ -146,6 +147,8 @@ export default class StudioModel {
       }).then(r => r.json()).then(() => {
         let groupIndex = this.workbench.rootGroupList.findIndex(g => g.id === newGroup.id);
         this.workbench.rootGroupList.splice(groupIndex, 1, newGroup);
+        this.settingModalLoading = false;
+        this.currSettingPropGroup = undefined;
       })
     } else {
       fetch(`${serverPath}/group/add`,
@@ -166,10 +169,11 @@ export default class StudioModel {
           groupDB.templateBlock = groupDB.propBlockList.find(b => b.id === groupDB.templateBlockId);
           groupDB.propBlockList.length = 0;
         }
+
+        this.settingModalLoading = false;
+        this.currSettingPropGroup = undefined;
       })
     }
-
-    this.currSettingPropGroup = undefined;
   }
 
   public updateOrAddPropBlock = (block: PropBlock) => {
