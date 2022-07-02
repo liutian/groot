@@ -55,6 +55,13 @@ const PropGroupStudio: React.FC<PropsType> = ({ group, templateBlock }) => {
         )
       }
 
+      <Typography.Link onClick={(e) => {
+        e.stopPropagation();
+        editBlock(block);
+      }}>
+        <EditOutlined />
+      </Typography.Link>
+
       {
         group.propBlockList.length > 1 && (
           <Typography.Link onClick={(e) => {
@@ -65,13 +72,6 @@ const PropGroupStudio: React.FC<PropsType> = ({ group, templateBlock }) => {
           </Typography.Link>
         )
       }
-
-      <Typography.Link onClick={(e) => {
-        e.stopPropagation();
-        editBlock(block);
-      }}>
-        <EditOutlined />
-      </Typography.Link>
     </Space>)
   }
 

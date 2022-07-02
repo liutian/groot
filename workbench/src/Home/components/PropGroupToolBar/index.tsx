@@ -26,16 +26,6 @@ const PropGroupToolBar: React.FC = () => {
   return <div className={styles.container}>
     <Space >
 
-      {
-        workbenchModel.rootGroupList.length > 1 && (
-          <Typography.Link onClick={() => {
-            studioModel.delGroup(group.id);
-          }}>
-            <DeleteOutlined />
-          </Typography.Link>
-        )
-      }
-
       <Typography.Link onClick={() => {
         updateAction(() => {
           studioModel.currSettingPropGroup = JSON.parse(JSON.stringify(group));
@@ -48,6 +38,16 @@ const PropGroupToolBar: React.FC = () => {
         listStructGroup && (
           <Typography.Link onClick={() => studioModel.toggleActiveGroupDesignMode()}>
             {studioModel.activeGroupDesignMode ? <SettingFilled /> : <SettingOutlined />}
+          </Typography.Link>
+        )
+      }
+
+      {
+        workbenchModel.rootGroupList.length > 1 && (
+          <Typography.Link onClick={() => {
+            studioModel.delGroup(group.id);
+          }}>
+            <DeleteOutlined />
           </Typography.Link>
         )
       }

@@ -52,6 +52,13 @@ function PropBlockStudio({ block, freezeSetting, templateMode, noWrapMode }: Pro
           )
         }
 
+        <Typography.Link onClick={(e) => {
+          e.preventDefault();
+          editPropItem();
+        }}>
+          <EditOutlined />
+        </Typography.Link>
+
         {
           block.propItemList.length > 1 && (
             <Typography.Link onClick={(e) => {
@@ -62,13 +69,6 @@ function PropBlockStudio({ block, freezeSetting, templateMode, noWrapMode }: Pro
             </Typography.Link>
           )
         }
-
-        <Typography.Link onClick={(e) => {
-          e.preventDefault();
-          editPropItem();
-        }}>
-          <EditOutlined />
-        </Typography.Link>
       </Space>)
     }
 
