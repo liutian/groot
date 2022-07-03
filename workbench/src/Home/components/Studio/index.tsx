@@ -61,7 +61,7 @@ function Studio() {
     const list = workbenchModel.rootGroupList.map((group) => {
       let content = <PropGroupStudio group={group} />;
       if (group.struct === 'List') {
-        if (studioModel.activeGroupDesignMode) {
+        if (group.templateBlockDesignMode) {
           content = <PropBlockStudio templateMode block={group.templateBlock} />
         } else {
           content = <PropGroupStudio templateBlock={group.templateBlock} group={group} />;

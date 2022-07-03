@@ -10,13 +10,13 @@ import styles from './index.module.less';
 const PropGroupToolBar: React.FC = () => {
   const [studioModel, updateAction] = useModel<StudioModel>('studio');
   const [workbenchModel] = useModel<WorkbenchModel>('workbench');
-  const [listStructGroup, setListStructGroup] = useState(false);
+  const [groupListStruct, setGroupListStruct] = useState(false);
   const [group, setGroup] = useState<PropGroup>();
 
   useEffect(() => {
     const group = workbenchModel.getPropGroup(studioModel.activeGroupId);
     setGroup(group);
-    setListStructGroup(group.struct === 'List');
+    setGroupListStruct(group.struct === 'List');
   }, [studioModel.activeGroupId, studioModel.settingModalLoading]);
 
   if (!group || !workbenchModel.designMode) {
@@ -35,9 +35,9 @@ const PropGroupToolBar: React.FC = () => {
       </Typography.Link>
 
       {
-        listStructGroup && (
-          <Typography.Link onClick={() => studioModel.toggleActiveGroupDesignMode()}>
-            {studioModel.activeGroupDesignMode ? <SettingFilled /> : <SettingOutlined />}
+        groupListStruct && (
+          <Typography.Link onClick={() => studioModel.toggleTemplateBlockDesignMode(group)}>
+            {group.templateBlockDesignMode ? <SettingFilled /> : <SettingOutlined />}
           </Typography.Link>
         )
       }

@@ -109,6 +109,7 @@ export class PropItemService {
         newItem.valueOfGroup = valueOfGroup;
         valueOfGroup.relativeItem = newItem;
         newItem.directBlock = valueOfGroup.propBlockList[0];
+        newItem.directBlock.relativeItem = newItem;
       }
 
       await em.flush();

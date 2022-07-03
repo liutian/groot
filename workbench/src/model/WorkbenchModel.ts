@@ -220,6 +220,11 @@ export default class WorkbenchModel {
     }
 
     const blockList = group.propBlockList;
+
+    if (group.struct === 'List') {
+      blockList.push(group.templateBlock);
+    }
+
     for (let index = 0; index < blockList.length; index++) {
       const block = blockList[index];
       if (type === 'block' && block.id === id) {

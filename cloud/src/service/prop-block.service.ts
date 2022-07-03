@@ -58,11 +58,13 @@ export class PropBlockService {
         ]
       });
 
-      if (!group || !group.templateBlock) {
+      if (!group) {
         throw new LogicException(`not found groupId:${groupId}`, LogicExceptionCode.NotFound);
+      } else if (!group.templateBlock) {
+        throw new LogicException(`templateBlock not exists groupId: ${groupId}`, LogicExceptionCode.NotFound);
       }
 
-      await this.shallowAddFromTemplate(group, group.templateBlock, em, groupIdList, blockIdList, itemIdList);
+      await this.shallowCloneFromTemplateBlock(group, group.templateBlock, em, groupIdList, blockIdList, itemIdList);
 
       await em.commit();
 
@@ -119,7 +121,10 @@ export class PropBlockService {
     }
   }
 
-  private async shallowAddFromTemplate(group: PropGroup, copyBlock: PropBlock, em: EntityManager, groupIdList: number[], blockIdList: number[], itemIdList: number[]) {
+  /**
+   * 从分组模版中浅克隆
+   */
+  private async shallowCloneFromTemplateBlock(group: PropGroup, cloneBlock: PropBlock, em: EntityManager, groupIdList: number[], blockIdList: number[], itemIdList: number[]) {
 
     const childrenBlock = await em.find(PropBlock, { group, isTemplate: false }, { orderBy: { order: 'DESC' } });
     const newBlock = em.create(PropBlock, pick(group, [
@@ -130,71 +135,107 @@ export class PropBlockService {
     newBlock.relativeItem = group.relativeItem;
     newBlock.order = childrenBlock.length ? childrenBlock[0].order + 1000 : 1000;
     newBlock.group = group;
-    if (copyBlock.imagePropBlock) {
-      newBlock.imagePropBlock = copyBlock.imagePropBlock;
+    if (cloneBlock.imagePropBlock) {
+      newBlock.imagePropBlock = cloneBlock.imagePropBlock;
     } else {
-      newBlock.imagePropBlock = copyBlock;
+      newBlock.imagePropBlock = cloneBlock;
     }
     await em.flush();
     blockIdList.push(newBlock.id);
 
-    const copyItemList = copyBlock.propItemList.getItems();
+    const copyItemList = cloneBlock.propItemList.getItems();
     for (let itemIndex = 0; itemIndex < copyItemList.length; itemIndex++) {
       const copyItem = copyItemList[itemIndex];
-      const newItem = em.create(PropItem, pick(copyItem, [
-        'label', 'propKey', 'type', 'defaultValue', 'span', 'componentVersion', 'component'
-      ]));
+      await this.shallowCloneFromTemplateItem(group, newBlock, copyItem, em, groupIdList, blockIdList, itemIdList);
+    }
 
-      newItem.block = newBlock;
-      newItem.order = (itemIndex + 1) * 1000;
-      newItem.group = group;
-      if (copyItem.imagePropItem) {
-        newItem.imagePropItem = copyItem.imagePropItem;
-      } else {
-        newItem.imagePropItem = copyItem;
+    return newBlock;
+  }
+
+  private async shallowCloneFromTemplateItem(group: PropGroup, newBlock: PropBlock, copyItem: PropItem, em: EntityManager, groupIdList: number[], blockIdList: number[], itemIdList: number[]) {
+    const newItem = em.create(PropItem, pick(copyItem, [
+      'label', 'propKey', 'type', 'defaultValue', 'span', 'componentVersion', 'component', 'order'
+    ]));
+
+    newItem.block = newBlock;
+    newItem.group = group;
+    if (copyItem.imagePropItem) {
+      newItem.imagePropItem = copyItem.imagePropItem;
+    } else {
+      newItem.imagePropItem = copyItem;
+    }
+
+    const copyOptionList = copyItem.optionList.getItems();
+    for (let optionIndex = 0; optionIndex < copyOptionList.length; optionIndex++) {
+      const copyOption = copyOptionList[optionIndex];
+      const newOption = em.create(PropValueOption, pick(copyOption, ['label', 'value', 'componentVersion', 'component']));
+      newOption.propItem = newItem;
+    }
+    await em.flush();
+    itemIdList.push(newItem.id);
+
+    if (newItem.type === PropItemType.LIST) {
+      if (!copyItem.templateBlock) {
+        throw new LogicException(`templateBlock not exists itemId: ${newItem.id}`, LogicExceptionCode.NotFound);
       }
 
-      const copyOptionList = copyItem.optionList.getItems();
-      for (let optionIndex = 0; optionIndex < copyOptionList.length; optionIndex++) {
-        const copyOption = copyOptionList[optionIndex];
-        const newOption = em.create(PropValueOption, pick(copyOption, ['label', 'value', 'componentVersion', 'component']));
-        newOption.propItem = newItem;
+      const innnerTemplateBlock = await em.findOne(PropBlock, copyItem.templateBlock,
+        { populate: ['propItemList.optionList'] }
+      );
+
+      if (!innnerTemplateBlock) {
+        throw new LogicException(`not found templateBlock id:${copyItem.templateBlock.id}`, LogicExceptionCode.NotFound);
       }
+
+      const valueOfGroup = em.create(PropGroup, {
+        name: '关联分组',
+        root: false,
+        componentVersion: newItem.componentVersion,
+        component: newItem.component,
+        relativeItem: newItem,
+        templateBlock: innnerTemplateBlock,
+        order: 0,
+        struct: 'List'
+      });
+      newItem.valueOfGroup = valueOfGroup;
+      newItem.templateBlock = innnerTemplateBlock;
       await em.flush();
-      itemIdList.push(newItem.id);
+      groupIdList.push(valueOfGroup.id);
 
-      if (newItem.type === PropItemType.LIST) {
-        const innnerTemplateBlock = await em.findOne(PropBlock, copyItem.templateBlock,
-          { populate: ['propItemList.optionList'] }
-        );
+      const innerChildrenBlock = await em.find(PropBlock,
+        { group: copyItem.valueOfGroup, isTemplate: false },
+        { populate: ['propItemList.optionList'] }
+      );
 
-        if (!innnerTemplateBlock) {
-          throw new LogicException(`not found block id:${copyItem.templateBlock!.id}`, LogicExceptionCode.NotFound);
-        }
+      for (let innerBlockIndex = 0; innerBlockIndex < innerChildrenBlock.length; innerBlockIndex++) {
+        const innnerBlock = innerChildrenBlock[innerBlockIndex];
+        await this.shallowCloneFromTemplateBlock(valueOfGroup, innnerBlock, em, groupIdList, blockIdList, itemIdList);
+      }
+    } else if (newItem.type === PropItemType.ITEM) {
+      const valueOfGroup = em.create(PropGroup, {
+        name: '关联分组',
+        root: false,
+        componentVersion: newItem.componentVersion,
+        component: newItem.component,
+        relativeItem: newItem,
+        order: 0,
+        struct: 'Item'
+      });
+      newItem.valueOfGroup = valueOfGroup;
+      await em.flush();
+      groupIdList.push(valueOfGroup.id);
 
-        const valueOfGroup = em.create(PropGroup, {
-          name: '关联分组',
-          root: false,
-          componentVersion: newItem.componentVersion,
-          component: newItem.component,
-          relativeItem: newItem,
-          templateBlock: innnerTemplateBlock,
-          order: 0
+      if (copyItem.directBlock) {
+        const directBlock = await em.findOne(PropBlock, copyItem.directBlock, {
+          populate: ['propItemList.optionList']
         });
-        newItem.valueOfGroup = valueOfGroup;
-        newItem.templateBlock = innnerTemplateBlock;
-        await em.flush();
-        groupIdList.push(valueOfGroup.id);
-
-        const innerChildrenBlock = await em.find(PropBlock,
-          { group: copyItem.valueOfGroup, isTemplate: false },
-          { populate: ['propItemList.optionList'] }
-        );
-
-        for (let innerBlockIndex = 0; innerBlockIndex < innerChildrenBlock.length; innerBlockIndex++) {
-          const innnerBlock = innerChildrenBlock[innerBlockIndex];
-          await this.shallowAddFromTemplate(valueOfGroup, innnerBlock, em, groupIdList, blockIdList, itemIdList);
+        if (!directBlock) {
+          throw new LogicException(`not found directBlock copyItem:${copyItem.id}`, LogicExceptionCode.NotFound);
         }
+
+        const newDirectBlock = await this.shallowCloneFromTemplateBlock(valueOfGroup, directBlock, em, groupIdList, blockIdList, itemIdList);
+        newItem.directBlock = newDirectBlock;
+        await em.flush();
       }
     }
   }

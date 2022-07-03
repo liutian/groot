@@ -8,10 +8,6 @@ export default class StudioModel {
    */
   public activeGroupId?: number;
   /**
-   * 当前激活分组是否是编辑状态
-   */
-  public activeGroupDesignMode = false;
-  /**
    * 当前配置组
    */
   public currSettingPropGroup?: PropGroup;
@@ -35,8 +31,16 @@ export default class StudioModel {
     this.activeGroupId = this.workbench.rootGroupList[0].id;
   }
 
-  public toggleActiveGroupDesignMode = () => {
-    this.activeGroupDesignMode = !this.activeGroupDesignMode;
+  public toggleTemplateBlockDesignMode = (group: PropGroup) => {
+    group.templateBlockDesignMode = !group.templateBlockDesignMode;
+    if (group.root && this.propItemStack.length) {
+      this.popPropItemStack(this.propItemStack[0]);
+    } else {
+      const index = this.propItemStack.findIndex(i => i.valueOfGroupId === group.id);
+      if (index !== -1 && index < this.propItemStack.length - 1) {
+        this.popPropItemStack(this.propItemStack[index + 1]);
+      }
+    }
   }
 
   public movePropBlock = (group: PropGroup, originIndex: number, up: boolean) => {
@@ -164,15 +168,13 @@ export default class StudioModel {
         this.currSettingPropGroup = undefined;
       })
     } else {
-      fetch(`${serverPath}/group/add`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(newGroup)
-        }
-      ).then(r => r.json()).then((result: { data: PropGroup }) => {
+      fetch(`${serverPath}/group/add`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(newGroup)
+      }).then(r => r.json()).then((result: { data: PropGroup }) => {
         const groupDB = result.data;
         // todo
         groupDB.expandBlockIdList = [];
@@ -281,7 +283,7 @@ export default class StudioModel {
         body: JSON.stringify(newItem)
       }).then(r => r.json()).then((result: { data: { newItem: PropItem, valueOfGroup: PropGroup, templateBlock: PropBlock }[] }) => {
         for (let index = 0; index < result.data.length; index++) {
-          const data = result.data[index]!;
+          const data = result.data[index];
           this.addPropItemFn(data);
         }
 
@@ -290,9 +292,9 @@ export default class StudioModel {
       })
     }
 
-    setTimeout(() => {
-      this.workbench.productStudioData();
-    }, 100)
+    // setTimeout(() => {
+    //   this.workbench.productStudioData();
+    // }, 100)
   }
 
   private addPropItemFn = (data: { newItem: PropItem, valueOfGroup: PropGroup, templateBlock: PropBlock }) => {
@@ -302,7 +304,7 @@ export default class StudioModel {
       const valueOfGroup = data.valueOfGroup;
       const templateBlock = data.templateBlock;
 
-      valueOfGroup.propBlockList = valueOfGroup.propBlockList.filter(b => b.id !== templateBlock.id);
+      valueOfGroup.propBlockList.length = 0;
       valueOfGroup.templateBlock = templateBlock;
       data.newItem.templateBlock = templateBlock;
       data.newItem.valueOfGroup = valueOfGroup;
@@ -344,10 +346,11 @@ export default class StudioModel {
   }
 
   public switchActiveGroup = (id: number) => {
-    const activeItem = this.workbench.rootGroupList.find(g => g.id === id);
-    if (activeItem) {
+    const group = this.workbench.rootGroupList.find(g => g.id === id);
+    if (group) {
+      const preActiveGroup = this.workbench.rootGroupList.find(g => g.id === this.activeGroupId);
+      preActiveGroup.templateBlockDesignMode = false;
       this.activeGroupId = id;
-      this.activeGroupDesignMode = false;
     }
   }
 
@@ -394,19 +397,36 @@ export default class StudioModel {
    * @param item 追加的PropItem
    */
   public pushPropItemStack = (item: PropItem) => {
-    if (this.propItemStack.length) {
-      // 重置item所在分组高亮
-      const resetItem = this.propItemStack[this.propItemStack.length - 1];
-      this.cancelHighlightStudioChain([resetItem]);
+    let removeList = [];
+
+    // 从堆栈中查找同属一个分组的item
+    for (let index = 0; index < this.propItemStack.length; index++) {
+      const stackItem = this.propItemStack[index];
+      if (stackItem.groupId === item.groupId) {
+        const rlist = this.propItemStack.splice(index);
+        removeList.push(...rlist);
+        break;
+      }
     }
+
+    // 重置堆栈中item
+    this.cancelHighlightStudioChain(removeList);
 
     const group = this.workbench.getPropGroup(item.groupId);
     group.highlight = true;
-    const block = group.propBlockList.find(b => b.id === item.blockId);
-    block.highlight = true;
+
+    if (item.blockId === group.templateBlockId) {
+      group.templateBlock.highlight = true;
+    } else {
+      const block = group.propBlockList.find(b => b.id === item.blockId);
+      block.highlight = true;
+    }
+
     item.highlight = true;
 
     this.propItemStack.push(item);
+
+    item.valueOfGroup.templateBlockDesignMode = false;
   }
 
   /**
@@ -414,10 +434,10 @@ export default class StudioModel {
    * @param propItem 从当前propItem开始之后所有item
    * @param clearSelf 是否弹出当前propItem
    */
-  public popPropItemStack = (propItem: PropItem, clearSelf: boolean) => {
+  public popPropItemStack = (propItem: PropItem) => {
     const index = this.propItemStack.findIndex(item => item.id === propItem.id);
     if (index !== -1) {
-      const isolateItemList = this.propItemStack.splice(clearSelf ? index : index + 1);
+      const isolateItemList = this.propItemStack.splice(index);
       this.cancelHighlightStudioChain(isolateItemList);
     }
   }
@@ -429,10 +449,16 @@ export default class StudioModel {
   private cancelHighlightStudioChain(itemList: PropItem[]) {
     itemList.forEach(item => {
       item.highlight = false;
+
       const group = this.workbench.getPropGroup(item.groupId);
       group.highlight = false;
-      const block = group.propBlockList.find(b => b.id === item.blockId);
-      block.highlight = false;
+
+      if (item.blockId === group.templateBlockId) {
+        group.templateBlock.highlight = false;
+      } else {
+        const block = group.propBlockList.find(b => b.id === item.blockId);
+        block.highlight = false;
+      }
     })
   }
 
