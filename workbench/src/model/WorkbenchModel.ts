@@ -185,15 +185,7 @@ export default class WorkbenchModel {
    * @returns 配置块对象
    */
   getPropBlock = (blockId: number): PropBlock => {
-    for (let index = 0; index < this.rootGroupList.length; index++) {
-      const rootGroup = this.rootGroupList[index];
-      const result = this.getProp<PropBlock>(blockId, 'block', rootGroup);
-      if (result) {
-        return result;
-      }
-    }
-
-    return null;
+    return this.getPropBlockOrGroup(blockId, 'block');
   }
 
   /**
@@ -202,9 +194,13 @@ export default class WorkbenchModel {
    * @returns 配置组对象
    */
   getPropGroup = (groupId: number): PropGroup => {
+    return this.getPropBlockOrGroup(groupId, 'group');
+  }
+
+  getPropBlockOrGroup = (id: number, type: 'group' | 'block') => {
     for (let index = 0; index < this.rootGroupList.length; index++) {
       const rootGroup = this.rootGroupList[index];
-      const result = this.getProp<PropGroup>(groupId, 'group', rootGroup);
+      const result = this.getProp(id, type, rootGroup);
       if (result) {
         return result;
       }
@@ -213,31 +209,35 @@ export default class WorkbenchModel {
     return null;
   }
 
-  private getProp = <T>(id: number, type: 'block' | 'group' | 'item', group: PropGroup): T => {
+  // 使用范型会导致sourceMap信息丢失
+  getProp = (id: number, type: 'block' | 'group' | 'item', group: PropGroup) => {
     if (type === 'group' && group.id === id) {
-      return group as any as T;
+      return group;
     }
 
     if (type === 'block' && group.struct === 'List' && id === group.templateBlock.id) {
-      return group.templateBlock as any as T;
+      return group.templateBlock;
     }
 
     const blockList = group.propBlockList;
     for (let index = 0; index < blockList.length; index++) {
       const block = blockList[index];
       if (type === 'block' && block.id === id) {
-        return block as any as T;
+        return block;
       }
 
       const itemList = block.propItemList;
       for (let itemIndex = 0; itemIndex < itemList.length; itemIndex++) {
         const item = itemList[itemIndex];
         if (type === 'item' && item.id === id) {
-          return item as any as T;
+          return item;
         }
 
         if (item.type === 'List' || item.type === 'Item') {
-          return this.getProp<T>(id, type, item.valueOfGroup);
+          const result = this.getProp(id, type, item.valueOfGroup);
+          if (result) {
+            return result;
+          }
         }
       }
     }
