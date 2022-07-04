@@ -43,6 +43,7 @@ export default class WorkbenchModel {
     this.component = component;
     this.designMode = designMode
     this.buildPropTree();
+    console.log('prop tree built out  ', this.rootGroupList);
 
     if (!designMode) {
       const releaseId = this.component.release.id;
@@ -143,8 +144,15 @@ export default class WorkbenchModel {
       group.expandBlockIdList = propBlockList.map(b => b.id);
     }
 
-    const templateBlock = blocks.find(b => b.id === group.templateBlockId);
-    if (group.struct === 'List' && templateBlock) {
+    // 不要从blocks中找模版，有可能存在同一个模版被多处使用的情况
+    let templateBlock = store.blockList.find(b => b.id === group.templateBlockId);
+    if (group.struct === 'List') {
+      if (!templateBlock) {
+        templateBlock = this.getPropBlock(group.templateBlockId);
+      }
+      if (!templateBlock) {
+        throw new Error(`not found templateBlock id:${group.templateBlockId}`);
+      }
       group.templateBlock = templateBlock;
     }
 
@@ -239,9 +247,14 @@ export default class WorkbenchModel {
         }
 
         if (item.type === 'List' || item.type === 'Item') {
-          const result = this.getProp(id, type, item.valueOfGroup);
-          if (result) {
-            return result;
+          if (item.valueOfGroup) {
+            const result = this.getProp(id, type, item.valueOfGroup);
+            if (result) {
+              return result;
+            }
+          } else {
+            // 部分item可能已经挂在到rootGroup但是valueOfGroup还没初始化完成
+            console.warn(`valueOfGroup can not empty itemId: ${item.id}`);
           }
         }
       }
