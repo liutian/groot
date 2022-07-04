@@ -237,6 +237,29 @@ export class PropBlockService {
         newItem.directBlock = newDirectBlock;
         await em.flush();
       }
+    } else if (newItem.type === PropItemType.HIERARCHY) {
+      const valueOfGroup = em.create(PropGroup, {
+        name: '关联分组',
+        root: false,
+        componentVersion: newItem.componentVersion,
+        component: newItem.component,
+        relativeItem: newItem,
+        order: 0,
+        struct: 'Default'
+      });
+      newItem.valueOfGroup = valueOfGroup;
+      await em.flush();
+      groupIdList.push(valueOfGroup.id);
+
+      const innerChildrenBlock = await em.find(PropBlock,
+        { group: copyItem.valueOfGroup },
+        { populate: ['propItemList.optionList'] }
+      );
+
+      for (let innerBlockIndex = 0; innerBlockIndex < innerChildrenBlock.length; innerBlockIndex++) {
+        const innnerBlock = innerChildrenBlock[innerBlockIndex];
+        await this.shallowCloneFromTemplateBlock(valueOfGroup, innnerBlock, em, groupIdList, blockIdList, itemIdList);
+      }
     }
   }
 

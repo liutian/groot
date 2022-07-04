@@ -89,9 +89,10 @@ export class PropItemService {
           name: '关联分组',
           componentId: block.component.id,
           componentVersionId: block.componentVersion.id,
-          struct: 'List'
+          struct: 'List',
+          root: false
         } as PropGroup;
-        valueOfGroup = await this.propGroupService.add(rawGroup, false);
+        valueOfGroup = await this.propGroupService.add(rawGroup);
 
         templateBlock = valueOfGroup.templateBlock;
         newItem.valueOfGroup = valueOfGroup;
@@ -103,13 +104,24 @@ export class PropItemService {
           name: '关联分组',
           componentId: block.component.id,
           componentVersionId: block.componentVersion.id,
-          struct: 'Item'
+          struct: 'Item',
+          root: false
         } as PropGroup;
-        valueOfGroup = await this.propGroupService.add(rawGroup, false);
+        valueOfGroup = await this.propGroupService.add(rawGroup);
         newItem.valueOfGroup = valueOfGroup;
         valueOfGroup.relativeItem = newItem;
         newItem.directBlock = valueOfGroup.propBlockList[0];
         newItem.directBlock.relativeItem = newItem;
+      } else if (newItem.type === PropItemType.HIERARCHY) {
+        const rawGroup = {
+          name: '关联分组',
+          componentId: block.component.id,
+          componentVersionId: block.componentVersion.id,
+          struct: 'Default',
+          root: false
+        } as PropGroup;
+        valueOfGroup = await this.propGroupService.add(rawGroup);
+        newItem.valueOfGroup = valueOfGroup;
       }
 
       await em.flush();

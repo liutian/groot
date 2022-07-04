@@ -16,7 +16,7 @@ export class PropGroupService {
     private propBlockService: PropBlockService
   ) { }
 
-  async add(rawGroup: PropGroup, root = true) {
+  async add(rawGroup: PropGroup) {
     const em = RequestContext.getEntityManager();
 
     const firstGroup = await em.findOne(PropGroup, {
@@ -25,10 +25,9 @@ export class PropGroupService {
     }, { orderBy: { order: 'DESC' } });
 
     const newGroup = em.create(PropGroup, {
-      ...pick(rawGroup, ['name', 'propKey', 'struct']),
+      ...pick(rawGroup, ['name', 'propKey', 'struct', 'root']),
       componentVersion: rawGroup.componentVersionId,
       component: rawGroup.componentId,
-      root,
       order: (firstGroup ? firstGroup.order : 0) + 1000
     });
 

@@ -171,15 +171,16 @@ export default class WorkbenchModel {
       for (let itemIndex = 0; itemIndex < items.length; itemIndex++) {
         const item = items[itemIndex];
         if (item.type === 'List') {
-          const relativeGroup = this.buildPropGroup(item.valueOfGroupId, store);
-
-          item.valueOfGroup = relativeGroup;
-          item.templateBlock = relativeGroup.templateBlock;
+          const valueOfGroup = this.buildPropGroup(item.valueOfGroupId, store);
+          item.valueOfGroup = valueOfGroup;
+          item.templateBlock = valueOfGroup.templateBlock;
         } else if (item.type === 'Item') {
-          const relativeGroup = this.buildPropGroup(item.valueOfGroupId, store);
-
-          item.valueOfGroup = relativeGroup;
-          item.directBlock = relativeGroup.propBlockList[0];
+          const valueOfGroup = this.buildPropGroup(item.valueOfGroupId, store);
+          item.valueOfGroup = valueOfGroup;
+          item.directBlock = valueOfGroup.propBlockList[0];
+        } else if (item.type === 'Hierarchy') {
+          const valueOfGroup = this.buildPropGroup(item.valueOfGroupId, store);
+          item.valueOfGroup = valueOfGroup;
         }
       }
     }
@@ -246,7 +247,7 @@ export default class WorkbenchModel {
           return item;
         }
 
-        if (item.type === 'List' || item.type === 'Item') {
+        if (item.type === 'List' || item.type === 'Item' || item.type === 'Hierarchy') {
           if (item.valueOfGroup) {
             const result = this.getProp(id, type, item.valueOfGroup);
             if (result) {

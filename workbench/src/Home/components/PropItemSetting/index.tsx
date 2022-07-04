@@ -12,7 +12,8 @@ const optionList = [
   { label: '多选', value: 'Checkbox' },
   { label: '单选', value: 'Radio' },
   { label: '列表', value: 'List' },
-  { label: '配置项', value: 'Item' }
+  { label: '配置项', value: 'Item' },
+  { label: '层级', value: 'Hierarchy' },
 ];
 
 const PropItemSetting: React.FC = () => {

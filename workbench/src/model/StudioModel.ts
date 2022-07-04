@@ -312,6 +312,10 @@ export default class StudioModel {
       const valueOfGroup = data.valueOfGroup;
       data.newItem.directBlock = valueOfGroup.propBlockList[0];
       data.newItem.valueOfGroup = valueOfGroup;
+    } else if (data.newItem.type === 'Hierarchy') {
+      const valueOfGroup = data.valueOfGroup;
+      data.newItem.valueOfGroup = valueOfGroup;
+      valueOfGroup.expandBlockIdList = [];
     }
   }
 

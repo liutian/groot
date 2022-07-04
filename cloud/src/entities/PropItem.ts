@@ -90,5 +90,6 @@ export enum PropItemType {
   RADIO = 'Radio',
   CHECKBOX = 'Checkbox',
   LIST = 'List',
-  ITEM = 'Item'
+  ITEM = 'Item',
+  HIERARCHY = 'Hierarchy'
 }

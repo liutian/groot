@@ -35,7 +35,7 @@ const SubStudio: React.FC<PropsType> = ({ item: propItem }) => {
     } else if (propItem.type === 'Item') {
       return <PropBlockStudio noWrapMode block={propItem.directBlock} />;
     } else {
-      return null;
+      return <PropGroupStudio group={propGroup} />;
     }
   }
 

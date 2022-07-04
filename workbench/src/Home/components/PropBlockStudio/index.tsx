@@ -102,6 +102,8 @@ function PropBlockStudio({ block, freezeSetting, templateMode, noWrapMode }: Pro
       </Button>
     } else if (item.type === 'Item') {
       return <Button block onClick={() => { studioModel.pushPropItemStack(item) }}>配置项</Button>
+    } else if (item.type === 'Hierarchy') {
+      return <Button block onClick={() => { studioModel.pushPropItemStack(item) }}>层级</Button>
     }
 
     return <>not found item</>
