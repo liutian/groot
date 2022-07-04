@@ -219,7 +219,7 @@ export default class WorkbenchModel {
       return group.templateBlock;
     }
 
-    const blockList = group.propBlockList;
+    const blockList = [...group.propBlockList];
 
     if (group.struct === 'List') {
       blockList.push(group.templateBlock);
