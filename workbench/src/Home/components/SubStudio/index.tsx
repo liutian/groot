@@ -3,7 +3,7 @@ import StudioModel from '@model/StudioModel';
 import WorkbenchModel from '@model/WorkbenchModel';
 import { useModel } from '@util/robot';
 import { Button } from 'antd';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 
 import PropBlockStudio from '../PropBlockStudio';
 import PropGroupStudio from '../PropGroupStudio';
@@ -50,7 +50,8 @@ const SubStudio: React.FC<PropsType> = ({ item: propItem }) => {
       <div className="pull-right">
         {
           propItem.type === 'List' && workbenchModel.designMode &&
-          (<Button type="link" icon={propGroup.templateBlockDesignMode ? <SettingFilled /> : <SettingOutlined />} onClick={() => studioModel.toggleTemplateBlockDesignMode(propGroup)}></Button>)
+          (<Button type="link" icon={propGroup.templateBlockDesignMode ? <SettingFilled /> : <SettingOutlined />}
+            onClick={() => studioModel.toggleTemplateBlockDesignMode(propGroup)}></Button>)
         }
       </div>
     </div>
