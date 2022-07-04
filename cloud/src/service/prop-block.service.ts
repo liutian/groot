@@ -121,6 +121,82 @@ export class PropBlockService {
     }
   }
 
+  async movePosition(originId: number, targetId: number) {
+    const em = RequestContext.getEntityManager();
+    const originBlock = await em.findOne(PropBlock, originId);
+
+    if (!originBlock) {
+      throw new LogicException(`not found block id: ${originId}`, LogicExceptionCode.NotFound);
+    }
+
+    const targetBlock = await em.findOne(PropBlock, targetId);
+
+    if (!targetBlock) {
+      throw new LogicException(`not found block id:${targetId}`, LogicExceptionCode.NotFound);
+    }
+
+    const order = targetBlock.order;
+    targetBlock.order = originBlock.order;
+    originBlock.order = order;
+
+    await em.flush();
+  }
+
+  async remove(blockId: number) {
+    const em = RequestContext.getEntityManager();
+
+    const block = await em.findOne(PropBlock, blockId, {
+      populate: [
+        'propItemList.optionList'
+      ]
+    });
+
+    if (!block) {
+      throw new LogicException(`not found block id : ${blockId}`, LogicExceptionCode.NotFound);
+    }
+
+    const innerGroupIds: number[] = [];
+
+    await em.begin();
+    try {
+      const itemList = block.propItemList.getItems();
+      for (let itemIndex = 0; itemIndex < itemList.length; itemIndex++) {
+        const item = itemList[itemIndex];
+
+        for (let optionIndex = 0; optionIndex < item.optionList.length; optionIndex++) {
+          const option = item.optionList[optionIndex];
+          await em.removeAndFlush(option);
+        }
+
+        await em.removeAndFlush(item);
+        if (item.type === PropItemType.LIST) {
+          innerGroupIds.push(item.valueOfGroup!.id);
+        }
+      }
+
+      await em.removeAndFlush(block);
+      await em.commit();
+    } catch (e) {
+      await em.rollback();
+      throw e;
+    }
+
+    for (let index = 0; index < innerGroupIds.length; index++) {
+      const groupId = innerGroupIds[index];
+      await this.propGroupService.remove(groupId);
+    }
+  }
+
+  async update(rawBlock: PropBlock) {
+    const em = RequestContext.getEntityManager();
+
+    const block = await em.findOne(PropBlock, rawBlock.id);
+
+    pick(rawBlock, ['name', 'propKey', 'rootPropKey'], block);
+
+    await em.flush();
+  }
+
   /**
    * 从分组模版中浅克隆
    */
@@ -261,82 +337,6 @@ export class PropBlockService {
         await this.shallowCloneFromTemplateBlock(valueOfGroup, innnerBlock, em, groupIdList, blockIdList, itemIdList);
       }
     }
-  }
-
-  async movePosition(originId: number, targetId: number) {
-    const em = RequestContext.getEntityManager();
-    const originBlock = await em.findOne(PropBlock, originId);
-
-    if (!originBlock) {
-      throw new LogicException(`not found block id: ${originId}`, LogicExceptionCode.NotFound);
-    }
-
-    const targetBlock = await em.findOne(PropBlock, targetId);
-
-    if (!targetBlock) {
-      throw new LogicException(`not found block id:${targetId}`, LogicExceptionCode.NotFound);
-    }
-
-    const order = targetBlock.order;
-    targetBlock.order = originBlock.order;
-    originBlock.order = order;
-
-    await em.flush();
-  }
-
-  async remove(blockId: number) {
-    const em = RequestContext.getEntityManager();
-
-    const block = await em.findOne(PropBlock, blockId, {
-      populate: [
-        'propItemList.optionList'
-      ]
-    });
-
-    if (!block) {
-      throw new LogicException(`not found block id : ${blockId}`, LogicExceptionCode.NotFound);
-    }
-
-    const innerGroupIds: number[] = [];
-
-    await em.begin();
-    try {
-      const itemList = block.propItemList.getItems();
-      for (let itemIndex = 0; itemIndex < itemList.length; itemIndex++) {
-        const item = itemList[itemIndex];
-
-        for (let optionIndex = 0; optionIndex < item.optionList.length; optionIndex++) {
-          const option = item.optionList[optionIndex];
-          await em.removeAndFlush(option);
-        }
-
-        await em.removeAndFlush(item);
-        if (item.type === PropItemType.LIST) {
-          innerGroupIds.push(item.valueOfGroup!.id);
-        }
-      }
-
-      await em.removeAndFlush(block);
-      await em.commit();
-    } catch (e) {
-      await em.rollback();
-      throw e;
-    }
-
-    for (let index = 0; index < innerGroupIds.length; index++) {
-      const groupId = innerGroupIds[index];
-      await this.propGroupService.remove(groupId);
-    }
-  }
-
-  async update(rawBlock: PropBlock) {
-    const em = RequestContext.getEntityManager();
-
-    const block = await em.findOne(PropBlock, rawBlock.id);
-
-    pick(rawBlock, ['name', 'propKey', 'rootPropKey'], block);
-
-    await em.flush();
   }
 }
 

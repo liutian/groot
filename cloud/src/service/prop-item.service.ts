@@ -156,39 +156,6 @@ export class PropItemService {
     return relativeList;
   }
 
-  private async cascadeMovePosition(originId: number, targetId: number, em: EntityManager, origin = false): Promise<{ originItem: PropItem, targetItem: PropItem }> {
-    const originItem = await em.findOne(PropItem, originId);
-
-    if (!originItem) {
-      throw new LogicException(`not found item id: ${originId}`, LogicExceptionCode.NotFound);
-    }
-
-    if (!origin) {
-      const blockCount = await em.count(PropBlock, {
-        component: originItem.component,
-        componentVersion: originItem.componentVersion,
-        imagePropBlock: originItem.block
-      });
-      if (blockCount > 0) {
-        throw new LogicException('当前配置块不应该作为其他配置块的imagePropBlock', LogicExceptionCode.UnExpect);
-      }
-    }
-
-    const targetItem = await em.findOne(PropItem, targetId);
-
-    if (!targetItem) {
-      throw new LogicException(`not found item id:${targetId}`, LogicExceptionCode.NotFound);
-    }
-
-    const order = targetItem.order;
-    targetItem.order = originItem.order;
-    originItem.order = order;
-
-    await em.flush();
-
-    return { originItem, targetItem }
-  }
-
   async remove(itemId: number) {
     const em = RequestContext.getEntityManager();
 
@@ -258,6 +225,39 @@ export class PropItemService {
     }
 
     return relativeList;
+  }
+
+  private async cascadeMovePosition(originId: number, targetId: number, em: EntityManager, origin = false): Promise<{ originItem: PropItem, targetItem: PropItem }> {
+    const originItem = await em.findOne(PropItem, originId);
+
+    if (!originItem) {
+      throw new LogicException(`not found item id: ${originId}`, LogicExceptionCode.NotFound);
+    }
+
+    if (!origin) {
+      const blockCount = await em.count(PropBlock, {
+        component: originItem.component,
+        componentVersion: originItem.componentVersion,
+        imagePropBlock: originItem.block
+      });
+      if (blockCount > 0) {
+        throw new LogicException('当前配置块不应该作为其他配置块的imagePropBlock', LogicExceptionCode.UnExpect);
+      }
+    }
+
+    const targetItem = await em.findOne(PropItem, targetId);
+
+    if (!targetItem) {
+      throw new LogicException(`not found item id:${targetId}`, LogicExceptionCode.NotFound);
+    }
+
+    const order = targetItem.order;
+    targetItem.order = originItem.order;
+    originItem.order = order;
+
+    await em.flush();
+
+    return { originItem, targetItem }
   }
 }
 

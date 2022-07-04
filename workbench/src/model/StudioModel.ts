@@ -4,22 +4,25 @@ import WorkbenchModel from "./WorkbenchModel";
 
 export default class StudioModel {
   /**
-   * 当前激活分组的ID
+   * 当前激活分组
    */
   public activeGroupId?: number;
   /**
-   * 当前配置组
+   * 正在配置的分组
    */
   public currSettingPropGroup?: PropGroup;
   /**
-   * 当前配置块
+   * 正在配置的块
    */
   public currSettingPropBlock?: PropBlock;
   /**
-   * 当前配置项
+   * 正在配置的项
    */
   public currSettingPropItem?: PropItem;
 
+  /**
+   * 级联堆栈
+   */
   public propItemStack: PropItem[] = [];
 
   public settingModalLoading = false;

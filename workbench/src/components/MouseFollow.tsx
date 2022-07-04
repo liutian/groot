@@ -7,6 +7,11 @@ type PropsType = {
   cursor?: 'move' | 'row-resize' | 'col-resize'
 } & HTMLAttributes<HTMLDivElement>;
 
+/**
+ * 监控鼠标拖拽操作时的坐标位置
+ * @param param0 
+ * @returns 
+ */
 const MouseFollow: React.FC<PropsType> = ({ start, end, move, cursor = 'move', ...props }) => {
   const hostRef = useRef<HTMLDivElement>(null);
   const orignPositionRef = useRef<{ x: number, y: number }>({ x: -1, y: -1 });
