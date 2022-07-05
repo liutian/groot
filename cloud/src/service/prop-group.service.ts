@@ -1,4 +1,4 @@
-import { RequestContext } from '@mikro-orm/core';
+import { EntityManager, RequestContext } from '@mikro-orm/core';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { LogicException, LogicExceptionCode } from 'config/logic.exception';
 import { PropBlock } from 'entities/PropBlock';
@@ -18,6 +18,13 @@ export class PropGroupService {
 
   async add(rawGroup: PropGroup) {
     const em = RequestContext.getEntityManager();
+
+    if (rawGroup.propKey && rawGroup.root === true) {
+      const propKeyUnique = await this.checkPropKeyUnique(rawGroup.propKey, rawGroup.componentId, rawGroup.componentVersionId, em);
+      if (!propKeyUnique) {
+        throw new LogicException(`propKey not unique propKey: ${rawGroup.propKey}`, LogicExceptionCode.NotFound);
+      }
+    }
 
     const firstGroup = await em.findOne(PropGroup, {
       componentVersion: rawGroup.componentVersionId,
@@ -122,6 +129,13 @@ export class PropGroupService {
       throw new LogicException(`not found group id: ${rawGroup.id}`, LogicExceptionCode.NotFound);
     }
 
+    if (rawGroup.propKey && group.root === true) {
+      const propKeyUnique = await this.checkPropKeyUnique(rawGroup.propKey, group.component.id, group.componentVersion.id, em, rawGroup.id);
+      if (!propKeyUnique) {
+        throw new LogicException(`propKey not unique propKey: ${rawGroup.propKey} groupId: ${group.id}`, LogicExceptionCode.NotFound);
+      }
+    }
+
     pick(rawGroup, ['name', 'propKey'], group);
 
     await em.flush();
@@ -169,6 +183,27 @@ export class PropGroupService {
     }
 
     await em.flush();
+  }
+
+  private async checkPropKeyUnique(propKey: string, componentId: number, componentVersionId: number, em: EntityManager, groupId?: number) {
+    const list = await em.find(PropGroup, {
+      root: true,
+      propKey,
+      component: componentId,
+      componentVersion: componentVersionId
+    });
+
+    if (groupId) {
+      if (list.find(g => g.id !== groupId)) {
+        return false;
+      }
+    } else {
+      if (list.length) {
+        return false;
+      }
+    }
+
+    return true;
   }
 }
 
