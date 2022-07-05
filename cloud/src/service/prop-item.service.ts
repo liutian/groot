@@ -51,6 +51,13 @@ export class PropItemService {
       if (blockCount > 0) {
         throw new LogicException('当前配置块不应该作为其他配置块的imagePropBlock', LogicExceptionCode.UnExpect);
       }
+    } else {
+      if (rawItem.propKey) {
+        const propKeyUnique = await this.checkPropKeyUnique(rawItem.propKey, block.component.id, block.componentVersion.id, rawItem.blockId, rawItem.rootPropKey, em);
+        if (!propKeyUnique) {
+          throw new LogicException(`not unique propKey:${rawItem.propKey} blockId:${block.id}`, LogicExceptionCode.NotUnique);
+        }
+      }
     }
 
     let newItem: PropItem, valueOfGroup: PropGroup, templateBlock: PropBlock;
@@ -190,6 +197,17 @@ export class PropItemService {
 
     const propItem = await em.findOne(PropItem, rawItem.id, { populate: ['optionList'] });
 
+    if (!propItem) {
+      throw new LogicException(`not found propItem id: ${rawItem.id}`, LogicExceptionCode.NotFound);
+    }
+
+    if (rawItem.propKey) {
+      const propKeyUnique = await this.checkPropKeyUnique(rawItem.propKey, propItem.component.id, propItem.componentVersion.id, propItem.block.id, rawItem.rootPropKey, em, rawItem.id);
+      if (!propKeyUnique) {
+        throw new LogicException(`not unique propKey:${rawItem.propKey} blockId:${propItem.block.id}`, LogicExceptionCode.NotUnique);
+      }
+    }
+
     pick(rawItem, ['label', 'propKey', 'rootPropKey', 'type', 'span'], propItem);
 
     if (rawItem.optionList && rawItem.optionList.length) {
@@ -258,6 +276,35 @@ export class PropItemService {
     await em.flush();
 
     return { originItem, targetItem }
+  }
+
+  private async checkPropKeyUnique(propKey: string, componentId: number, componentVersionId: number, blockId: number, rootPropKey: boolean, em: EntityManager, itemId?: number) {
+    if (rootPropKey) {
+      const unique = await this.propGroupService.checkPropKeyUnique({ propKey, componentId, componentVersionId, em, itemId });
+      if (!unique) {
+        return false;
+      }
+    }
+
+    const list = await em.find(PropItem, {
+      block: blockId,
+      rootPropKey: rootPropKey || false,
+      propKey,
+      component: componentId,
+      componentVersion: componentVersionId
+    });
+
+    if (itemId) {
+      if (list.find(b => b.id !== itemId)) {
+        return false;
+      }
+    } else {
+      if (list.length) {
+        return false;
+      }
+    }
+
+    return true;
   }
 }
 

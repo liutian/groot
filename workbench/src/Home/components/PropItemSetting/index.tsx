@@ -1,5 +1,5 @@
 import { useModel } from "@util/robot";
-import { Form, Input, Modal, Radio, Select, Space, Typography } from "antd";
+import { Form, Input, Modal, Radio, Select, Space, Switch, Typography } from "antd";
 import React, { useEffect } from "react";
 import StudioModel from '@model/StudioModel';
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
@@ -80,6 +80,9 @@ const PropItemSetting: React.FC = () => {
       </Form.Item>
       <Form.Item label="属性映射" rules={[{ required: true }]} name="propKey">
         <Input />
+      </Form.Item>
+      <Form.Item valuePropName="checked" label="根级映射" name="rootPropKey">
+        <Switch />
       </Form.Item>
       <Form.Item label="宽度" name="span">
         <Radio.Group >
