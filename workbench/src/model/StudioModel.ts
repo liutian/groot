@@ -3,10 +3,7 @@ import { serverPath } from "config";
 import WorkbenchModel from "./WorkbenchModel";
 
 export default class StudioModel {
-  /**
-   * 当前激活分组
-   */
-  public activeGroupId?: number;
+
   /**
    * 正在配置的分组
    */
@@ -31,7 +28,6 @@ export default class StudioModel {
 
   public init(workbench: WorkbenchModel) {
     this.workbench = workbench;
-    this.activeGroupId = this.workbench.rootGroupList[0].id;
   }
 
   public toggleTemplateBlockDesignMode = (group: PropGroup) => {
@@ -94,22 +90,22 @@ export default class StudioModel {
       const drag = groups.find(g => g.id === +dragId)!;
       const hoverIndex = hoverId === '__add' ? groups.length : groups.findIndex(g => g.id === +hoverId);
       const dragIndex = groups.findIndex(g => g.id === +dragId);
-      const currentIndex = groups.findIndex(g => g.id === this.activeGroupId);
+      const currentIndex = groups.findIndex(g => g.id === this.workbench.activeGroupId);
 
       groups.splice(hoverIndex, 0, drag);
 
       if (hoverIndex < dragIndex) {
         groups.splice(dragIndex + 1, 1);
         if (currentIndex >= hoverIndex && currentIndex < dragIndex) {
-          this.activeGroupId = groups[currentIndex + 1].id;
+          this.workbench.activeGroupId = groups[currentIndex + 1].id;
         } else if (currentIndex === dragIndex) {
-          this.activeGroupId = +hoverId;
+          this.workbench.activeGroupId = +hoverId;
         }
       } else {
         if (currentIndex === dragIndex && currentIndex < hoverIndex) {
-          this.activeGroupId = groups[currentIndex - 1]?.id;
+          this.workbench.activeGroupId = groups[currentIndex - 1]?.id;
         } else if (currentIndex === dragIndex) {
-          this.activeGroupId = groups[hoverIndex - 1]?.id;
+          this.workbench.activeGroupId = groups[hoverIndex - 1]?.id;
         }
         groups.splice(dragIndex, 1);
       }
@@ -182,7 +178,7 @@ export default class StudioModel {
         // todo
         groupDB.expandBlockIdList = [];
         this.workbench.rootGroupList.push(groupDB);
-        this.activeGroupId = groupDB.id;
+        this.workbench.activeGroupId = groupDB.id;
 
         if (newGroup.struct === 'List') {
           groupDB.templateBlock = groupDB.propBlockList.find(b => b.id === groupDB.templateBlockId);
@@ -328,8 +324,8 @@ export default class StudioModel {
 
       this.workbench.rootGroupList.splice(index, 1);
 
-      if (this.activeGroupId === groupId) {
-        this.activeGroupId = this.workbench.rootGroupList[0]?.id;
+      if (this.workbench.activeGroupId === groupId) {
+        this.workbench.activeGroupId = this.workbench.rootGroupList[0]?.id;
       }
     })
   }
@@ -350,53 +346,6 @@ export default class StudioModel {
         block.propItemList.splice(itemIndex, 1);
       }
     })
-  }
-
-  public switchActiveGroup = (id: number) => {
-    const group = this.workbench.rootGroupList.find(g => g.id === id);
-    if (group) {
-      const preActiveGroup = this.workbench.rootGroupList.find(g => g.id === this.activeGroupId);
-      preActiveGroup.templateBlockDesignMode = false;
-      this.activeGroupId = id;
-    }
-  }
-
-  public switchDesignMode = () => {
-    this.workbench.jsonMode = false;
-    this.workbench.manualMode = false;
-    if (this.workbench.designMode) {
-      this.workbench.designMode = false;
-      this.workbench.rootGroupList.forEach((group) => {
-        group.propBlockList.forEach((block) => {
-          const values = this.workbench.blockFormInstanceMap.get(block.id).getFieldsValue();
-          block.propItemList.forEach((item) => {
-            item.defaultValue = values[item.propKey];
-          });
-        })
-      })
-    } else {
-      this.workbench.designMode = true;
-    }
-  }
-
-  public switchManualMode = () => {
-    this.workbench.jsonMode = false;
-    this.workbench.designMode = false;
-    if (this.workbench.manualMode) {
-      this.workbench.manualMode = false;
-    } else {
-      this.workbench.manualMode = true;
-    }
-  }
-
-  public switchJSONMode = () => {
-    this.workbench.manualMode = false;
-    this.workbench.designMode = false;
-    if (this.workbench.jsonMode) {
-      this.workbench.jsonMode = false;
-    } else {
-      this.workbench.jsonMode = true;
-    }
   }
 
   /**
@@ -494,6 +443,46 @@ export default class StudioModel {
       span: 24,
       order: 0
     } as PropItem;
+  }
+
+
+
+  public switchDesignMode = () => {
+    this.workbench.jsonMode = false;
+    this.workbench.manualMode = false;
+    if (this.workbench.designMode) {
+      this.workbench.designMode = false;
+      this.workbench.rootGroupList.forEach((group) => {
+        group.propBlockList.forEach((block) => {
+          const values = this.workbench.blockFormInstanceMap.get(block.id).getFieldsValue();
+          block.propItemList.forEach((item) => {
+            item.defaultValue = values[item.propKey];
+          });
+        })
+      })
+    } else {
+      this.workbench.designMode = true;
+    }
+  }
+
+  public switchManualMode = () => {
+    this.workbench.jsonMode = false;
+    this.workbench.designMode = false;
+    if (this.workbench.manualMode) {
+      this.workbench.manualMode = false;
+    } else {
+      this.workbench.manualMode = true;
+    }
+  }
+
+  public switchJSONMode = () => {
+    this.workbench.manualMode = false;
+    this.workbench.designMode = false;
+    if (this.workbench.jsonMode) {
+      this.workbench.jsonMode = false;
+    } else {
+      this.workbench.jsonMode = true;
+    }
   }
 
   public createCodemeta(component: Component) {

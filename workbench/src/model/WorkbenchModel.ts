@@ -1,6 +1,11 @@
 import { FormInstance } from "antd";
 
 export default class WorkbenchModel {
+  /**
+   * 当前激活分组
+   */
+  public activeGroupId?: number;
+
   public loadComponent: 'doing' | 'notfound' | 'over' = 'doing';
   /**
    * 窗口部件缩放大小
@@ -41,9 +46,10 @@ export default class WorkbenchModel {
     this.loadComponent = 'over';
     this.iframeRef = iframeRef;
     this.component = component;
-    this.designMode = designMode
+    this.designMode = designMode;
     this.buildPropTree();
-    console.log('prop tree built out  ', this.rootGroupList);
+    console.log('<=================== prop tree built out =================>\n', this.rootGroupList);
+    this.activeGroupId = this.rootGroupList[0].id;
 
     if (!designMode) {
       const releaseId = this.component.release.id;
@@ -262,5 +268,14 @@ export default class WorkbenchModel {
     }
 
     return null;
+  }
+
+  public switchActiveGroup = (id: number) => {
+    const group = this.rootGroupList.find(g => g.id === id);
+    if (group) {
+      const preActiveGroup = this.rootGroupList.find(g => g.id === this.activeGroupId);
+      preActiveGroup.templateBlockDesignMode = false;
+      this.activeGroupId = id;
+    }
   }
 }

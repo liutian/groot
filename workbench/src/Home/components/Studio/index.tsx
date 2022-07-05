@@ -40,7 +40,7 @@ function Studio() {
   const tabOnChange = (activeKey: string) => {
     if (activeKey !== '__add') {
       // 选中某个分组
-      studioModel.switchActiveGroup(parseInt(activeKey));
+      workbenchModel.switchActiveGroup(parseInt(activeKey));
       return;
     }
 
@@ -84,7 +84,7 @@ function Studio() {
   /////////////////////////////////////////////////////////////////////////////
   return <>
     <DndProvider backend={HTML5Backend}>
-      <Tabs size="small" className="studio-tabs" activeKey={studioModel.activeGroupId?.toString()}
+      <Tabs size="small" className="studio-tabs" activeKey={workbenchModel.activeGroupId?.toString()}
         onChange={tabOnChange} renderTabBar={renderTabBar} tabBarExtraContent={<PropGroupToolBar />}>
         {renderTabContent()}
       </Tabs>

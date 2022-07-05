@@ -14,10 +14,10 @@ const PropGroupToolBar: React.FC = () => {
   const [group, setGroup] = useState<PropGroup>();
 
   useEffect(() => {
-    const group = workbenchModel.getPropGroup(studioModel.activeGroupId);
+    const group = workbenchModel.getPropGroup(workbenchModel.activeGroupId);
     setGroup(group);
     setGroupListStruct(group.struct === 'List');
-  }, [studioModel.activeGroupId, studioModel.settingModalLoading]);
+  }, [workbenchModel.activeGroupId, studioModel.settingModalLoading]);
 
   if (!group || !workbenchModel.designMode) {
     return null;
