@@ -3,6 +3,8 @@ import 'zone.js';
 
 const store = new Map<string, ModelContainer>();
 
+let fastUpdate = false;
+
 /**
  * 注册模型实例
  * @param key 模型名称
@@ -33,7 +35,6 @@ export const registerModel = (key: string, model: any) => {
 
   store.set(key, {
     origin: model,
-    fastUpdate: false,
     proxy: wrapper(key, model),
   });
 
@@ -108,8 +109,7 @@ function wrapper(modelKey: string, target: any): any {
     },
     // 禁止直接更改代理对象的属性
     set(oTarget, sKey, vValue, receiver) {
-      const modelContainer = store.get(modelKey);
-      if (modelContainer.fastUpdate) {
+      if (fastUpdate) {
         Reflect.set(oTarget, sKey, vValue, receiver);
         return true;
       }
@@ -141,16 +141,14 @@ function autoTrigger(modelKey: string, asyncTaskName?: string) {
  */
 function execInZone(modelKey: string, type: string, runFn: Function, triggerFn: (asyncTaskName?: string) => void) {
   let resultOfRun;
-  const modelContainer = store.get(modelKey)!;
-
   Zone.current.fork({
     name: `robot-${type}-${modelKey}`,
     onInvokeTask: (delegate, _currentZone, targetZone, task, ...args) => {
-      const forceFalse = modelContainer.fastUpdate !== true;
-      modelContainer.fastUpdate = true;
+      const forceFalse = fastUpdate !== true;
+      fastUpdate = true;
       const result = delegate.invokeTask(targetZone, task, ...args);
       if (forceFalse) {
-        modelContainer.fastUpdate = false;
+        fastUpdate = false;
       }
 
       triggerFn(task.source);
@@ -158,11 +156,11 @@ function execInZone(modelKey: string, type: string, runFn: Function, triggerFn: 
       return result;
     }
   }).run(() => {
-    const forceFalse = modelContainer.fastUpdate !== true;
-    modelContainer.fastUpdate = true;
+    const forceFalse = fastUpdate !== true;
+    fastUpdate = true;
     resultOfRun = runFn();
     if (forceFalse) {
-      modelContainer.fastUpdate = false;
+      fastUpdate = false;
     }
 
     triggerFn();
@@ -181,5 +179,4 @@ type ModelContainer = {
   proxy: any,
   origin: any,
   rootTrigger?: Function,
-  fastUpdate: boolean,
 };
