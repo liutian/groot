@@ -2,6 +2,7 @@ import { useModel } from "@util/robot";
 import { Form, Input, Modal, Radio } from "antd";
 import React, { useEffect, useRef } from "react";
 import StudioModel from '@model/StudioModel';
+import { propKeyRule } from "@util/utils";
 
 const PropGroupSetting: React.FC = () => {
   const [form] = Form.useForm();
@@ -44,7 +45,7 @@ const PropGroupSetting: React.FC = () => {
           <Radio value="Item">配置项</Radio>
         </Radio.Group>
       </Form.Item>
-      <Form.Item label="属性映射" name="propKey">
+      <Form.Item label="属性映射" name="propKey" rules={[{ pattern: propKeyRule, message: '格式错误，必须是标准js标识符' }]}>
         <Input />
       </Form.Item>
     </Form>

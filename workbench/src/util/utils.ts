@@ -17,3 +17,5 @@ export function autoIncrementForName(names: string[]) {
 
   return nameSuffix;
 }
+
+export const propKeyRule = /^[_a-zA-Z]\w*$/i;
