@@ -1,5 +1,5 @@
 import { useModel } from "@util/robot";
-import { Form, Input, Modal } from "antd";
+import { Form, Input, Modal, Switch } from "antd";
 import React, { useEffect, useRef } from "react";
 import StudioModel from '@model/StudioModel';
 
@@ -39,6 +39,9 @@ const PropBlockSetting: React.FC = () => {
       </Form.Item>
       <Form.Item label="属性映射" name="propKey">
         <Input />
+      </Form.Item>
+      <Form.Item valuePropName="checked" label="根级映射" name="rootPropKey">
+        <Switch />
       </Form.Item>
     </Form>
   </Modal>)

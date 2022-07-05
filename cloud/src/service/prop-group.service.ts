@@ -3,7 +3,7 @@ import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { LogicException, LogicExceptionCode } from 'config/logic.exception';
 import { PropBlock } from 'entities/PropBlock';
 import { PropGroup } from 'entities/PropGroup';
-import { PropItemType } from 'entities/PropItem';
+import { PropItem, PropItemType } from 'entities/PropItem';
 import { pick } from 'util.ts/common';
 import { PropBlockService } from './prop-block.service';
 
@@ -20,9 +20,14 @@ export class PropGroupService {
     const em = RequestContext.getEntityManager();
 
     if (rawGroup.propKey && rawGroup.root === true) {
-      const propKeyUnique = await this.checkPropKeyUnique(rawGroup.propKey, rawGroup.componentId, rawGroup.componentVersionId, em);
+      const propKeyUnique = await this.checkPropKeyUnique({
+        propKey: rawGroup.propKey,
+        componentId: rawGroup.componentId,
+        componentVersionId: rawGroup.componentVersionId,
+        em
+      });
       if (!propKeyUnique) {
-        throw new LogicException(`propKey not unique propKey: ${rawGroup.propKey}`, LogicExceptionCode.NotFound);
+        throw new LogicException(`not unique propKey: ${rawGroup.propKey} `, LogicExceptionCode.NotUnique);
       }
     }
 
@@ -37,6 +42,10 @@ export class PropGroupService {
       component: rawGroup.componentId,
       order: (firstGroup ? firstGroup.order : 0) + 1000
     });
+
+    if (!newGroup.root) {
+      delete newGroup.propKey;
+    }
 
     await em.flush();
 
@@ -130,9 +139,15 @@ export class PropGroupService {
     }
 
     if (rawGroup.propKey && group.root === true) {
-      const propKeyUnique = await this.checkPropKeyUnique(rawGroup.propKey, group.component.id, group.componentVersion.id, em, rawGroup.id);
+      const propKeyUnique = await this.checkPropKeyUnique({
+        propKey: rawGroup.propKey,
+        componentId: group.component.id,
+        componentVersionId: group.componentVersion.id,
+        em,
+        groupId: rawGroup.id
+      });
       if (!propKeyUnique) {
-        throw new LogicException(`propKey not unique propKey: ${rawGroup.propKey} groupId: ${group.id}`, LogicExceptionCode.NotFound);
+        throw new LogicException(`propKey not unique propKey: ${rawGroup.propKey} groupId: ${group.id}`, LogicExceptionCode.NotUnique);
       }
     }
 
@@ -185,20 +200,55 @@ export class PropGroupService {
     await em.flush();
   }
 
-  private async checkPropKeyUnique(propKey: string, componentId: number, componentVersionId: number, em: EntityManager, groupId?: number) {
-    const list = await em.find(PropGroup, {
+  async checkPropKeyUnique(params: { propKey: string, componentId: number, componentVersionId: number, em: EntityManager, groupId?: number, blockId?: number, itemId?: number }) {
+    const list = await params.em.find(PropGroup, {
       root: true,
-      propKey,
-      component: componentId,
-      componentVersion: componentVersionId
+      propKey: params.propKey,
+      component: params.componentId,
+      componentVersion: params.componentVersionId
     });
 
-    if (groupId) {
-      if (list.find(g => g.id !== groupId)) {
+    if (params.groupId) {
+      if (list.find(g => g.id !== params.groupId)) {
         return false;
       }
     } else {
       if (list.length) {
+        return false;
+      }
+    }
+
+    const blockList = await params.em.find(PropBlock, {
+      rootPropKey: true,
+      isTemplate: false,
+      propKey: params.propKey,
+      component: params.componentId,
+      componentVersion: params.componentVersionId
+    });
+
+    if (params.blockId) {
+      if (blockList.find(b => b.id !== params.blockId)) {
+        return false;
+      }
+    } else {
+      if (blockList.length) {
+        return false;
+      }
+    }
+
+    const itemList = await params.em.find(PropItem, {
+      rootPropKey: true,
+      propKey: params.propKey,
+      component: params.componentId,
+      componentVersion: params.componentVersionId
+    });
+
+    if (params.itemId) {
+      if (itemList.find(i => i.id !== params.itemId)) {
+        return false;
+      }
+    } else {
+      if (itemList.length) {
         return false;
       }
     }

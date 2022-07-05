@@ -3,7 +3,8 @@ import { HttpException, HttpStatus } from "@nestjs/common";
 // 自定义业务异常
 export enum LogicExceptionCode {
   NotFound = 1000,
-  UnExpect = 1001
+  UnExpect = 1001,
+  NotUnique = 1002
 }
 
 export class LogicException extends HttpException {

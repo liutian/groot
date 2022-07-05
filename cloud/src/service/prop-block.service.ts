@@ -26,6 +26,13 @@ export class PropBlockService {
       throw new LogicException(`not found group id: ${rawBlock.groupId}`, LogicExceptionCode.NotFound);
     }
 
+    if (rawBlock.propKey && !rawBlock.isTemplate) {
+      const propKeyUnique = await this.checkPropKeyUnique(rawBlock.propKey, group.component.id, group.componentVersion.id, rawBlock.groupId, rawBlock.rootPropKey, em);
+      if (!propKeyUnique) {
+        throw new LogicException(`not unique propKey:${rawBlock.propKey} groupId:${group.id}`, LogicExceptionCode.NotUnique);
+      }
+    }
+
     const firstBlock = await em.findOne(PropBlock, { group, order: { $gt: 0 } }, { orderBy: { order: 'DESC' } });
     const order = rawBlock.order ? rawBlock.order : (firstBlock ? firstBlock.order + 1000 : 1000);
 
@@ -36,6 +43,11 @@ export class PropBlockService {
       group,
       order
     });
+
+    if (newBlock.isTemplate) {
+      delete newBlock.propKey;
+      delete newBlock.rootPropKey;
+    }
 
     await em.flush();
 
@@ -192,6 +204,17 @@ export class PropBlockService {
 
     const block = await em.findOne(PropBlock, rawBlock.id);
 
+    if (!block) {
+      throw new LogicException(`not found block id: ${rawBlock.id}`, LogicExceptionCode.NotFound);
+    }
+
+    if (rawBlock.propKey) {
+      const propKeyUnique = await this.checkPropKeyUnique(rawBlock.propKey, block.component.id, block.componentVersion.id, block.group.id, rawBlock.rootPropKey, em, rawBlock.id);
+      if (!propKeyUnique) {
+        throw new LogicException(`not unique propKey:${rawBlock.propKey} groupId:${block.group.id}`, LogicExceptionCode.NotUnique);
+      }
+    }
+
     pick(rawBlock, ['name', 'propKey', 'rootPropKey'], block);
 
     await em.flush();
@@ -337,6 +360,35 @@ export class PropBlockService {
         await this.shallowCloneFromTemplateBlock(valueOfGroup, innnerBlock, em, groupIdList, blockIdList, itemIdList);
       }
     }
+  }
+
+  private async checkPropKeyUnique(propKey: string, componentId: number, componentVersionId: number, groupId: number, rootPropKey: boolean, em: EntityManager, blockId?: number) {
+    if (rootPropKey) {
+      const unique = await this.propGroupService.checkPropKeyUnique({ propKey, componentId, componentVersionId, em, blockId });
+      if (!unique) {
+        return false;
+      }
+    }
+
+    const list = await em.find(PropBlock, {
+      group: groupId,
+      rootPropKey: rootPropKey || false,
+      propKey,
+      component: componentId,
+      componentVersion: componentVersionId
+    });
+
+    if (blockId) {
+      if (list.find(b => b.id !== blockId)) {
+        return false;
+      }
+    } else {
+      if (list.length) {
+        return false;
+      }
+    }
+
+    return true;
   }
 }
 
