@@ -29,7 +29,7 @@ const SideFooter: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
     </div>
     <Typography.Text ellipsis={{ tooltip: 'columns.[].form.lable' }} className={styles.content} >
       <NumberOutlined />&nbsp;
-      <span>columns.[].form.lable</span>
+      <span>{workbenchModel.activePropItemPath}</span>
     </Typography.Text>
     <div >
       <div className={styles.actionItem} onClick={switchWidgetWidnwo}>

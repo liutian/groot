@@ -48,6 +48,9 @@ export default class WorkbenchModel {
   public notifyReady = false;
   public propObjectReady = false;
 
+  public activePropItemPath = '';
+  public activePropItemId?: number;
+
   public init = (component: Component, iframeRef: { current: HTMLIFrameElement }, designMode: boolean) => {
     this.loadComponent = 'over';
     this.iframeRef = iframeRef;
@@ -237,8 +240,8 @@ export default class WorkbenchModel {
    * @param blockId 配置块id
    * @returns 配置块对象
    */
-  getPropBlock = (blockId: number): PropBlock => {
-    return this.getPropBlockOrGroup(blockId, 'block');
+  getPropBlock = (blockId: number, path?: [PropItem | PropBlock | PropGroup]): PropBlock => {
+    return this.getPropBlockOrGroupOrItem(blockId, 'block', path);
   }
 
   /**
@@ -246,14 +249,21 @@ export default class WorkbenchModel {
    * @param groupId 配置组ID
    * @returns 配置组对象
    */
-  getPropGroup = (groupId: number): PropGroup => {
-    return this.getPropBlockOrGroup(groupId, 'group');
+  getPropGroup = (groupId: number, path?: [PropItem | PropBlock | PropGroup]): PropGroup => {
+    return this.getPropBlockOrGroupOrItem(groupId, 'group', path);
   }
 
-  getPropBlockOrGroup = (id: number, type: 'group' | 'block') => {
+  getPropItem = (itemId: number, path?: [PropItem | PropBlock | PropGroup]): PropItem => {
+    return this.getPropBlockOrGroupOrItem(itemId, 'item', path)
+  }
+
+  getPropBlockOrGroupOrItem = (id: number, type: 'group' | 'block' | 'item', path?: [PropItem | PropBlock | PropGroup]) => {
+    if (!path) {
+      path = [] as any;
+    }
     for (let index = 0; index < this.rootGroupList.length; index++) {
       const rootGroup = this.rootGroupList[index];
-      const result = this.getProp(id, type, rootGroup);
+      const result = this.getProp(id, type, rootGroup, path);
       if (result) {
         return result;
       }
@@ -263,12 +273,15 @@ export default class WorkbenchModel {
   }
 
   // 使用范型会导致sourceMap信息丢失
-  getProp = (id: number, type: 'block' | 'group' | 'item', group: PropGroup) => {
+  getProp = (id: number, type: 'block' | 'group' | 'item', group: PropGroup, path?: [PropItem | PropBlock | PropGroup]) => {
     if (type === 'group' && group.id === id) {
+      path.push(group);
       return group;
     }
 
     if (type === 'block' && group.struct === 'List' && id === group.templateBlock.id) {
+      path.push(group);
+      path.push(group.templateBlock);
       return group.templateBlock;
     }
 
@@ -281,6 +294,8 @@ export default class WorkbenchModel {
     for (let index = 0; index < blockList.length; index++) {
       const block = blockList[index];
       if (type === 'block' && block.id === id) {
+        path.push(group);
+        path.push(block);
         return block;
       }
 
@@ -288,12 +303,15 @@ export default class WorkbenchModel {
       for (let itemIndex = 0; itemIndex < itemList.length; itemIndex++) {
         const item = itemList[itemIndex];
         if (type === 'item' && item.id === id) {
+          path.push(group);
+          path.push(block);
+          path.push(item);
           return item;
         }
 
         if (item.type === 'List' || item.type === 'Item' || item.type === 'Hierarchy') {
           if (item.valueOfGroup) {
-            const result = this.getProp(id, type, item.valueOfGroup);
+            const result = this.getProp(id, type, item.valueOfGroup, path);
             if (result) {
               return result;
             }
@@ -315,5 +333,41 @@ export default class WorkbenchModel {
       preActiveGroup.templateBlockDesignMode = false;
       this.activeGroupId = id;
     }
+  }
+
+  public setActivePropItemPath = (itemId: number): void => {
+    if (this.activePropItemId === itemId) {
+      return;
+    }
+
+    let path = [];
+    const result = this.getPropItem(itemId, path as any);
+    if (!result) {
+      throw new Error(`not found propItem id: ${itemId}`);
+    }
+    const propKeyList = path.reduce((pre, currennt, index) => {
+      if (index % 3 === 0) {
+        const group = currennt as PropGroup;
+        if (group.root && group.propKey) {
+          pre.push(group.propKey);
+        }
+      } else if (index % 3 === 1) {
+        const block = currennt as PropBlock;
+        if (block.propKey) {
+          pre.push(block.propKey);
+        }
+      } else if (index % 3 === 2) {
+        const item = currennt as PropItem;
+        pre.push(item.propKey);
+        if (item.type === 'List') {
+          pre.push('[]');
+        }
+      }
+
+      return pre;
+    }, []) as string[];
+
+    this.activePropItemPath = propKeyList.join('.');
+    this.activePropItemId = itemId;
   }
 }

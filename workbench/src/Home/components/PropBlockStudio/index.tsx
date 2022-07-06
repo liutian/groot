@@ -14,7 +14,7 @@ type PropType = {
 
 function PropBlockStudio({ block, freezeSetting, templateMode, noWrapMode }: PropType) {
   const [studioModel, updateAction] = useModel<StudioModel>('studio');
-  const [workbenchModel] = useModel<WorkbenchModel>('workbench');
+  const [workbenchModel, workbenchUpdateAction] = useModel<WorkbenchModel>('workbench');
   const [form] = Form.useForm();
   workbenchModel.blockFormInstanceMap.set(block.id, form);
 
@@ -114,7 +114,17 @@ function PropBlockStudio({ block, freezeSetting, templateMode, noWrapMode }: Pro
       <Row gutter={6}>
         {
           block.propItemList.map((item, index) => {
-            return <Col span={item.span} key={item.id} >
+            return <Col span={item.span} key={item.id}
+              onMouseEnter={() => {
+                workbenchModel.setActivePropItemPath(item.id);
+              }}
+              onMouseLeave={() => {
+                workbenchUpdateAction(() => {
+                  workbenchModel.activePropItemId = 0;
+                  workbenchModel.activePropItemPath = '';
+                })
+              }}
+            >
               <Form.Item className={styles.propItem} label={renderItemLabel(item, index)} name={item.propKey} preserve={false}
                 valuePropName={item.type === 'Switch' ? 'checked' : 'value'} initialValue={item.defaultValue}>
                 {renderFormItem(item)}
