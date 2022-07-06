@@ -45,9 +45,21 @@ const PropGroupSetting: React.FC = () => {
           <Radio value="Item">配置项</Radio>
         </Radio.Group>
       </Form.Item>
-      <Form.Item label="属性映射" name="propKey" rules={[{ pattern: propKeyRule, message: '格式错误，必须是标准js标识符' }]}>
-        <Input />
+      <Form.Item
+        noStyle
+        shouldUpdate={(prevValues, currentValues) => prevValues.struct !== currentValues.struct}
+      >
+        {({ getFieldValue }) => {
+          const required = getFieldValue('struct') === 'List';
+          const rules = [{ required }, { pattern: propKeyRule, message: '格式错误，必须是标准js标识符' }];
+          return (
+            <Form.Item label="属性名" name="propKey" rules={rules}>
+              <Input />
+            </Form.Item>
+          )
+        }}
       </Form.Item>
+
     </Form>
   </Modal>)
 }

@@ -78,10 +78,10 @@ const PropItemSetting: React.FC = () => {
       <Form.Item label="类型" name="type" rules={[{ required: true }]}>
         <Select disabled={!!studioModel.currSettingPropItem?.id} options={optionList} />
       </Form.Item>
-      <Form.Item label="属性映射" rules={[{ required: true }]} name="propKey">
+      <Form.Item label="属性名" rules={[{ required: true }]} name="propKey">
         <Input />
       </Form.Item>
-      <Form.Item valuePropName="checked" label="根级映射" name="rootPropKey">
+      <Form.Item valuePropName="checked" label="根属性" name="rootPropKey">
         <Switch />
       </Form.Item>
       <Form.Item label="宽度" name="span">

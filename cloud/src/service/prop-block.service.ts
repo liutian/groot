@@ -21,6 +21,11 @@ export class PropBlockService {
   async add(rawBlock: PropBlock) {
     const em = RequestContext.getEntityManager();
 
+    if (rawBlock.isTemplate) {
+      delete rawBlock.propKey;
+      delete rawBlock.rootPropKey;
+    }
+
     const group = await em.findOne(PropGroup, rawBlock.groupId);
     if (!group) {
       throw new LogicException(`not found group id: ${rawBlock.groupId}`, LogicExceptionCode.NotFound);
@@ -44,10 +49,7 @@ export class PropBlockService {
       order
     });
 
-    if (newBlock.isTemplate) {
-      delete newBlock.propKey;
-      delete newBlock.rootPropKey;
-    }
+
 
     await em.flush();
 

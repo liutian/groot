@@ -1,3 +1,4 @@
+import { fillPropChain } from "@util/utils";
 import { FormInstance } from "antd";
 
 export default class WorkbenchModel {
@@ -12,11 +13,11 @@ export default class WorkbenchModel {
    */
   public widgetWindowRect: 'min' | 'full' | 'normal' | 'none' | { x?: number, y?: number, width?: number, height?: number } = 'min';
   /**
-   * 侧边栏最小拖拽最小宽度
+   * 侧边栏拖拽最小宽度
    */
   public minSideWidth = 480;
   public iframeRef?: { current: HTMLIFrameElement };
-  public iframePath = '';
+  public iframePath = 'http://job.weimob.com';
   /**
    * 组件信息
    */
@@ -41,6 +42,11 @@ export default class WorkbenchModel {
   public rootGroupList: PropGroup[] = [];
 
   public currEnv: 'dev' | 'qa' | 'pl' | 'online' = 'dev';
+
+  public propObject = {};
+
+  public notifyReady = false;
+  public propObjectReady = false;
 
   public init = (component: Component, iframeRef: { current: HTMLIFrameElement }, designMode: boolean) => {
     this.loadComponent = 'over';
@@ -69,37 +75,69 @@ export default class WorkbenchModel {
   /**
    * 配置项变动通知iframe更新
    */
-  notifyIframe = (content: string) => {
-    // const props = content;
+  notifyIframe = () => {
+    if (!this.notifyIframe || !this.propObjectReady) {
+      return;
+    }
 
-    // this.iframeRef.current.contentWindow.postMessage({
-    //   type: 'refresh',
-    //   path: this.component.instance.path,
-    //   metadata: {
-    //     moduleName: this.component.componentName + '_module',
-    //     packageName: this.component.packageName,
-    //     componentName: this.component.componentName,
-    //     // todo
-    //     props
-    //   }
-    // }, '*');
+    this.iframeRef.current.contentWindow.postMessage({
+      type: 'refresh',
+      // path: this.component.instance.path,
+      metadata: {
+        moduleName: this.component.componentName + '_module',
+        packageName: this.component.packageName,
+        componentName: this.component.componentName,
+        // todo
+        props: this.propObject
+      }
+    }, '*');
   }
 
   // todo
-  public productStudioData = () => {
-    const props: any[] = [];
+  public refreshComponent = () => {
+    Object.keys(this.propObject).forEach(k => delete this.propObject[k]);
     this.rootGroupList.forEach((group) => {
-      group.propBlockList.forEach((block) => {
-        const values = this.blockFormInstanceMap.get(block.id).getFieldsValue();
-        block.propItemList.forEach((item) => {
-          props.push({
-            key: item.propKey,
-            defaultValue: values ? values[item.propKey] : item.defaultValue
-          })
-        })
-      })
+      if (group.propKey) {
+        const ctx = fillPropChain(this.propObject, group.propKey);
+        this.buildPropObject(group, ctx);
+      } else {
+        this.buildPropObject(group, this.propObject);
+      }
+    });
+    this.propObjectReady = true;
+    console.log('<=================== prop object build out =================>\n', this.propObject);
+    this.notifyIframe();
+  }
+
+  public buildPropObject(group: PropGroup, ctx: Object) {
+    group.propBlockList.forEach((block) => {
+      const preCTX = ctx;
+      if (group.struct === 'Default' && block.propKey) {
+        if (block.rootPropKey) {
+          ctx = fillPropChain(this.propObject, block.propKey);
+        } else {
+          ctx = fillPropChain(ctx, block.propKey);
+        }
+      }
+
+      block.propItemList.forEach((item) => {
+        const preCTX = ctx;
+        if (item.propKey) {
+          if (item.rootPropKey) {
+            ctx = fillPropChain(this.propObject, item.propKey);
+          } else {
+            ctx = fillPropChain(ctx, item.propKey);
+          }
+        }
+
+        if (item.type === 'List' || item.type === 'Item' || item.type === 'Hierarchy') {
+          this.buildPropObject(item.valueOfGroup, ctx);
+        }
+        ctx = preCTX;
+      });
+
+      ctx = preCTX;
     })
-    this.notifyIframe(JSON.stringify(props));
   }
 
   /**

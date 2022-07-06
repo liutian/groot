@@ -37,10 +37,10 @@ const PropBlockSetting: React.FC = () => {
       <Form.Item name="name" label="名称" rules={[{ required: true }]}>
         <Input ref={inputRef} />
       </Form.Item>
-      <Form.Item label="属性映射" name="propKey">
+      <Form.Item label="属性名" name="propKey">
         <Input />
       </Form.Item>
-      <Form.Item valuePropName="checked" label="根级映射" name="rootPropKey">
+      <Form.Item valuePropName="checked" label="根属性" name="rootPropKey">
         <Switch />
       </Form.Item>
     </Form>

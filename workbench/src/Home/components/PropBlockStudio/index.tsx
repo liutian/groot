@@ -110,7 +110,7 @@ function PropBlockStudio({ block, freezeSetting, templateMode, noWrapMode }: Pro
   }
 
   return <div className={templateMode || noWrapMode ? styles.containerWrap : ''}>
-    <Form form={form} layout="vertical" className="studio-form" onValuesChange={() => workbenchModel.productStudioData()}>
+    <Form form={form} layout="vertical" className="studio-form" onValuesChange={() => workbenchModel.refreshComponent()}>
       <Row gutter={6}>
         {
           block.propItemList.map((item, index) => {

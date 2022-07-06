@@ -4,7 +4,8 @@ import { HttpException, HttpStatus } from "@nestjs/common";
 export enum LogicExceptionCode {
   NotFound = 1000,
   UnExpect = 1001,
-  NotUnique = 1002
+  NotUnique = 1002,
+  ParamError = 1003
 }
 
 export class LogicException extends HttpException {

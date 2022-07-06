@@ -1,4 +1,5 @@
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { LogicException, LogicExceptionCode } from 'config/logic.exception';
 import { PropBlock } from 'entities/PropBlock';
 import { PropGroup } from 'entities/PropGroup';
 import { PropItem } from 'entities/PropItem';
@@ -27,6 +28,9 @@ export class StudioController {
 
   @Post('/group/add')
   async groupAdd(@Body() group: PropGroup) {
+    if (group.struct === 'List' && !group.propKey) {
+      throw new LogicException(`struct 为 List 时 propKey 必须有值`, LogicExceptionCode.ParamError);
+    }
     return this.groupService.add(group);
   }
 

@@ -165,6 +165,7 @@ export default class StudioModel {
         this.workbench.rootGroupList.splice(groupIndex, 1, newGroup);
         this.settingModalLoading = false;
         this.currSettingPropGroup = undefined;
+        this.workbench.refreshComponent();
       })
     } else {
       fetch(`${serverPath}/group/add`, {
@@ -187,6 +188,7 @@ export default class StudioModel {
 
         this.settingModalLoading = false;
         this.currSettingPropGroup = undefined;
+        this.workbench.refreshComponent();
       })
     }
   }
@@ -208,6 +210,7 @@ export default class StudioModel {
         group.propBlockList.splice(blockIndex, 1, newBlock);
         this.settingModalLoading = false;
         this.currSettingPropBlock = undefined;
+        this.workbench.refreshComponent();
       });
     } else {
       fetch(`${serverPath}/block/add`, {
@@ -223,6 +226,7 @@ export default class StudioModel {
 
         this.settingModalLoading = false;
         this.currSettingPropBlock = undefined;
+        this.workbench.refreshComponent();
       })
 
     }
@@ -244,6 +248,7 @@ export default class StudioModel {
         blockList: result.data.blockList,
         itemList: result.data.itemList
       });
+      this.workbench.refreshComponent();
     })
   }
 
@@ -272,6 +277,7 @@ export default class StudioModel {
 
         this.settingModalLoading = false;
         this.currSettingPropItem = undefined;
+        this.workbench.refreshComponent();
       });
     } else {
       fetch(`${serverPath}/item/add`, {
@@ -288,6 +294,7 @@ export default class StudioModel {
 
         this.settingModalLoading = false;
         this.currSettingPropItem = undefined;
+        this.workbench.refreshComponent();
       })
     }
 
@@ -327,6 +334,7 @@ export default class StudioModel {
       if (this.workbench.activeGroupId === groupId) {
         this.workbench.activeGroupId = this.workbench.rootGroupList[0]?.id;
       }
+      this.workbench.refreshComponent();
     })
   }
 
@@ -334,6 +342,7 @@ export default class StudioModel {
     fetch(`${serverPath}/block/remove/${blockId}`).then(() => {
       let blockIndex = group.propBlockList.findIndex(b => b.id === blockId);
       group.propBlockList.splice(blockIndex, 1);
+      this.workbench.refreshComponent();
     })
   }
 
@@ -345,6 +354,7 @@ export default class StudioModel {
         let itemIndex = block.propItemList.findIndex(item => item.id === itemData.id);
         block.propItemList.splice(itemIndex, 1);
       }
+      this.workbench.refreshComponent();
     })
   }
 

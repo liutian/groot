@@ -35,6 +35,9 @@ const Home = () => {
     fetch(url).then(r => r.json()).then(({ data }: { data: Component }) => {
       workbenchModel.init(data, iframeRef, designMode);
       studioModel.init(workbenchModel);
+      setTimeout(() => {
+        workbenchModel.refreshComponent();
+      }, 300);
       // todo
       // setPageName(`groot::{"path": "${workbenchModel.component.instance.path}","name":"${workbenchModel.component.name}"}`);
     }, () => {
@@ -50,7 +53,8 @@ const Home = () => {
       if (event.data === 'ok') {
         // 首次通知更新数据
         // todo
-        workbenchModel.notifyIframe('todo');
+        workbenchModel.notifyReady = true;
+        workbenchModel.notifyIframe();
       }
     }
 
