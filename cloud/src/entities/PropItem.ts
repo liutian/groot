@@ -1,10 +1,9 @@
-import { Cascade, Collection, Entity, Enum, ManyToOne, OneToMany, OneToOne, Property } from "@mikro-orm/core";
+import { Entity, Enum, ManyToOne, OneToOne, Property } from "@mikro-orm/core";
 import { BaseEntity } from "./BaseEntity";
 import { Component } from "./Component";
 import { ComponentVersion } from "./ComponentVersion";
 import { PropBlock } from "./PropBlock";
 import { PropGroup } from "./PropGroup";
-import { PropValueOption } from "./PropValueOption";
 
 @Entity()
 export class PropItem extends BaseEntity {
@@ -22,10 +21,10 @@ export class PropItem extends BaseEntity {
   defaultValue?: string;
 
   /**
-   * 类型为多选，单选，下拉框时所对应选项列表
+   * 类型为多选，单选，下拉框时所对应选项列表，json化存储
    */
-  @OneToMany({ entity: () => PropValueOption, mappedBy: option => option.propItem, cascade: [Cascade.ALL], orphanRemoval: true })
-  optionList = new Collection<PropValueOption>(this);
+  @Property({ length: 10000 })
+  valueOptions?: string;
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'blockId' })
   block: PropBlock;

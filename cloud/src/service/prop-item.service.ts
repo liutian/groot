@@ -4,7 +4,6 @@ import { LogicException, LogicExceptionCode } from 'config/logic.exception';
 import { PropBlock } from 'entities/PropBlock';
 import { PropGroup } from 'entities/PropGroup';
 import { PropItem, PropItemType } from 'entities/PropItem';
-import { PropValueOption } from 'entities/PropValueOption';
 import { pick } from 'util.ts/common';
 import { PropGroupService } from './prop-group.service';
 
@@ -68,7 +67,7 @@ export class PropItemService {
       const firstItem = await em.findOne(PropItem, { block }, { orderBy: { order: 'DESC' } });
 
       newItem = em.create(PropItem, {
-        ...pick(rawItem, ['label', 'propKey', 'rootPropKey', 'type', 'span']),
+        ...pick(rawItem, ['label', 'propKey', 'rootPropKey', 'type', 'span', 'valueOptions']),
         block,
         group: block.group,
         component: block.component,
@@ -78,18 +77,6 @@ export class PropItemService {
       });
 
       await em.flush();
-
-      const optionList = rawItem.optionList as any as PropValueOption[] || [];
-      for (let optionIndex = 0; optionIndex < optionList.length; optionIndex++) {
-        const option = optionList[optionIndex];
-        em.create(PropValueOption, {
-          ...option,
-          componentVersion: block.componentVersion,
-          component: block.component,
-          propItem: newItem
-        });
-        await em.flush();
-      }
 
       if (newItem.type === PropItemType.LIST) {
         const rawGroup = {
@@ -195,7 +182,7 @@ export class PropItemService {
   async update(rawItem: PropItem) {
     const em = RequestContext.getEntityManager();
 
-    const propItem = await em.findOne(PropItem, rawItem.id, { populate: ['optionList'] });
+    const propItem = await em.findOne(PropItem, rawItem.id);
 
     if (!propItem) {
       throw new LogicException(`not found propItem id: ${rawItem.id}`, LogicExceptionCode.NotFound);
@@ -208,25 +195,7 @@ export class PropItemService {
       }
     }
 
-    pick(rawItem, ['label', 'propKey', 'rootPropKey', 'type', 'span'], propItem);
-
-    if (rawItem.optionList && rawItem.optionList.length) {
-      propItem.optionList.removeAll();
-      // 对集合数据进行删除后必须立即提交sql，否则部分数据无法真正新增成功
-      await em.flush();
-
-      const optionList = rawItem.optionList as any as PropValueOption[] || [];
-      for (let optionIndex = 0; optionIndex < optionList.length; optionIndex++) {
-        const option = optionList[optionIndex];
-        em.create(PropValueOption, {
-          label: option.label,
-          value: option.value,
-          componentVersion: propItem.componentVersion,
-          component: propItem.component,
-          propItem: propItem
-        });
-      }
-    }
+    pick(rawItem, ['label', 'propKey', 'rootPropKey', 'type', 'span', 'valueOptions'], propItem);
 
     await em.flush();
 

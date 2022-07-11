@@ -4,7 +4,6 @@ import { LogicException, LogicExceptionCode } from 'config/logic.exception';
 import { PropBlock } from 'entities/PropBlock';
 import { PropGroup } from 'entities/PropGroup';
 import { PropItem, PropItemType } from 'entities/PropItem';
-import { PropValueOption } from 'entities/PropValueOption';
 import { autoIncrementForName, pick } from 'util.ts/common';
 import { omitProps } from 'util.ts/ormUtil';
 import { PropGroupService } from './prop-group.service';
@@ -68,7 +67,7 @@ export class PropBlockService {
 
       const group = await em.findOne(PropGroup, groupId, {
         populate: [
-          'templateBlock.propItemList.optionList'
+          'templateBlock.propItemList'
         ]
       });
 
@@ -121,7 +120,7 @@ export class PropBlockService {
 
     for (let itemIdIndex = 0; itemIdIndex < itemIdList.length; itemIdIndex++) {
       const itemId = itemIdList[itemIdIndex];
-      const item = await em.findOne(PropItem, itemId, { populate: ['optionList'] });
+      const item = await em.findOne(PropItem, itemId);
 
       if (!item) {
         throw new LogicException(`not found item id:${itemId}`, LogicExceptionCode.NotFound);
@@ -159,11 +158,7 @@ export class PropBlockService {
   async remove(blockId: number) {
     const em = RequestContext.getEntityManager();
 
-    const block = await em.findOne(PropBlock, blockId, {
-      populate: [
-        'propItemList.optionList'
-      ]
-    });
+    const block = await em.findOne(PropBlock, blockId, { populate: ['propItemList'] });
 
     if (!block) {
       throw new LogicException(`not found block id : ${blockId}`, LogicExceptionCode.NotFound);
@@ -176,11 +171,6 @@ export class PropBlockService {
       const itemList = block.propItemList.getItems();
       for (let itemIndex = 0; itemIndex < itemList.length; itemIndex++) {
         const item = itemList[itemIndex];
-
-        for (let optionIndex = 0; optionIndex < item.optionList.length; optionIndex++) {
-          const option = item.optionList[optionIndex];
-          await em.removeAndFlush(option);
-        }
 
         await em.removeAndFlush(item);
         if (item.type === PropItemType.LIST) {
@@ -255,7 +245,7 @@ export class PropBlockService {
 
   private async shallowCloneFromTemplateItem(group: PropGroup, newBlock: PropBlock, copyItem: PropItem, em: EntityManager, groupIdList: number[], blockIdList: number[], itemIdList: number[]) {
     const newItem = em.create(PropItem, pick(copyItem, [
-      'label', 'propKey', 'type', 'defaultValue', 'span', 'componentVersion', 'component', 'order'
+      'label', 'propKey', 'type', 'defaultValue', 'span', 'componentVersion', 'component', 'order', 'valueOptions'
     ]));
 
     newItem.block = newBlock;
@@ -266,12 +256,6 @@ export class PropBlockService {
       newItem.imagePropItem = copyItem;
     }
 
-    const copyOptionList = copyItem.optionList.getItems();
-    for (let optionIndex = 0; optionIndex < copyOptionList.length; optionIndex++) {
-      const copyOption = copyOptionList[optionIndex];
-      const newOption = em.create(PropValueOption, pick(copyOption, ['label', 'value', 'componentVersion', 'component']));
-      newOption.propItem = newItem;
-    }
     await em.flush();
     itemIdList.push(newItem.id);
 
@@ -281,7 +265,7 @@ export class PropBlockService {
       }
 
       const innnerTemplateBlock = await em.findOne(PropBlock, copyItem.templateBlock,
-        { populate: ['propItemList.optionList'] }
+        { populate: ['propItemList'] }
       );
 
       if (!innnerTemplateBlock) {
@@ -305,7 +289,7 @@ export class PropBlockService {
 
       const innerChildrenBlock = await em.find(PropBlock,
         { group: copyItem.valueOfGroup, isTemplate: false },
-        { populate: ['propItemList.optionList'] }
+        { populate: ['propItemList'] }
       );
 
       for (let innerBlockIndex = 0; innerBlockIndex < innerChildrenBlock.length; innerBlockIndex++) {
@@ -328,7 +312,7 @@ export class PropBlockService {
 
       if (copyItem.directBlock) {
         const directBlock = await em.findOne(PropBlock, copyItem.directBlock, {
-          populate: ['propItemList.optionList']
+          populate: ['propItemList']
         });
         if (!directBlock) {
           throw new LogicException(`not found directBlock copyItem:${copyItem.id}`, LogicExceptionCode.NotFound);
@@ -354,7 +338,7 @@ export class PropBlockService {
 
       const innerChildrenBlock = await em.find(PropBlock,
         { group: copyItem.valueOfGroup },
-        { populate: ['propItemList.optionList'] }
+        { populate: ['propItemList'] }
       );
 
       for (let innerBlockIndex = 0; innerBlockIndex < innerChildrenBlock.length; innerBlockIndex++) {

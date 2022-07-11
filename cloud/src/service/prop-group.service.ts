@@ -81,7 +81,7 @@ export class PropGroupService {
 
     const group = await em.findOne(PropGroup, groupId, {
       populate: [
-        'propBlockList.propItemList.optionList'
+        'propBlockList.propItemList'
       ]
     });
 
@@ -99,11 +99,6 @@ export class PropGroupService {
         const itemList = block.propItemList.getItems();
         for (let itemIndex = 0; itemIndex < itemList.length; itemIndex++) {
           const item = itemList[itemIndex];
-
-          for (let optionIndex = 0; optionIndex < item.optionList.length; optionIndex++) {
-            const option = item.optionList[optionIndex];
-            await em.removeAndFlush(option);
-          }
 
           await em.removeAndFlush(item);
           if (item.type === PropItemType.LIST) {

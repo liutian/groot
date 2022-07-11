@@ -1,4 +1,4 @@
-import { autoIncrementForName, uuid } from "@util/utils";
+import { autoIncrementForName, parseOptions, stringifyOptions, uuid } from "@util/utils";
 import { serverPath } from "config";
 import WorkbenchModel from "./WorkbenchModel";
 
@@ -256,7 +256,9 @@ export default class StudioModel {
     const newItem = Object.assign(this.currSettingPropItem, item);
 
     if (!['Select', 'Radio', 'Checkbox'].includes(newItem.type)) {
-      newItem.optionList = undefined;
+      newItem.valueOptions = undefined;
+    } else {
+      stringifyOptions(newItem);
     }
 
     this.settingModalLoading = true;
@@ -270,6 +272,7 @@ export default class StudioModel {
       }).then(r => r.json()).then((result: { data: PropItem[] }) => {
         for (let index = 0; index < result.data.length; index++) {
           const propItem = result.data[index];
+          parseOptions(propItem);
           const block = this.workbench.getPropBlock(propItem.blockId);
           let itemIndex = block.propItemList.findIndex(item => item.id === propItem.id);
           block.propItemList.splice(itemIndex, 1, propItem);
@@ -323,6 +326,7 @@ export default class StudioModel {
       data.newItem.valueOfGroup = valueOfGroup;
       valueOfGroup.expandBlockIdList = [];
     }
+    parseOptions(data.newItem);
   }
 
   public delGroup = (groupId: number) => {

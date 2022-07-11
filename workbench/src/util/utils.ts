@@ -28,3 +28,15 @@ export const fillPropChain = (ctx: Object, propStr: string) => {
 
   return result;
 }
+
+export const parseOptions = (propItem: PropItem) => {
+  if (['Checkbox', 'Radio', 'Select'].includes(propItem.type)) {
+    propItem.optionList = JSON.parse(propItem.valueOptions || '[]');
+  }
+}
+
+export const stringifyOptions = (propItem: PropItem) => {
+  if (['Checkbox', 'Radio', 'Select'].includes(propItem.type)) {
+    propItem.valueOptions = JSON.stringify(propItem.optionList || []);
+  }
+}

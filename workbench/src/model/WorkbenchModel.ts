@@ -1,4 +1,4 @@
-import { fillPropChain } from "@util/utils";
+import { fillPropChain, parseOptions } from "@util/utils";
 import { FormInstance } from "antd";
 
 export default class WorkbenchModel {
@@ -229,6 +229,7 @@ export default class WorkbenchModel {
           const valueOfGroup = this.buildPropGroup(item.valueOfGroupId, store);
           item.valueOfGroup = valueOfGroup;
         }
+        parseOptions(item);
       }
     }
 

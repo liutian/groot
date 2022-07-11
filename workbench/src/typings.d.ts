@@ -49,7 +49,6 @@ type PropItem = {
   valueOfGroup?: PropGroup,
   templateBlock?: PropBlock,
   directBlock?: PropBlock,
-  optionList: PropValueOption[],
   type: 'Input' | 'Date_Picker' | 'Switch' | 'Select' | 'Radio' | 'Checkbox' | 'List' | 'Item' | 'Hierarchy',
 
   groupId: number,
@@ -57,7 +56,8 @@ type PropItem = {
 
   // 分割线下面时界面属性
   highlight?: boolean,
-} & Omit<import("../../cloud/src/entities/PropItem").PropItem, 'type' | 'valueOfGroup' | 'templateBlock' | 'directBlock' | 'optionList'>;
+  optionList: PropValueOption[],
+} & Omit<import("../../cloud/src/entities/PropItem").PropItem, 'type' | 'valueOfGroup' | 'templateBlock' | 'directBlock'>;
 
 type PropValueOption = {
   label: string,
