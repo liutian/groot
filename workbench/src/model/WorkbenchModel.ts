@@ -45,8 +45,8 @@ export default class WorkbenchModel {
 
   public propObject = {};
 
-  public notifyReady = false;
-  public propObjectReady = false;
+  public iframeReady = false;
+  public propInfoReady = false;
 
   public activePropItemPath = '';
   public activePropItemId?: number;
@@ -59,6 +59,9 @@ export default class WorkbenchModel {
     this.buildPropTree();
     console.log('<=================== prop tree built out =================>\n', this.rootGroupList);
     this.activeGroupId = this.rootGroupList[0].id;
+
+    this.propInfoReady = true;
+    this.refreshComponent();
 
     if (!designMode) {
       const releaseId = this.component.release.id;
@@ -79,7 +82,7 @@ export default class WorkbenchModel {
    * 配置项变动通知iframe更新
    */
   notifyIframe = () => {
-    if (!this.notifyIframe || !this.propObjectReady) {
+    if (!this.iframeReady || !this.propInfoReady) {
       return;
     }
 
@@ -107,7 +110,6 @@ export default class WorkbenchModel {
         this.buildPropObject(group, this.propObject);
       }
     });
-    this.propObjectReady = true;
     console.log('<=================== prop object build out =================>\n', this.propObject);
     this.notifyIframe();
   }
