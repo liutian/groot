@@ -79,6 +79,12 @@ export class PropItem extends BaseEntity {
    */
   @ManyToOne({ serializer: value => value?.id, serializedName: 'imagePropItemId' })
   imagePropItem?: PropItem;
+
+  /**
+   * 版本升级时，确认当前propItem是否被改动的判断条件
+   */
+  @Property()
+  versionTraceId?: number;
 }
 
 export enum PropItemType {
