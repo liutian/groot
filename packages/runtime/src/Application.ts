@@ -1,5 +1,5 @@
 import { CodeMetadata } from '@grootio/core';
-import { loadWebWorker } from './config';
+import { loadWebWorker } from './bootstrap';
 import { Page } from './Page';
 import { ApplicationDataType, UIManagerInstance, WebWorkerOutputMessage } from './types';
 import { errorInfo, iframeNamePrefix, studioMode } from './util';

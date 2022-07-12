@@ -20,19 +20,19 @@ export type WebWorkerOutputMessage = {
  */
 export type UIManagerOption = {
   /**
-   * 拉取代码元数据的服务器地址
+   * 服务器地址
    */
   cloudServer?: string;
   /**
-   * 项目key
+   * 应用key
    */
   applicationKey?: string;
   /**
-   * 是否立即加载WebWorker
+   * 是否提前加载WebWorker
    */
-  loadWebWorkerOnInit?: boolean;
+  preLoadWebWorker?: boolean;
   /**
-   * 懒加载项目信息
+   * 懒加载应用信息
    */
   lazyLoadApplication?: boolean | Promise<void>;
   AMD: AMDModuleOption;

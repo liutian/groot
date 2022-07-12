@@ -1,2 +1,2 @@
 export * from './src/UIManager';
-export * from './src/config';
+export * from './src/bootstrap';

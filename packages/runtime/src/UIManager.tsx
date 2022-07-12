@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import React from 'react';
 
-import { bootstrap, loadApplication } from './config';
+import { bootstrap, loadApplication } from './bootstrap';
 import { errorInfo } from './util';
 import { UIManagerOption, UIManagerInstance } from './types';
 import { Page } from './Page';
@@ -43,7 +43,8 @@ export const UIManager: IUIManager<{ path: string }> = ({ path }) => {
     return <>application loading...</>;
   }
 
-  if (!managerInstance.application!.hasPage(path)) {
+  if (!managerInstance.application.hasPage(path)) {
+    // todo 支持动态路由
     return <>page not found</>;
   }
 
@@ -51,7 +52,7 @@ export const UIManager: IUIManager<{ path: string }> = ({ path }) => {
     return <>page loading...</>;
   }
 
-  const loadPageResult = managerInstance.application!.loadPage(path);
+  const loadPageResult = managerInstance.application.loadPage(path);
   if (loadPageResult instanceof Page) {
     // 热更新
     watchRefreshOnlyOne(loadPageResult, () => {
@@ -92,7 +93,7 @@ function useRefresh() {
  */
 UIManager.init = (options: UIManagerOption) => {
   if (instanceReady) {
-    throw new Error('repeat init!!!');
+    throw new Error('UIManager.init have been performed');
   }
   managerInstance = bootstrap(options);
   instanceReady = true;
