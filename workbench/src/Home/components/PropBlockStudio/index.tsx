@@ -4,6 +4,7 @@ import { useModel } from "@util/robot";
 import StudioModel from '@model/StudioModel';
 import styles from './index.module.less';
 import WorkbenchModel from "@model/WorkbenchModel";
+import { useEffect } from "react";
 
 type PropType = {
   block: PropBlock,
@@ -16,7 +17,17 @@ function PropBlockStudio({ block, freezeSetting, templateMode, noWrapMode }: Pro
   const [studioModel, updateAction] = useModel<StudioModel>('studio');
   const [workbenchModel, workbenchUpdateAction] = useModel<WorkbenchModel>('workbench');
   const [form] = Form.useForm();
-  workbenchModel.blockFormInstanceMap.set(block.id, form);
+
+  useEffect(() => {
+    workbenchModel.blockFormInstanceMap.set(block.id, form);
+
+    // 组件销毁时自动更新表单数据并删除表单对象
+    return () => {
+      const formObj = form.getFieldsValue();
+      workbenchModel.autoSavePropItemDefaultValue(block, formObj);
+      workbenchModel.blockFormInstanceMap.delete(block.id);
+    }
+  }, []);
 
   const renderItemLabel = (propItem: PropItem, itemIndex: number) => {
 

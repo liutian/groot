@@ -1,4 +1,4 @@
-import { fillPropChain, parseOptions } from "@util/utils";
+import { fillPropChain, fillPropChainGreed, parseOptions } from "@util/utils";
 import { FormInstance } from "antd";
 
 export default class WorkbenchModel {
@@ -100,11 +100,11 @@ export default class WorkbenchModel {
   }
 
   // todo
-  public refreshComponent = () => {
+  public refreshComponent() {
     Object.keys(this.propObject).forEach(k => delete this.propObject[k]);
     this.rootGroupList.forEach((group) => {
       if (group.propKey) {
-        const ctx = fillPropChain(this.propObject, group.propKey);
+        const ctx = fillPropChainGreed(this.propObject, group.propKey);
         this.buildPropObject(group, ctx);
       } else {
         this.buildPropObject(group, this.propObject);
@@ -119,25 +119,32 @@ export default class WorkbenchModel {
       const preCTX = ctx;
       if (group.struct === 'Default' && block.propKey) {
         if (block.rootPropKey) {
-          ctx = fillPropChain(this.propObject, block.propKey);
+          ctx = fillPropChainGreed(this.propObject, block.propKey);
         } else {
-          ctx = fillPropChain(ctx, block.propKey);
+          ctx = fillPropChainGreed(ctx, block.propKey);
         }
       }
 
+      const blockFormObj = this.blockFormInstanceMap.get(block.id)?.getFieldsValue() || {};
       block.propItemList.forEach((item) => {
         const preCTX = ctx;
-        if (item.propKey) {
-          if (item.rootPropKey) {
-            ctx = fillPropChain(this.propObject, item.propKey);
-          } else {
-            ctx = fillPropChain(ctx, item.propKey);
-          }
+
+        if (!item.propKey) {
+          throw new Error('propKey can not null');
         }
 
-        if (item.type === 'List' || item.type === 'Item' || item.type === 'Hierarchy') {
+        if (['List', 'Item', 'Hierarchy'].includes(item.type)) {
+          if (item.rootPropKey) {
+            ctx = fillPropChainGreed(this.propObject, item.propKey);
+          } else {
+            ctx = fillPropChainGreed(ctx, item.propKey);
+          }
           this.buildPropObject(item.valueOfGroup, ctx);
+        } else {
+          const [newCTX, propEnd] = fillPropChain(item.rootPropKey ? this.propObject : ctx, item.propKey);
+          newCTX[propEnd] = blockFormObj[item.propKey] || item.defaultValue;
         }
+
         ctx = preCTX;
       });
 
@@ -372,5 +379,13 @@ export default class WorkbenchModel {
 
     this.activePropItemPath = propKeyList.join('.');
     this.activePropItemId = itemId;
+  }
+
+  public autoSavePropItemDefaultValue(block: PropBlock, formObj: Object) {
+    block.propItemList.forEach((item) => {
+      if (formObj[item.propKey] !== undefined) {
+        item.defaultValue = formObj[item.propKey];
+      }
+    })
   }
 }

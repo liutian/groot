@@ -20,13 +20,34 @@ export function autoIncrementForName(names: string[]) {
 
 export const propKeyRule = /^[_a-zA-Z][\w\.]*$/i;
 
-export const fillPropChain = (ctx: Object, propStr: string) => {
+/**
+ * 自动填充属性链，每个属性都为对象
+ * @param ctx 
+ * @param propStr 
+ * @returns 
+ */
+export const fillPropChainGreed = (ctx: Object, propStr: string) => {
   const propList = propStr.replace(/^\./, '').replace(/\.$/, '').replace(/\.{2,}/g, '').split('.');
   let result = propList.reduce((pre, current) => {
     return pre[current] = {};
   }, ctx);
 
   return result;
+}
+
+/**
+ * 只填充属性链前面的属性，最后一个属性不填充
+ * @param ctx 
+ * @param propStr 
+ * @returns 
+ */
+export const fillPropChain = (ctx: Object, propStr: string): [Object, string] => {
+  const propList = propStr.replace(/^\./, '').replace(/\.$/, '').replace(/\.{2,}/g, '').split('.');
+  let result = propList.slice(0, -1).reduce((pre, current) => {
+    return pre[current] = {};
+  }, ctx);
+
+  return [result, propList.at(-1)];
 }
 
 export const parseOptions = (propItem: PropItem) => {
