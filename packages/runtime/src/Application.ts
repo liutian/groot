@@ -1,11 +1,11 @@
 import { CodeMetadata } from '@grootio/core';
 import { loadWebWorker } from './config';
-import { Page } from './page';
-import { ProjectDataType, UIManagerInstance, WebWorkerOutputMessage } from './types';
+import { Page } from './Page';
+import { ApplicationDataType, UIManagerInstance, WebWorkerOutputMessage } from './types';
 import { errorInfo, iframeNamePrefix, studioMode } from './util';
 
 let manager: UIManagerInstance;
-export class Project {
+export class Application {
   private allPageMap = new Map<string, Page>();
   private loadedPageMap = new Map<string, Page>();
   studioPage?: Page;
@@ -16,42 +16,42 @@ export class Project {
 
   }
 
-  static create(data: ProjectDataType, managerInstance: UIManagerInstance): Project {
+  static create(data: ApplicationDataType, managerInstance: UIManagerInstance): Application {
     manager = managerInstance;
-    const project = new Project(data.name, data.key);
+    const application = new Application(data.name, data.key);
     data.pages.forEach((item) => {
-      project.allPageMap.set(item.path, item);
+      application.allPageMap.set(item.path, item);
     })
 
     // 工作台模式
     if (studioMode) {
       // 初始化从name中获取页面信息
       const pageInfo = JSON.parse(window.self.name.replace(new RegExp('^' + iframeNamePrefix), ''));
-      project.studioPage = new Page(pageInfo.name, pageInfo.path, manager);
-      project.studioPage.hostMetadataPromise = new Promise((resolve) => {
-        project.hostMetadataResove = resolve;
+      application.studioPage = new Page(pageInfo.name, pageInfo.path, manager);
+      application.studioPage.hostMetadataPromise = new Promise((resolve) => {
+        application.hostMetadataResove = resolve;
       });
-      delete project.studioPage.resourceUrl;
-      project.allPageMap.set(project.studioPage.path, project.studioPage);
+      delete application.studioPage.resourceUrl;
+      application.allPageMap.set(application.studioPage.path, application.studioPage);
 
       window.parent!.postMessage('ok', '*');
       window.addEventListener('message', (event: any) => {
         if (event.data.type === 'refresh') {
-          const refreshPage = project.allPageMap.get(event.data.path);
+          const refreshPage = application.allPageMap.get(event.data.path);
 
           if (!refreshPage) {
-            errorInfo('refresh page not found', 'project');
+            errorInfo('refresh page not found', 'application');
             return;
           }
 
-          if (refreshPage !== project.studioPage) {
+          if (refreshPage !== application.studioPage) {
             throw new Error('refreshPage is not studioPage');
           }
 
           // 父级窗口管理的页面是当前项目
-          if (project.activePage === refreshPage) {
+          if (application.activePage === refreshPage) {
             if (refreshPage.loadFromHostFirst === false) {
-              project.hostMetadataResove!(event.data.metadata);
+              application.hostMetadataResove!(event.data.metadata);
               refreshPage.loadFromHostFirst = true;
             } else {
               refreshPage.createModuleByWorker(event.data.metadata);
@@ -61,7 +61,7 @@ export class Project {
       })
     }
 
-    return project;
+    return application;
   }
 
   hasPage(path: string): boolean {

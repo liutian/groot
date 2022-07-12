@@ -135,7 +135,7 @@ export class Page extends EventTarget {
     try {
       window.Function(code)();
     } catch (err) {
-      errorInfo('page code execute fail ==> ' + err, 'project');
+      errorInfo('page code execute fail ==> ' + err, 'application');
     } finally {
       this.postMessageByQueue();
     }

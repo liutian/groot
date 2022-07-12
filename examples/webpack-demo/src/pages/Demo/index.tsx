@@ -7,9 +7,9 @@ import * as jsxRuntime from 'react/jsx-runtime';
 
 UIManager.init({
   cloudServer: 'http://localhost:3000',
-  projectKey: 'project1',
+  applicationKey: 'project1',
   debug: true,
-  amd: {
+  AMD: {
     modules: {
       react,
       antd: {

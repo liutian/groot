@@ -1,7 +1,7 @@
 import { CodeMetadata } from '@grootio/core';
 import { AMDModuleOption } from './amd';
-import { Page } from './page';
-import { Project } from './project';
+import { Page } from './Page';
+import { Application } from './Application';
 
 export type WebWorkerInputMessage = {
   type: 'transformCode';
@@ -26,7 +26,7 @@ export type UIManagerOption = {
   /**
    * 项目key
    */
-  projectKey?: string;
+  applicationKey?: string;
   /**
    * 是否立即加载WebWorker
    */
@@ -34,8 +34,8 @@ export type UIManagerOption = {
   /**
    * 懒加载项目信息
    */
-  lazyLoadProject?: boolean | Promise<void>;
-  amd: AMDModuleOption;
+  lazyLoadApplication?: boolean | Promise<void>;
+  AMD: AMDModuleOption;
   webWorker?: WebWorkerType;
   debug?: boolean;
   internalPages?: Page[];
@@ -44,11 +44,11 @@ export type UIManagerOption = {
 export type UIManagerInstance = {
   worker?: Worker;
   workerOk: boolean;
-  project?: Project;
-  projectLoading: boolean;
+  application?: Application;
+  applicationLoading: boolean;
 };
 
-export type ProjectDataType = {
+export type ApplicationDataType = {
   name: string,
   key: string,
   pages: Page[]

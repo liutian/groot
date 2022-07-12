@@ -1,13 +1,13 @@
 import { CodeMetadata } from '@grootio/core';
 import { initAMDModules } from './amd';
-import { Page } from './page';
-import { Project } from './project';
-import { UIManagerOption, UIManagerInstance, ProjectDataType } from './types';
+import { Page } from './Page';
+import { Application } from './Application';
+import { UIManagerOption, UIManagerInstance, ApplicationDataType } from './types';
 import { debugInfo, errorInfo } from './util';
 
 const defaultOption: UIManagerOption = {} as any;
 let managerInstance: UIManagerInstance = {
-  projectLoading: false,
+  applicationLoading: false,
   workerOk: false
 } as any;
 let bootstrapOptions: UIManagerOption;
@@ -20,22 +20,22 @@ let bootstrapOptions: UIManagerOption;
  */
 export function bootstrap(customOption: UIManagerOption): UIManagerInstance {
   bootstrapOptions = Object.assign({ ...defaultOption }, customOption);
-  initAMDModules(bootstrapOptions.amd);
+  initAMDModules(bootstrapOptions.AMD);
 
   // 立即加载WebWorker
   if (bootstrapOptions.loadWebWorkerOnInit) {
     loadWebWorker();
   }
 
-  if (typeof bootstrapOptions.lazyLoadProject === 'boolean') {
+  if (typeof bootstrapOptions.lazyLoadApplication === 'boolean') {
     // 立即加载项目信息
-    if (bootstrapOptions.lazyLoadProject === false) {
-      loadProject();
+    if (bootstrapOptions.lazyLoadApplication === false) {
+      loadApplication();
     }
   } else {
     // 延迟加载项目信息
-    bootstrapOptions.lazyLoadProject?.then(() => {
-      loadProject();
+    bootstrapOptions.lazyLoadApplication?.then(() => {
+      loadApplication();
     });
   }
 
@@ -71,15 +71,15 @@ export function loadWebWorker(): void {
   managerInstance.worker = workerInstance;
 }
 
-export function loadProject(): Promise<void> {
-  if (managerInstance.project) {
-    throw new Error('project has loaded');
+export function loadApplication(): Promise<void> {
+  if (managerInstance.application) {
+    throw new Error('application has loaded');
   }
 
-  managerInstance.projectLoading = true;
-  return getProjectInfo().then((projectData: ProjectDataType) => {
-    managerInstance.projectLoading = false;
-    const pages = projectData.pages.map((orignPage) => {
+  managerInstance.applicationLoading = true;
+  return getApplicationInfo().then((applicationData: ApplicationDataType) => {
+    managerInstance.applicationLoading = false;
+    const pages = applicationData.pages.map((orignPage) => {
       const page = new Page(orignPage.name, orignPage.path, managerInstance);
       if (orignPage.resourceUrl) {
         page.resourceUrl = orignPage.resourceUrl;
@@ -91,17 +91,17 @@ export function loadProject(): Promise<void> {
 
       return page;
     })
-    managerInstance.project = Project.create({ ...projectData, pages }, managerInstance);
+    managerInstance.application = Application.create({ ...applicationData, pages }, managerInstance);
   });
 }
 
-function getProjectInfo() {
-  if (bootstrapOptions.cloudServer && bootstrapOptions.projectKey) {
-    return window.fetch(bootstrapOptions.cloudServer + '/project/detail/' + bootstrapOptions.projectKey).then(response => response.json());
-  } else if (window._grootProjectInfo) {
-    return Promise.resolve(window._grootProjectInfo);
+function getApplicationInfo() {
+  if (bootstrapOptions.cloudServer && bootstrapOptions.applicationKey) {
+    return window.fetch(bootstrapOptions.cloudServer + '/application/detail/' + bootstrapOptions.applicationKey).then(response => response.json());
+  } else if (window._grootApplicationInfo) {
+    return Promise.resolve(window._grootApplicationInfo);
   } else {
-    return Promise.reject(new Error('no project info'));
+    return Promise.reject(new Error('no application info'));
   }
 }
 

@@ -7,7 +7,7 @@ interface Window {
   ) => void;
   _moduleCallback: (module: any) => void;
 
-  _grootProjectInfo: any;
+  _grootApplicationInfo: any;
 }
 
 

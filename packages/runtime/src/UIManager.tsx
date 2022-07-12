@@ -1,10 +1,10 @@
 import { useCallback, useState } from 'react';
 import React from 'react';
 
-import { bootstrap, loadProject } from './config';
+import { bootstrap, loadApplication } from './config';
 import { errorInfo } from './util';
 import { UIManagerOption, UIManagerInstance } from './types';
-import { Page } from './page';
+import { Page } from './Page';
 
 let instanceReady = false;
 let managerInstance: UIManagerInstance;
@@ -33,17 +33,17 @@ export const UIManager: IUIManager<{ path: string }> = ({ path }) => {
     );
   }
 
-  if (!managerInstance.project && managerInstance.projectLoading !== true) {
-    loadProject().then(() => {
+  if (!managerInstance.application && managerInstance.applicationLoading !== true) {
+    loadApplication().then(() => {
       refresh();
     });
   }
 
-  if (managerInstance.projectLoading) {
-    return <>project loading...</>;
+  if (managerInstance.applicationLoading) {
+    return <>application loading...</>;
   }
 
-  if (!managerInstance.project!.hasPage(path)) {
+  if (!managerInstance.application!.hasPage(path)) {
     return <>page not found</>;
   }
 
@@ -51,7 +51,7 @@ export const UIManager: IUIManager<{ path: string }> = ({ path }) => {
     return <>page loading...</>;
   }
 
-  const loadPageResult = managerInstance.project!.loadPage(path);
+  const loadPageResult = managerInstance.application!.loadPage(path);
   if (loadPageResult instanceof Page) {
     // 热更新
     watchRefreshOnlyOne(loadPageResult, () => {
@@ -79,9 +79,9 @@ export const UIManager: IUIManager<{ path: string }> = ({ path }) => {
  * 强制刷新渲染
  */
 function useRefresh() {
-  const [, refresh] = useState(0);
+  const [, refresh] = useState(true);
   return useCallback(() => {
-    refresh((count) => ++count);
+    refresh((bool) => !bool);
   }, []);
 }
 
