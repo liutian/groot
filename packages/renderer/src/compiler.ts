@@ -1,6 +1,6 @@
+import { Metadata } from "@grootio/types";
 import React, { useState } from "react";
 import { globalConfig } from "./config";
-import { Metadata } from "./types";
 import { debugInfo, designMode, errorInfo } from "./util";
 
 export const buildComponent = (root: Metadata, store: Metadata[]) => {

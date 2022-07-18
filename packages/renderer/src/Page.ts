@@ -1,5 +1,5 @@
+import { Metadata, PageData } from "@grootio/types";
 import { buildComponent, reBuildProps } from "./compiler";
-import { Metadata, PageData } from "./types";
 import { errorInfo } from "./util";
 
 export class Page extends EventTarget {

@@ -6,7 +6,8 @@
   "workspaces": [
     "packages/core",
     "packages/runtime",
-    "packages/renderer"
+    "packages/renderer",
+    "packages/types"
   ],
   "scripts": {},
   "lint-staged": {

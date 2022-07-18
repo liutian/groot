@@ -1,13 +1,10 @@
 {
-  "name": "@grootio/renderer",
+  "name": "@grootio/types",
   "version": "0.0.1",
   "description": "",
   "main": "dist/index.js",
   "scripts": {
     "build": "npx tsc"
-  },
-  "dependencies": {
-    "@grootio/types": "0.0.1"
   },
   "peerDependencies": {
     "react": "18.2.0"
