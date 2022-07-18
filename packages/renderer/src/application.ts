@@ -16,7 +16,7 @@ const instance = {
 
 export type ApplicationInstance = typeof instance;
 
-let iframeApplicationLoadResolve: (info: Object) => void;
+let iframeApplicationLoadResolve: (info: ApplicationData) => void;
 let iframeHostConfig: IframeHostConnfig;
 // 当前路由导航激活的页面
 let activePage: Page;
@@ -80,7 +80,7 @@ function loadApplicationData(): Promise<void> {
   });
 }
 
-function getApplicationData() {
+function getApplicationData(): Promise<ApplicationData> {
   if (designMode && iframeHostConfig.rewriteApplicationData) {
     return new Promise((resolve, reject) => {
       iframeApplicationLoadResolve = resolve;
