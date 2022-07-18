@@ -5,7 +5,8 @@
   "description": "component assembly workshop",
   "workspaces": [
     "packages/core",
-    "packages/runtime"
+    "packages/runtime",
+    "packages/renderer"
   ],
   "scripts": {},
   "lint-staged": {

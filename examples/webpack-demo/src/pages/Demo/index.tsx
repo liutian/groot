@@ -1,5 +1,5 @@
 import { Button, Input, Select } from 'antd';
-import { UIManager } from '@grootio/runtime';
+import { UIManager } from '@grootio/renderer';
 import { useLocation } from 'react-router';
 import react from 'react';
 import * as tslib from 'tslib';
@@ -9,18 +9,16 @@ UIManager.init({
   cloudServer: 'http://localhost:3000',
   applicationKey: 'project1',
   debug: true,
-  AMD: {
-    modules: {
-      react,
-      antd: {
-        Button,
-        Input,
-        Select,
-      },
-      tslib,
-      ['react/jsx-runtime']: jsxRuntime,
+  modules: {
+    react,
+    antd: {
+      Button,
+      Input,
+      Select,
     },
-  }
+    tslib,
+    ['react/jsx-runtime']: jsxRuntime,
+  },
 });
 
 function Demo() {
@@ -28,7 +26,7 @@ function Demo() {
 
   return (
     <>
-      <UIManager path={location.pathname.replace(/^\/admin/, '')} />
+      <UIManager path={location.pathname} />
     </>
   );
 }
