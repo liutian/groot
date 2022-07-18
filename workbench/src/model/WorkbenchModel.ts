@@ -1,5 +1,7 @@
+import { NotifyType } from "@util/types";
 import { fillPropChain, fillPropChainGreed, parseOptions } from "@util/utils";
 import { FormInstance } from "antd";
+import { notifyIframe } from "Home/iframeManager";
 
 export default class WorkbenchModel {
   /**
@@ -17,7 +19,7 @@ export default class WorkbenchModel {
    */
   public minSideWidth = 480;
   public iframeRef?: { current: HTMLIFrameElement };
-  public iframePath = 'http://job.weimob.com';
+  public iframePath = 'http://localhost:8888/admin/groot/demo';
   /**
    * 组件信息
    */
@@ -45,11 +47,48 @@ export default class WorkbenchModel {
 
   public propObject = {};
 
-  public iframeReady = false;
-  public propInfoReady = false;
-
   public activePropItemPath = '';
   public activePropItemId?: number;
+
+  public applicationData = {
+    name: 'demo',
+    key: 'demo',
+    pages: [
+      {
+        path: '/admin/groot/demo',
+        metadataList: [
+          {
+            id: 1,
+            parentId: null,
+            packageName: 'groot',
+            moduleName: 'Container',
+            advancedProps: [{
+              keyChain: 'children',
+              type: 'component',
+            }],
+            propsObj: {
+              children: [2]
+            }
+          },
+          {
+            id: 2,
+            parentId: 1,
+            packageName: 'antd',
+            moduleName: 'Button',
+
+            propsObj: {
+              type: 'primary',
+              children: 'demo1'
+            }
+          }
+        ]
+      }
+    ]
+  }
+
+  public iframeHostConnfig = {
+    rewriteApplicationData: true
+  }
 
   public init = (component: Component, iframeRef: { current: HTMLIFrameElement }, designMode: boolean) => {
     this.loadComponent = 'over';
@@ -60,7 +99,6 @@ export default class WorkbenchModel {
     console.log('<=================== prop tree built out =================>\n', this.rootGroupList);
     this.activeGroupId = this.rootGroupList[0].id;
 
-    this.propInfoReady = true;
     this.refreshComponent();
 
     if (!designMode) {
@@ -78,27 +116,6 @@ export default class WorkbenchModel {
     }
   }
 
-  /**
-   * 配置项变动通知iframe更新
-   */
-  notifyIframe = () => {
-    if (!this.iframeReady || !this.propInfoReady) {
-      return;
-    }
-
-    this.iframeRef.current.contentWindow.postMessage({
-      type: 'refresh',
-      // path: this.component.instance.path,
-      metadata: {
-        moduleName: this.component.componentName + '_module',
-        packageName: this.component.packageName,
-        componentName: this.component.componentName,
-        // todo
-        props: this.propObject
-      }
-    }, '*');
-  }
-
   // todo
   public refreshComponent() {
     Object.keys(this.propObject).forEach(k => delete this.propObject[k]);
@@ -111,7 +128,7 @@ export default class WorkbenchModel {
       }
     });
     console.log('<=================== prop object build out =================>\n', this.propObject);
-    this.notifyIframe();
+    notifyIframe(NotifyType.RefreshComponent);
   }
 
   public buildPropObject(group: PropGroup, ctx: Object) {
