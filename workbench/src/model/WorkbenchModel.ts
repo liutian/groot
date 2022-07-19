@@ -31,7 +31,7 @@ export default class WorkbenchModel {
   /**
    * 组件设计模式
    */
-  public designMode = false;
+  public prototypeMode = false;
   /**
     * 编码配置模式
     */
@@ -90,18 +90,18 @@ export default class WorkbenchModel {
     rewriteApplicationData: true
   }
 
-  public init = (component: Component, iframeRef: { current: HTMLIFrameElement }, designMode: boolean) => {
+  public init = (component: Component, iframeRef: { current: HTMLIFrameElement }, prototypeMode: boolean) => {
     this.loadComponent = 'over';
     this.iframeRef = iframeRef;
     this.component = component;
-    this.designMode = designMode;
+    this.prototypeMode = prototypeMode;
     this.buildPropTree();
     console.log('<=================== prop tree built out =================>\n', this.rootGroupList);
     this.activeGroupId = this.rootGroupList[0].id;
 
     this.refreshComponent();
 
-    if (!designMode) {
+    if (!prototypeMode) {
       const releaseId = this.component.release.id;
       const project = this.component.project;
       if (releaseId === project.devRelease.id) {

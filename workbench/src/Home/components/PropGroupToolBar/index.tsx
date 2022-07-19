@@ -19,7 +19,7 @@ const PropGroupToolBar: React.FC = () => {
     setGroupListStruct(group.struct === 'List');
   }, [workbenchModel.activeGroupId, studioModel.settingModalLoading]);
 
-  if (!group || !workbenchModel.designMode) {
+  if (!group || !workbenchModel.prototypeMode) {
     return null;
   }
 

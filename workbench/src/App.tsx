@@ -1,11 +1,15 @@
+import React from 'react';
 import { useRoutes } from 'react-router-dom';
 import Home from './Home';
 
 function App() {
   const element = useRoutes([
     {
-      path: '/component/:componentId',
-      element: <Home />,
+      path: '/component/prototype/:componentId',
+      element: React.createElement(() => <Home prototypeMode />),
+    }, {
+      path: '/component/instance/:componentId',
+      element: React.createElement(() => <Home />),
     }, {
       path: '*',
       element: <NoMatch />

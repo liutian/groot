@@ -34,7 +34,7 @@ const PropGroupStudio: React.FC<PropsType> = ({ group, templateBlock }) => {
   }
 
   const renderBlockSetting = (block: PropBlock, blockIndex: number) => {
-    if (!workbenchModel.designMode || templateBlock) return null;
+    if (!workbenchModel.prototypeMode || templateBlock) return null;
 
     return (<Space size="small" >
       <Typography.Link onClick={(e) => {
@@ -102,7 +102,7 @@ const PropGroupStudio: React.FC<PropsType> = ({ group, templateBlock }) => {
     </Collapse>
     <div className={styles.footerAction}>
       {
-        workbenchModel.designMode && !templateBlock && (
+        workbenchModel.prototypeMode && !templateBlock && (
           <Button type="primary" ghost block onClick={() => {
             studioModel.showPropBlockSettinngForCreate(group);
           }}>

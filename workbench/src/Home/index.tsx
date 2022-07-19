@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { useEffect, useRef } from 'react';
+import { useParams, useSearchParams, useLocation } from 'react-router-dom';
 
 import { useRegisterModel } from '@util/robot';
 import StudioModel from '@model/StudioModel';
@@ -11,20 +11,20 @@ import WidgetWindow from './components/WidgetWindow';
 import WorkbenchModel from '@model/WorkbenchModel';
 import { destroyIframe, startManageIframe } from './iframeManager';
 
-const Home = () => {
+const Home: React.FC<{ prototypeMode?: boolean }> = ({ prototypeMode }) => {
   const [studioModel] = useRegisterModel<StudioModel>('studio', new StudioModel());
   const [workbenchModel, workbenchUpdateAction] = useRegisterModel<WorkbenchModel>('workbench', new WorkbenchModel());
 
   const iframeRef = useRef<HTMLIFrameElement>({} as any);
+
   let { componentId } = useParams();
   let [searchParams] = useSearchParams();
 
   useEffect(() => {
     let url = `${serverPath}/component`;
-    const designMode = searchParams.has('design');
 
     // 确定请求地址
-    if (designMode) {
+    if (prototypeMode) {
       url = `${url}/prototype?id=${componentId}&versionId=${searchParams.get('versionId') || ''}`;
     } else {
       url = `${url}/instance?id=${componentId}&releaseId=${searchParams.get('releaseId') || ''}`;
@@ -32,7 +32,7 @@ const Home = () => {
 
     // 获取组件信息
     fetch(url).then(r => r.json()).then(({ data }: { data: Component }) => {
-      workbenchModel.init(data, iframeRef, designMode);
+      workbenchModel.init(data, iframeRef, prototypeMode);
       studioModel.init(workbenchModel);
       startManageIframe(iframeRef.current, workbenchModel);
       // todo

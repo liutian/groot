@@ -464,8 +464,8 @@ export default class StudioModel {
   public switchDesignMode = () => {
     this.workbench.jsonMode = false;
     this.workbench.manualMode = false;
-    if (this.workbench.designMode) {
-      this.workbench.designMode = false;
+    if (this.workbench.prototypeMode) {
+      this.workbench.prototypeMode = false;
       this.workbench.rootGroupList.forEach((group) => {
         group.propBlockList.forEach((block) => {
           const values = this.workbench.blockFormInstanceMap.get(block.id).getFieldsValue();
@@ -475,13 +475,13 @@ export default class StudioModel {
         })
       })
     } else {
-      this.workbench.designMode = true;
+      this.workbench.prototypeMode = true;
     }
   }
 
   public switchManualMode = () => {
     this.workbench.jsonMode = false;
-    this.workbench.designMode = false;
+    this.workbench.prototypeMode = false;
     if (this.workbench.manualMode) {
       this.workbench.manualMode = false;
     } else {
@@ -491,7 +491,7 @@ export default class StudioModel {
 
   public switchJSONMode = () => {
     this.workbench.manualMode = false;
-    this.workbench.designMode = false;
+    this.workbench.prototypeMode = false;
     if (this.workbench.jsonMode) {
       this.workbench.jsonMode = false;
     } else {

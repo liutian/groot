@@ -49,7 +49,7 @@ const SubStudio: React.FC<PropsType> = ({ item: propItem }) => {
       </div>
       <div className="pull-right">
         {
-          propItem.type === 'List' && workbenchModel.designMode &&
+          propItem.type === 'List' && workbenchModel.prototypeMode &&
           (<Button type="link" icon={propGroup.templateBlockDesignMode ? <SettingFilled /> : <SettingOutlined />}
             onClick={() => studioModel.toggleTemplateBlockDesignMode(propGroup)}></Button>)
         }

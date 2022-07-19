@@ -23,9 +23,9 @@ const SideToolBar: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
     </div>
     <div className={styles.actions} >
       <Button type="link" title="部署" icon={<SendOutlined />} />
-      <Button type="link" title="源码" icon={workbenchModel.manualMode ? <CodeFilled /> : <CodeOutlined />} onClick={() => studioModel.switchManualMode()} />
-      <Button type="link" title="json" icon={workbenchModel.jsonMode ? <DashboardFilled /> : <DashboardOutlined />} onClick={() => studioModel.switchJSONMode()} />
-      <Button type="link" title="设计" icon={workbenchModel.designMode ? <SettingFilled /> : <SettingOutlined />} onClick={() => studioModel.switchDesignMode()} />
+      <Button type="link" title="源码" icon={workbenchModel.manualMode ? <CodeFilled /> : <CodeOutlined />} />
+      <Button type="link" title="json" icon={workbenchModel.jsonMode ? <DashboardFilled /> : <DashboardOutlined />} />
+      <Button type="link" title="设计" icon={workbenchModel.prototypeMode ? <SettingFilled /> : <SettingOutlined />} onClick={() => studioModel.switchDesignMode()} />
     </div>
   </div>
 }

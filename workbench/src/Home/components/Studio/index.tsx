@@ -77,7 +77,7 @@ function Studio() {
 
     return <>
       {list}
-      {workbenchModel.designMode && <Tabs.TabPane key="__add" tab={<Typography.Link><PlusOutlined /></Typography.Link>}></Tabs.TabPane>}
+      {workbenchModel.prototypeMode && <Tabs.TabPane key="__add" tab={<Typography.Link><PlusOutlined /></Typography.Link>}></Tabs.TabPane>}
     </>
   }
 
