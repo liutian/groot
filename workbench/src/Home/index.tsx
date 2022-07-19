@@ -34,15 +34,13 @@ const Home: React.FC<{ prototypeMode?: boolean }> = ({ prototypeMode }) => {
     fetch(url).then(r => r.json()).then(({ data }: { data: Component }) => {
       workbenchModel.init(data, iframeRef, prototypeMode);
       studioModel.init(workbenchModel);
-      startManageIframe(iframeRef.current, workbenchModel);
-      // todo
-      // setPageName(`groot::{"path": "${workbenchModel.component.instance.path}","name":"${workbenchModel.component.name}"}`);
+      setTimeout(() => {
+        startManageIframe(iframeRef.current, workbenchModel);
+      }, 0);
     }, () => {
       workbenchModel.loadComponent = 'notfound';
-    })
-  }, []);
+    });
 
-  useEffect(() => {
     return () => {
       destroyIframe();
     }
