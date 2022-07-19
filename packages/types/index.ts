@@ -16,8 +16,8 @@ export type UIManagerConfig = {
 
 export type IframeHostConnfig = {
   rewriteApplicationData: boolean,
-  runtimeConfig: UIManagerConfig,
-  designPage: string,
+  runtimeConfig?: UIManagerConfig,
+  controlPage: string,
 }
 
 export type ApplicationData = {

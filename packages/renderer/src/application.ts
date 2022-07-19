@@ -1,7 +1,7 @@
 import { Page } from './Page';
 import { ApplicationStatus } from './types';
 import { ApplicationData, IframeHostConnfig, PostMessageType, UIManagerConfig } from '@grootio/types';
-import { designMode, iframeNamePrefix } from './util';
+import { controlMode, iframeNamePrefix } from './util';
 import { globalConfig, setConfig } from './config';
 
 
@@ -31,7 +31,7 @@ const loadingPages = new Set();
 export function bootstrap(customConfig: UIManagerConfig): ApplicationInstance {
   setConfig(customConfig);
 
-  if (designMode) {
+  if (controlMode) {
     // 从父级iframe的name中获取配置信息，这样可以即时获取数据
     // todo 父级重置iframe name时是否可以获取最新数据
     iframeHostConfig = JSON.parse(window.self.name.replace(new RegExp('^' + iframeNamePrefix), ''));
@@ -81,7 +81,7 @@ function loadApplicationData(): Promise<void> {
 }
 
 function getApplicationData(): Promise<ApplicationData> {
-  if (designMode && iframeHostConfig.rewriteApplicationData) {
+  if (controlMode && iframeHostConfig.rewriteApplicationData) {
     return new Promise((resolve, reject) => {
       iframeApplicationLoadResolve = resolve;
       window.parent.postMessage(PostMessageType.Fetch_Application, '*');
@@ -104,12 +104,12 @@ function initApplication(data: ApplicationData) {
   // 初始化pages
   data.pages.forEach((pageData) => {
     const page = new Page(pageData);
-    if (designMode && page.path === iframeHostConfig.designPage) {
-      page.designMode = true;
+    if (controlMode && page.path === iframeHostConfig.controlPage) {
+      page.controlMode = true;
     }
     allPageMap.set(page.path, page);
   });
-  if (designMode) {
+  if (controlMode) {
     window.parent.postMessage(PostMessageType.Ready_Applicationn, '*');
   }
 }
@@ -140,7 +140,7 @@ function loadPage(path: string): Promise<Page> | Page {
     loadedPageMap.set(path, page);
     page.compile();
 
-    if (designMode && page.designMode) {
+    if (controlMode && page.controlMode) {
       window.parent.postMessage(PostMessageType.Ready_Page, '*',);
     }
     return page;

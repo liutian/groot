@@ -9,7 +9,7 @@ export class Page extends EventTarget {
 
   metadataPromise?: Promise<Metadata[]>;
   rootComponent?: any;
-  designMode = false;
+  controlMode = false;
 
   constructor(data: PageData) {
     super();

@@ -1,5 +1,5 @@
 import Container from "./modules/Container";
-import { UIManagerConfig } from "./types";
+import { UIManagerConfig } from "@grootio/types";
 
 const internalModules = {
   groot: {

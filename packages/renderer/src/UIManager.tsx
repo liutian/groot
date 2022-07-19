@@ -2,9 +2,10 @@ import { useState } from 'react';
 import React from 'react';
 
 import { errorInfo } from './util';
-import { ApplicationStatus, UIManagerConfig } from './types';
+import { ApplicationStatus } from './types';
 import { Page } from './Page';
 import { ApplicationInstance, bootstrap } from './application';
+import { UIManagerConfig } from '@grootio/types';
 
 let app: ApplicationInstance;
 // 保持最新的函数引用
