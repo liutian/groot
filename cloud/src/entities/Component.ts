@@ -2,7 +2,7 @@ import { Collection, Entity, ManyToOne, OneToMany, OneToOne, Property } from "@m
 import { BaseEntity } from "./BaseEntity";
 import { ComponentInstance } from "./ComponentInstance";
 import { ComponentVersion } from "./ComponentVersion";
-import { Project } from "./Project";
+import { Application } from "./Application";
 import { Release } from "./Release";
 
 @Entity()
@@ -42,7 +42,7 @@ export class Component extends BaseEntity {
   recentVersion?: ComponentVersion;// 此处必须为可选，否则创建组建会引发recentVersion非空校验
 
   @ManyToOne()
-  project: Project;
+  application: Application;
 
   @Property({ persist: false })
   version: ComponentVersion;

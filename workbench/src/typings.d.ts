@@ -88,9 +88,9 @@ type Component = {
   versionList: ComponentVersion[]
 } & Omit<import("../../cloud/src/entities/Component").Component, 'version'>;
 
-type Project = {
+type Application = {
 
-} & Omit<import("../../cloud/src/entities/Project").Project, ''>;
+} & Omit<import("../../cloud/src/entities/Application").Application, ''>;
 
 type CodeMeta = {
   id: number,

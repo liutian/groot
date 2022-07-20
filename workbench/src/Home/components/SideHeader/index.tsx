@@ -63,10 +63,10 @@ const SideHeader: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
               <div className={styles.releaseItem} key={release.id}>
                 <div className={styles.releaseItemText}>{release.name}</div>
                 <div >
-                  <Tag hidden={workbenchModel.component.project.devRelease.id !== release.id}>dev</Tag>
-                  <Tag hidden={workbenchModel.component.project.qaRelease.id !== release.id}>qa</Tag>
-                  <Tag hidden={workbenchModel.component.project.onlineRelease.id !== release.id}>online</Tag>
-                  <Tag hidden={workbenchModel.component.project.plRelease.id !== release.id}>pl</Tag>
+                  <Tag hidden={workbenchModel.component.application.devRelease.id !== release.id}>dev</Tag>
+                  <Tag hidden={workbenchModel.component.application.qaRelease.id !== release.id}>qa</Tag>
+                  <Tag hidden={workbenchModel.component.application.onlineRelease.id !== release.id}>online</Tag>
+                  <Tag hidden={workbenchModel.component.application.plRelease.id !== release.id}>pl</Tag>
                 </div>
               </div>
             )

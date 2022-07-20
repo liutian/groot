@@ -4,6 +4,7 @@ import { PropBlock } from 'entities/PropBlock';
 import { PropGroup } from 'entities/PropGroup';
 import { PropItem } from 'entities/PropItem';
 import { ComponentService } from 'service/component.service';
+import { ApplicationService } from 'service/application.service';
 import { PropBlockService } from 'service/prop-block.service';
 import { PropGroupService } from 'service/prop-group.service';
 import { PropItemService } from 'service/prop-item.service';
@@ -14,6 +15,7 @@ export class StudioController {
     private readonly blockService: PropBlockService,
     private readonly groupService: PropGroupService,
     private readonly componentService: ComponentService,
+    private readonly applicationService: ApplicationService
   ) { }
 
   @Get('/component/instance')
@@ -89,5 +91,10 @@ export class StudioController {
   @Post('/item/update')
   async itemUpdate(@Body() item: PropItem) {
     return await this.itemService.update(item);
+  }
+
+  @Get('/application/detail/:applicationId')
+  async applicationDetail(@Param('applicationId') applicationId: number) {
+    return this.applicationService.getDetail(applicationId);
   }
 }

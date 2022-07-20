@@ -13,7 +13,7 @@ export class ComponentService {
   async getComponentForRelease(id: number, releaseId?: number) {
     const em = RequestContext.getEntityManager();
     const component = await em.findOne(Component, id, {
-      populate: ['project.devRelease', 'project.qaRelease', 'project.plRelease', 'project.onlineRelease']
+      populate: ['application.devRelease', 'application.qaRelease', 'application.plRelease', 'application.onlineRelease']
     });
 
     if (!component) {
@@ -22,7 +22,7 @@ export class ComponentService {
 
     let release;
     if (!releaseId) {
-      release = component.project.devRelease;
+      release = component.application.devRelease;
     } else {
       release = await em.findOne(Release, releaseId);
 

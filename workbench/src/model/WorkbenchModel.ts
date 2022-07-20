@@ -1,7 +1,6 @@
-import { NotifyType } from "@util/types";
-import { fillPropChain, fillPropChainGreed, parseOptions } from "@util/utils";
+import { parseOptions } from "@util/utils";
 import { FormInstance } from "antd";
-import { notifyIframe } from "Home/iframeManager";
+import { IframeManagerInstance } from "Home/iframeManager";
 
 export default class WorkbenchModel {
   /**
@@ -18,8 +17,6 @@ export default class WorkbenchModel {
    * 侧边栏拖拽最小宽度
    */
   public minSideWidth = 480;
-  public iframeRef?: { current: HTMLIFrameElement };
-  public iframePath = 'http://localhost:8888/admin/groot/demo';
   /**
    * 组件信息
    */
@@ -45,128 +42,40 @@ export default class WorkbenchModel {
 
   public currEnv: 'dev' | 'qa' | 'pl' | 'online' = 'dev';
 
-  public propObject = {};
-
   public activePropItemPath = '';
   public activePropItemId?: number;
 
-  public applicationData = {
-    name: 'demo',
-    key: 'demo',
-    pages: [
-      {
-        path: '/admin/groot/demo',
-        metadataList: [
-          {
-            id: 1,
-            parentId: null,
-            packageName: 'groot',
-            moduleName: 'Container',
-            advancedProps: [{
-              keyChain: 'children',
-              type: 'component',
-            }],
-            propsObj: {
-              children: [2]
-            }
-          },
-          {
-            id: 2,
-            parentId: 1,
-            packageName: 'antd',
-            moduleName: 'Button',
+  public iframeManager: IframeManagerInstance;
 
-            propsObj: {
-              type: 'primary',
-              children: 'demo1'
-            }
-          }
-        ]
-      }
-    ]
-  }
+  public destory = false;
 
-  public iframeHostConnfig = {
-    rewriteApplicationData: true
-  }
-
-  public init = (component: Component, iframeRef: { current: HTMLIFrameElement }, prototypeMode: boolean) => {
+  public init = (component: Component, prototypeMode: boolean) => {
     this.loadComponent = 'over';
-    this.iframeRef = iframeRef;
     this.component = component;
     this.prototypeMode = prototypeMode;
     this.buildPropTree();
     console.log('<=================== prop tree built out =================>\n', this.rootGroupList);
     this.activeGroupId = this.rootGroupList[0].id;
 
-    this.refreshComponent();
-
     if (!prototypeMode) {
       const releaseId = this.component.release.id;
-      const project = this.component.project;
-      if (releaseId === project.devRelease.id) {
+      const application = this.component.application;
+      if (releaseId === application.devRelease.id) {
         this.currEnv = 'dev';
-      } else if (releaseId === project.qaRelease.id) {
+      } else if (releaseId === application.qaRelease.id) {
         this.currEnv = 'qa';
-      } else if (releaseId === project.plRelease.id) {
+      } else if (releaseId === application.plRelease.id) {
         this.currEnv = 'pl';
-      } else if (releaseId === project.onlineRelease.id) {
+      } else if (releaseId === application.onlineRelease.id) {
         this.currEnv = 'online';
       }
     }
+
   }
 
-  // todo
-  public refreshComponent() {
-    Object.keys(this.propObject).forEach(k => delete this.propObject[k]);
-    this.rootGroupList.forEach((group) => {
-      if (group.propKey) {
-        const ctx = fillPropChainGreed(this.propObject, group.propKey);
-        this.buildPropObject(group, ctx);
-      } else {
-        this.buildPropObject(group, this.propObject);
-      }
-    });
-    console.log('<=================== prop object build out =================>\n', this.propObject);
-    notifyIframe(NotifyType.RefreshComponent);
-  }
-
-  public buildPropObject(group: PropGroup, ctx: Object) {
-    group.propBlockList.forEach((block) => {
-      const preCTX = ctx;
-      if (group.struct === 'Default' && block.propKey) {
-        if (block.rootPropKey) {
-          ctx = fillPropChainGreed(this.propObject, block.propKey);
-        } else {
-          ctx = fillPropChainGreed(ctx, block.propKey);
-        }
-      }
-
-      const blockFormObj = this.blockFormInstanceMap.get(block.id)?.getFieldsValue() || {};
-      block.propItemList.forEach((item) => {
-        const preCTX = ctx;
-
-        if (!item.propKey) {
-          throw new Error('propKey can not null');
-        }
-
-        if (['List', 'Item', 'Hierarchy'].includes(item.type)) {
-          if (item.rootPropKey) {
-            ctx = fillPropChainGreed(this.propObject, item.propKey);
-          } else {
-            ctx = fillPropChainGreed(ctx, item.propKey);
-          }
-          this.buildPropObject(item.valueOfGroup, ctx);
-        } else {
-          const [newCTX, propEnd] = fillPropChain(item.rootPropKey ? this.propObject : ctx, item.propKey);
-          newCTX[propEnd] = blockFormObj[item.propKey] || item.defaultValue;
-        }
-
-        ctx = preCTX;
-      });
-
-      ctx = preCTX;
-    })
+  public destoryModel() {
+    this.destory = true;
+    this.iframeManager?.destroyIframe();
   }
 
   /**

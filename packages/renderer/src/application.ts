@@ -1,6 +1,6 @@
 import { Page } from './Page';
 import { ApplicationStatus } from './types';
-import { ApplicationData, IframeHostConnfig, PostMessageType, UIManagerConfig } from '@grootio/types';
+import { ApplicationData, IframeHostConfig, PostMessageType, UIManagerConfig } from '@grootio/types';
 import { controlMode, iframeNamePrefix } from './util';
 import { globalConfig, setConfig } from './config';
 
@@ -17,7 +17,7 @@ const instance = {
 export type ApplicationInstance = typeof instance;
 
 let iframeApplicationLoadResolve: (info: ApplicationData) => void;
-let iframeHostConfig: IframeHostConnfig;
+let iframeHostConfig: IframeHostConfig;
 // 当前路由导航激活的页面
 let activePage: Page;
 // 当前应用包含的页面
@@ -81,7 +81,7 @@ function loadApplicationData(): Promise<void> {
 }
 
 function getApplicationData(): Promise<ApplicationData> {
-  if (controlMode && iframeHostConfig.rewriteApplicationData) {
+  if (controlMode) {
     return new Promise((resolve, reject) => {
       iframeApplicationLoadResolve = resolve;
       window.parent.postMessage(PostMessageType.Fetch_Application, '*');
@@ -149,7 +149,7 @@ function loadPage(path: string): Promise<Page> | Page {
 
 function updateComponentProp(data) {
   const path = data.path as string;
-  if (path === activePage.path) {
+  if (path.endsWith(activePage.path)) {
     activePage.incrementUpdate(data.metadata);
   }
 }

@@ -5,7 +5,7 @@ import { Component } from '../../entities/Component';
 import { PropItem, PropItemType } from '../../entities/PropItem';
 import { PropBlock } from '../../entities/PropBlock';
 import { PropGroup } from '../../entities/PropGroup';
-import { Project } from '../../entities/Project';
+import { Application } from '../../entities/Application';
 import { Release } from '../../entities/Release';
 import { ComponentInstance } from '../../entities/ComponentInstance';
 import { PropValue } from '../../entities/PropValue';
@@ -14,26 +14,28 @@ export class DatabaseSeeder extends Seeder {
 
   async run(em: EntityManager): Promise<void> {
 
-    const project = em.create(Project, {
-      name: '管理系统'
+    const application = em.create(Application, {
+      name: '管理系统',
+      serverUrl: 'https://demo.com',
+      playgroundPath: '/admin/groot/playground'
     });
-    await em.persistAndFlush(project);
+    await em.persistAndFlush(application);
 
     const release = em.create(Release, {
       name: '0.0.1',
-      project
+      application
     });
-    project.devRelease = release;
-    project.qaRelease = release;
-    project.plRelease = release;
-    project.onlineRelease = release;
+    application.devRelease = release;
+    application.qaRelease = release;
+    application.plRelease = release;
+    application.onlineRelease = release;
     await em.persistAndFlush(release);
 
     const component = em.create(Component, {
       name: '列表查询',
       packageName: 'ant',
       componentName: 'Button',
-      project
+      application
     });
     await em.persistAndFlush(component);
 

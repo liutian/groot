@@ -121,7 +121,7 @@ function PropBlockStudio({ block, freezeSetting, templateMode, noWrapMode }: Pro
   }
 
   return <div className={templateMode || noWrapMode ? styles.containerWrap : ''}>
-    <Form form={form} layout="vertical" className="studio-form" onValuesChange={() => workbenchModel.refreshComponent()}>
+    <Form form={form} layout="vertical" className="studio-form" onValuesChange={() => workbenchModel.iframeManager.refreshComponent()}>
       <Row gutter={6}>
         {
           block.propItemList.map((item, index) => {

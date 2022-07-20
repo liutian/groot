@@ -14,31 +14,31 @@ export type UIManagerConfig = {
   modules: { [packageName: string]: { [moduleName: string]: any } };
 };
 
-export type IframeHostConnfig = {
-  rewriteApplicationData: boolean,
+export type IframeHostConfig = {
   runtimeConfig?: UIManagerConfig,
-  controlPage: string,
+  controlPage?: string,
+  localServerUrl?: string
 }
 
 export type ApplicationData = {
   name: string,
   key: string,
-  pages: PageData[]
+  pages: PageData[],
 }
 
 export type PageData = {
   path: string;
-  metadataUrl: string;
-  metadataList: Metadata[];
+  metadataUrl?: string;
+  metadataList?: Metadata[];
 }
 
 export type Metadata = {
   id: number,
   packageName: string,
   moduleName: string,
-  parentId: number,
+  parentId?: number,
 
-  advancedProps: PropMetadata[],
+  advancedProps?: PropMetadata[],
 
   propsObj: {
     [key: string]: any
@@ -50,7 +50,7 @@ export type Metadata = {
 export type PropMetadata = {
   keyChain: string,
   type: 'component',
-  data: any,
+  data?: any,
 }
 
 export enum PostMessageType {

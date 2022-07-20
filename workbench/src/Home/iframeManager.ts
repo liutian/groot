@@ -1,42 +1,99 @@
-import { PostMessageType } from "@grootio/types";
+import { ApplicationData, IframeHostConfig, PostMessageType } from "@grootio/types";
 import WorkbenchModel from "@model/WorkbenchModel";
 import { NotifyType } from "@util/types";
+import { fillPropChain, fillPropChainGreed } from "@util/utils";
 
 let iframe: HTMLIFrameElement;
-let workbenchModel: WorkbenchModel;
 let iframeReady = false;
+let workbenchModel: WorkbenchModel;
 
-export const startManageIframe = (ele: HTMLIFrameElement, model: WorkbenchModel) => {
-  iframe = ele;
-  workbenchModel = model;
-  // 提供给iframe页面mock数据（正常情况需要iframe页面通过接口获取元数据信息）
-  iframe.setAttribute('name', `groot::${JSON.stringify(workbenchModel.iframeHostConnfig)}`);
-
-  // 在iframe页面加载完成之后，自动进行首次数据推送
-  window.self.addEventListener('message', onMessage);
+let iframeHostConfig: IframeHostConfig = {
+  localServerUrl: 'http://localhost:8888'
 }
 
-const onMessage = (event: MessageEvent) => {
+let applicationData = {
+  name: 'demo',
+  key: 'demo',
+  pages: [
+    {
+      path: '/admin/groot/playground',
+      metadataList: [
+        {
+          id: 1,
+          parentId: null,
+          packageName: 'groot',
+          moduleName: 'Container',
+          advancedProps: [{
+            keyChain: 'children',
+            type: 'component',
+          }],
+          propsObj: {
+            children: [2]
+          }
+        },
+        {
+          id: 2,
+          parentId: 1,
+          packageName: 'antd',
+          moduleName: 'Button',
+
+          propsObj: {
+            type: 'primary',
+            children: 'demo1'
+          }
+        }
+      ]
+    }
+  ]
+} as ApplicationData;
+
+let propObject = {};
+
+const instance = {
+  destroyIframe,
+  refreshComponent,
+  navigation
+}
+
+export type IframeManagerInstance = typeof instance;
+
+export function launchIframeManager(ele: HTMLIFrameElement, model: WorkbenchModel): IframeManagerInstance {
+  iframe = ele;
+  workbenchModel = model;
+  window.self.addEventListener('message', onMessage);
+
+  return instance;
+}
+
+function onMessage(event: MessageEvent) {
   // iframe页面准备就绪可以接受外部更新
   if (event.data === PostMessageType.OK) {
     iframeReady = true;
   } else if (event.data === PostMessageType.Fetch_Application) {
-    if (workbenchModel.iframeHostConnfig.rewriteApplicationData) {
-      notifyIframe(NotifyType.InitApplication);
-    } else {
-      throw new Error('rewriteApplicationData is false');
-    }
+    notifyIframe(NotifyType.InitApplication);
   } else if (event.data === PostMessageType.Ready_Page) {
-    // 首次通知更新数据
-    notifyIframe(NotifyType.RefreshComponent);
+    refreshComponent();
   }
 }
 
+function navigation(path: string) {
+  let iframePath: string;
+
+  if (iframeHostConfig.localServerUrl) {
+    iframePath = iframeHostConfig.localServerUrl + path
+  } else {
+    iframePath = workbenchModel.component.application.serverUrl + path;
+  }
+
+  iframeHostConfig.controlPage = iframePath;
+  iframe.contentWindow.name = `groot::${JSON.stringify(iframeHostConfig)}`;
+  iframe.setAttribute('src', iframePath);
+}
 
 /**
    * 配置项变动通知iframe更新
    */
-export const notifyIframe = (type: NotifyType, data?: any) => {
+function notifyIframe(type: NotifyType, data?: any) {
   if (!iframeReady) {
     return;
   }
@@ -45,23 +102,75 @@ export const notifyIframe = (type: NotifyType, data?: any) => {
     iframe.contentWindow.postMessage({
       type,
       data: data || {
-        path: workbenchModel.iframePath,
+        path: iframeHostConfig.controlPage,
         metadata: {
           id: 2,
-          propsObj: workbenchModel.propObject
+          propsObj: propObject
         }
       }
     }, '*');
   } else if (type === NotifyType.InitApplication) {
     iframe.contentWindow.postMessage({
       type,
-      data: data || workbenchModel.applicationData
+      data: data || applicationData
     }, '*');
   }
 
 }
 
+// todo
+function refreshComponent() {
+  Object.keys(propObject).forEach(k => delete propObject[k]);
+  workbenchModel.rootGroupList.forEach((group) => {
+    if (group.propKey) {
+      const ctx = fillPropChainGreed(propObject, group.propKey);
+      buildPropObject(group, ctx);
+    } else {
+      buildPropObject(group, propObject);
+    }
+  });
+  console.log('<=================== prop object build out =================>\n', propObject);
+  notifyIframe(NotifyType.RefreshComponent);
+}
 
-export const destroyIframe = () => {
+function buildPropObject(group: PropGroup, ctx: Object) {
+  group.propBlockList.forEach((block) => {
+    const preCTX = ctx;
+    if (group.struct === 'Default' && block.propKey) {
+      if (block.rootPropKey) {
+        ctx = fillPropChainGreed(propObject, block.propKey);
+      } else {
+        ctx = fillPropChainGreed(ctx, block.propKey);
+      }
+    }
+
+    const blockFormObj = workbenchModel.blockFormInstanceMap.get(block.id)?.getFieldsValue() || {};
+    block.propItemList.forEach((item) => {
+      const preCTX = ctx;
+
+      if (!item.propKey) {
+        throw new Error('propKey can not null');
+      }
+
+      if (['List', 'Item', 'Hierarchy'].includes(item.type)) {
+        if (item.rootPropKey) {
+          ctx = fillPropChainGreed(propObject, item.propKey);
+        } else {
+          ctx = fillPropChainGreed(ctx, item.propKey);
+        }
+        buildPropObject(item.valueOfGroup, ctx);
+      } else {
+        const [newCTX, propEnd] = fillPropChain(item.rootPropKey ? propObject : ctx, item.propKey);
+        newCTX[propEnd] = blockFormObj[item.propKey] || item.defaultValue;
+      }
+
+      ctx = preCTX;
+    });
+
+    ctx = preCTX;
+  })
+}
+
+function destroyIframe() {
   window.self.removeEventListener('message', onMessage);
 }
