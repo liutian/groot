@@ -1,4 +1,5 @@
 export enum NotifyType {
-  RefreshComponent = 'update::component',
-  InitApplication = 'init::application'
+  Init_Config = 'init::config',
+  Init_Application = 'init::application',
+  Update_Component = 'update::component',
 }

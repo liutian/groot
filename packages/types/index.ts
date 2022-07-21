@@ -14,10 +14,10 @@ export type UIManagerConfig = {
   modules: { [packageName: string]: { [moduleName: string]: any } };
 };
 
-export type IframeHostConfig = {
+export type IframeDebuggerConfig = {
   runtimeConfig?: UIManagerConfig,
+  // 页面启动那一刻调试页面就已经确定，如果要更改iframe src一定会导致页面重新加载，然后重新执行应用启动过程
   controlPage?: string,
-  localServerUrl?: string
 }
 
 export type ApplicationData = {
@@ -54,10 +54,13 @@ export type PropMetadata = {
 }
 
 export enum PostMessageType {
-  Ready_Applicationn = 'ready::applicationn',
-  Fetch_Application = 'fetch::application',
   OK = 'ok',
-  Ready_Page = 'ready::page',
+  Init_Config = 'init::config',
+  Fetch_Application = 'fetch::application',
   Init_Application = 'init::application',
+  Ready_Applicationn = 'ready::applicationn',
+  Ready_Page = 'ready::page',
   Update_Component = 'update::component'
 }
+
+export const iframeNamePrefix = 'groot::';

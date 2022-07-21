@@ -49,6 +49,8 @@ export default class WorkbenchModel {
 
   public destory = false;
 
+  public localFrontEndUrl = 'http://localhost:8888';
+
   public init = (component: Component, prototypeMode: boolean) => {
     this.loadComponent = 'over';
     this.component = component;

@@ -72,6 +72,8 @@ UIManager.init = (config: UIManagerConfig) => {
     throw new Error('UIManager.init have been executed');
   }
   app = bootstrap(config);
+
+  console.log('UIManager.init .....');
   return app;
 };
 

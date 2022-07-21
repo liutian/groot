@@ -1,7 +1,7 @@
 import { Page } from './Page';
 import { ApplicationStatus } from './types';
-import { ApplicationData, IframeHostConfig, PostMessageType, UIManagerConfig } from '@grootio/types';
-import { controlMode, iframeNamePrefix } from './util';
+import { ApplicationData, IframeDebuggerConfig, PostMessageType, UIManagerConfig } from '@grootio/types';
+import { controlMode } from './util';
 import { globalConfig, setConfig } from './config';
 
 
@@ -17,7 +17,7 @@ const instance = {
 export type ApplicationInstance = typeof instance;
 
 let iframeApplicationLoadResolve: (info: ApplicationData) => void;
-let iframeHostConfig: IframeHostConfig;
+let iframeDebuggerConfig: IframeDebuggerConfig;
 // 当前路由导航激活的页面
 let activePage: Page;
 // 当前应用包含的页面
@@ -32,21 +32,8 @@ export function bootstrap(customConfig: UIManagerConfig): ApplicationInstance {
   setConfig(customConfig);
 
   if (controlMode) {
-    // 从父级iframe的name中获取配置信息，这样可以即时获取数据
-    // todo 父级重置iframe name时是否可以获取最新数据
-    iframeHostConfig = JSON.parse(window.self.name.replace(new RegExp('^' + iframeNamePrefix), ''));
-    if (iframeHostConfig.runtimeConfig) {
-      setConfig(iframeHostConfig.runtimeConfig);
-    }
     window.parent.postMessage(PostMessageType.OK, '*');
-    window.addEventListener('message', (event: any) => {
-      const messageType = event.data.type;
-      if (messageType === PostMessageType.Init_Application) {
-        iframeApplicationLoadResolve(event.data.data);
-      } else if (messageType === PostMessageType.Update_Component) {
-        updateComponentProp(event.data.data);
-      }
-    });
+    window.addEventListener('message', onMessage);
   }
 
   // 立即加载应用信息
@@ -55,6 +42,20 @@ export function bootstrap(customConfig: UIManagerConfig): ApplicationInstance {
   }
 
   return instance as ApplicationInstance;
+}
+
+function onMessage(event: any) {
+  const messageType = event.data.type;
+  if (messageType === PostMessageType.Init_Config) {
+    iframeDebuggerConfig = event.data.data;
+    if (iframeDebuggerConfig.runtimeConfig) {
+      setConfig(iframeDebuggerConfig.runtimeConfig);
+    }
+  } else if (messageType === PostMessageType.Init_Application) {
+    iframeApplicationLoadResolve(event.data.data);
+  } else if (messageType === PostMessageType.Update_Component) {
+    updateComponentProp(event.data.data);
+  }
 }
 
 function loadApplication(success = () => { }, fail = () => { }) {
@@ -74,13 +75,13 @@ function loadApplicationData(): Promise<void> {
   }
 
   instance.status = ApplicationStatus.Loading;
-  return getApplicationData().then((data) => {
+  return fetchApplicationData().then((data) => {
     initApplication(data);
     instance.status = ApplicationStatus.OK;
   });
 }
 
-function getApplicationData(): Promise<ApplicationData> {
+function fetchApplicationData(): Promise<ApplicationData> {
   if (controlMode) {
     return new Promise((resolve, reject) => {
       iframeApplicationLoadResolve = resolve;
@@ -104,7 +105,7 @@ function initApplication(data: ApplicationData) {
   // 初始化pages
   data.pages.forEach((pageData) => {
     const page = new Page(pageData);
-    if (controlMode && page.path === iframeHostConfig.controlPage) {
+    if (controlMode && page.path === iframeDebuggerConfig.controlPage) {
       page.controlMode = true;
     }
     allPageMap.set(page.path, page);

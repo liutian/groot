@@ -1,4 +1,4 @@
-import { ApplicationData, IframeHostConfig, PostMessageType } from "@grootio/types";
+import { ApplicationData, IframeDebuggerConfig, iframeNamePrefix, PostMessageType } from "@grootio/types";
 import WorkbenchModel from "@model/WorkbenchModel";
 import { NotifyType } from "@util/types";
 import { fillPropChain, fillPropChainGreed } from "@util/utils";
@@ -7,8 +7,8 @@ let iframe: HTMLIFrameElement;
 let iframeReady = false;
 let workbenchModel: WorkbenchModel;
 
-let iframeHostConfig: IframeHostConfig = {
-  localServerUrl: 'http://localhost:8888'
+let iframeDebuggerConfig: IframeDebuggerConfig = {
+
 }
 
 let applicationData = {
@@ -39,6 +39,34 @@ let applicationData = {
 
           propsObj: {
             type: 'primary',
+            children: 'playground'
+          }
+        }
+      ]
+    }, {
+      path: '/admin/groot/demo',
+      metadataList: [
+        {
+          id: 3,
+          parentId: null,
+          packageName: 'groot',
+          moduleName: 'Container',
+          advancedProps: [{
+            keyChain: 'children',
+            type: 'component',
+          }],
+          propsObj: {
+            children: [4]
+          }
+        },
+        {
+          id: 4,
+          parentId: 3,
+          packageName: 'antd',
+          moduleName: 'Button',
+
+          propsObj: {
+            type: 'primary',
             children: 'demo1'
           }
         }
@@ -59,6 +87,7 @@ export type IframeManagerInstance = typeof instance;
 
 export function launchIframeManager(ele: HTMLIFrameElement, model: WorkbenchModel): IframeManagerInstance {
   iframe = ele;
+  iframe.contentWindow.name = iframeNamePrefix;
   workbenchModel = model;
   window.self.addEventListener('message', onMessage);
 
@@ -69,25 +98,25 @@ function onMessage(event: MessageEvent) {
   // iframe页面准备就绪可以接受外部更新
   if (event.data === PostMessageType.OK) {
     iframeReady = true;
-  } else if (event.data === PostMessageType.Fetch_Application) {
-    notifyIframe(NotifyType.InitApplication);
+    notifyIframe(NotifyType.Init_Config);
   } else if (event.data === PostMessageType.Ready_Page) {
     refreshComponent();
+  } else if (event.data === PostMessageType.Fetch_Application) {
+    notifyIframe(NotifyType.Init_Application);
   }
 }
 
 function navigation(path: string) {
   let iframePath: string;
 
-  if (iframeHostConfig.localServerUrl) {
-    iframePath = iframeHostConfig.localServerUrl + path
+  if (workbenchModel.localFrontEndUrl) {
+    iframePath = workbenchModel.localFrontEndUrl + path
   } else {
     iframePath = workbenchModel.component.application.serverUrl + path;
   }
 
-  iframeHostConfig.controlPage = iframePath;
-  iframe.contentWindow.name = `groot::${JSON.stringify(iframeHostConfig)}`;
-  iframe.setAttribute('src', iframePath);
+  iframeDebuggerConfig.controlPage = iframePath;
+  iframe.src = iframePath;
 }
 
 /**
@@ -98,22 +127,27 @@ function notifyIframe(type: NotifyType, data?: any) {
     return;
   }
 
-  if (type === NotifyType.RefreshComponent) {
+  if (type === NotifyType.Update_Component) {
     iframe.contentWindow.postMessage({
       type,
       data: data || {
-        path: iframeHostConfig.controlPage,
+        path: iframeDebuggerConfig.controlPage,
         metadata: {
           id: 2,
           propsObj: propObject
         }
       }
     }, '*');
-  } else if (type === NotifyType.InitApplication) {
+  } else if (type === NotifyType.Init_Application) {
     iframe.contentWindow.postMessage({
       type,
       data: data || applicationData
     }, '*');
+  } else if (type === NotifyType.Init_Config) {
+    iframe.contentWindow.postMessage({
+      type,
+      data: data || iframeDebuggerConfig
+    }, '*')
   }
 
 }
@@ -130,7 +164,7 @@ function refreshComponent() {
     }
   });
   console.log('<=================== prop object build out =================>\n', propObject);
-  notifyIframe(NotifyType.RefreshComponent);
+  notifyIframe(NotifyType.Update_Component);
 }
 
 function buildPropObject(group: PropGroup, ctx: Object) {
