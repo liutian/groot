@@ -8,6 +8,7 @@ import { ApplicationService } from 'service/application.service';
 import { PropBlockService } from 'service/prop-block.service';
 import { PropGroupService } from 'service/prop-group.service';
 import { PropItemService } from 'service/prop-item.service';
+import { ScaffoldService } from 'service/scaffold.service';
 @Controller('/studio')
 export class StudioController {
   constructor(
@@ -15,17 +16,18 @@ export class StudioController {
     private readonly blockService: PropBlockService,
     private readonly groupService: PropGroupService,
     private readonly componentService: ComponentService,
-    private readonly applicationService: ApplicationService
+    private readonly applicationService: ApplicationService,
+    private readonly scaffoldService: ScaffoldService
   ) { }
 
   @Get('/component/instance')
   async getComponent(@Query('id') id: number, @Query('releaseId') releaseId?: number) {
-    return this.componentService.getComponentForRelease(id, releaseId);
+    return this.componentService.getComponentInstance(id, releaseId);
   }
 
-  @Get('/component/prototype')
-  async getComponentForEdit(@Query('id') id: number, @Query('versionId') versionId?: number) {
-    return this.componentService.getComponentForVersion(id, versionId);
+  @Get('/component/prototype/detail/:componentId')
+  async getComponentForEdit(@Param('componentId') componentId: number, @Query('versionId') versionId?: number) {
+    return this.componentService.getComponentPrototype(componentId, versionId);
   }
 
   @Post('/group/add')
@@ -96,5 +98,10 @@ export class StudioController {
   @Get('/application/detail/:applicationId')
   async applicationDetail(@Param('applicationId') applicationId: number) {
     return this.applicationService.getDetail(applicationId);
+  }
+
+  @Get('/scaffold/detail/:scaffoldId')
+  async scaffoldDetail(@Param('scaffoldId') scaffoldId: number) {
+    return this.scaffoldService.getDetail(scaffoldId);
   }
 }

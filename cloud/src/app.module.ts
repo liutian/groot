@@ -10,6 +10,7 @@ import { PropGroupService } from 'service/prop-group.service';
 import { PropItemService } from 'service/prop-item.service';
 import { ComponentService } from 'service/component.service';
 import { ApplicationService } from 'service/application.service';
+import { ScaffoldService } from 'service/scaffold.service';
 @Module({
   imports: [
     MikroOrmModule.forRoot(config)
@@ -26,7 +27,8 @@ import { ApplicationService } from 'service/application.service';
     PropGroupService,
     ComponentService,
     AppService,
-    ApplicationService
+    ApplicationService,
+    ScaffoldService
   ],
 })
 export class AppModule { }

@@ -9,6 +9,7 @@ import { Application } from '../../entities/Application';
 import { Release } from '../../entities/Release';
 import { ComponentInstance } from '../../entities/ComponentInstance';
 import { PropValue } from '../../entities/PropValue';
+import { Scaffold } from '../../entities/Scaffold';
 
 export class DatabaseSeeder extends Seeder {
 
@@ -31,11 +32,16 @@ export class DatabaseSeeder extends Seeder {
     application.onlineRelease = release;
     await em.persistAndFlush(release);
 
+    const scaffold = em.create(Scaffold, {
+      name: 'demo',
+    });
+    await em.persistAndFlush(scaffold);
+
     const component = em.create(Component, {
       name: '列表查询',
       packageName: 'ant',
       componentName: 'Button',
-      application
+      scaffold
     });
     await em.persistAndFlush(component);
 

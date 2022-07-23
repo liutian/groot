@@ -2,8 +2,8 @@ import { Collection, Entity, ManyToOne, OneToMany, OneToOne, Property } from "@m
 import { BaseEntity } from "./BaseEntity";
 import { ComponentInstance } from "./ComponentInstance";
 import { ComponentVersion } from "./ComponentVersion";
-import { Application } from "./Application";
 import { Release } from "./Release";
+import { Scaffold } from "./Scaffold";
 
 @Entity()
 export class Component extends BaseEntity {
@@ -41,9 +41,6 @@ export class Component extends BaseEntity {
   @OneToOne({ serializer: value => value?.id, serializedName: 'recentVersionId' })
   recentVersion?: ComponentVersion;// 此处必须为可选，否则创建组建会引发recentVersion非空校验
 
-  @ManyToOne()
-  application: Application;
-
   @Property({ persist: false })
   version: ComponentVersion;
 
@@ -55,4 +52,7 @@ export class Component extends BaseEntity {
 
   @Property({ persist: false })
   releaseList: Release[];
+
+  @ManyToOne({ serializer: value => value?.id, serializedName: 'scaffoldId' })
+  scaffold: Scaffold;
 }

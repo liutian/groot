@@ -10,11 +10,10 @@ import { Release } from 'entities/Release';
 @Injectable()
 export class ComponentService {
 
-  async getComponentForRelease(id: number, releaseId?: number) {
+  // todo **id为componentInstanceId**
+  async getComponentInstance(id: number, releaseId?: number) {
     const em = RequestContext.getEntityManager();
-    const component = await em.findOne(Component, id, {
-      populate: ['application.devRelease', 'application.qaRelease', 'application.plRelease', 'application.onlineRelease']
-    });
+    const component = await em.findOne(Component, id);
 
     if (!component) {
       throw new LogicException(`not found component id:${id}`, LogicExceptionCode.NotFound);
@@ -22,7 +21,8 @@ export class ComponentService {
 
     let release;
     if (!releaseId) {
-      release = component.application.devRelease;
+      // release = component.application.devRelease;
+      throw new LogicException(`not found releaseId`, LogicExceptionCode.ParamError);
     } else {
       release = await em.findOne(Release, releaseId);
 
@@ -72,7 +72,7 @@ export class ComponentService {
    * @param versionId 组件版本
    * @returns 组件信息
    */
-  async getComponentForVersion(id: number, versionId?: number) {
+  async getComponentPrototype(id: number, versionId?: number) {
     const em = RequestContext.getEntityManager();
     const component = await em.findOne(Component, id, { populate: ['versionList'] });
 
