@@ -55,6 +55,8 @@ function onMessage(event: any) {
     iframeApplicationLoadResolve(event.data.data);
   } else if (messageType === PostMessageType.Update_Component) {
     updateComponentProp(event.data.data);
+  } else if (messageType === PostMessageType.Reload_Page) {
+    window.location.reload();
   }
 }
 

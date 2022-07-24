@@ -1,15 +1,16 @@
-import React from 'react';
 import { useRoutes } from 'react-router-dom';
-import Home from './Home';
+
+import Editor from 'pages/Editor';
+import Scaffold from './pages/Scaffold';
 
 function App() {
   const element = useRoutes([
     {
-      path: '/component/prototype/:componentId',
-      element: React.createElement(() => <Home prototypeMode />),
+      path: '/scaffold',
+      element: <Scaffold />,
     }, {
-      path: '/component/instance/:componentId',
-      element: React.createElement(() => <Home />),
+      path: '/editor',
+      element: <Editor />,
     }, {
       path: '*',
       element: <NoMatch />

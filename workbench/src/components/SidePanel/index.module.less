@@ -1,0 +1,89 @@
+.headerContainer {
+  display: flex;
+  padding: var(--prop-pane-padding-y) var(--prop-pane-padding-x);
+  border-bottom: solid 1px #ddd;
+  background-color: #f3f3f3;
+}
+
+.tabsContainer {
+  flex-grow: 1;
+
+  &> :global(.ant-tabs-nav) {
+    margin-bottom: 0;
+  }
+}
+
+.toolBar {
+  display: flex;
+  padding: 0 var(--prop-pane-padding-x);
+  border-bottom: dashed 1px #cacaca;
+  // background-color: #f8f8f8;
+}
+
+.propPaneContainer {
+  display: flex;
+  flex-grow: 1;
+  overflow: auto;
+}
+
+.footerContainer {
+  --bg-color: #0095ff;
+  --bg-color-darken: darken(#0095ff, 10%);
+  display: flex;
+  padding: 0 var(--prop-pane-padding-x);
+  line-height: 28px;
+  height: 28px;
+  color: #fff;
+  background-color: var(--bg-color);
+
+  &.designMode {
+    --bg-color: #cc6633;
+    --bg-color-darken: darken(#cc6633, 10%);
+  }
+
+  > :first-child {
+    margin-left: -8px;
+  }
+
+  > :last-child {
+    margin-right: -8px;
+  }
+
+  .actionItemLeft {
+    margin-left: '-8px'
+  }
+
+  .actionItemRight {
+    margin-right: '-8px'
+  }
+}
+
+.moveHandle {
+  position: absolute;
+  top: 0;
+  left: -5px;
+  height: 100%;
+  width: 10px;
+}
+
+.propPaneItem {
+  flex: 1;
+  min-width: var(--grid-item-min-width);
+
+  :global(.ant-tabs .ant-tabs-nav) {
+    margin-bottom: 0 !important;
+    padding: 0 var(--prop-pane-padding-x);
+  }
+
+  :global(.ant-collapse) {
+    background-color: transparent;
+
+    :global(.ant-collapse-item) {
+      border-bottom: 1px solid #efefef;
+    }
+  }
+
+  &.cascaderPropPane {
+    border-left: solid 1px #efefef;
+  }
+}

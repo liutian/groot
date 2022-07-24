@@ -60,7 +60,8 @@ export enum PostMessageType {
   Init_Application = 'init::application',
   Ready_Applicationn = 'ready::applicationn',
   Ready_Page = 'ready::page',
-  Update_Component = 'update::component'
+  Update_Component = 'update::component',
+  Reload_Page = 'reload::page'
 }
 
 export const iframeNamePrefix = 'groot::';

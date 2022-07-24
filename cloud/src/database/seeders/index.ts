@@ -98,5 +98,34 @@ export class DatabaseSeeder extends Seeder {
     });
     propValue.componentInstanceList.add(instance);
     await em.persistAndFlush(propValue);
+
+
+
+
+
+
+
+    const component2 = em.create(Component, {
+      name: '列表查询',
+      packageName: 'ant',
+      componentName: 'Button2',
+      scaffold
+    });
+    await em.persistAndFlush(component);
+
+    const componentVersion2 = em.create(ComponentVersion, {
+      name: 'v0.0.1',
+      component: component2
+    });
+    component2.recentVersion = componentVersion2;
+    await em.persistAndFlush(componentVersion2);
+
+    const group2 = em.create(PropGroup, {
+      name: '配置组',
+      order: 1000,
+      componentVersion: componentVersion2,
+      component: component2
+    });
+    await em.persistAndFlush(group2);
   }
 }

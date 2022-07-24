@@ -84,6 +84,7 @@ type PropValue = {
 
 type Component = {
   version: ComponentVersion,
+  recentVersionId: number
 
   versionList: ComponentVersion[]
 } & Omit<import("../../cloud/src/entities/Component").Component, 'version'>;
@@ -91,6 +92,11 @@ type Component = {
 type Application = {
 
 } & Omit<import("../../cloud/src/entities/Application").Application, ''>;
+
+type Scaffold = {
+
+  componentList: Component[]
+} & Omit<import("../../cloud/src/entities/Scaffold").Scaffold, ''>;
 
 type CodeMeta = {
   id: number,

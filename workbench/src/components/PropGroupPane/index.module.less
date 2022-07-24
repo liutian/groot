@@ -1,0 +1,21 @@
+.blockContainer {
+  :global(.ant-collapse-extra) {
+    opacity: 0;
+  }
+
+  :global(.ant-collapse-header) {
+    border-bottom: 1px dashed transparent;
+  }
+
+  &:global(.ant-collapse-item-active .ant-collapse-header) {
+    border-bottom: 1px dashed #f0f0f0;
+  }
+
+  &:hover :global(.ant-collapse-extra) {
+    opacity: 1;
+  }
+}
+
+.footerAction {
+  padding: var(--prop-pane-padding-y) var(--prop-pane-padding-x);
+}

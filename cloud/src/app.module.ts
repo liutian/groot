@@ -1,6 +1,6 @@
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
-import { StudioController } from './studio.controller';
+import { WorkbenchController } from './workbench.controller';
 import { AppService } from './app.service';
 import config from 'config/mikro-orm.config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
@@ -15,7 +15,7 @@ import { ScaffoldService } from 'service/scaffold.service';
   imports: [
     MikroOrmModule.forRoot(config)
   ],
-  controllers: [StudioController],
+  controllers: [WorkbenchController],
   providers: [
     {
       provide: APP_INTERCEPTOR,
