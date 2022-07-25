@@ -1,3 +1,4 @@
+import { ApplicationData, PostMessageType } from "@grootio/types";
 import { IframeManagerInstance, launchIframeManager } from "@model/iframeManager";
 import PropHandleModel from "./PropHandleModel";
 
@@ -23,10 +24,13 @@ export default class WorkbenchModel {
   public prototypeMode = false;
 
   public localFrontEndUrl = 'http://localhost:8888';
-  public playgroundPath = '/admin/groot/playground';
   public iframeManager: IframeManagerInstance;
 
   public currActiveTab: 'props' | 'scaffold' = 'props';
+
+  public scaffold: Scaffold;
+
+  public applicationData: ApplicationData;
 
   private destroy = false;
   private propHandle: PropHandleModel;
@@ -41,19 +45,44 @@ export default class WorkbenchModel {
       return;
     }
 
-    this.iframeManager = launchIframeManager(iframe, this.propHandle);
+    this.iframeManager = launchIframeManager(iframe, this.propHandle, this);
     this.iframeManager.setBasePath(basePath);
   }
 
-  public start(component: Component, prototypeMode: boolean) {
+  public startScaffold(component: Component, scaffold: Scaffold) {
     this.component = component;
-    this.prototypeMode = prototypeMode;
-    this.propHandle.buildPropTree(component.version.groupList, component.version.blockList, component.version.itemList);
+    this.scaffold = scaffold;
+    this.prototypeMode = true;
+
+    const { groupList, blockList, itemList } = component.version;
+    this.propHandle.buildPropTree(groupList, blockList, itemList);
+
+    this.applicationData = this.buildApplicationData(scaffold);
+
+    this.iframeManager.navigation(this.scaffold.playgroundPath, () => {
+      const metadata = this.iframeManager.buildMetadata(this.component);
+      this.iframeManager.notifyIframe(PostMessageType.Init_Page, { path: this.scaffold.playgroundPath, metadataList: [metadata] });
+    });
   }
 
   public destroyModel() {
     this.destroy = true;
     this.iframeManager?.destroyIframe();
+  }
+
+  private buildApplicationData(scaffold: Scaffold) {
+    const pageData = {
+      path: scaffold.playgroundPath,
+      metadataList: []
+    };
+
+    const applicationData = {
+      name: scaffold.name,
+      key: 'scaffold-demo',
+      pages: [pageData]
+    };
+
+    return applicationData;
   }
 
 }

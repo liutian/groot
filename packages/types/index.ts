@@ -35,7 +35,7 @@ export type PageData = {
 export type Metadata = {
   id: number,
   packageName: string,
-  moduleName: string,
+  componentName: string,
   parentId?: number,
 
   advancedProps?: PropMetadata[],
@@ -59,7 +59,8 @@ export enum PostMessageType {
   Fetch_Application = 'fetch::application',
   Init_Application = 'init::application',
   Ready_Applicationn = 'ready::applicationn',
-  Ready_Page = 'ready::page',
+  Fetch_Page = 'fetch::page',
+  Init_Page = 'init::page',
   Update_Component = 'update::component',
   Reload_Page = 'reload::page'
 }

@@ -54,9 +54,13 @@ function onMessage(event: any) {
   } else if (messageType === PostMessageType.Init_Application) {
     iframeApplicationLoadResolve(event.data.data);
   } else if (messageType === PostMessageType.Update_Component) {
-    updateComponentProp(event.data.data);
+    activePage.incrementUpdate(event.data.data);
   } else if (messageType === PostMessageType.Reload_Page) {
     window.location.reload();
+  } else if (messageType === PostMessageType.Init_Page) {
+    if (activePage.path === event.data.data.path) {
+      activePage.fetchMetadataResolve(event.data.data.metadataList);
+    }
   }
 }
 
@@ -142,17 +146,6 @@ function loadPage(path: string): Promise<Page> | Page {
     loadingPages.delete(path);
     loadedPageMap.set(path, page);
     page.compile();
-
-    if (controlMode && page.controlMode) {
-      window.parent.postMessage(PostMessageType.Ready_Page, '*',);
-    }
     return page;
   });
-}
-
-function updateComponentProp(data) {
-  const path = data.path as string;
-  if (path.endsWith(activePage.path)) {
-    activePage.incrementUpdate(data.metadata);
-  }
 }

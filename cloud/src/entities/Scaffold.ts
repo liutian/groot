@@ -10,4 +10,7 @@ export class Scaffold extends BaseEntity {
 
   @Property({ persist: false })
   componentList: Component[];
+
+  @Property({ length: 100 })
+  playgroundPath: string;
 }

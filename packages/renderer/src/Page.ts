@@ -1,6 +1,6 @@
-import { Metadata, PageData } from "@grootio/types";
+import { Metadata, PageData, PostMessageType } from "@grootio/types";
 import { buildComponent, reBuildProps } from "./compiler";
-import { errorInfo } from "./util";
+import { controlMode, errorInfo } from "./util";
 
 export class Page extends EventTarget {
   path!: string;
@@ -8,6 +8,7 @@ export class Page extends EventTarget {
   metadataList: Metadata[];
 
   metadataPromise?: Promise<Metadata[]>;
+  fetchMetadataResolve?: (data: Metadata[]) => void;
   rootComponent?: any;
   controlMode = false;
 
@@ -26,7 +27,15 @@ export class Page extends EventTarget {
    * 加载页面配置信息
    */
   loadMetadata(): Promise<Metadata[]> {
-    if (this.metadataList) {
+    if (controlMode && this.controlMode) {
+      window.parent.postMessage({ type: PostMessageType.Fetch_Page, data: this.path }, '*',);
+      return new Promise((resolve) => {
+        this.fetchMetadataResolve = (metadataList: Metadata[]) => {
+          this.metadataList = metadataList;
+          resolve(metadataList);
+        }
+      })
+    } else if (this.metadataList) {
       return Promise.resolve(this.metadataList);
     } else if (this.metadataUrl) {// 从远程地址加载配置信息
       if (!this.metadataPromise) {
@@ -52,7 +61,7 @@ export class Page extends EventTarget {
   }
 
   compile() {
-    const rootMetadata = this.metadataList.find(m => m.parentId === null);
+    const rootMetadata = this.metadataList.find(m => !m.parentId);
     this.rootComponent = buildComponent(rootMetadata, this.metadataList);
   }
 

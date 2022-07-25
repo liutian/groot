@@ -20,11 +20,11 @@ const createComponent = (metadata: Metadata, store: Metadata[]) => {
 }
 
 const createComponentWrapper = (metadata: Metadata) => {
-  const module = globalConfig.modules[metadata.packageName][metadata.moduleName];
+  const module = globalConfig.modules[metadata.packageName][metadata.componentName];
   if (!module) {
-    errorInfo(`not found module : ${metadata.packageName}/${metadata.moduleName}`, 'compiler');
+    errorInfo(`not found module : ${metadata.packageName}/${metadata.componentName}`, 'compiler');
   }
-  const componentName = `${metadata.packageName}_${metadata.moduleName}`;
+  const componentName = `${metadata.packageName}_${metadata.componentName}`;
 
   function ComponentFunction() {
     const [, switchBool] = useState(true);

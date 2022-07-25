@@ -34,12 +34,13 @@ export class DatabaseSeeder extends Seeder {
 
     const scaffold = em.create(Scaffold, {
       name: 'demo',
+      playgroundPath: '/admin/groot/playground'
     });
     await em.persistAndFlush(scaffold);
 
     const component = em.create(Component, {
       name: '列表查询',
-      packageName: 'ant',
+      packageName: 'antd',
       componentName: 'Button',
       scaffold
     });
@@ -107,8 +108,8 @@ export class DatabaseSeeder extends Seeder {
 
     const component2 = em.create(Component, {
       name: '列表查询',
-      packageName: 'ant',
-      componentName: 'Button2',
+      packageName: 'antd',
+      componentName: 'Button',
       scaffold
     });
     await em.persistAndFlush(component);

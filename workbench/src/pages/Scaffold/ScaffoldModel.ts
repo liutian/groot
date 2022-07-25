@@ -17,8 +17,7 @@ export default class ScaffoldModel {
     this.loadComponent = 'doing';
     fetch(url).then(res => res.json()).then(({ data }: { data: Component }) => {
       this.loadComponent = 'over';
-      this.workbench.start(data, true);
-      this.workbench.iframeManager.navigation(this.workbench.playgroundPath);
+      this.workbench.startScaffold(data, this.scaffold);
     })
   }
 
