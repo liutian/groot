@@ -37,7 +37,7 @@ const SidePanel: React.FC<PropsType> = ({ extraTabPanes, ...props }) => {
 
         <div className={`${styles.propPaneContainer} `}>
           <div className={`${styles.propPaneItem}  `}>
-            <PropPane />
+            {!!workbenchModel.component ? <PropPane /> : <>loading ...</>}
           </div>
 
           {

@@ -57,7 +57,7 @@ const Scaffold: React.FC = () => {
     }
 
     return <Tabs.TabPane key="scaffold" tab="脚手架">
-      <Menu mode="inline" className={styles.menuContainer} expandIcon={renderActions()} selectedKeys={[`${workbenchModel.component.id}`]} items={componentTypes} />
+      <Menu mode="inline" className={styles.menuContainer} expandIcon={renderActions()} selectedKeys={[`${workbenchModel.component?.id}`]} items={componentTypes} />
     </Tabs.TabPane>
   }
 
@@ -65,8 +65,6 @@ const Scaffold: React.FC = () => {
     return <>loading</>
   } else if (scaffoldModel.scaffold === null) {
     return <>notfound component</>
-  } else if (!workbenchModel.component) {
-    return <>loading component</>
   } else {
     return (<Workbench extraTabPanes={renderList()} />);
   }

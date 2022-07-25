@@ -30,7 +30,6 @@ export default class WorkbenchModel {
 
   private destroy = false;
   private propHandle: PropHandleModel;
-  private navigationPaddingPath: string;
 
   public inject(propHandle: PropHandleModel) {
     this.propHandle = propHandle;
@@ -44,17 +43,6 @@ export default class WorkbenchModel {
 
     this.iframeManager = launchIframeManager(iframe, this.propHandle);
     this.iframeManager.setBasePath(basePath);
-    if (this.navigationPaddingPath) {
-      this.iframeManager.navigation(this.navigationPaddingPath);
-    }
-  }
-
-  public navigation(path: string) {
-    if (!this.iframeManager) {
-      this.navigationPaddingPath = path;
-    } else {
-      this.iframeManager.navigation(path);
-    }
   }
 
   public start(component: Component, prototypeMode: boolean) {
