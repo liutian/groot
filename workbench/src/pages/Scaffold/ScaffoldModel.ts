@@ -1,5 +1,5 @@
 import { serverPath } from "config";
-import WorkbenchModel from "./WorkbenchModel";
+import WorkbenchModel from "../../model/WorkbenchModel";
 
 export default class ScaffoldModel {
   static modelName = 'scaffold';

@@ -5,7 +5,7 @@ import { useRegisterModel } from "@util/robot";
 import WorkbenchModel from "@model/WorkbenchModel";
 import PropPersistModel from "@model/PropPersistModel";
 import PropHandleModel from "@model/PropHandleModel";
-import ScaffoldModel from "@model/ScaffoldModel";
+import ScaffoldModel from "pages/Scaffold/ScaffoldModel";
 import Workbench from "@components/Workbench";
 
 const Editor: React.FC = () => {
