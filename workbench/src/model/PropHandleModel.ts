@@ -1,3 +1,4 @@
+import { PropItemType } from "@grootio/types";
 import { parseOptions } from "@util/utils";
 import { FormInstance } from "antd";
 
@@ -229,15 +230,15 @@ export default class PropHandleModel {
 
       for (let itemIndex = 0; itemIndex < items.length; itemIndex++) {
         const item = items[itemIndex];
-        if (item.type === 'List') {
+        if (item.type === PropItemType.LIST) {
           const valueOfGroup = this.buildPropGroup(item.valueOfGroupId, store);
           item.valueOfGroup = valueOfGroup;
           item.templateBlock = valueOfGroup.templateBlock;
-        } else if (item.type === 'Item') {
+        } else if (item.type === PropItemType.ITEM) {
           const valueOfGroup = this.buildPropGroup(item.valueOfGroupId, store);
           item.valueOfGroup = valueOfGroup;
           item.directBlock = valueOfGroup.propBlockList[0];
-        } else if (item.type === 'Hierarchy') {
+        } else if (item.type === PropItemType.HIERARCHY) {
           const valueOfGroup = this.buildPropGroup(item.valueOfGroupId, store);
           item.valueOfGroup = valueOfGroup;
         }
@@ -322,7 +323,7 @@ export default class PropHandleModel {
           return item;
         }
 
-        if (item.type === 'List' || item.type === 'Item' || item.type === 'Hierarchy') {
+        if (item.type === PropItemType.LIST || item.type === PropItemType.ITEM || item.type === PropItemType.HIERARCHY) {
           if (item.valueOfGroup) {
             const result = this.getProp(id, type, item.valueOfGroup, path);
             if (result) {

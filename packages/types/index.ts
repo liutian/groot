@@ -66,3 +66,18 @@ export enum PostMessageType {
 }
 
 export const iframeNamePrefix = 'groot::';
+
+export enum PropItemType {
+  INPUT = 'Input',
+  DATE_PICKER = 'Date_Picker',
+  SWITCH = 'Switch',
+  SELECT = 'Select',
+  RADIO = 'Radio',
+  CHECKBOX = 'Checkbox',
+  LIST = 'List',
+  ITEM = 'Item',
+  HIERARCHY = 'Hierarchy',
+  JSON = 'Json',
+  FUNCTION = 'Function',
+  OPTIONS = 'Options',
+}

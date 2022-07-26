@@ -1,3 +1,4 @@
+import { PropItemType } from "@grootio/types";
 import { autoIncrementForName, parseOptions, stringifyOptions, uuid } from "@util/utils";
 import { serverPath } from "config";
 import PropHandleModel from "./PropHandleModel";
@@ -287,7 +288,7 @@ export default class PropPersistModel {
   private addPropItemFn = (data: { newItem: PropItem, valueOfGroup: PropGroup, templateBlock: PropBlock }) => {
     const block = this.propHandle.getPropBlock(data.newItem.blockId);
     block.propItemList.push(data.newItem);
-    if (data.newItem.type === 'List') {
+    if (data.newItem.type === PropItemType.LIST) {
       const valueOfGroup = data.valueOfGroup;
       const templateBlock = data.templateBlock;
 
@@ -295,11 +296,11 @@ export default class PropPersistModel {
       valueOfGroup.templateBlock = templateBlock;
       data.newItem.templateBlock = templateBlock;
       data.newItem.valueOfGroup = valueOfGroup;
-    } else if (data.newItem.type === 'Item') {
+    } else if (data.newItem.type === PropItemType.ITEM) {
       const valueOfGroup = data.valueOfGroup;
       data.newItem.directBlock = valueOfGroup.propBlockList[0];
       data.newItem.valueOfGroup = valueOfGroup;
-    } else if (data.newItem.type === 'Hierarchy') {
+    } else if (data.newItem.type === PropItemType.HIERARCHY) {
       const valueOfGroup = data.valueOfGroup;
       data.newItem.valueOfGroup = valueOfGroup;
       valueOfGroup.expandBlockIdList = [];

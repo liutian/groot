@@ -7,6 +7,7 @@ import styles from './index.module.less';
 import WorkbenchModel from "@model/WorkbenchModel";
 import PropPersistModel from "@model/PropPersistModel";
 import PropHandleModel from "@model/PropHandleModel";
+import { PropItemType } from '@grootio/types';
 
 type PropType = {
   block: PropBlock,
@@ -98,25 +99,25 @@ function PropBlockPane({ block, freezeSetting, templateMode, noWrapMode }: PropT
   }
 
   const renderFormItem = (item: PropItem) => {
-    if (item.type === 'Input') {
+    if (item.type === PropItemType.INPUT) {
       return <Input />;
-    } else if (item.type === 'Date_Picker') {
+    } else if (item.type === PropItemType.DATE_PICKER) {
       return <DatePicker />;
-    } else if (item.type === 'Switch') {
+    } else if (item.type === PropItemType.SWITCH) {
       return <Switch />
-    } else if (item.type === 'Select') {
+    } else if (item.type === PropItemType.SELECT) {
       return <Select options={item.optionList} />
-    } else if (item.type === 'Radio') {
+    } else if (item.type === PropItemType.RADIO) {
       return <Radio.Group options={item.optionList} />
-    } else if (item.type === 'Checkbox') {
+    } else if (item.type === PropItemType.CHECKBOX) {
       return <Checkbox.Group options={item.optionList} />
-    } else if (item.type === 'List') {
+    } else if (item.type === PropItemType.LIST) {
       return <Button block onClick={() => { propHandleModel.pushPropItemStack(item) }}>
         列表{item.valueOfGroup.propBlockList.length}
       </Button>
-    } else if (item.type === 'Item') {
+    } else if (item.type === PropItemType.ITEM) {
       return <Button block onClick={() => { propHandleModel.pushPropItemStack(item) }}>配置项</Button>
-    } else if (item.type === 'Hierarchy') {
+    } else if (item.type === PropItemType.HIERARCHY) {
       return <Button block onClick={() => { propHandleModel.pushPropItemStack(item) }}>层级</Button>
     }
 

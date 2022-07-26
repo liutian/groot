@@ -1,4 +1,4 @@
-import { IframeDebuggerConfig, iframeNamePrefix, Metadata, PostMessageType } from "@grootio/types";
+import { IframeDebuggerConfig, iframeNamePrefix, Metadata, PostMessageType, PropItemType } from "@grootio/types";
 import PropHandleModel from "@model/PropHandleModel";
 import { fillPropChain, fillPropChainGreed } from "@util/utils";
 import WorkbenchModel from "./WorkbenchModel";
@@ -159,7 +159,7 @@ function buildPropObject(group: PropGroup, ctx: Object, propsObj: Object) {
         throw new Error('propKey can not null');
       }
 
-      if (['List', 'Item', 'Hierarchy'].includes(item.type)) {
+      if ([PropItemType.LIST, PropItemType.ITEM, PropItemType.HIERARCHY].includes(item.type as any)) {
         if (item.rootPropKey) {
           ctx = fillPropChainGreed(propsObj, item.propKey);
         } else {

@@ -4,6 +4,7 @@ import { Component } from "./Component";
 import { ComponentVersion } from "./ComponentVersion";
 import { PropBlock } from "./PropBlock";
 import { PropGroup } from "./PropGroup";
+import { PropItemType } from '@grootio/types';
 
 @Entity()
 export class PropItem extends BaseEntity {
@@ -87,14 +88,3 @@ export class PropItem extends BaseEntity {
   versionTraceId?: number;
 }
 
-export enum PropItemType {
-  INPUT = 'Input',
-  DATE_PICKER = 'Date_Picker',
-  SWITCH = 'Switch',
-  SELECT = 'Select',
-  RADIO = 'Radio',
-  CHECKBOX = 'Checkbox',
-  LIST = 'List',
-  ITEM = 'Item',
-  HIERARCHY = 'Hierarchy'
-}

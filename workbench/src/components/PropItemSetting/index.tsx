@@ -3,17 +3,18 @@ import { Form, Input, Modal, Radio, Select, Space, Switch, Typography } from "an
 import React, { useEffect } from "react";
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import PropPersistModel from "@model/PropPersistModel";
+import { PropItemType } from "@grootio/types";
 
 const optionList = [
-  { label: '文本', value: 'Input' },
-  { label: '日期', value: 'Date_Picker' },
-  { label: '开关', value: 'Switch' },
-  { label: '下拉框', value: 'Select' },
-  { label: '多选', value: 'Checkbox' },
-  { label: '单选', value: 'Radio' },
-  { label: '列表', value: 'List' },
-  { label: '配置项', value: 'Item' },
-  { label: '层级', value: 'Hierarchy' },
+  { label: '文本', value: PropItemType.INPUT },
+  { label: '日期', value: PropItemType.DATE_PICKER },
+  { label: '开关', value: PropItemType.SWITCH },
+  { label: '下拉框', value: PropItemType.SELECT },
+  { label: '多选', value: PropItemType.CHECKBOX },
+  { label: '单选', value: PropItemType.RADIO },
+  { label: '列表', value: PropItemType.LIST },
+  { label: '配置项', value: PropItemType.ITEM },
+  { label: '层级', value: PropItemType.HIERARCHY },
 ];
 
 const PropItemSetting: React.FC = () => {
