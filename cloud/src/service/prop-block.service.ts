@@ -1,9 +1,10 @@
+import { PropItemType } from '@grootio/common';
 import { EntityManager, RequestContext } from '@mikro-orm/core';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { LogicException, LogicExceptionCode } from 'config/logic.exception';
 import { PropBlock } from 'entities/PropBlock';
 import { PropGroup } from 'entities/PropGroup';
-import { PropItem, PropItemType } from 'entities/PropItem';
+import { PropItem } from 'entities/PropItem';
 import { autoIncrementForName, pick } from 'util.ts/common';
 import { omitProps } from 'util.ts/ormUtil';
 import { PropGroupService } from './prop-group.service';
