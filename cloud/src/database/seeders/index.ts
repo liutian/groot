@@ -2,7 +2,7 @@ import { EntityManager } from '@mikro-orm/core';
 import { Seeder } from '@mikro-orm/seeder';
 import { ComponentVersion } from '../../entities/ComponentVersion';
 import { Component } from '../../entities/Component';
-import { PropItem, PropItemType } from '../../entities/PropItem';
+import { PropItem } from '../../entities/PropItem';
 import { PropBlock } from '../../entities/PropBlock';
 import { PropGroup } from '../../entities/PropGroup';
 import { Application } from '../../entities/Application';
@@ -10,6 +10,7 @@ import { Release } from '../../entities/Release';
 import { ComponentInstance } from '../../entities/ComponentInstance';
 import { PropValue } from '../../entities/PropValue';
 import { Scaffold } from '../../entities/Scaffold';
+import { PropItemType } from '@grootio/types';
 
 export class DatabaseSeeder extends Seeder {
 
@@ -38,8 +39,120 @@ export class DatabaseSeeder extends Seeder {
     });
     await em.persistAndFlush(scaffold);
 
-    const component = em.create(Component, {
+
+
+    const component_table = em.create(Component, {
       name: '列表查询',
+      packageName: '@ant-design/pro-table',
+      componentName: 'ProTable',
+      scaffold
+    });
+    await em.persistAndFlush(component_table);
+
+    const component_table_version = em.create(ComponentVersion, {
+      name: 'v0.0.1',
+      component: component_table
+    });
+    component_table.recentVersion = component_table_version;
+    await em.persistAndFlush(component_table_version);
+
+    const group_table = em.create(PropGroup, {
+      name: '列配置',
+      order: 1000,
+      struct: 'List',
+      propKey: 'columns',
+      componentVersion: component_table_version,
+      component: component_table,
+    });
+    await em.persistAndFlush(group_table);
+
+    const block_table = em.create(PropBlock, {
+      name: '列模版',
+      group: group_table,
+      componentVersion: component_table_version,
+      order: 1000,
+      component: component_table,
+      isTemplate: true
+    })
+    await em.persistAndFlush(block_table);
+
+    group_table.templateBlock = block_table;
+
+    const item_table_1 = em.create(PropItem, {
+      label: '索引',
+      propKey: 'dataIndex',
+      type: PropItemType.INPUT,
+      block: block_table,
+      group: group_table,
+      componentVersion: component_table_version,
+      order: 1000,
+      span: 12,
+      component: component_table
+    })
+    await em.persistAndFlush(item_table_1);
+
+    const item_table_2 = em.create(PropItem, {
+      label: '标题',
+      propKey: 'title',
+      type: PropItemType.INPUT,
+      block: block_table,
+      group: group_table,
+      componentVersion: component_table_version,
+      order: 1001,
+      span: 12,
+      component: component_table
+    })
+    await em.persistAndFlush(item_table_2);
+
+    const item_table_3 = em.create(PropItem, {
+      label: '类型',
+      propKey: 'valueType',
+      type: PropItemType.SELECT,
+      block: block_table,
+      group: group_table,
+      componentVersion: component_table_version,
+      order: 1002,
+      component: component_table,
+      valueOptions: '[{"label":"文本","value":"text"},{"label":"下拉框","value":"select"},{"label":"日期","value":"date"},{"label":"时间","value":"dateTime"}]'
+    })
+    await em.persistAndFlush(item_table_3);
+
+
+
+    const item_table_4 = em.create(PropItem, {
+      label: '提示信息',
+      propKey: 'tooltip',
+      type: PropItemType.INPUT,
+      block: block_table,
+      group: group_table,
+      componentVersion: component_table_version,
+      order: 1003,
+      component: component_table,
+    })
+    await em.persistAndFlush(item_table_4);
+
+
+    const item_table_5 = em.create(PropItem, {
+      label: '选项列表',
+      propKey: 'fieldProps.options',
+      type: PropItemType.OPTIONS,
+      block: block_table,
+      group: group_table,
+      componentVersion: component_table_version,
+      order: 1004,
+      component: component_table,
+    })
+    await em.persistAndFlush(item_table_5);
+
+
+
+
+
+
+
+
+    const component = em.create(Component, {
+      name: '按钮',
       packageName: 'antd',
       componentName: 'Button',
       scaffold
@@ -72,7 +185,7 @@ export class DatabaseSeeder extends Seeder {
 
     const item = em.create(PropItem, {
       label: '配置项',
-      propKey: 'prop',
+      propKey: 'children',
       type: PropItemType.INPUT,
       block,
       group,
@@ -81,6 +194,11 @@ export class DatabaseSeeder extends Seeder {
       component
     })
     await em.persistAndFlush(item);
+
+
+
+
+
 
     const instance = em.create(ComponentInstance, {
       name: '用户查询页面',
@@ -106,27 +224,5 @@ export class DatabaseSeeder extends Seeder {
 
 
 
-    const component2 = em.create(Component, {
-      name: '列表查询',
-      packageName: 'antd',
-      componentName: 'Button',
-      scaffold
-    });
-    await em.persistAndFlush(component);
-
-    const componentVersion2 = em.create(ComponentVersion, {
-      name: 'v0.0.1',
-      component: component2
-    });
-    component2.recentVersion = componentVersion2;
-    await em.persistAndFlush(componentVersion2);
-
-    const group2 = em.create(PropGroup, {
-      name: '配置组',
-      order: 1000,
-      componentVersion: componentVersion2,
-      component: component2
-    });
-    await em.persistAndFlush(group2);
   }
 }
