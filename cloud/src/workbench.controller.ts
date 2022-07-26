@@ -20,9 +20,9 @@ export class WorkbenchController {
     private readonly scaffoldService: ScaffoldService
   ) { }
 
-  @Get('/component/instance')
-  async getComponent(@Query('id') id: number, @Query('releaseId') releaseId?: number) {
-    return this.componentService.getComponentInstance(id, releaseId);
+  @Get('/component/instance/detail/:componentId')
+  async getComponent(@Param('componentId') componentId: number, @Query('releaseId') releaseId?: number) {
+    return this.componentService.getComponentInstance(componentId, releaseId);
   }
 
   @Get('/component/prototype/detail/:componentId')
@@ -96,8 +96,8 @@ export class WorkbenchController {
   }
 
   @Get('/application/detail/:applicationId')
-  async applicationDetail(@Param('applicationId') applicationId: number) {
-    return this.applicationService.getDetail(applicationId);
+  async applicationDetail(@Param('applicationId') applicationId: number, @Query('releaseId') releaseId: number) {
+    return this.applicationService.getDetail(applicationId, releaseId);
   }
 
   @Get('/scaffold/detail/:scaffoldId')

@@ -37,4 +37,7 @@ export class ComponentInstance extends BaseEntity {
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'parentInstanceId' })
   parentInstance?: ComponentInstance;
+
+  @Property({ persist: false })
+  componentId: number;
 }

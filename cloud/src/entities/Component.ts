@@ -24,10 +24,10 @@ export class Component extends BaseEntity {
   componentName: string;
 
   /**
-   * 是否是页面级组件
+   * 是否是容器组件
    */
   @Property()
-  page = true;
+  container = true;
 
   /**
    * 组件版本列表

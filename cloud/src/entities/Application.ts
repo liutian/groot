@@ -28,8 +28,11 @@ export class Application extends BaseEntity {
   releaseList = new Collection<Release>(this);
 
   @Property({ length: 100 })
-  serverUrl: string;
+  remoteFrontEndUrl: string;
 
   @Property({ length: 100 })
   playgroundPath: string;
+
+  @Property({ persist: false })
+  release: Release;
 }

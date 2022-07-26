@@ -17,7 +17,7 @@ export class DatabaseSeeder extends Seeder {
 
     const application = em.create(Application, {
       name: '管理系统',
-      serverUrl: 'https://demo.com',
+      remoteFrontEndUrl: 'https://demo.com',
       playgroundPath: '/admin/groot/playground'
     });
     await em.persistAndFlush(application);

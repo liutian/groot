@@ -75,7 +75,7 @@ type ComponentInstance = {
 } & Omit<import("../../cloud/src/entities/ComponentInstance").ComponentInstance, ''>;
 
 type Release = {
-
+  instanceList: ComponentInstance[]
 } & Omit<import("../../cloud/src/entities/Release").Release, ''>;
 
 type PropValue = {
@@ -91,6 +91,7 @@ type Component = {
 
 type Application = {
 
+  release: Release
 } & Omit<import("../../cloud/src/entities/Application").Application, ''>;
 
 type Scaffold = {
