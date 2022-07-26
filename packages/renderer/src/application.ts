@@ -1,6 +1,6 @@
 import { Page } from './Page';
 import { ApplicationStatus } from './types';
-import { ApplicationData, IframeDebuggerConfig, PostMessageType, UIManagerConfig } from '@grootio/types';
+import { ApplicationData, IframeDebuggerConfig, PostMessageType, UIManagerConfig } from '@grootio/common';
 import { controlMode } from './util';
 import { globalConfig, setConfig } from './config';
 

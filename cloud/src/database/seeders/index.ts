@@ -10,7 +10,7 @@ import { Release } from '../../entities/Release';
 import { ComponentInstance } from '../../entities/ComponentInstance';
 import { PropValue } from '../../entities/PropValue';
 import { Scaffold } from '../../entities/Scaffold';
-import { PropItemType } from '@grootio/types';
+import { PropItemType } from '@grootio/common';
 
 export class DatabaseSeeder extends Seeder {
 

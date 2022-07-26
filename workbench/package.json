@@ -40,6 +40,6 @@
     "react-dom": "18.2.0",
     "react-router-dom": "6.3.0",
     "zone.js": "0.11.6",
-    "@grootio/types": "0.0.1"
+    "@grootio/common": "0.0.1"
   }
 }

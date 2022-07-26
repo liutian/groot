@@ -7,7 +7,7 @@
     "packages/core",
     "packages/runtime",
     "packages/renderer",
-    "packages/types"
+    "packages/common"
   ],
   "scripts": {},
   "lint-staged": {

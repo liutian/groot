@@ -7,7 +7,7 @@ import styles from './index.module.less';
 import WorkbenchModel from "@model/WorkbenchModel";
 import PropPersistModel from "@model/PropPersistModel";
 import PropHandleModel from "@model/PropHandleModel";
-import { PropItemType } from '@grootio/types';
+import { PropItemType } from '@grootio/common';
 
 type PropType = {
   block: PropBlock,

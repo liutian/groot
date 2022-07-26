@@ -1,4 +1,4 @@
-import { Metadata, PageData, PostMessageType } from "@grootio/types";
+import { Metadata, PageData, PostMessageType } from "@grootio/common";
 import { buildComponent, reBuildProps } from "./compiler";
 import { controlMode, errorInfo } from "./util";
 

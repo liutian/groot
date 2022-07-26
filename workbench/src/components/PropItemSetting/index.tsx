@@ -3,7 +3,7 @@ import { Form, Input, Modal, Radio, Select, Space, Switch, Typography } from "an
 import React, { useEffect } from "react";
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import PropPersistModel from "@model/PropPersistModel";
-import { PropItemType } from "@grootio/types";
+import { PropItemType } from "@grootio/common";
 
 const optionList = [
   { label: '文本', value: PropItemType.INPUT },

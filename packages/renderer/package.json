@@ -7,7 +7,7 @@
     "build": "npx tsc"
   },
   "dependencies": {
-    "@grootio/types": "0.0.1"
+    "@grootio/common": "0.0.1"
   },
   "peerDependencies": {
     "react": "18.2.0"

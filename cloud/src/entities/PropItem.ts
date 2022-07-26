@@ -4,7 +4,7 @@ import { Component } from "./Component";
 import { ComponentVersion } from "./ComponentVersion";
 import { PropBlock } from "./PropBlock";
 import { PropGroup } from "./PropGroup";
-import { PropItemType } from '@grootio/types';
+import { PropItemType } from '@grootio/common';
 
 @Entity()
 export class PropItem extends BaseEntity {

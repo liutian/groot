@@ -1,4 +1,4 @@
-import { PropItemType } from "@grootio/types";
+import { PropItemType } from "@grootio/common";
 import { autoIncrementForName, parseOptions, stringifyOptions, uuid } from "@util/utils";
 import { serverPath } from "config";
 import PropHandleModel from "./PropHandleModel";

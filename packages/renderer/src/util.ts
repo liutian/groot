@@ -1,4 +1,4 @@
-import { iframeNamePrefix } from "@grootio/types";
+import { iframeNamePrefix } from "@grootio/common";
 import { globalConfig } from "./config";
 
 export const controlMode = window.self !== window.top && window.self.name.startsWith(iframeNamePrefix);

@@ -1,5 +1,5 @@
 {
-  "name": "@grootio/types",
+  "name": "@grootio/common",
   "version": "0.0.1",
   "description": "",
   "main": "dist/index.js",

@@ -1,4 +1,4 @@
-import { Metadata } from "@grootio/types";
+import { Metadata } from "@grootio/common";
 import React, { useState } from "react";
 import { globalConfig } from "./config";
 import { debugInfo, controlMode, errorInfo } from "./util";

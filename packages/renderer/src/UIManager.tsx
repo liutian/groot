@@ -5,7 +5,7 @@ import { errorInfo } from './util';
 import { ApplicationStatus } from './types';
 import { Page } from './Page';
 import { ApplicationInstance, bootstrap } from './application';
-import { UIManagerConfig } from '@grootio/types';
+import { UIManagerConfig } from '@grootio/common';
 
 let app: ApplicationInstance;
 // 保持最新的函数引用

@@ -1,4 +1,4 @@
-import { PropItemType } from "@grootio/types";
+import { PropItemType } from "@grootio/common";
 import { parseOptions } from "@util/utils";
 import { FormInstance } from "antd";
 

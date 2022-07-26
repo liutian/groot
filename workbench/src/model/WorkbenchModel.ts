@@ -1,4 +1,4 @@
-import { ApplicationData, PostMessageType } from "@grootio/types";
+import { ApplicationData, PostMessageType } from "@grootio/common";
 import { IframeManagerInstance, launchIframeManager } from "@model/iframeManager";
 import PropHandleModel from "./PropHandleModel";
 
