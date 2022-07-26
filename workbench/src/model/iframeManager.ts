@@ -65,7 +65,7 @@ function buildMetadata(component: Component): Metadata {
   };
   propHandleModel.rootGroupList.forEach((group) => {
     if (group.propKey) {
-      const ctx = fillPropChainGreed(metadata.propsObj, group.propKey);
+      const ctx = fillPropChainGreed(metadata.propsObj, group.propKey, group.struct === 'List');
       buildPropObject(group, ctx, metadata.propsObj);
     } else {
       buildPropObject(group, metadata.propsObj, metadata.propsObj);
@@ -126,7 +126,7 @@ function refreshComponent() {
   const metadata = { id: workbenchModel.component.id, propsObj: {} };
   propHandleModel.rootGroupList.forEach((group) => {
     if (group.propKey) {
-      const ctx = fillPropChainGreed(metadata.propsObj, group.propKey);
+      const ctx = fillPropChainGreed(metadata.propsObj, group.propKey, group.struct === 'List');
       buildPropObject(group, ctx, metadata.propsObj);
     } else {
       buildPropObject(group, metadata.propsObj, metadata.propsObj);
@@ -145,6 +145,10 @@ function buildPropObject(group: PropGroup, ctx: Object, propsObj: Object) {
       } else {
         ctx = fillPropChainGreed(ctx, block.propKey);
       }
+    } else if (group.struct === 'List') {
+      const blockObj = {};
+      (ctx as any[]).push(blockObj);
+      ctx = blockObj;
     }
 
     const blockFormObj = propHandleModel.blockFormInstanceMap.get(block.id)?.getFieldsValue() || {};

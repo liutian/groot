@@ -26,9 +26,12 @@ export const propKeyRule = /^[_a-zA-Z][\w\.]*$/i;
  * @param propStr 
  * @returns 
  */
-export const fillPropChainGreed = (ctx: Object, propStr: string) => {
+export const fillPropChainGreed = (ctx: Object, propStr: string, isArray = false) => {
   const propList = propStr.replace(/^\./, '').replace(/\.$/, '').replace(/\.{2,}/g, '').split('.');
-  let result = propList.reduce((pre, current) => {
+  let result = propList.reduce((pre, current, index) => {
+    if (index === propList.length - 1 && isArray) {
+      return pre[current] = [];
+    }
     return pre[current] = {};
   }, ctx);
 
