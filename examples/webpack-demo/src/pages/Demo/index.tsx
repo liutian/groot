@@ -1,4 +1,5 @@
 import { Button, Input, Select } from 'antd';
+import { ProTable } from '@ant-design/pro-table';
 import { UIManager } from '@grootio/renderer';
 import { useLocation } from 'react-router';
 import react from 'react';
@@ -15,6 +16,9 @@ UIManager.init({
       Button,
       Input,
       Select,
+    },
+    '@ant-design/pro-table': {
+      ProTable
     },
     tslib,
     ['react/jsx-runtime']: jsxRuntime,
