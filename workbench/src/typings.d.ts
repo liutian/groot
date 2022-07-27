@@ -49,7 +49,7 @@ type PropItem = {
   valueOfGroup?: PropGroup,
   templateBlock?: PropBlock,
   directBlock?: PropBlock,
-  type: 'Input' | 'Date_Picker' | 'Switch' | 'Select' | 'Radio' | 'Checkbox' | 'List' | 'Item' | 'Hierarchy',
+  type: 'Text' | 'Date_Picker' | 'Switch' | 'Select' | 'Radio' | 'Checkbox' | 'List' | 'Item' | 'Hierarchy',
 
   groupId: number,
   valueOfGroupId?: number,

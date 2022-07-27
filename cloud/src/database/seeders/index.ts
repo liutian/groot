@@ -81,7 +81,7 @@ export class DatabaseSeeder extends Seeder {
     const item_table_1 = em.create(PropItem, {
       label: '索引',
       propKey: 'dataIndex',
-      type: PropItemType.INPUT,
+      type: PropItemType.TEXT,
       block: block_table,
       group: group_table,
       componentVersion: component_table_version,
@@ -94,7 +94,7 @@ export class DatabaseSeeder extends Seeder {
     const item_table_2 = em.create(PropItem, {
       label: '标题',
       propKey: 'title',
-      type: PropItemType.INPUT,
+      type: PropItemType.TEXT,
       block: block_table,
       group: group_table,
       componentVersion: component_table_version,
@@ -122,7 +122,7 @@ export class DatabaseSeeder extends Seeder {
     const item_table_4 = em.create(PropItem, {
       label: '提示信息',
       propKey: 'tooltip',
-      type: PropItemType.INPUT,
+      type: PropItemType.TEXT,
       block: block_table,
       group: group_table,
       componentVersion: component_table_version,
@@ -175,7 +175,7 @@ export class DatabaseSeeder extends Seeder {
     const item = em.create(PropItem, {
       label: '配置项',
       propKey: 'children',
-      type: PropItemType.INPUT,
+      type: PropItemType.TEXT,
       block,
       group,
       componentVersion,

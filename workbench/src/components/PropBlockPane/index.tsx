@@ -99,7 +99,7 @@ function PropBlockPane({ block, freezeSetting, templateMode, noWrapMode }: PropT
   }
 
   const renderFormItem = (item: PropItem) => {
-    if (item.type === PropItemType.INPUT) {
+    if (item.type === PropItemType.TEXT) {
       return <Input />;
     } else if (item.type === PropItemType.DATE_PICKER) {
       return <DatePicker />;

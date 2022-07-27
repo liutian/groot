@@ -68,7 +68,7 @@ export enum PostMessageType {
 export const iframeNamePrefix = 'groot::';
 
 export enum PropItemType {
-  INPUT = 'Input',
+  TEXT = 'Text',
   DATE_PICKER = 'Date_Picker',
   SWITCH = 'Switch',
   SELECT = 'Select',

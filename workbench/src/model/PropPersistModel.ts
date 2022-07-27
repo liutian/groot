@@ -358,7 +358,7 @@ export default class PropPersistModel {
 
     this.currSettingPropItem = {
       id: 0,
-      type: 'Input',
+      type: 'Text',
       label: `配置项${nameSuffix}`,
       propKey: `prop${propSuffix}`,
       blockId: block.id,

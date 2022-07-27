@@ -6,7 +6,7 @@ import PropPersistModel from "@model/PropPersistModel";
 import { PropItemType } from "@grootio/common";
 
 const optionList = [
-  { label: '文本', value: PropItemType.INPUT },
+  { label: '文本', value: PropItemType.TEXT },
   { label: '日期', value: PropItemType.DATE_PICKER },
   { label: '开关', value: PropItemType.SWITCH },
   { label: '下拉框', value: PropItemType.SELECT },
