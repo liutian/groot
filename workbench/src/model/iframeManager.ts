@@ -17,7 +17,7 @@ let iframeDebuggerConfig: IframeDebuggerConfig = {
 }
 
 
-const instance = {
+const instancePrototype = {
   destroyIframe,
   refreshComponent,
   navigation,
@@ -26,7 +26,7 @@ const instance = {
   notifyIframe
 }
 
-export type IframeManagerInstance = typeof instance;
+export type IframeManagerInstance = typeof instancePrototype;
 
 export function launchIframeManager(ele: HTMLIFrameElement, _propHandleModel: PropHandleModel, _workbenchModel: WorkbenchModel): IframeManagerInstance {
   iframe = ele;
@@ -36,7 +36,8 @@ export function launchIframeManager(ele: HTMLIFrameElement, _propHandleModel: Pr
 
   window.self.addEventListener('message', onMessage);
 
-  return instance;
+  // 方法在原型上避免执行视图更新操作
+  return Object.create(instancePrototype);
 }
 
 function onMessage(event: MessageEvent) {
