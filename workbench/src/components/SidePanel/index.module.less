@@ -11,6 +11,20 @@
   &> :global(.ant-tabs-nav) {
     margin-bottom: 0;
   }
+
+  &> :global(.ant-tabs-content-holder > .ant-tabs-content) {
+    height: 100%;
+  }
+
+  &> :global(.ant-tabs-content-holder > .ant-tabs-content > .ant-tabs-tabpane) {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.tabsItemPanel {
+  display: flex;
+  flex-direction: column;
 }
 
 .toolBar {
