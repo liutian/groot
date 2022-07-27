@@ -162,9 +162,9 @@ function buildPropObject(group: PropGroup, ctx: Object, propsObj: Object) {
 
       if ([PropItemType.LIST, PropItemType.ITEM, PropItemType.HIERARCHY].includes(item.type as any)) {
         if (item.rootPropKey) {
-          ctx = fillPropChainGreed(propsObj, item.propKey);
+          ctx = fillPropChainGreed(propsObj, item.propKey, item.type === PropItemType.LIST);
         } else {
-          ctx = fillPropChainGreed(ctx, item.propKey);
+          ctx = fillPropChainGreed(ctx, item.propKey, item.type === PropItemType.LIST);
         }
         buildPropObject(item.valueOfGroup, ctx, propsObj);
       } else {
