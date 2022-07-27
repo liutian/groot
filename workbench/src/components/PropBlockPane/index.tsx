@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Button, Checkbox, Col, DatePicker, Form, Input, Radio, Row, Select, Space, Switch, Typography } from "antd";
+import { Button, Checkbox, Col, DatePicker, Form, Input, Radio, Row, Select, Space, Switch, TimePicker, Typography } from "antd";
 import { VerticalAlignTopOutlined, DeleteOutlined, VerticalAlignBottomOutlined, EditOutlined } from '@ant-design/icons';
 
 import { useModel } from "@util/robot";
@@ -101,8 +101,12 @@ function PropBlockPane({ block, freezeSetting, templateMode, noWrapMode }: PropT
   const renderFormItem = (item: PropItem) => {
     if (item.type === PropItemType.TEXT) {
       return <Input />;
+    } else if (item.type === PropItemType.TEXTAREA) {
+      return <Input.TextArea />;
     } else if (item.type === PropItemType.DATE_PICKER) {
       return <DatePicker />;
+    } else if (item.type === PropItemType.TIME_PICKER) {
+      return <TimePicker style={{ width: '100%' }} />;
     } else if (item.type === PropItemType.SWITCH) {
       return <Switch />
     } else if (item.type === PropItemType.SELECT) {
@@ -119,6 +123,10 @@ function PropBlockPane({ block, freezeSetting, templateMode, noWrapMode }: PropT
       return <Button block onClick={() => { propHandleModel.pushPropItemStack(item) }}>配置项</Button>
     } else if (item.type === PropItemType.HIERARCHY) {
       return <Button block onClick={() => { propHandleModel.pushPropItemStack(item) }}>层级</Button>
+    } else if (item.type === PropItemType.JSON) {
+      return <>json</>
+    } else if (item.type === PropItemType.FUNCTION) {
+      return <>函数</>
     }
 
     return <>not found item</>

@@ -7,7 +7,9 @@ import { PropItemType } from "@grootio/common";
 
 const optionList = [
   { label: '文本', value: PropItemType.TEXT },
+  { label: '多行文本', value: PropItemType.TEXTAREA },
   { label: '日期', value: PropItemType.DATE_PICKER },
+  { label: '时间', value: PropItemType.TIME_PICKER },
   { label: '开关', value: PropItemType.SWITCH },
   { label: '下拉框', value: PropItemType.SELECT },
   { label: '多选', value: PropItemType.CHECKBOX },
@@ -15,6 +17,8 @@ const optionList = [
   { label: '列表', value: PropItemType.LIST },
   { label: '配置项', value: PropItemType.ITEM },
   { label: '层级', value: PropItemType.HIERARCHY },
+  { label: 'json', value: PropItemType.JSON },
+  { label: '函数', value: PropItemType.FUNCTION },
 ];
 
 const PropItemSetting: React.FC = () => {

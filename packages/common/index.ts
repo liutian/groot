@@ -69,7 +69,9 @@ export const iframeNamePrefix = 'groot::';
 
 export enum PropItemType {
   TEXT = 'Text',
+  TEXTAREA = 'Textarea',
   DATE_PICKER = 'Date_Picker',
+  TIME_PICKER = 'Time_Picker',
   SWITCH = 'Switch',
   SELECT = 'Select',
   RADIO = 'Radio',
