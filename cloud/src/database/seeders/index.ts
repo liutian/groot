@@ -132,17 +132,6 @@ export class DatabaseSeeder extends Seeder {
     await em.persistAndFlush(item_table_4);
 
 
-    const item_table_5 = em.create(PropItem, {
-      label: '选项列表',
-      propKey: 'fieldProps.options',
-      type: PropItemType.OPTIONS,
-      block: block_table,
-      group: group_table,
-      componentVersion: component_table_version,
-      order: 1004,
-      component: component_table,
-    })
-    await em.persistAndFlush(item_table_5);
 
 
 

@@ -79,5 +79,4 @@ export enum PropItemType {
   HIERARCHY = 'Hierarchy',
   JSON = 'Json',
   FUNCTION = 'Function',
-  OPTIONS = 'Options',
 }

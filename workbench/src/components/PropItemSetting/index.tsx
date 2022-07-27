@@ -88,7 +88,7 @@ const PropItemSetting: React.FC = () => {
       </Form.Item>
       <Form.Item label="宽度" name="span">
         <Radio.Group >
-          <Radio value={12}>一半</Radio>
+          <Radio value={12}>半行</Radio>
           <Radio value={24}>整行</Radio>
         </Radio.Group>
       </Form.Item>
