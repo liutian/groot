@@ -1,6 +1,6 @@
 import PropPersistModel from "@model/PropPersistModel";
 import { useModel } from "@util/robot";
-import { Form, Input, Modal, Switch } from "antd";
+import { Form, Input, Modal, Radio, Switch } from "antd";
 import React, { useEffect, useRef } from "react";
 
 const PropBlockSetting: React.FC = () => {
@@ -42,6 +42,12 @@ const PropBlockSetting: React.FC = () => {
       </Form.Item>
       <Form.Item valuePropName="checked" label="根属性" name="rootPropKey">
         <Switch />
+      </Form.Item>
+      <Form.Item label="布局" name="layout" initialValue="horizontal">
+        <Radio.Group >
+          <Radio value="horizontal">水平</Radio>
+          <Radio value="vertical">垂直</Radio>
+        </Radio.Group>
       </Form.Item>
     </Form>
   </Modal>)

@@ -6,10 +6,17 @@
   :global(.ant-collapse-header) {
     border-bottom: 1px dashed transparent;
     background-color: #f5f5f5;
+    padding-top: 6px !important;
+    padding-bottom: 6px !important;
+  }
+
+  :global(.ant-collapse-content-box) {
+    padding-top: 10px !important;
+    padding-bottom: 0;
   }
 
   &:global(.ant-collapse-item-active .ant-collapse-header) {
-    border-bottom: 1px dashed #f0f0f0;
+    border-bottom: 1px dashed #f5f5f5;
   }
 
   &:hover :global(.ant-collapse-extra) {

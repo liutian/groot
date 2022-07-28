@@ -33,7 +33,8 @@ function PropBlockPane({ block, freezeSetting, templateMode, noWrapMode }: PropT
     }
   }, []);
 
-  const renderItemLabel = (propItem: PropItem, itemIndex: number) => {
+  const renderItemSetting = (propItem: PropItem, itemIndex: number) => {
+    if (!workbenchModel.prototypeMode || freezeSetting) return null;
 
     const editPropItem = () => {
       propPersistAction(() => {
@@ -41,50 +42,56 @@ function PropBlockPane({ block, freezeSetting, templateMode, noWrapMode }: PropT
       })
     }
 
-    const renderItemSetting = () => {
-      if (!workbenchModel.prototypeMode || freezeSetting) return null;
+    return (<Space size="small">
+      {
+        itemIndex > 0 && (
+          <Typography.Link onClick={(e) => {
+            e.preventDefault();
+            propPersistModel.movePropItem(block, itemIndex, true);
+          }}>
+            <VerticalAlignTopOutlined />
+          </Typography.Link>
+        )
+      }
 
-      return (<Space size="small">
-        {
-          itemIndex > 0 && (
-            <Typography.Link onClick={(e) => {
-              e.preventDefault();
-              propPersistModel.movePropItem(block, itemIndex, true);
-            }}>
-              <VerticalAlignTopOutlined />
-            </Typography.Link>
-          )
-        }
+      {
+        itemIndex < block.propItemList.length - 1 && (
+          <Typography.Link onClick={(e) => {
+            e.preventDefault();
+            propPersistModel.movePropItem(block, itemIndex, false);
+          }}>
+            <VerticalAlignBottomOutlined />
+          </Typography.Link>
+        )
+      }
 
-        {
-          itemIndex < block.propItemList.length - 1 && (
-            <Typography.Link onClick={(e) => {
-              e.preventDefault();
-              propPersistModel.movePropItem(block, itemIndex, false);
-            }}>
-              <VerticalAlignBottomOutlined />
-            </Typography.Link>
-          )
-        }
+      <Typography.Link onClick={(e) => {
+        e.preventDefault();
+        editPropItem();
+      }}>
+        <EditOutlined />
+      </Typography.Link>
 
-        <Typography.Link onClick={(e) => {
-          e.preventDefault();
-          editPropItem();
-        }}>
-          <EditOutlined />
-        </Typography.Link>
+      {
+        block.propItemList.length > 1 && (
+          <Typography.Link onClick={(e) => {
+            e.preventDefault();
+            propPersistModel.delItem(propItem.id);
+          }} >
+            <DeleteOutlined />
+          </Typography.Link>
+        )
+      }
+    </Space>)
+  }
 
-        {
-          block.propItemList.length > 1 && (
-            <Typography.Link onClick={(e) => {
-              e.preventDefault();
-              propPersistModel.delItem(propItem.id);
-            }} >
-              <DeleteOutlined />
-            </Typography.Link>
-          )
-        }
-      </Space>)
+  const renderItemLabel = (propItem: PropItem, itemIndex: number) => {
+
+    if (block.layout === 'horizontal') {
+      return <>
+        {propItem.label}
+        <i className="highlight" hidden={!propItem.highlight} />
+      </>
     }
 
     return <div className={styles.propItemHeader}>
@@ -93,17 +100,17 @@ function PropBlockPane({ block, freezeSetting, templateMode, noWrapMode }: PropT
         <i className="highlight" hidden={!propItem.highlight} />
       </div>
       <div className={styles.propItemHeaderActions}>
-        {renderItemSetting()}
+        {renderItemSetting(propItem, itemIndex)}
       </div>
     </div>
   }
 
   return <div className={templateMode || noWrapMode ? styles.containerWrap : ''}>
-    <Form form={form} layout="vertical" className="prop-form" onValuesChange={() => workbenchModel.iframeManager.refreshComponent()}>
+    <Form form={form} layout={block.layout} labelAlign="left" colon={false} className={styles.propForm} onValuesChange={() => workbenchModel.iframeManager.refreshComponent()}>
       <Row gutter={6}>
         {
           block.propItemList.map((item, index) => {
-            return <Col span={item.span} key={item.id}
+            return <Col span={block.layout === 'vertical' ? item.span : 24} key={item.id}
               onMouseEnter={() => {
                 propHandleModel.setActivePropItemPath(item.id);
               }}
@@ -112,12 +119,17 @@ function PropBlockPane({ block, freezeSetting, templateMode, noWrapMode }: PropT
                   propHandleModel.activePropItemId = 0;
                   propHandleModel.activePropItemPath = '';
                 })
-              }}
-            >
-              <Form.Item className={styles.propItem} label={renderItemLabel(item, index)} name={item.propKey} preserve={false}
-                valuePropName={item.type === 'Switch' ? 'checked' : 'value'} initialValue={item.defaultValue}>
-                <PropItemPane item={item} />
-              </Form.Item>
+              }}>
+              <div className={`${styles.propItemContainer} ${!workbenchModel.prototypeMode || freezeSetting || block.layout === 'vertical' ? '' : styles.hasAction}`}>
+                <div className="content">
+                  <Form.Item
+                    className={styles.propItem} label={renderItemLabel(item, index)} name={item.propKey} preserve={false}
+                    valuePropName={item.type === 'Switch' ? 'checked' : 'value'} initialValue={item.defaultValue}>
+                    <PropItemPane item={item} />
+                  </Form.Item>
+                </div>
+                <div className="action">{block.layout === 'horizontal' && renderItemSetting(item, index)}</div>
+              </div>
             </Col>
           })
         }
