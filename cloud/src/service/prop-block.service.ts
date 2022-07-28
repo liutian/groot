@@ -42,7 +42,7 @@ export class PropBlockService {
     const order = rawBlock.order ? rawBlock.order : (firstBlock ? firstBlock.order + 1000 : 1000);
 
     const newBlock = em.create(PropBlock, {
-      ...pick(rawBlock, ['name', 'propKey', 'rootPropKey', 'isTemplate']),
+      ...pick(rawBlock, ['name', 'propKey', 'rootPropKey', 'isTemplate', 'layout']),
       component: group.component,
       componentVersion: group.componentVersion,
       group,
@@ -208,7 +208,7 @@ export class PropBlockService {
       }
     }
 
-    pick(rawBlock, ['name', 'propKey', 'rootPropKey'], block);
+    pick(rawBlock, ['name', 'propKey', 'rootPropKey', 'layout'], block);
 
     await em.flush();
   }
@@ -220,13 +220,14 @@ export class PropBlockService {
 
     const childrenBlock = await em.find(PropBlock, { group, isTemplate: false }, { orderBy: { order: 'DESC' } });
     const newBlock = em.create(PropBlock, pick(group, [
-      'componentVersion', 'component'
+      'componentVersion', 'component',
     ]));
     const nameSuffix = autoIncrementForName(childrenBlock.map(block => block.name));
     newBlock.name = `配置块${nameSuffix}`;
     newBlock.relativeItem = group.relativeItem;
     newBlock.order = childrenBlock.length ? childrenBlock[0].order + 1000 : 1000;
     newBlock.group = group;
+    newBlock.layout = cloneBlock.layout;
     if (cloneBlock.imagePropBlock) {
       newBlock.imagePropBlock = cloneBlock.imagePropBlock;
     } else {

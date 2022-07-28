@@ -1,4 +1,5 @@
-import { Collection, Entity, ManyToOne, OneToMany, Property } from "@mikro-orm/core";
+import { PropBlockLayout } from "@grootio/common";
+import { Collection, Entity, Enum, ManyToOne, OneToMany, Property } from "@mikro-orm/core";
 import { BaseEntity } from "./BaseEntity";
 import { Component } from "./Component";
 import { ComponentVersion } from "./ComponentVersion";
@@ -58,4 +59,7 @@ export class PropBlock extends BaseEntity {
    */
   @ManyToOne({ serializer: value => value?.id, serializedName: 'imagePropBlockId' })
   imagePropBlock?: PropBlock;
+
+  @Enum()
+  layout: PropBlockLayout;
 }

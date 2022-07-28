@@ -10,7 +10,7 @@ import { Release } from '../../entities/Release';
 import { ComponentInstance } from '../../entities/ComponentInstance';
 import { PropValue } from '../../entities/PropValue';
 import { Scaffold } from '../../entities/Scaffold';
-import { PropItemType } from '@grootio/common';
+import { PropBlockLayout, PropItemType } from '@grootio/common';
 
 export class DatabaseSeeder extends Seeder {
 
@@ -72,7 +72,8 @@ export class DatabaseSeeder extends Seeder {
       componentVersion: component_table_version,
       order: 1000,
       component: component_table,
-      isTemplate: true
+      isTemplate: true,
+      layout: PropBlockLayout.Horizontal
     })
     await em.persistAndFlush(block_table);
 
@@ -86,7 +87,6 @@ export class DatabaseSeeder extends Seeder {
       group: group_table,
       componentVersion: component_table_version,
       order: 1000,
-      span: 12,
       component: component_table
     })
     await em.persistAndFlush(item_table_1);
@@ -99,7 +99,6 @@ export class DatabaseSeeder extends Seeder {
       group: group_table,
       componentVersion: component_table_version,
       order: 1001,
-      span: 12,
       component: component_table
     })
     await em.persistAndFlush(item_table_2);
@@ -168,7 +167,8 @@ export class DatabaseSeeder extends Seeder {
       group,
       componentVersion,
       order: 1000,
-      component
+      component,
+      layout: PropBlockLayout.Horizontal
     })
     await em.persistAndFlush(block);
 

@@ -88,3 +88,8 @@ export enum PropItemType {
   JSON = 'Json',
   FUNCTION = 'Function',
 }
+
+export enum PropBlockLayout {
+  Horizontal = 'horizontal',
+  Vertical = 'vertical'
+}
