@@ -5,15 +5,18 @@ import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import PropPersistModel from "@model/PropPersistModel";
 import { PropItemType } from "@grootio/common";
 
-const optionList = [
+const typeList = [
   { label: '文本', value: PropItemType.TEXT },
   { label: '多行文本', value: PropItemType.TEXTAREA },
-  { label: '日期', value: PropItemType.DATE_PICKER },
-  { label: '时间', value: PropItemType.TIME_PICKER },
+  { label: '数字', value: PropItemType.NUMBER },
+  { label: '滑块', value: PropItemType.SLIDER },
+  { label: '按钮组', value: PropItemType.BUTTON_GROUP },
   { label: '开关', value: PropItemType.SWITCH },
   { label: '下拉框', value: PropItemType.SELECT },
   { label: '多选', value: PropItemType.CHECKBOX },
   { label: '单选', value: PropItemType.RADIO },
+  { label: '日期', value: PropItemType.DATE_PICKER },
+  { label: '时间', value: PropItemType.TIME_PICKER },
   { label: '列表', value: PropItemType.LIST },
   { label: '配置项', value: PropItemType.ITEM },
   { label: '层级', value: PropItemType.HIERARCHY },
@@ -56,10 +59,28 @@ const PropItemSetting: React.FC = () => {
                   <Form.Item name={[name, 'label']} {...restField} rules={[{ required: true }]}>
                     <Input placeholder="请输入名称" />
                   </Form.Item>
-                  :
                   <Form.Item name={[name, 'value']} {...restField} rules={[{ required: true }]}>
                     <Input placeholder="请输入数据" />
                   </Form.Item>
+
+                  <Form.Item noStyle dependencies={['type']}>
+                    {() => {
+                      const type = form.getFieldValue('type');
+                      return type === 'Button_Group' ? <Form.Item name={[name, 'title']} {...restField} >
+                        <Input placeholder="请输入描述" />
+                      </Form.Item> : null;
+                    }}
+                  </Form.Item>
+
+                  <Form.Item noStyle dependencies={['type']}>
+                    {() => {
+                      const type = form.getFieldValue('type');
+                      return type === 'Button_Group' ? <Form.Item name={[name, 'icon']} {...restField} >
+                        <Input placeholder="请输入图标" />
+                      </Form.Item> : null;
+                    }}
+                  </Form.Item>
+
                   <Typography.Link onClick={() => add({ label: '', value: '' }, index + 1)}>
                     <PlusOutlined />
                   </Typography.Link>
@@ -75,14 +96,14 @@ const PropItemSetting: React.FC = () => {
     )
   }
 
-  return (<Modal mask={false} destroyOnClose width={450} title="配置项" confirmLoading={propPersistModel.settingModalLoading}
+  return (<Modal mask={false} destroyOnClose width={600} title="配置项" confirmLoading={propPersistModel.settingModalLoading}
     visible={!!propPersistModel.currSettingPropItem} onOk={handleOk} onCancel={handleCancel}>
-    <Form form={form} labelAlign="right" labelCol={{ span: 6 }} wrapperCol={{ span: 18 }} >
+    <Form form={form} labelAlign="right" labelCol={{ span: 4 }} wrapperCol={{ span: 20 }} >
       <Form.Item name="label" label="名称" rules={[{ required: true }]}>
         <Input />
       </Form.Item>
       <Form.Item label="类型" name="type" rules={[{ required: true }]}>
-        <Select disabled={!!propPersistModel.currSettingPropItem?.id} options={optionList} />
+        <Select disabled={!!propPersistModel.currSettingPropItem?.id} options={typeList} />
       </Form.Item>
       <Form.Item label="属性名" rules={[{ required: true }]} name="propKey">
         <Input />
@@ -105,7 +126,7 @@ const PropItemSetting: React.FC = () => {
       <Form.Item dependencies={['type']} noStyle >
         {({ getFieldValue }) => {
           const type = getFieldValue('type');
-          const hasOption = ['Select', 'Radio', 'Checkbox'].includes(type);
+          const hasOption = ['Select', 'Radio', 'Checkbox', 'Button_Group'].includes(type);
 
           return hasOption ? renderSelectFormItem() : null
         }}

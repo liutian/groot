@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Button, Col, Form, Row, Space, Typography } from "antd";
+import { Button, Checkbox, Col, DatePicker, Form, Input, InputNumber, Radio, Row, Select, Space, Switch, TimePicker, Tooltip, Typography } from "antd";
 import { VerticalAlignTopOutlined, DeleteOutlined, VerticalAlignBottomOutlined, EditOutlined } from '@ant-design/icons';
 
 import { useModel } from "@util/robot";
@@ -7,7 +7,9 @@ import styles from './index.module.less';
 import WorkbenchModel from "@model/WorkbenchModel";
 import PropPersistModel from "@model/PropPersistModel";
 import PropHandleModel from "@model/PropHandleModel";
-import PropItemPane from "@components/PropItemPane";
+import { PropItemType } from "@grootio/common";
+import NumberSlider from "@components/NumberSlider";
+import TextEditor from "@components/TextEditor";
 
 type PropType = {
   block: PropBlock,
@@ -102,6 +104,52 @@ function PropBlockPane({ block, freezeSetting, templateMode, noWrapMode }: PropT
     </div>
   }
 
+  const renderFormItem = (item: PropItem) => {
+    if (item.type === PropItemType.TEXT) {
+      return <Input />;
+    } else if (item.type === PropItemType.TEXTAREA) {
+      return <Input.TextArea />;
+    } else if (item.type === PropItemType.NUMBER) {
+      return <InputNumber keyboard />;
+    } else if (item.type === PropItemType.SLIDER) {
+      return <NumberSlider min={1} max={100} />;
+    } else if (item.type === PropItemType.BUTTON_GROUP) {
+      return <Radio.Group>
+        {item.optionList.map((option) => {
+          return <Tooltip title={option.title}>
+            <Radio.Button value={option.value}>{option.label}</Radio.Button>
+          </Tooltip>
+        })}
+      </Radio.Group>;
+    } else if (item.type === PropItemType.SWITCH) {
+      return <Switch />
+    } else if (item.type === PropItemType.SELECT) {
+      return <Select options={item.optionList} />
+    } else if (item.type === PropItemType.RADIO) {
+      return <Radio.Group options={item.optionList} />
+    } else if (item.type === PropItemType.CHECKBOX) {
+      return <Checkbox.Group options={item.optionList} />
+    } else if (item.type === PropItemType.DATE_PICKER) {
+      return <DatePicker />;
+    } else if (item.type === PropItemType.TIME_PICKER) {
+      return <TimePicker style={{ width: '100%' }} />;
+    } else if (item.type === PropItemType.LIST) {
+      return <Button block onClick={() => { propHandleModel.pushPropItemStack(item) }}>
+        列表{item.valueOfGroup.propBlockList.length}
+      </Button>
+    } else if (item.type === PropItemType.ITEM) {
+      return <Button block onClick={() => { propHandleModel.pushPropItemStack(item) }}>配置项</Button>
+    } else if (item.type === PropItemType.HIERARCHY) {
+      return <Button block onClick={() => { propHandleModel.pushPropItemStack(item) }}>层级</Button>
+    } else if (item.type === PropItemType.JSON) {
+      return <TextEditor type="json" />
+    } else if (item.type === PropItemType.FUNCTION) {
+      return <TextEditor type="function" />
+    }
+
+    return <>not found item</>
+  }
+
   return <div className={templateMode || noWrapMode ? styles.containerWrap : ''}>
     <Form form={form} layout={block.layout} labelAlign="left" colon={false} className={styles.propForm} onValuesChange={() => workbenchModel.iframeManager.refreshComponent()}>
       <Row gutter={6}>
@@ -122,7 +170,7 @@ function PropBlockPane({ block, freezeSetting, templateMode, noWrapMode }: PropT
                   <Form.Item
                     className={styles.propItem} label={renderItemLabel(item, index)} name={item.propKey} preserve={false}
                     valuePropName={item.type === 'Switch' ? 'checked' : 'value'} initialValue={item.defaultValue}>
-                    <PropItemPane item={item} />
+                    {renderFormItem(item)}
                   </Form.Item>
                 </div>
                 <div className="action">{block.layout === 'horizontal' && renderItemSetting(item, index)}</div>

@@ -43,7 +43,7 @@ const PropBlockSetting: React.FC = () => {
       <Form.Item valuePropName="checked" label="根属性" name="rootPropKey">
         <Switch />
       </Form.Item>
-      <Form.Item label="布局" name="layout" initialValue="horizontal">
+      <Form.Item label="配置项布局" name="layout" initialValue="horizontal">
         <Radio.Group >
           <Radio value="horizontal">水平</Radio>
           <Radio value="vertical">垂直</Radio>

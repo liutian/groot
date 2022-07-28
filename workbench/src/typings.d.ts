@@ -50,7 +50,7 @@ type PropItem = {
   valueOfGroup?: PropGroup,
   templateBlock?: PropBlock,
   directBlock?: PropBlock,
-  type: 'Text' | 'Textarea' | 'Date_Picker' | 'Time_Picker' | 'Switch' | 'Select' | 'Radio' | 'Checkbox' | 'List' | 'Item' | 'Hierarchy' | 'Json' | 'Function',
+  type: 'Text' | 'Textarea' | 'Number' | 'Slider' | 'Button_Group' | 'Switch' | 'Select' | 'Radio' | 'Checkbox' | 'Date_Picker' | 'Time_Picker' | 'List' | 'Item' | 'Hierarchy' | 'Json' | 'Function',
 
   groupId: number,
   valueOfGroupId?: number,
@@ -62,7 +62,9 @@ type PropItem = {
 
 type PropValueOption = {
   label: string,
-  value: PropItemType
+  value: PropItemType,
+  title?: string,
+  icon?: string
 };
 
 type ComponentVersion = {

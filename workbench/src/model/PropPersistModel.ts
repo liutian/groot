@@ -238,8 +238,8 @@ export default class PropPersistModel {
   public updateOrAddPropItem = (item: PropItem) => {
     const newItem = Object.assign(this.currSettingPropItem, item);
 
-    if (!['Select', 'Radio', 'Checkbox'].includes(newItem.type)) {
-      newItem.valueOptions = undefined;
+    if (!['Select', 'Radio', 'Checkbox', 'Button_Group'].includes(newItem.type)) {
+      newItem.optionList = undefined;
     } else {
       stringifyOptions(newItem);
     }
