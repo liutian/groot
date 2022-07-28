@@ -8,6 +8,7 @@ import WorkbenchModel from "@model/WorkbenchModel";
 import PropPersistModel from "@model/PropPersistModel";
 import PropHandleModel from "@model/PropHandleModel";
 import { PropItemType } from '@grootio/common';
+import TextEditor from "@components/TextEditor";
 
 type PropType = {
   block: PropBlock,
@@ -124,9 +125,9 @@ function PropBlockPane({ block, freezeSetting, templateMode, noWrapMode }: PropT
     } else if (item.type === PropItemType.HIERARCHY) {
       return <Button block onClick={() => { propHandleModel.pushPropItemStack(item) }}>层级</Button>
     } else if (item.type === PropItemType.JSON) {
-      return <>json</>
+      return <TextEditor type="json" />
     } else if (item.type === PropItemType.FUNCTION) {
-      return <>函数</>
+      return <TextEditor type="function" />
     }
 
     return <>not found item</>

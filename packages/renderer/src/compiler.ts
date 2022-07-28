@@ -1,4 +1,4 @@
-import { Metadata } from "@grootio/common";
+import { Metadata, PropMetadataType } from "@grootio/common";
 import React, { useState } from "react";
 import { globalConfig } from "./config";
 import { debugInfo, controlMode, errorInfo } from "./util";
@@ -47,13 +47,32 @@ const processAdvancedProp = (metadata: Metadata, store: Metadata[]) => {
     const keys = propMetadata.keyChain.split('.');
     const endPropKey = keys[keys.length - 1];
     let ctx = metadata.propsObj;
-    for (let keyIndex = 0; keyIndex < keys.length - 1; keyIndex++) {
-      const key = keys[keyIndex];
-      ctx = ctx[key];
-    }
+    keys.forEach((key, index) => {
+      if (index === keys.length - 1) {
+        return;
+      }
 
-    if (propMetadata.type === 'component') {
+      if (key.startsWith('[')) {
+        ctx = ctx[+key.replace('[', '').replace(']', '')];
+      } else {
+        ctx = ctx[key];
+      }
+    })
+
+    if (propMetadata.type === PropMetadataType.Component) {
       ctx[endPropKey] = createComponentByMetadataId(ctx[endPropKey], store);
+    } else if (propMetadata.type === PropMetadataType.Json) {
+      try {
+        ctx[endPropKey] = JSON.parse(ctx[endPropKey]);
+      } catch (e) {
+        ctx[endPropKey] = undefined;
+      }
+    } else if (propMetadata.type === PropMetadataType.Function) {
+      try {
+        ctx[endPropKey] = window.Function(ctx[endPropKey]);
+      } catch (e) {
+        ctx[endPropKey] = undefined;
+      }
     }
   })
 

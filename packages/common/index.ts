@@ -49,8 +49,14 @@ export type Metadata = {
 
 export type PropMetadata = {
   keyChain: string,
-  type: 'component',
+  type: PropMetadataType,
   data?: any,
+}
+
+export enum PropMetadataType {
+  Component = 'component',
+  Json = 'json',
+  Function = 'function'
 }
 
 export enum PostMessageType {
