@@ -44,6 +44,20 @@ const PropGroupPane: React.FC<PropsType> = ({ group, templateBlock }) => {
         <PlusOutlined />
       </Typography.Link>
 
+      <Typography.Link onClick={(e) => {
+        e.stopPropagation();
+        editBlock(block);
+      }}>
+        <EditOutlined />
+      </Typography.Link>
+
+      <Typography.Link disabled={group.propBlockList.length === 1} onClick={(e) => {
+        e.stopPropagation();
+        propPersistModel.delBlock(block.id, group);
+      }} >
+        <DeleteOutlined />
+      </Typography.Link>
+
       {
         blockIndex > 0 && (
           <Typography.Link onClick={(e) => {
@@ -62,24 +76,6 @@ const PropGroupPane: React.FC<PropsType> = ({ group, templateBlock }) => {
             propPersistModel.movePropBlock(group, blockIndex, false);
           }}>
             <VerticalAlignBottomOutlined />
-          </Typography.Link>
-        )
-      }
-
-      <Typography.Link onClick={(e) => {
-        e.stopPropagation();
-        editBlock(block);
-      }}>
-        <EditOutlined />
-      </Typography.Link>
-
-      {
-        group.propBlockList.length > 1 && (
-          <Typography.Link onClick={(e) => {
-            e.stopPropagation();
-            propPersistModel.delBlock(block.id, group);
-          }} >
-            <DeleteOutlined />
           </Typography.Link>
         )
       }

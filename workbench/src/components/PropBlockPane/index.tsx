@@ -43,6 +43,21 @@ function PropBlockPane({ block, freezeSetting, templateMode, noWrapMode }: PropT
     }
 
     return (<Space size="small">
+
+      <Typography.Link onClick={(e) => {
+        e.preventDefault();
+        editPropItem();
+      }}>
+        <EditOutlined />
+      </Typography.Link>
+
+      <Typography.Link disabled={block.propItemList.length === 1} onClick={(e) => {
+        e.preventDefault();
+        propPersistModel.delItem(propItem.id);
+      }} >
+        <DeleteOutlined />
+      </Typography.Link>
+
       {
         itemIndex > 0 && (
           <Typography.Link onClick={(e) => {
@@ -61,24 +76,6 @@ function PropBlockPane({ block, freezeSetting, templateMode, noWrapMode }: PropT
             propPersistModel.movePropItem(block, itemIndex, false);
           }}>
             <VerticalAlignBottomOutlined />
-          </Typography.Link>
-        )
-      }
-
-      <Typography.Link onClick={(e) => {
-        e.preventDefault();
-        editPropItem();
-      }}>
-        <EditOutlined />
-      </Typography.Link>
-
-      {
-        block.propItemList.length > 1 && (
-          <Typography.Link onClick={(e) => {
-            e.preventDefault();
-            propPersistModel.delItem(propItem.id);
-          }} >
-            <DeleteOutlined />
           </Typography.Link>
         )
       }

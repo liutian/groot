@@ -46,15 +46,11 @@ const PropGroupToolBar: React.FC = () => {
         )
       }
 
-      {
-        propHandleModel.rootGroupList.length > 1 && (
-          <Typography.Link onClick={() => {
-            propPersistModel.delGroup(group.id);
-          }}>
-            <DeleteOutlined />
-          </Typography.Link>
-        )
-      }
+      <Typography.Link disabled={propHandleModel.rootGroupList.length === 1} onClick={() => {
+        propPersistModel.delGroup(group.id);
+      }}>
+        <DeleteOutlined />
+      </Typography.Link>
     </Space>
   </div>
 }
