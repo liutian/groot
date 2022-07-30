@@ -1,4 +1,4 @@
-import { PropBlockLayout } from "@grootio/common";
+import { PropBlockLayout, PropBlockStructType } from "@grootio/common";
 import { Collection, Entity, Enum, ManyToOne, OneToMany, Property } from "@mikro-orm/core";
 import { BaseEntity } from "./BaseEntity";
 import { Component } from "./Component";
@@ -61,5 +61,9 @@ export class PropBlock extends BaseEntity {
   imagePropBlock?: PropBlock;
 
   @Enum()
-  layout: PropBlockLayout;
+  layout: PropBlockLayout = PropBlockLayout.Horizontal;
+
+  @Enum()
+  struct: PropBlockStructType = PropBlockStructType.Default;
+
 }

@@ -96,3 +96,8 @@ export enum PropBlockLayout {
   Horizontal = 'horizontal',
   Vertical = 'vertical'
 }
+
+export enum PropBlockStructType {
+  List = 'list',
+  Default = 'default'
+}

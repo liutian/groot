@@ -38,10 +38,12 @@ type PropGroup = {
  */
 type PropBlock = {
   propItemList: PropItem[],
-  layout: 'horizontal' | 'vertical'
+  layout: 'horizontal' | 'vertical',
+  struct: 'list' | 'default',
+
   // 分割线下面时界面属性
   highlight?: boolean
-} & Omit<import("../../cloud/src/entities/PropBlock").PropBlock, 'propItemList' | 'layout'>;
+} & Omit<import("../../cloud/src/entities/PropBlock").PropBlock, 'propItemList' | 'layout' | 'struct'>;
 
 /**
  * 描述代码元数据配置的属性配置项类型

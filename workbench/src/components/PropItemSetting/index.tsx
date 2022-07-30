@@ -98,7 +98,7 @@ const PropItemSetting: React.FC = () => {
 
   return (<Modal mask={false} destroyOnClose width={600} title="配置项" confirmLoading={propPersistModel.settingModalLoading}
     visible={!!propPersistModel.currSettingPropItem} onOk={handleOk} onCancel={handleCancel}>
-    <Form form={form} labelAlign="right" labelCol={{ span: 4 }} wrapperCol={{ span: 20 }} >
+    <Form form={form} colon={false} labelAlign="right" labelCol={{ span: 4 }} wrapperCol={{ span: 20 }} >
       <Form.Item name="label" label="名称" rules={[{ required: true }]}>
         <Input />
       </Form.Item>

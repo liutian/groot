@@ -35,7 +35,7 @@ const PropGroupSetting: React.FC = () => {
 
   return (<Modal mask={false} width={400} title="配置组" confirmLoading={propPersistModel.settingModalLoading}
     visible={!!propPersistModel.currSettingPropGroup} onOk={handleOk} onCancel={handleCancel}>
-    <Form form={form} labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
+    <Form form={form} colon={false} labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
       <Form.Item name="name" label="名称" rules={[{ required: true }]}>
         <Input ref={inputRef} />
       </Form.Item>

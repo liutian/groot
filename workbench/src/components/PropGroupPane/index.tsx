@@ -7,6 +7,8 @@ import WorkbenchModel from "@model/WorkbenchModel";
 import styles from './index.module.less';
 import { useState } from "react";
 import PropPersistModel from "@model/PropPersistModel";
+import { PropBlockStructType } from "@grootio/common";
+import PropBlockListPane from "@components/PropBlockListPane";
 
 type PropsType = {
   group: PropGroup,
@@ -91,7 +93,13 @@ const PropGroupPane: React.FC<PropsType> = ({ group, templateBlock }) => {
             header={<>
               {block.name}<i className="highlight" hidden={!block.highlight} />
             </>} >
-            <PropBlockPane block={block} freezeSetting={!!templateBlock} />
+            {
+              block.struct === PropBlockStructType.Default ?
+                (<PropBlockPane block={block} freezeSetting={!!templateBlock} />)
+                :
+                (<PropBlockListPane block={block} freezeSetting={!!templateBlock} />)
+            }
+
           </Collapse.Panel>)
         })
       }
