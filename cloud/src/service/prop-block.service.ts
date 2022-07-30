@@ -219,15 +219,16 @@ export class PropBlockService {
   private async shallowCloneFromTemplateBlock(group: PropGroup, cloneBlock: PropBlock, em: EntityManager, groupIdList: number[], blockIdList: number[], itemIdList: number[]) {
 
     const childrenBlock = await em.find(PropBlock, { group, isTemplate: false }, { orderBy: { order: 'DESC' } });
-    const newBlock = em.create(PropBlock, pick(group, [
-      'componentVersion', 'component',
-    ]));
     const nameSuffix = autoIncrementForName(childrenBlock.map(block => block.name));
-    newBlock.name = `配置块${nameSuffix}`;
-    newBlock.relativeItem = group.relativeItem;
-    newBlock.order = childrenBlock.length ? childrenBlock[0].order + 1000 : 1000;
-    newBlock.group = group;
-    newBlock.layout = cloneBlock.layout;
+    const newBlock = em.create(PropBlock, {
+      componentVersion: group.componentVersion,
+      component: group.component,
+      name: `配置块${nameSuffix}`,
+      relativeItem: group.relativeItem,
+      order: childrenBlock.length ? childrenBlock[0].order + 1000 : 1000,
+      group: group,
+      layout: cloneBlock.layout
+    });
     if (cloneBlock.imagePropBlock) {
       newBlock.imagePropBlock = cloneBlock.imagePropBlock;
     } else {
