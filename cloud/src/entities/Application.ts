@@ -1,5 +1,6 @@
 import { Collection, Entity, ManyToOne, OneToMany, Property } from "@mikro-orm/core";
 import { BaseEntity } from "./BaseEntity";
+import { Project } from "./Project";
 import { Release } from "./Release";
 
 @Entity()
@@ -35,4 +36,8 @@ export class Application extends BaseEntity {
 
   @Property({ persist: false })
   release: Release;
+
+  @ManyToOne({ serializer: value => value?.id, serializedName: 'projectId' })
+  project: Project;
+
 }

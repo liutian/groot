@@ -2,8 +2,8 @@ import { Collection, Entity, ManyToMany, ManyToOne, OneToMany, Property } from "
 import { BaseEntity } from "./BaseEntity";
 import { Component } from "./Component";
 import { ComponentVersion } from "./ComponentVersion";
-import { Release } from "./Release";
 import { PropValue } from "./PropValue";
+import { Release } from "./Release";
 
 @Entity()
 export class ComponentInstance extends BaseEntity {
@@ -27,7 +27,7 @@ export class ComponentInstance extends BaseEntity {
   propValueList = new Collection<PropValue>(this);
 
   /**
-   * 一个实例可以被多个迭代引用，相邻迭代大部分实例基本不会变动，降低数据占用
+   * 一个实例可以被多个迭代引用，只有组件版本升级会导致实例变化
    */
   @ManyToMany(() => Release, release => release.instanceList, { owner: true })
   releaseList = new Collection<Release>(this);
