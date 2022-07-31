@@ -1,3 +1,4 @@
+import { PropGroupStructType } from "@grootio/common";
 import { Collection, Entity, ManyToOne, OneToMany, Property } from "@mikro-orm/core";
 import { BaseEntity } from "./BaseEntity";
 import { Component } from "./Component";
@@ -29,14 +30,11 @@ export class PropGroup extends BaseEntity {
   /**
    * 关联配置项，层级结构时需要通过该值查找上级配置项
    */
-  @ManyToOne({ serializer: value => value?.id, serializedName: 'relativeItemId' })
-  relativeItem?: PropItem;
+  @ManyToOne({ serializer: value => value?.id, serializedName: 'parentItemId' })
+  parentItem?: PropItem;
 
-  /**
-   * 关联配置块模版，层级结构时需要通过该值查找下级配置块 todo 是否可以移除该字段
-   */
-  @ManyToOne({ serializer: value => value?.id, serializedName: 'templateBlockId' })
-  templateBlock?: PropBlock;
+  @Property({ persist: false })
+  parentItemId?: number;
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'componentVersionId' })
   componentVersion: ComponentVersion;
@@ -54,10 +52,9 @@ export class PropGroup extends BaseEntity {
   componentId?: number;
 
   /**
-   * List 可以在分组下创建过个相同格式的配置块
    * Item 其下没有配置块这一层，直接展示配置项
    * Default 直接下级为配置块，配置块直接下级为配置项
    */
   @Property()
-  struct: 'List' | 'Item' | 'Default' = 'Default';
+  struct: PropGroupStructType = PropGroupStructType.Default
 }

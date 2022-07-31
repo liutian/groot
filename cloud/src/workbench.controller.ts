@@ -32,9 +32,6 @@ export class WorkbenchController {
 
   @Post('/group/add')
   async groupAdd(@Body() group: PropGroup) {
-    if (group.struct === 'List' && !group.propKey) {
-      throw new LogicException(`struct 为 List 时 propKey 必须有值`, LogicExceptionCode.ParamError);
-    }
     return this.groupService.add(group);
   }
 
@@ -63,11 +60,6 @@ export class WorkbenchController {
   @Post('/block/add')
   async blockAdd(@Body() block: PropBlock) {
     return this.blockService.add(block);
-  }
-
-  @Post('/block/addFromTemplate')
-  async addFromTemplate(@Body('groupId') groupId: number) {
-    return this.blockService.addFromTemplate(groupId);
   }
 
   @Get('/block/remove/:blockId')

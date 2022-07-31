@@ -12,10 +12,9 @@ import PropBlockListPane from "@components/PropBlockListPane";
 
 type PropsType = {
   group: PropGroup,
-  templateBlock?: PropBlock
 }
 
-const PropGroupPane: React.FC<PropsType> = ({ group, templateBlock }) => {
+const PropGroupPane: React.FC<PropsType> = ({ group }) => {
   const [propPersistModel, propPersistAction] = useModel<PropPersistModel>(PropPersistModel.modelName);
   const [workbenchModel] = useModel<WorkbenchModel>(WorkbenchModel.modelName);
   const [, refresh] = useState(0);
@@ -36,15 +35,19 @@ const PropGroupPane: React.FC<PropsType> = ({ group, templateBlock }) => {
   }
 
   const renderBlockSetting = (block: PropBlock, blockIndex: number) => {
-    if (!workbenchModel.prototypeMode || templateBlock) return null;
+    if (!workbenchModel.prototypeMode) return null;
 
     return (<Space size="small" >
-      <Typography.Link onClick={(e) => {
-        e.stopPropagation();
-        propPersistModel.showPropItemSettinngForCreate(block);
-      }}>
-        <PlusOutlined />
-      </Typography.Link>
+      {
+        block.struct !== PropBlockStructType.List && (
+          <Typography.Link onClick={(e) => {
+            e.stopPropagation();
+            propPersistModel.showPropItemSettinngForCreate(block);
+          }}>
+            <PlusOutlined />
+          </Typography.Link>
+        )
+      }
 
       <Typography.Link onClick={(e) => {
         e.stopPropagation();
@@ -53,7 +56,7 @@ const PropGroupPane: React.FC<PropsType> = ({ group, templateBlock }) => {
         <EditOutlined />
       </Typography.Link>
 
-      <Typography.Link disabled={group.propBlockList.length === 1} onClick={(e) => {
+      <Typography.Link onClick={(e) => {
         e.stopPropagation();
         propPersistModel.delBlock(block.id, group);
       }} >
@@ -95,9 +98,9 @@ const PropGroupPane: React.FC<PropsType> = ({ group, templateBlock }) => {
             </>} >
             {
               block.struct === PropBlockStructType.Default ?
-                (<PropBlockPane block={block} freezeSetting={!!templateBlock} />)
+                (<PropBlockPane block={block} />)
                 :
-                (<PropBlockListPane block={block} freezeSetting={!!templateBlock} />)
+                (<PropBlockListPane block={block} />)
             }
 
           </Collapse.Panel>)
@@ -106,21 +109,11 @@ const PropGroupPane: React.FC<PropsType> = ({ group, templateBlock }) => {
     </Collapse>
     <div className={styles.footerAction}>
       {
-        workbenchModel.prototypeMode && !templateBlock && (
+        workbenchModel.prototypeMode && (
           <Button type="primary" ghost block onClick={() => {
             propPersistModel.showPropBlockSettinngForCreate(group);
           }}>
             添加配置块
-          </Button>
-        )
-      }
-
-      {
-        templateBlock && (
-          <Button disabled={!templateBlock?.propItemList.length} type="primary" ghost block onClick={() => {
-            propPersistModel.addBlockFromTemplate(group.id)
-          }}>
-            复制配置块
           </Button>
         )
       }

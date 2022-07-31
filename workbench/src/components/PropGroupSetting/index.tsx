@@ -39,11 +39,10 @@ const PropGroupSetting: React.FC = () => {
       <Form.Item name="name" label="名称" rules={[{ required: true }]}>
         <Input ref={inputRef} />
       </Form.Item>
-      <Form.Item name="struct" label="结构" rules={[{ required: true }]}>
+      <Form.Item name="struct" label="结构" rules={[{ required: true }]} initialValue="default">
         <Radio.Group disabled={!!propPersistModel.currSettingPropGroup?.id}>
-          <Radio value="Default">默认</Radio>
-          <Radio value="List">列表</Radio>
-          <Radio value="Item">配置项</Radio>
+          <Radio value="default">层级</Radio>
+          <Radio value="flat">平铺</Radio>
         </Radio.Group>
       </Form.Item>
       <Form.Item

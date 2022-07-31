@@ -14,11 +14,10 @@ import TextEditor from "@components/TextEditor";
 type PropType = {
   block: PropBlock,
   freezeSetting?: boolean,
-  templateMode?: boolean,
   noWrapMode?: boolean
 }
 
-function PropBlockPane({ block, freezeSetting, templateMode, noWrapMode }: PropType) {
+function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
   const [propPersistModel, propPersistAction] = useModel<PropPersistModel>(PropPersistModel.modelName);
   const [propHandleModel, propHandleUpdateAction] = useModel<PropHandleModel>(PropHandleModel.modelName);
   const [workbenchModel] = useModel<WorkbenchModel>(WorkbenchModel.modelName);
@@ -53,9 +52,9 @@ function PropBlockPane({ block, freezeSetting, templateMode, noWrapMode }: PropT
         <EditOutlined />
       </Typography.Link>
 
-      <Typography.Link disabled={block.propItemList.length === 1} onClick={(e) => {
+      <Typography.Link onClick={(e) => {
         e.preventDefault();
-        propPersistModel.delItem(propItem.id);
+        propPersistModel.delItem(propItem.id, block);
       }} >
         <DeleteOutlined />
       </Typography.Link>
@@ -105,15 +104,15 @@ function PropBlockPane({ block, freezeSetting, templateMode, noWrapMode }: PropT
   }
 
   const renderFormItem = (item: PropItem) => {
-    if (item.type === PropItemType.TEXT) {
+    if (item.type === PropItemType.Text) {
       return <Input />;
-    } else if (item.type === PropItemType.TEXTAREA) {
+    } else if (item.type === PropItemType.Textarea) {
       return <Input.TextArea />;
-    } else if (item.type === PropItemType.NUMBER) {
+    } else if (item.type === PropItemType.Number) {
       return <InputNumber keyboard />;
-    } else if (item.type === PropItemType.SLIDER) {
+    } else if (item.type === PropItemType.Slider) {
       return <NumberSlider min={1} max={100} />;
-    } else if (item.type === PropItemType.BUTTON_GROUP) {
+    } else if (item.type === PropItemType.Button_Group) {
       return <Radio.Group>
         {item.optionList.map((option) => {
           return <Tooltip title={option.title}>
@@ -121,37 +120,34 @@ function PropBlockPane({ block, freezeSetting, templateMode, noWrapMode }: PropT
           </Tooltip>
         })}
       </Radio.Group>;
-    } else if (item.type === PropItemType.SWITCH) {
+    } else if (item.type === PropItemType.Switch) {
       return <Switch />
-    } else if (item.type === PropItemType.SELECT) {
+    } else if (item.type === PropItemType.Select) {
       return <Select options={item.optionList} />
-    } else if (item.type === PropItemType.RADIO) {
+    } else if (item.type === PropItemType.Radio) {
       return <Radio.Group options={item.optionList} />
-    } else if (item.type === PropItemType.CHECKBOX) {
+    } else if (item.type === PropItemType.Checkbox) {
       return <Checkbox.Group options={item.optionList} />
-    } else if (item.type === PropItemType.DATE_PICKER) {
+    } else if (item.type === PropItemType.Date_Picker) {
       return <DatePicker />;
-    } else if (item.type === PropItemType.TIME_PICKER) {
+    } else if (item.type === PropItemType.Time_Picker) {
       return <TimePicker style={{ width: '100%' }} />;
-    } else if (item.type === PropItemType.LIST) {
-      return <Button block onClick={() => { propHandleModel.pushPropItemStack(item) }}>
-        列表{item.valueOfGroup.propBlockList.length}
-      </Button>
-    } else if (item.type === PropItemType.ITEM) {
-      return <Button block onClick={() => { propHandleModel.pushPropItemStack(item) }}>配置项</Button>
-    } else if (item.type === PropItemType.HIERARCHY) {
+    } else if (item.type === PropItemType.Flat) {
+      return <Button block onClick={() => { propHandleModel.pushPropItemStack(item) }}>平铺</Button>
+    } else if (item.type === PropItemType.Hierarchy) {
       return <Button block onClick={() => { propHandleModel.pushPropItemStack(item) }}>层级</Button>
-    } else if (item.type === PropItemType.JSON) {
+    } else if (item.type === PropItemType.Json) {
       return <TextEditor type="json" />
-    } else if (item.type === PropItemType.FUNCTION) {
+    } else if (item.type === PropItemType.Function) {
       return <TextEditor type="function" />
     }
 
     return <>not found item</>
   }
 
-  return <div className={templateMode || noWrapMode ? styles.containerWrap : ''}>
-    <Form form={form} layout={block.layout} labelAlign="left" colon={false} className={styles.propForm} onValuesChange={() => workbenchModel.iframeManager.refreshComponent()}>
+  return <div className={noWrapMode ? styles.containerWrap : ''}>
+    <Form form={form} layout={block.layout} labelAlign="left" colon={false} className={styles.propForm}
+      onValuesChange={() => workbenchModel.iframeManager.refreshComponent()}>
       <Row gutter={6}>
         {
           block.propItemList.map((item, index) => {
@@ -169,7 +165,7 @@ function PropBlockPane({ block, freezeSetting, templateMode, noWrapMode }: PropT
                 <div className="content">
                   <Form.Item
                     className={styles.propItem} label={renderItemLabel(item, index)} name={item.propKey} preserve={false}
-                    valuePropName={item.type === 'Switch' ? 'checked' : 'value'} initialValue={item.defaultValue}>
+                    valuePropName={item.type === 'switch' ? 'checked' : 'value'} initialValue={item.defaultValue}>
                     {renderFormItem(item)}
                   </Form.Item>
                 </div>
@@ -181,7 +177,7 @@ function PropBlockPane({ block, freezeSetting, templateMode, noWrapMode }: PropT
       </Row>
     </Form>
     {
-      templateMode || (workbenchModel.prototypeMode && noWrapMode) ? (
+      (workbenchModel.prototypeMode && noWrapMode) ? (
         <Button type="primary" ghost block onClick={() => {
           propPersistModel.showPropItemSettinngForCreate(block)
         }}>

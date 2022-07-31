@@ -1,5 +1,5 @@
 import { PropItemType } from "@grootio/common";
-import { autoIncrementForName, parseOptions, stringifyOptions, uuid } from "@util/utils";
+import { autoIncrementForName, parseOptions, stringifyOptions } from "@util/utils";
 import { serverPath } from "config";
 import PropHandleModel from "./PropHandleModel";
 import WorkbenchModel from "./WorkbenchModel";
@@ -113,19 +113,15 @@ export default class PropPersistModel {
       headers: {
         'Content-Type': 'application/json'
       },
-    }).then(r => r.json()).then((result: { data: { originId: number, targetId: number, blockId: number }[] }) => {
-      for (let index = 0; index < result.data.length; index++) {
-        const { blockId } = result.data[index];
-        const block = this.propHandle.getPropBlock(blockId);
-        if (up) {
-          const targetItem = block.propItemList[originIndex - 1];
-          block.propItemList[originIndex - 1] = originItem;
-          block.propItemList[originIndex] = targetItem;
-        } else {
-          const targetItem = block.propItemList[originIndex + 1];
-          block.propItemList[originIndex + 1] = originItem;
-          block.propItemList[originIndex] = targetItem;
-        }
+    }).then(r => r.json()).then(() => {
+      if (up) {
+        const targetItem = block.propItemList[originIndex - 1];
+        block.propItemList[originIndex - 1] = originItem;
+        block.propItemList[originIndex] = targetItem;
+      } else {
+        const targetItem = block.propItemList[originIndex + 1];
+        block.propItemList[originIndex + 1] = originItem;
+        block.propItemList[originIndex] = targetItem;
       }
     });
   }
@@ -163,11 +159,6 @@ export default class PropPersistModel {
         groupDB.expandBlockIdList = [];
         this.propHandle.rootGroupList.push(groupDB);
         this.propHandle.activeGroupId = groupDB.id;
-
-        if (newGroup.struct === 'List') {
-          groupDB.templateBlock = groupDB.propBlockList.find(b => b.id === groupDB.templateBlockId);
-          groupDB.propBlockList.length = 0;
-        }
 
         this.settingModalLoading = false;
         this.currSettingPropGroup = undefined;
@@ -215,30 +206,11 @@ export default class PropPersistModel {
     }
   }
 
-  public addBlockFromTemplate = (groupId: number,) => {
-    fetch(`${serverPath}/block/addFromTemplate`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        groupId
-      })
-    }).then(r => r.json()).then((result: { data: { groupList: PropGroup[], blockList: PropBlock[], itemList: PropItem[] } }) => {
-      const group = this.propHandle.getPropGroup(groupId);
-      this.propHandle.buildPropGroup(group, {
-        groupList: result.data.groupList,
-        blockList: result.data.blockList,
-        itemList: result.data.itemList
-      });
-      this.workbench.iframeManager.refreshComponent();
-    })
-  }
-
   public updateOrAddPropItem = (item: PropItem) => {
     const newItem = Object.assign(this.currSettingPropItem, item);
 
-    if (!['Select', 'Radio', 'Checkbox', 'Button_Group'].includes(newItem.type)) {
+    const typesOfHasOption = [PropItemType.Select, PropItemType.Radio, PropItemType.Checkbox, PropItemType.Button_Group] as string[];
+    if (!typesOfHasOption.includes(newItem.type)) {
       newItem.optionList = undefined;
     } else {
       stringifyOptions(newItem);
@@ -252,14 +224,12 @@ export default class PropPersistModel {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(newItem)
-      }).then(r => r.json()).then((result: { data: PropItem[] }) => {
-        for (let index = 0; index < result.data.length; index++) {
-          const propItem = result.data[index];
-          parseOptions(propItem);
-          const block = this.propHandle.getPropBlock(propItem.blockId);
-          let itemIndex = block.propItemList.findIndex(item => item.id === propItem.id);
-          block.propItemList.splice(itemIndex, 1, propItem);
-        }
+      }).then(r => r.json()).then((result: { data: PropItem }) => {
+        const propItem = result.data;
+        parseOptions(propItem);
+        const block = this.propHandle.getPropBlock(propItem.blockId);
+        let itemIndex = block.propItemList.findIndex(item => item.id === propItem.id);
+        block.propItemList.splice(itemIndex, 1, propItem);
 
         this.settingModalLoading = false;
         this.currSettingPropItem = undefined;
@@ -272,11 +242,8 @@ export default class PropPersistModel {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(newItem)
-      }).then(r => r.json()).then((result: { data: { newItem: PropItem, valueOfGroup: PropGroup, templateBlock: PropBlock }[] }) => {
-        for (let index = 0; index < result.data.length; index++) {
-          const data = result.data[index];
-          this.addPropItemFn(data);
-        }
+      }).then(r => r.json()).then((result: { data: { newItem: PropItem, childGroup: PropGroup } }) => {
+        this.addPropItemFn(result.data);
 
         this.settingModalLoading = false;
         this.currSettingPropItem = undefined;
@@ -285,25 +252,16 @@ export default class PropPersistModel {
     }
   }
 
-  private addPropItemFn = (data: { newItem: PropItem, valueOfGroup: PropGroup, templateBlock: PropBlock }) => {
+  private addPropItemFn = (data: { newItem: PropItem, childGroup: PropGroup }) => {
     const block = this.propHandle.getPropBlock(data.newItem.blockId);
     block.propItemList.push(data.newItem);
-    if (data.newItem.type === PropItemType.LIST) {
-      const valueOfGroup = data.valueOfGroup;
-      const templateBlock = data.templateBlock;
-
-      valueOfGroup.propBlockList.length = 0;
-      valueOfGroup.templateBlock = templateBlock;
-      data.newItem.templateBlock = templateBlock;
-      data.newItem.valueOfGroup = valueOfGroup;
-    } else if (data.newItem.type === PropItemType.ITEM) {
-      const valueOfGroup = data.valueOfGroup;
-      data.newItem.directBlock = valueOfGroup.propBlockList[0];
-      data.newItem.valueOfGroup = valueOfGroup;
-    } else if (data.newItem.type === PropItemType.HIERARCHY) {
-      const valueOfGroup = data.valueOfGroup;
-      data.newItem.valueOfGroup = valueOfGroup;
-      valueOfGroup.expandBlockIdList = [];
+    if (data.newItem.type === PropItemType.Flat) {
+      const childGroup = data.childGroup;
+      data.newItem.childGroup = childGroup;
+    } else if (data.newItem.type === PropItemType.Hierarchy) {
+      const childGroup = data.childGroup;
+      data.newItem.childGroup = childGroup;
+      childGroup.expandBlockIdList = [];
     }
     parseOptions(data.newItem);
   }
@@ -329,14 +287,10 @@ export default class PropPersistModel {
     })
   }
 
-  public delItem = (itemId: number) => {
-    fetch(`${serverPath}/item/remove/${itemId}`).then(r => r.json()).then((result: { data: PropItem[] }) => {
-      for (let index = 0; index < result.data.length; index++) {
-        const itemData = result.data[index]!;
-        const block = this.propHandle.getPropBlock(itemData.blockId);
-        let itemIndex = block.propItemList.findIndex(item => item.id === itemData.id);
-        block.propItemList.splice(itemIndex, 1);
-      }
+  public delItem = (itemId: number, block: PropBlock) => {
+    fetch(`${serverPath}/item/remove/${itemId}`).then(r => r.json()).then(() => {
+      let itemIndex = block.propItemList.findIndex(item => item.id === itemId);
+      block.propItemList.splice(itemIndex, 1);
       this.workbench.iframeManager.refreshComponent();
     })
   }
@@ -347,8 +301,6 @@ export default class PropPersistModel {
     this.currSettingPropBlock = {
       name: `配置块${nameSuffix}`,
       groupId: group.id,
-      propItemList: [],
-      order: 0
     } as PropBlock;
   }
 
@@ -357,14 +309,12 @@ export default class PropPersistModel {
     const propSuffix = autoIncrementForName(block.propItemList.map(item => item.propKey));
 
     this.currSettingPropItem = {
-      id: 0,
-      type: 'Text',
+      type: 'text',
       label: `配置项${nameSuffix}`,
       propKey: `prop${propSuffix}`,
       blockId: block.id,
       groupId: block.groupId,
       span: 24,
-      order: 0
     } as PropItem;
   }
 

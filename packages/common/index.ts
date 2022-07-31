@@ -74,27 +74,31 @@ export enum PostMessageType {
 export const iframeNamePrefix = 'groot::';
 
 export enum PropItemType {
-  TEXT = 'Text',
-  TEXTAREA = 'Textarea',
-  NUMBER = 'Number',
-  SLIDER = 'Slider',
-  BUTTON_GROUP = 'Button_Group',
-  SWITCH = 'Switch',
-  SELECT = 'Select',
-  RADIO = 'Radio',
-  CHECKBOX = 'Checkbox',
-  DATE_PICKER = 'Date_Picker',
-  TIME_PICKER = 'Time_Picker',
-  LIST = 'List',
-  ITEM = 'Item',
-  HIERARCHY = 'Hierarchy',
-  JSON = 'Json',
-  FUNCTION = 'Function',
+  Text = 'text',
+  Textarea = 'textarea',
+  Number = 'number',
+  Slider = 'slider',
+  Button_Group = 'button_group',
+  Switch = 'switch',
+  Select = 'select',
+  Radio = 'radio',
+  Checkbox = 'checkbox',
+  Date_Picker = 'date_picker',
+  Time_Picker = 'time_picker',
+  Hierarchy = 'hierarchy',
+  Flat = 'flat',
+  Json = 'json',
+  Function = 'function',
 }
 
 export enum PropBlockLayout {
   Horizontal = 'horizontal',
   Vertical = 'vertical'
+}
+
+export enum PropGroupStructType {
+  Flat = 'flat',
+  Default = 'default'
 }
 
 export enum PropBlockStructType {

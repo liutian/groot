@@ -22,16 +22,12 @@ interface Window {
  */
 type PropGroup = {
   propBlockList: PropBlock[],
-  templateBlock?: PropBlock,
-
-  relativeItemId?: number,
-  templateBlockId?: number,
 
   // 分割线下面时界面属性
   highlight?: boolean,
   expandBlockIdList: number[],
-  templateBlockDesignMode?: boolean,
-} & Omit<import("../../cloud/src/entities/PropGroup").PropGroup, 'propBlockList' | 'templateBlock'>;
+  templateDesignMode?: boolean
+} & Omit<import("../../cloud/src/entities/PropGroup").PropGroup, 'propBlockList'>;
 
 /**
  * 描述代码元数据配置的属性配置块类型
@@ -49,18 +45,16 @@ type PropBlock = {
  * 描述代码元数据配置的属性配置项类型
  */
 type PropItem = {
-  valueOfGroup?: PropGroup,
-  templateBlock?: PropBlock,
-  directBlock?: PropBlock,
-  type: 'Text' | 'Textarea' | 'Number' | 'Slider' | 'Button_Group' | 'Switch' | 'Select' | 'Radio' | 'Checkbox' | 'Date_Picker' | 'Time_Picker' | 'List' | 'Item' | 'Hierarchy' | 'Json' | 'Function',
+  childGroup?: PropGroup,
+  type: 'text' | 'textarea' | 'number' | 'slider' | 'button_group' | 'switch' | 'select' | 'radio' | 'checkbox' | 'date_picker' | 'time_picker' | 'hierarchy' | 'flat' | 'json' | 'function',
 
   groupId: number,
-  valueOfGroupId?: number,
+  childGroupId?: number,
 
   // 分割线下面时界面属性
   highlight?: boolean,
   optionList: PropValueOption[],
-} & Omit<import("../../cloud/src/entities/PropItem").PropItem, 'type' | 'valueOfGroup' | 'templateBlock' | 'directBlock'>;
+} & Omit<import("../../cloud/src/entities/PropItem").PropItem, 'type' | 'childGroup'>;
 
 type PropValueOption = {
   label: string,

@@ -26,18 +26,6 @@ export default class PropHandleModel {
   public blockFormInstanceMap = new Map<number, FormInstance>();
   public rootGroupList: PropGroup[] = [];
 
-  public toggleTemplateBlockDesignMode = (group: PropGroup) => {
-    group.templateBlockDesignMode = !group.templateBlockDesignMode;
-    if (group.root && this.propItemStack.length) {
-      this.popPropItemStack(this.propItemStack[0]);
-    } else {
-      const index = this.propItemStack.findIndex(i => i.valueOfGroupId === group.id);
-      if (index !== -1 && index < this.propItemStack.length - 1) {
-        this.popPropItemStack(this.propItemStack[index + 1]);
-      }
-    }
-  }
-
   /**
    * 向堆栈中追加item
    * @param item 追加的PropItem
@@ -61,18 +49,14 @@ export default class PropHandleModel {
     const group = this.getPropGroup(item.groupId);
     group.highlight = true;
 
-    if (item.blockId === group.templateBlockId) {
-      group.templateBlock.highlight = true;
-    } else {
-      const block = group.propBlockList.find(b => b.id === item.blockId);
-      block.highlight = true;
-    }
+    const block = group.propBlockList.find(b => b.id === item.blockId);
+    block.highlight = true;
 
     item.highlight = true;
 
     this.propItemStack.push(item);
 
-    item.valueOfGroup.templateBlockDesignMode = false;
+    item.childGroup.templateDesignMode = false;
   }
 
   /**
@@ -98,12 +82,8 @@ export default class PropHandleModel {
       const group = this.getPropGroup(item.groupId);
       group.highlight = false;
 
-      if (item.blockId === group.templateBlockId) {
-        group.templateBlock.highlight = false;
-      } else {
-        const block = group.propBlockList.find(b => b.id === item.blockId);
-        block.highlight = false;
-      }
+      const block = group.propBlockList.find(b => b.id === item.blockId);
+      block.highlight = false;
     })
   }
 
@@ -117,23 +97,20 @@ export default class PropHandleModel {
     if (!result) {
       throw new Error(`not found propItem id: ${itemId}`);
     }
-    const propKeyList = path.reduce((pre, currennt, index) => {
+    const propKeyList = path.reduce((pre, current, index) => {
       if (index % 3 === 0) {
-        const group = currennt as PropGroup;
+        const group = current as PropGroup;
         if (group.root && group.propKey) {
           pre.push(group.propKey);
         }
       } else if (index % 3 === 1) {
-        const block = currennt as PropBlock;
+        const block = current as PropBlock;
         if (block.propKey) {
           pre.push(block.propKey);
         }
       } else if (index % 3 === 2) {
-        const item = currennt as PropItem;
+        const item = current as PropItem;
         pre.push(item.propKey);
-        if (item.type === 'List') {
-          pre.push('[]');
-        }
       }
 
       return pre;
@@ -147,7 +124,7 @@ export default class PropHandleModel {
     const group = this.rootGroupList.find(g => g.id === id);
     if (group) {
       const preActiveGroup = this.rootGroupList.find(g => g.id === this.activeGroupId);
-      preActiveGroup.templateBlockDesignMode = false;
+      preActiveGroup.templateDesignMode = false;
       this.activeGroupId = id;
     }
   }
@@ -194,7 +171,7 @@ export default class PropHandleModel {
       .filter(b => b.groupId === group.id)
       .sort((a, b) => a.order - b.order)
 
-    const propBlockList = blocks.filter(b => b.id !== group.templateBlockId);
+    const propBlockList = [...blocks];
 
     if (group.propBlockList?.length) {
       group.propBlockList.push(...propBlockList);
@@ -202,18 +179,6 @@ export default class PropHandleModel {
     } else {
       group.propBlockList = propBlockList;
       group.expandBlockIdList = propBlockList.map(b => b.id);
-    }
-
-    // 不要从blocks中找模版，有可能存在同一个模版被多处使用的情况
-    let templateBlock = store.blockList.find(b => b.id === group.templateBlockId);
-    if (group.struct === 'List') {
-      if (!templateBlock) {
-        templateBlock = this.getPropBlock(group.templateBlockId);
-      }
-      if (!templateBlock) {
-        throw new Error(`not found templateBlock id:${group.templateBlockId}`);
-      }
-      group.templateBlock = templateBlock;
     }
 
     for (let blockIndex = 0; blockIndex < blocks.length; blockIndex++) {
@@ -230,17 +195,12 @@ export default class PropHandleModel {
 
       for (let itemIndex = 0; itemIndex < items.length; itemIndex++) {
         const item = items[itemIndex];
-        if (item.type === PropItemType.LIST) {
-          const valueOfGroup = this.buildPropGroup(item.valueOfGroupId, store);
-          item.valueOfGroup = valueOfGroup;
-          item.templateBlock = valueOfGroup.templateBlock;
-        } else if (item.type === PropItemType.ITEM) {
-          const valueOfGroup = this.buildPropGroup(item.valueOfGroupId, store);
-          item.valueOfGroup = valueOfGroup;
-          item.directBlock = valueOfGroup.propBlockList[0];
-        } else if (item.type === PropItemType.HIERARCHY) {
-          const valueOfGroup = this.buildPropGroup(item.valueOfGroupId, store);
-          item.valueOfGroup = valueOfGroup;
+        if (item.type === PropItemType.Flat) {
+          const childGroup = this.buildPropGroup(item.childGroupId, store);
+          item.childGroup = childGroup;
+        } else if (item.type === PropItemType.Hierarchy) {
+          const childGroup = this.buildPropGroup(item.childGroupId, store);
+          item.childGroup = childGroup;
         }
         parseOptions(item);
       }
@@ -287,29 +247,19 @@ export default class PropHandleModel {
   }
 
   // 使用范型会导致sourceMap信息丢失
-  getProp = (id: number, type: 'block' | 'group' | 'item', group: PropGroup, path?: [PropItem | PropBlock | PropGroup]) => {
+  getProp = (id: number, type: 'block' | 'group' | 'item', group: PropGroup, stash?: [PropItem | PropBlock | PropGroup]) => {
     if (type === 'group' && group.id === id) {
-      path.push(group);
+      stash.push(group);
       return group;
-    }
-
-    if (type === 'block' && group.struct === 'List' && id === group.templateBlock.id) {
-      path.push(group);
-      path.push(group.templateBlock);
-      return group.templateBlock;
     }
 
     const blockList = [...group.propBlockList];
 
-    if (group.struct === 'List') {
-      blockList.push(group.templateBlock);
-    }
-
     for (let index = 0; index < blockList.length; index++) {
       const block = blockList[index];
       if (type === 'block' && block.id === id) {
-        path.push(group);
-        path.push(block);
+        stash.push(group);
+        stash.push(block);
         return block;
       }
 
@@ -317,21 +267,21 @@ export default class PropHandleModel {
       for (let itemIndex = 0; itemIndex < itemList.length; itemIndex++) {
         const item = itemList[itemIndex];
         if (type === 'item' && item.id === id) {
-          path.push(group);
-          path.push(block);
-          path.push(item);
+          stash.push(group);
+          stash.push(block);
+          stash.push(item);
           return item;
         }
 
-        if (item.type === PropItemType.LIST || item.type === PropItemType.ITEM || item.type === PropItemType.HIERARCHY) {
-          if (item.valueOfGroup) {
-            const result = this.getProp(id, type, item.valueOfGroup, path);
+        if (item.type === PropItemType.Flat || item.type === PropItemType.Hierarchy) {
+          if (item.childGroup) {
+            const result = this.getProp(id, type, item.childGroup, stash);
             if (result) {
               return result;
             }
           } else {
-            // 部分item可能已经挂在到rootGroup但是valueOfGroup还没初始化完成
-            console.warn(`valueOfGroup can not empty itemId: ${item.id}`);
+            // 部分item可能已经挂在到rootGroup但是childGroup还没初始化完成
+            console.warn(`childGroup can not empty itemId: ${item.id}`);
           }
         }
       }

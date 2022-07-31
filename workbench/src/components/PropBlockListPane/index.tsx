@@ -1,43 +1,30 @@
-import { Form, Input } from "antd";
+import { Space, Typography } from "antd";
+import { useState } from "react";
+
+import styles from './index.module.less';
 
 type PropsType = {
-  freezeSetting: boolean,
   block: PropBlock
 }
 
-const PropBlockListPane: React.FC<PropsType> = () => {
-  const list = ['one', 'two', 'three', 'four'];
-  const list2 = ['aaa', 'bbb', 'ccc', 'ddd']
-  const [form] = Form.useForm();
+const PropBlockListPane: React.FC<PropsType> = ({ block }) => {
+  const [childBlock] = useState<PropBlock[]>(() => {
+    return block.propItemList[0].childGroup.propBlockList;
+  });
 
-  return <>
+  return <div className={styles.container}>
     <div>
-      <Form form={form} layout="vertical">
-        {
-          list.map((str) => {
-            return (
-              <div key={str}>
-                {
-                  list2.map((item) => {
-                    return <FormItem key={item} name={str + item} label={str + item} />
-                  })
-                }
-              </div>
-            )
-          })
-        }
-      </Form>
+      {childBlock?.length}
     </div>
-    <div>options</div>
-  </>
+    <div>
+      <Space>
+        <Typography.Link>添加子项</Typography.Link>
+        <Typography.Link>首要显示项</Typography.Link>
+        <Typography.Link>子项配置</Typography.Link>
+      </Space>
+    </div>
+  </div>
 }
 
-const FormItem = ({ name, label }) => {
-  return <span >
-    <Form.Item name={name} label={label}>
-      <Input />
-    </Form.Item>
-  </span>
-}
 
 export default PropBlockListPane;

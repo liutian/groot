@@ -6,22 +6,21 @@ import PropPersistModel from "@model/PropPersistModel";
 import { PropItemType } from "@grootio/common";
 
 const typeList = [
-  { label: '文本', value: PropItemType.TEXT },
-  { label: '多行文本', value: PropItemType.TEXTAREA },
-  { label: '数字', value: PropItemType.NUMBER },
-  { label: '滑块', value: PropItemType.SLIDER },
-  { label: '按钮组', value: PropItemType.BUTTON_GROUP },
-  { label: '开关', value: PropItemType.SWITCH },
-  { label: '下拉框', value: PropItemType.SELECT },
-  { label: '多选', value: PropItemType.CHECKBOX },
-  { label: '单选', value: PropItemType.RADIO },
-  { label: '日期', value: PropItemType.DATE_PICKER },
-  { label: '时间', value: PropItemType.TIME_PICKER },
-  { label: '列表', value: PropItemType.LIST },
-  { label: '配置项', value: PropItemType.ITEM },
-  { label: '层级', value: PropItemType.HIERARCHY },
-  { label: 'json', value: PropItemType.JSON },
-  { label: '函数', value: PropItemType.FUNCTION },
+  { label: '文本', value: PropItemType.Text },
+  { label: '多行文本', value: PropItemType.Textarea },
+  { label: '数字', value: PropItemType.Number },
+  { label: '滑块', value: PropItemType.Slider },
+  { label: '按钮组', value: PropItemType.Button_Group },
+  { label: '开关', value: PropItemType.Switch },
+  { label: '下拉框', value: PropItemType.Select },
+  { label: '多选', value: PropItemType.Checkbox },
+  { label: '单选', value: PropItemType.Radio },
+  { label: '日期', value: PropItemType.Date_Picker },
+  { label: '时间', value: PropItemType.Time_Picker },
+  { label: '配置项平铺', value: PropItemType.Flat },
+  { label: '层级', value: PropItemType.Hierarchy },
+  { label: 'json', value: PropItemType.Json },
+  { label: '函数', value: PropItemType.Function },
 ];
 
 const PropItemSetting: React.FC = () => {
@@ -126,7 +125,7 @@ const PropItemSetting: React.FC = () => {
       <Form.Item dependencies={['type']} noStyle >
         {({ getFieldValue }) => {
           const type = getFieldValue('type');
-          const hasOption = ['Select', 'Radio', 'Checkbox', 'Button_Group'].includes(type);
+          const hasOption = ([PropItemType.Select, PropItemType.Radio, PropItemType.Checkbox, PropItemType.Button_Group]).includes(type);
 
           return hasOption ? renderSelectFormItem() : null
         }}

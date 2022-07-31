@@ -14,13 +14,11 @@ const PropGroupToolBar: React.FC = () => {
   const [propHandleModel] = useModel<PropHandleModel>(PropHandleModel.modelName);
   const [workbenchModel] = useModel<WorkbenchModel>(WorkbenchModel.modelName);
 
-  const [groupListStruct, setGroupListStruct] = useState(false);
   const [group, setGroup] = useState<PropGroup>();
 
   useEffect(() => {
     const group = propHandleModel.getPropGroup(propHandleModel.activeGroupId);
     setGroup(group);
-    setGroupListStruct(group.struct === 'List');
   }, [propHandleModel.activeGroupId, propPersistModel.settingModalLoading]);
 
   if (!group || !workbenchModel.prototypeMode) {
@@ -37,14 +35,6 @@ const PropGroupToolBar: React.FC = () => {
       }}>
         <EditOutlined />
       </Typography.Link>
-
-      {
-        groupListStruct && (
-          <Typography.Link onClick={() => propHandleModel.toggleTemplateBlockDesignMode(group)}>
-            {group.templateBlockDesignMode ? <SettingFilled /> : <SettingOutlined />}
-          </Typography.Link>
-        )
-      }
 
       <Typography.Link disabled={propHandleModel.rootGroupList.length === 1} onClick={() => {
         propPersistModel.delGroup(group.id);

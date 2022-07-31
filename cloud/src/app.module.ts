@@ -1,7 +1,6 @@
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
 import { WorkbenchController } from './workbench.controller';
-import { AppService } from './app.service';
 import config from 'config/mikro-orm.config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { StandardResultInterceptor } from 'config/standard-result.interceptor';
@@ -11,6 +10,7 @@ import { PropItemService } from 'service/prop-item.service';
 import { ComponentService } from 'service/component.service';
 import { ApplicationService } from 'service/application.service';
 import { ScaffoldService } from 'service/scaffold.service';
+import { CommonService } from 'service/common.service';
 @Module({
   imports: [
     MikroOrmModule.forRoot(config)
@@ -26,9 +26,9 @@ import { ScaffoldService } from 'service/scaffold.service';
     PropBlockService,
     PropGroupService,
     ComponentService,
-    AppService,
     ApplicationService,
-    ScaffoldService
+    ScaffoldService,
+    CommonService
   ],
 })
 export class AppModule { }

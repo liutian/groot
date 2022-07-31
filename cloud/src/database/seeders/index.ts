@@ -56,83 +56,13 @@ export class DatabaseSeeder extends Seeder {
     component_table.recentVersion = component_table_version;
     await em.persistAndFlush(component_table_version);
 
-    const group_table = em.create(PropGroup, {
-      name: '列配置',
+    const group1 = em.create(PropGroup, {
+      name: '配置组',
       order: 1000,
-      struct: 'List',
-      propKey: 'columns',
       componentVersion: component_table_version,
-      component: component_table,
+      component: component_table
     });
-    await em.persistAndFlush(group_table);
-
-    const block_table = em.create(PropBlock, {
-      name: '列模版',
-      group: group_table,
-      componentVersion: component_table_version,
-      order: 1000,
-      component: component_table,
-      isTemplate: true,
-      layout: PropBlockLayout.Horizontal,
-      struct: PropBlockStructType.Default
-    })
-    await em.persistAndFlush(block_table);
-
-    group_table.templateBlock = block_table;
-
-    const item_table_1 = em.create(PropItem, {
-      label: '索引',
-      propKey: 'dataIndex',
-      type: PropItemType.TEXT,
-      block: block_table,
-      group: group_table,
-      componentVersion: component_table_version,
-      order: 1000,
-      component: component_table
-    })
-    await em.persistAndFlush(item_table_1);
-
-    const item_table_2 = em.create(PropItem, {
-      label: '标题',
-      propKey: 'title',
-      type: PropItemType.TEXT,
-      block: block_table,
-      group: group_table,
-      componentVersion: component_table_version,
-      order: 1001,
-      component: component_table
-    })
-    await em.persistAndFlush(item_table_2);
-
-    const item_table_3 = em.create(PropItem, {
-      label: '类型',
-      propKey: 'valueType',
-      type: PropItemType.SELECT,
-      block: block_table,
-      group: group_table,
-      componentVersion: component_table_version,
-      order: 1002,
-      component: component_table,
-      valueOptions: '[{"label":"文本","value":"text"},{"label":"下拉框","value":"select"},{"label":"日期","value":"date"},{"label":"时间","value":"dateTime"}]'
-    })
-    await em.persistAndFlush(item_table_3);
-
-
-
-    const item_table_4 = em.create(PropItem, {
-      label: '提示信息',
-      propKey: 'tooltip',
-      type: PropItemType.TEXT,
-      block: block_table,
-      group: group_table,
-      componentVersion: component_table_version,
-      order: 1003,
-      component: component_table,
-    })
-    await em.persistAndFlush(item_table_4);
-
-
-
+    await em.persistAndFlush(group1);
 
 
 
@@ -177,7 +107,7 @@ export class DatabaseSeeder extends Seeder {
     const item = em.create(PropItem, {
       label: '配置项',
       propKey: 'children',
-      type: PropItemType.TEXT,
+      type: PropItemType.Text,
       block,
       group,
       componentVersion,

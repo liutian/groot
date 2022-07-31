@@ -4,7 +4,6 @@ import React from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import DraggableTabNode from "../DraggableTabNode";
-// import styles from './index.module.less';
 
 import { useModel } from '@util/robot';
 import PropGroupPane from "../PropGroupPane";
@@ -14,6 +13,7 @@ import PropGroupToolBar from "../PropGroupToolBar";
 import WorkbenchModel from "@model/WorkbenchModel";
 import PropHandleModel from "@model/PropHandleModel";
 import PropPersistModel from "@model/PropPersistModel";
+import { PropGroupStructType } from "@grootio/common";
 
 function PropPane() {
   const [propHandleModel] = useModel<PropHandleModel>(PropHandleModel.modelName);
@@ -31,7 +31,6 @@ function PropPane() {
     </DefaultTabBar>
   );
 
-  // 自定义渲染Tab标题，实现右键菜单功能
   const renderTabBarItem = (group: PropGroup) => {
     return <div>{group.name}<i className="highlight" hidden={!group.highlight} /></div>;
   }
@@ -49,10 +48,6 @@ function PropPane() {
       // 显示分组弹框
       propPersistModel.currSettingPropGroup = {
         name: `分组${nameSuffix}`,
-        root: true,
-        propBlockList: [],
-        order: 0,
-        struct: 'Default'
       } as PropGroup;
     })
   }
@@ -60,13 +55,7 @@ function PropPane() {
   const renderTabContent = () => {
     const list = propHandleModel.rootGroupList.map((group) => {
       let content = <PropGroupPane group={group} />;
-      if (group.struct === 'List') {
-        if (group.templateBlockDesignMode) {
-          content = <PropBlockPane templateMode block={group.templateBlock} />
-        } else {
-          content = <PropGroupPane templateBlock={group.templateBlock} group={group} />;
-        }
-      } else if (group.struct === 'Item') {
+      if (group.struct === PropGroupStructType.Flat) {
         content = <PropBlockPane noWrapMode block={group.propBlockList[0]} />;
       }
 

@@ -1,11 +1,12 @@
-import { PropItemType } from '@grootio/common';
-import { EntityManager, RequestContext } from '@mikro-orm/core';
+import { PropGroupStructType } from '@grootio/common';
+import { RequestContext } from '@mikro-orm/core';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { LogicException, LogicExceptionCode } from 'config/logic.exception';
 import { PropBlock } from 'entities/PropBlock';
 import { PropGroup } from 'entities/PropGroup';
 import { PropItem } from 'entities/PropItem';
 import { pick } from 'util.ts/common';
+import { CommonService } from './common.service';
 import { PropBlockService } from './prop-block.service';
 
 
@@ -14,21 +15,18 @@ export class PropGroupService {
 
   constructor(
     @Inject(forwardRef(() => PropBlockService))
-    private propBlockService: PropBlockService
+    private propBlockService: PropBlockService,
+    private commonService: CommonService,
   ) { }
 
   async add(rawGroup: PropGroup) {
     const em = RequestContext.getEntityManager();
 
-    if (rawGroup.propKey && rawGroup.root === true) {
-      const propKeyUnique = await this.checkPropKeyUnique({
-        propKey: rawGroup.propKey,
-        componentId: rawGroup.componentId,
-        componentVersionId: rawGroup.componentVersionId,
-        em
-      });
-      if (!propKeyUnique) {
-        throw new LogicException(`not unique propKey: ${rawGroup.propKey} `, LogicExceptionCode.NotUnique);
+    if (rawGroup.propKey && rawGroup.root) {
+      const chainList = await this.commonService.calcAllPropKeyChain(rawGroup.componentId, rawGroup.componentVersionId, em);
+
+      if (chainList.includes(rawGroup.propKey)) {
+        throw new LogicException(`not unique item propKey:${rawGroup.propKey}`, LogicExceptionCode.NotUnique);
       }
     }
 
@@ -44,28 +42,23 @@ export class PropGroupService {
       order: (firstGroup ? firstGroup.order : 0) + 1000
     });
 
+    if (rawGroup.parentItemId) {
+      const parentItem = await em.findOne(PropItem, rawGroup.parentItemId);
+      if (!parentItem) {
+        throw new LogicException(`not found parentItem id: ${rawGroup.parentItemId}`, LogicExceptionCode.NotFound);
+      }
+      newGroup.parentItem = parentItem;
+    }
+
     if (!newGroup.root) {
       delete newGroup.propKey;
     }
 
     await em.flush();
 
-    if (newGroup.struct === 'List') {
+    if (newGroup.struct === PropGroupStructType.Flat) {
       const rawBlock = {
-        name: '配置块模版',
-        groupId: newGroup.id,
-        component: newGroup.component,
-        componentVersion: newGroup.componentVersion,
-        isTemplate: true
-      } as PropBlock;
-
-      const templateBlock = await this.propBlockService.add(rawBlock);
-      newGroup.templateBlock = templateBlock;
-
-      await em.flush();
-    } else if (newGroup.struct === 'Item') {
-      const rawBlock = {
-        name: '配置块模版',
+        name: '内嵌配置块',
         groupId: newGroup.id,
         component: newGroup.component,
         componentVersion: newGroup.componentVersion,
@@ -102,8 +95,8 @@ export class PropGroupService {
           const item = itemList[itemIndex];
 
           await em.removeAndFlush(item);
-          if (item.type === PropItemType.LIST) {
-            innerGroupIds.push(item.valueOfGroup.id);
+          if (item.childGroup) {
+            innerGroupIds.push(item.childGroup.id);
           }
         }
 
@@ -120,9 +113,13 @@ export class PropGroupService {
 
     for (let index = 0; index < innerGroupIds.length; index++) {
       const groupId = innerGroupIds[index];
-      await this.remove(groupId);
+      try {
+        await this.remove(groupId);
+      } catch (e) {
+        console.error(`remove group fail id:${groupId}`);
+        console.error(e);
+      }
     }
-
   }
 
   async update(rawGroup: PropGroup) {
@@ -134,22 +131,25 @@ export class PropGroupService {
       throw new LogicException(`not found group id: ${rawGroup.id}`, LogicExceptionCode.NotFound);
     }
 
-    if (rawGroup.propKey && group.root === true) {
-      const propKeyUnique = await this.checkPropKeyUnique({
-        propKey: rawGroup.propKey,
-        componentId: group.component.id,
-        componentVersionId: group.componentVersion.id,
-        em,
-        groupId: rawGroup.id
-      });
-      if (!propKeyUnique) {
-        throw new LogicException(`propKey not unique propKey: ${rawGroup.propKey} groupId: ${group.id}`, LogicExceptionCode.NotUnique);
+    await em.begin();
+    try {
+      pick(rawGroup, ['name', 'propKey'], group);
+
+      await em.flush();
+
+      if (rawGroup.propKey && group.root) {
+        const repeatChainMap = await this.commonService.checkPropKeyUnique(group.component.id, group.componentVersion.id, em);
+        if (repeatChainMap.size > 0) {
+          await em.rollback();
+          throw new LogicException(`not unique propKey:${group.propKey}`, LogicExceptionCode.NotUnique);
+        }
       }
+
+      await em.commit();
+    } catch (e) {
+      await em.rollback();
+      throw e;
     }
-
-    pick(rawGroup, ['name', 'propKey'], group);
-
-    await em.flush();
   }
 
   async movePosition(originId: number, targetId?: number) {
@@ -196,61 +196,6 @@ export class PropGroupService {
     await em.flush();
   }
 
-  async checkPropKeyUnique(params: { propKey: string, componentId: number, componentVersionId: number, em: EntityManager, groupId?: number, blockId?: number, itemId?: number }) {
-    const list = await params.em.find(PropGroup, {
-      root: true,
-      propKey: params.propKey,
-      component: params.componentId,
-      componentVersion: params.componentVersionId
-    });
-
-    if (params.groupId) {
-      if (list.find(g => g.id !== params.groupId)) {
-        return false;
-      }
-    } else {
-      if (list.length) {
-        return false;
-      }
-    }
-
-    const blockList = await params.em.find(PropBlock, {
-      rootPropKey: true,
-      isTemplate: false,
-      propKey: params.propKey,
-      component: params.componentId,
-      componentVersion: params.componentVersionId
-    });
-
-    if (params.blockId) {
-      if (blockList.find(b => b.id !== params.blockId)) {
-        return false;
-      }
-    } else {
-      if (blockList.length) {
-        return false;
-      }
-    }
-
-    const itemList = await params.em.find(PropItem, {
-      rootPropKey: true,
-      propKey: params.propKey,
-      component: params.componentId,
-      componentVersion: params.componentVersionId
-    });
-
-    if (params.itemId) {
-      if (itemList.find(i => i.id !== params.itemId)) {
-        return false;
-      }
-    } else {
-      if (itemList.length) {
-        return false;
-      }
-    }
-
-    return true;
-  }
 }
 
 

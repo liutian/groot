@@ -13,7 +13,7 @@ export class PropItem extends BaseEntity {
   label: string;
 
   @Property({ length: 50 })
-  propKey: string;
+  propKey?: string;
 
   @Enum()
   type: PropItemType;
@@ -40,22 +40,10 @@ export class PropItem extends BaseEntity {
   span = 24;
 
   /**
-   * 类型为 List Item时，所属下级配置组
+   * 类型为Hierarchy Item时，所属下级配置组
    */
-  @OneToOne({ serializer: value => value?.id, serializedName: 'valueOfGroupId' })
-  valueOfGroup?: PropGroup;
-
-  /**
-   * 类型为 List 时，所属下级配置块模版 todo 是否可以删除该字段
-   */
-  @ManyToOne({ serializer: value => value?.id, serializedName: 'templateBlockId' })
-  templateBlock?: PropBlock;
-
-  /**
-   * 类型为 Item 时，所属下级配置块 todo 是否可以删除该字段
-   */
-  @ManyToOne({ serializer: value => value?.id, serializedName: 'directBlockId' })
-  directBlock?: PropBlock;
+  @OneToOne({ serializer: value => value?.id, serializedName: 'childGroupId' })
+  childGroup?: PropGroup;
 
   /**
    * 是否是组件根属性，如果为true则不会继承父级配置块
@@ -76,13 +64,9 @@ export class PropItem extends BaseEntity {
   component: Component;
 
   /**
-   * 联动镜像改变该配置块也随之改变，方便批量操作
-   */
-  @ManyToOne({ serializer: value => value?.id, serializedName: 'imagePropItemId' })
-  imagePropItem?: PropItem;
-
-  /**
    * 版本升级时，确认当前propItem是否被改动的判断条件
+   * 上一个版本versionTraceId，如果为空则是上一个版本对应propItem 的 ID
+   * 如果propItem属性变化，则重置versionTraceId为当前ID
    */
   @Property()
   versionTraceId?: number;

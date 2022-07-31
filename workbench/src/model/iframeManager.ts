@@ -1,4 +1,4 @@
-import { IframeDebuggerConfig, iframeNamePrefix, Metadata, PostMessageType, PropItemType, PropMetadata, PropMetadataType } from "@grootio/common";
+import { IframeDebuggerConfig, iframeNamePrefix, Metadata, PostMessageType, PropGroupStructType, PropItemType, PropMetadataType } from "@grootio/common";
 import PropHandleModel from "@model/PropHandleModel";
 import { fillPropChain, fillPropChainGreed } from "@util/utils";
 import WorkbenchModel from "./WorkbenchModel";
@@ -67,7 +67,7 @@ function buildMetadata(component: Component): Metadata {
   } as Metadata;
   propHandleModel.rootGroupList.forEach((group) => {
     if (group.propKey) {
-      const ctx = fillPropChainGreed(metadata.propsObj, group.propKey, group.struct === 'List');
+      const ctx = fillPropChainGreed(metadata.propsObj, group.propKey);
       buildPropObject(group, ctx, group.propKey, metadata);
     } else {
       buildPropObject(group, metadata.propsObj, '', metadata);
@@ -134,7 +134,7 @@ function refreshComponent() {
   };
   propHandleModel.rootGroupList.forEach((group) => {
     if (group.propKey) {
-      const ctx = fillPropChainGreed(metadata.propsObj, group.propKey, group.struct === 'List');
+      const ctx = fillPropChainGreed(metadata.propsObj, group.propKey);
       buildPropObject(group, ctx, group.propKey, metadata);
     } else {
       buildPropObject(group, metadata.propsObj, '', metadata);
@@ -148,7 +148,7 @@ function buildPropObject(group: PropGroup, ctx: Object, ctxKeyChain: string, met
   group.propBlockList.forEach((block, index) => {
     const preCTX = ctx;
     const preCTXKeyChain = ctxKeyChain;
-    if (group.struct === 'Default' && block.propKey) {
+    if (group.struct === PropGroupStructType.Default && block.propKey) {
       if (block.rootPropKey) {
         ctx = fillPropChainGreed(metadata.propsObj, block.propKey);
         ctxKeyChain = block.propKey;
@@ -156,11 +156,6 @@ function buildPropObject(group: PropGroup, ctx: Object, ctxKeyChain: string, met
         ctx = fillPropChainGreed(ctx, block.propKey);
         ctxKeyChain += `.${block.propKey}`;
       }
-    } else if (group.struct === 'List') {
-      const blockObj = {};
-      ctxKeyChain += `.[${index}]`;
-      (ctx as any[]).push(blockObj);
-      ctx = blockObj;
     }
 
     const blockFormObj = propHandleModel.blockFormInstanceMap.get(block.id)?.getFieldsValue() || {};
@@ -168,30 +163,30 @@ function buildPropObject(group: PropGroup, ctx: Object, ctxKeyChain: string, met
       const preCTX = ctx;
       const preCTXKeyChain = ctxKeyChain;
 
-      if (!item.propKey) {
+      if (!item.propKey && !item.childGroup) {
         throw new Error('propKey can not null');
       }
 
-      if ([PropItemType.LIST, PropItemType.ITEM, PropItemType.HIERARCHY].includes(item.type as any)) {
+      if (item.childGroup) {
         if (item.rootPropKey) {
-          ctx = fillPropChainGreed(metadata.propsObj, item.propKey, item.type === PropItemType.LIST);
+          ctx = fillPropChainGreed(metadata.propsObj, item.propKey);
           ctxKeyChain = item.propKey;
         } else {
-          ctx = fillPropChainGreed(ctx, item.propKey, item.type === PropItemType.LIST);
+          ctx = fillPropChainGreed(ctx, item.propKey);
           ctxKeyChain += `.${item.propKey}`;
         }
-        buildPropObject(item.valueOfGroup, ctx, ctxKeyChain, metadata);
+        buildPropObject(item.childGroup, ctx, ctxKeyChain, metadata);
       } else {
         const [newCTX, propEnd] = fillPropChain(item.rootPropKey ? metadata.propsObj : ctx, item.propKey);
         ctxKeyChain = item.rootPropKey ? item.propKey : `${ctxKeyChain}.${item.propKey}`;
         newCTX[propEnd] = blockFormObj[item.propKey] || item.defaultValue;
         ctxKeyChain = ctxKeyChain.replace(/^\./, '');
-        if (item.type === 'Json') {
+        if (item.type === PropItemType.Json) {
           metadata.advancedProps.push({
             keyChain: ctxKeyChain,
             type: PropMetadataType.Json,
           })
-        } else if (item.type === 'Function') {
+        } else if (item.type === PropItemType.Function) {
           metadata.advancedProps.push({
             keyChain: ctxKeyChain,
             type: PropMetadataType.Function,

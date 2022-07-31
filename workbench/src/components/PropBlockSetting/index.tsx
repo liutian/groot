@@ -1,3 +1,4 @@
+import { PropBlockStructType } from "@grootio/common";
 import PropPersistModel from "@model/PropPersistModel";
 import { useModel } from "@util/robot";
 import { Form, Input, Modal, Radio, Switch } from "antd";
@@ -37,11 +38,26 @@ const PropBlockSetting: React.FC = () => {
       <Form.Item name="name" label="名称" rules={[{ required: true }]}>
         <Input ref={inputRef} />
       </Form.Item>
-      <Form.Item label="属性名" name="propKey">
-        <Input />
+      <Form.Item noStyle dependencies={['struct']}>
+        {
+          () => {
+            const struct = form.getFieldValue('struct');
+            return (
+              <Form.Item label="属性名" name="propKey" rules={[{ required: struct === PropBlockStructType.List }]}>
+                <Input />
+              </Form.Item>
+            )
+          }
+        }
       </Form.Item>
       <Form.Item valuePropName="checked" label="根属性" name="rootPropKey">
         <Switch />
+      </Form.Item>
+      <Form.Item label="结构" name="struct" initialValue="default">
+        <Radio.Group >
+          <Radio value="default">默认</Radio>
+          <Radio value="list">列表</Radio>
+        </Radio.Group>
       </Form.Item>
       <Form.Item label="配置项布局" name="layout" initialValue="horizontal">
         <Radio.Group >
