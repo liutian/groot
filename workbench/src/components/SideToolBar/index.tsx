@@ -13,7 +13,7 @@ const SideToolBar: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
           <HomeOutlined />
         </Breadcrumb.Item>
         <Breadcrumb.Item href="">列表页面</Breadcrumb.Item>
-        <Breadcrumb.Item href="">弹出框</Breadcrumb.Item>
+        <Breadcrumb.Item href="">子组件</Breadcrumb.Item>
       </Breadcrumb>
     </div>
     <div className={styles.actions} >
