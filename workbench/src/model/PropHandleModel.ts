@@ -40,6 +40,12 @@ export default class PropHandleModel {
         const rlist = this.propItemStack.splice(index);
         removeList.push(...rlist);
         break;
+      } else if (index === this.propItemStack.length - 1) {
+        if (stackItem.childGroup.id === item.groupId) {
+          break
+        }
+        const rlist = this.propItemStack.splice(0);
+        removeList.push(...rlist);
       }
     }
 

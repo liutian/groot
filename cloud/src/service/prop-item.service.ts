@@ -17,8 +17,7 @@ export class PropItemService {
     private commonService: CommonService,
   ) { }
 
-  async add(rawItem: PropItem) {
-    const em = RequestContext.getEntityManager();
+  async add(rawItem: PropItem, em = RequestContext.getEntityManager()) {
 
     const block = await em.findOne(PropBlock, rawItem.blockId);
     if (!block) {
@@ -46,19 +45,23 @@ export class PropItemService {
 
     let newItem: PropItem, childGroup: PropGroup;
 
-    await em.begin();
+    const firstItem = await em.findOne(PropItem, { block }, { orderBy: { order: 'DESC' } });
+
+    newItem = em.create(PropItem, {
+      ...pick(rawItem, ['label', 'propKey', 'rootPropKey', 'type', 'span', 'valueOptions']),
+      block,
+      group: block.group,
+      component: block.component,
+      componentVersion: block.componentVersion,
+      order: firstItem ? firstItem.order + 1000 : 1000,
+    });
+
+    const parentCtx = em.getTransactionContext();
+    await em.begin({ ctx: parentCtx });
+    const newCtx = em.getTransactionContext();
+    em.setTransactionContext(newCtx);
 
     try {
-      const firstItem = await em.findOne(PropItem, { block }, { orderBy: { order: 'DESC' } });
-
-      newItem = em.create(PropItem, {
-        ...pick(rawItem, ['label', 'propKey', 'rootPropKey', 'type', 'span', 'valueOptions']),
-        block,
-        group: block.group,
-        component: block.component,
-        componentVersion: block.componentVersion,
-        order: firstItem ? firstItem.order + 1000 : 1000,
-      });
 
       await em.flush();
 
@@ -83,6 +86,8 @@ export class PropItemService {
     } catch (e) {
       await em.rollback();
       throw e;
+    } finally {
+      em.setTransactionContext(parentCtx);
     }
 
     return { newItem, childGroup }

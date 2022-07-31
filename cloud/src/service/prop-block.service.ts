@@ -1,11 +1,14 @@
+import { PropBlockStructType, PropItemType } from '@grootio/common';
 import { RequestContext } from '@mikro-orm/core';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { LogicException, LogicExceptionCode } from 'config/logic.exception';
 import { PropBlock } from 'entities/PropBlock';
 import { PropGroup } from 'entities/PropGroup';
+import { PropItem } from 'entities/PropItem';
 import { pick } from 'util.ts/common';
 import { CommonService } from './common.service';
 import { PropGroupService } from './prop-group.service';
+import { PropItemService } from './prop-item.service';
 
 
 @Injectable()
@@ -14,11 +17,12 @@ export class PropBlockService {
   constructor(
     @Inject(forwardRef(() => PropGroupService))
     private propGroupService: PropGroupService,
+    @Inject(forwardRef(() => PropItemService))
+    private propItemService: PropItemService,
     private commonService: CommonService,
   ) { }
 
-  async add(rawBlock: PropBlock) {
-    const em = RequestContext.getEntityManager();
+  async add(rawBlock: PropBlock, em = RequestContext.getEntityManager()) {
 
     const group = await em.findOne(PropGroup, rawBlock.groupId);
     if (!group) {
@@ -51,9 +55,34 @@ export class PropBlockService {
       order
     });
 
-    await em.flush();
 
-    return newBlock;
+    const parentCtx = em.getTransactionContext();
+    await em.begin({ ctx: parentCtx });
+    const newCtx = em.getTransactionContext();
+    em.setTransactionContext(newCtx);
+
+    let result: { newBlock: PropBlock, extra?: { newItem: PropItem, childGroup?: PropGroup } } = { newBlock };
+
+    try {
+      await em.flush();
+      if (rawBlock.struct === PropBlockStructType.List) {
+        const rawItem = {
+          label: '子项模版配置',
+          type: PropItemType.Hierarchy,
+          blockId: newBlock.id
+        } as PropItem;
+        result.extra = await this.propItemService.add(rawItem, em);
+      }
+
+      await em.commit();
+    } catch (e) {
+      await em.rollback();
+      throw e;
+    } finally {
+      em.setTransactionContext(parentCtx);
+    }
+
+    return result;
   }
 
   /**

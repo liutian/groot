@@ -193,10 +193,16 @@ export default class PropPersistModel {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(newBlock)
-      }).then(r => r.json()).then((result: { data: PropBlock }) => {
-        group.propBlockList.push(result.data);
+      }).then(r => r.json()).then((result: { data }) => {
+        const resultData: { newBlock: PropBlock, extra?: { newItem: PropItem, childGroup?: PropGroup } } = result.data;
+
+        group.propBlockList.push(resultData.newBlock);
+        if (resultData.extra?.childGroup) {
+          resultData.newBlock.propItemList[0].childGroup = resultData.extra.childGroup;
+          resultData.extra.childGroup.expandBlockIdList = [];
+        }
         // todo
-        group.expandBlockIdList.push(result.data.id);
+        group.expandBlockIdList.push(resultData.newBlock.id);
 
         this.settingModalLoading = false;
         this.currSettingPropBlock = undefined;
@@ -243,27 +249,22 @@ export default class PropPersistModel {
         },
         body: JSON.stringify(newItem)
       }).then(r => r.json()).then((result: { data: { newItem: PropItem, childGroup: PropGroup } }) => {
-        this.addPropItemFn(result.data);
+        if (result.data.childGroup) {
+          result.data.newItem.childGroup = result.data.childGroup;
+          result.data.childGroup.expandBlockIdList = [];
+        }
+        const block = this.propHandle.getPropBlock(newItem.blockId);
+        block.propItemList.push(result.data.newItem);
+        parseOptions(result.data.newItem);
+
+        const group = this.propHandle.getPropGroup(block.groupId);
+        group.expandBlockIdList.push(block.id);
 
         this.settingModalLoading = false;
         this.currSettingPropItem = undefined;
         this.workbench.iframeManager.refreshComponent();
       })
     }
-  }
-
-  private addPropItemFn = (data: { newItem: PropItem, childGroup: PropGroup }) => {
-    const block = this.propHandle.getPropBlock(data.newItem.blockId);
-    block.propItemList.push(data.newItem);
-    if (data.newItem.type === PropItemType.Flat) {
-      const childGroup = data.childGroup;
-      data.newItem.childGroup = childGroup;
-    } else if (data.newItem.type === PropItemType.Hierarchy) {
-      const childGroup = data.childGroup;
-      data.newItem.childGroup = childGroup;
-      childGroup.expandBlockIdList = [];
-    }
-    parseOptions(data.newItem);
   }
 
   public delGroup = (groupId: number) => {

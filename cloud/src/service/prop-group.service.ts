@@ -19,8 +19,7 @@ export class PropGroupService {
     private commonService: CommonService,
   ) { }
 
-  async add(rawGroup: PropGroup) {
-    const em = RequestContext.getEntityManager();
+  async add(rawGroup: PropGroup, em = RequestContext.getEntityManager()) {
 
     if (rawGroup.propKey && rawGroup.root) {
       const chainList = await this.commonService.calcAllPropKeyChain(rawGroup.componentId, rawGroup.componentVersionId, em);
@@ -114,6 +113,7 @@ export class PropGroupService {
     for (let index = 0; index < innerGroupIds.length; index++) {
       const groupId = innerGroupIds[index];
       try {
+        // wraning ... 嵌套避免多个commit
         await this.remove(groupId);
       } catch (e) {
         console.error(`remove group fail id:${groupId}`);
