@@ -52,6 +52,8 @@ const SidePanel: React.FC<PropsType> = ({ extraTabPanes, ...props }) => {
         </div>
       </Tabs.TabPane>
 
+      <Tabs.TabPane key="data-sources" tab="数据源"></Tabs.TabPane>
+      <Tabs.TabPane key="vars" tab="变量"></Tabs.TabPane>
       {extraTabPanes}
     </Tabs>
 
