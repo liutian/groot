@@ -58,7 +58,8 @@ type PropItem = {
   extraUIData?: {
     type: 'BlockListPrefs',
     data?: any
-  }
+  },
+  defaultValue: any
 } & Omit<import("../../cloud/src/entities/PropItem").PropItem, 'type' | 'childGroup'>;
 
 type PropValueOption = {
@@ -103,12 +104,5 @@ type Scaffold = {
   componentList: Component[]
 } & Omit<import("../../cloud/src/entities/Scaffold").Scaffold, ''>;
 
-type CodeMeta = {
-  id: number,
-  key: string,
-  defaultValue: any,
-  type: PropItemType
-}
 
-type PropItemType = import("../../cloud/src/entities/PropItem").PropItemType;
 

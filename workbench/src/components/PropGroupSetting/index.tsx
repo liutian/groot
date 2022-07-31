@@ -35,32 +35,37 @@ const PropGroupSetting: React.FC = () => {
 
   return (<Modal mask={false} width={400} title="配置组" confirmLoading={propPersistModel.settingModalLoading}
     visible={!!propPersistModel.currSettingPropGroup} onOk={handleOk} onCancel={handleCancel}>
-    <Form form={form} colon={false} labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
-      <Form.Item name="name" label="名称" rules={[{ required: true }]}>
-        <Input ref={inputRef} />
-      </Form.Item>
-      <Form.Item name="struct" label="结构" rules={[{ required: true }]} initialValue="default">
-        <Radio.Group disabled={!!propPersistModel.currSettingPropGroup?.id}>
-          <Radio value="default">层级</Radio>
-          <Radio value="flat">平铺</Radio>
-        </Radio.Group>
-      </Form.Item>
-      <Form.Item
-        noStyle
-        shouldUpdate={(prevValues, currentValues) => prevValues.struct !== currentValues.struct}
-      >
-        {({ getFieldValue }) => {
-          const required = getFieldValue('struct') === 'List';
-          const rules = [{ required }, { pattern: propKeyRule, message: '格式错误，必须是标准js标识符' }];
-          return (
-            <Form.Item label="属性名" name="propKey" rules={rules}>
-              <Input />
-            </Form.Item>
-          )
-        }}
-      </Form.Item>
+    {
+      !!propPersistModel.currSettingPropGroup && (
 
-    </Form>
+        <Form form={form} colon={false} labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
+          <Form.Item name="name" label="名称" rules={[{ required: true }]}>
+            <Input ref={inputRef} />
+          </Form.Item>
+          <Form.Item name="struct" label="结构" rules={[{ required: true }]} initialValue="default">
+            <Radio.Group disabled={!!propPersistModel.currSettingPropGroup.id}>
+              <Radio value="default">层级</Radio>
+              <Radio value="flat">平铺</Radio>
+            </Radio.Group>
+          </Form.Item>
+          <Form.Item
+            noStyle
+            shouldUpdate={(prevValues, currentValues) => prevValues.struct !== currentValues.struct}
+          >
+            {({ getFieldValue }) => {
+              const required = getFieldValue('struct') === 'List';
+              const rules = [{ required }, { pattern: propKeyRule, message: '格式错误，必须是标准js标识符' }];
+              return (
+                <Form.Item label="属性名" name="propKey" rules={rules}>
+                  <Input />
+                </Form.Item>
+              )
+            }}
+          </Form.Item>
+
+        </Form>
+      )
+    }
   </Modal>)
 }
 

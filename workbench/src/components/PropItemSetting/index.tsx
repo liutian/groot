@@ -97,40 +97,45 @@ const PropItemSetting: React.FC = () => {
 
   return (<Modal mask={false} destroyOnClose width={600} title="配置项" confirmLoading={propPersistModel.settingModalLoading}
     visible={!!propPersistModel.currSettingPropItem} onOk={handleOk} onCancel={handleCancel}>
-    <Form form={form} colon={false} labelAlign="right" labelCol={{ span: 4 }} wrapperCol={{ span: 20 }} >
-      <Form.Item name="label" label="名称" rules={[{ required: true }]}>
-        <Input />
-      </Form.Item>
-      <Form.Item label="类型" name="type" rules={[{ required: true }]}>
-        <Select disabled={!!propPersistModel.currSettingPropItem?.id} options={typeList} />
-      </Form.Item>
-      <Form.Item label="属性名" rules={[{ required: true }]} name="propKey">
-        <Input />
-      </Form.Item>
-      <Form.Item valuePropName="checked" label="根属性" name="rootPropKey">
-        <Switch />
-      </Form.Item>
+    {
+      !!propPersistModel.currSettingPropItem && (
 
-      {
-        propPersistModel.currSettingPropItem?.span !== -1 && (
-          <Form.Item label="宽度" name="span">
-            <Radio.Group >
-              <Radio value={12}>半行</Radio>
-              <Radio value={24}>整行</Radio>
-            </Radio.Group>
-          </Form.Item>)
-      }
+        <Form form={form} colon={false} labelAlign="right" labelCol={{ span: 4 }} wrapperCol={{ span: 20 }} >
+          <Form.Item name="label" label="名称" rules={[{ required: true }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item label="类型" name="type" rules={[{ required: true }]}>
+            <Select disabled={!!propPersistModel.currSettingPropItem.id} options={typeList} />
+          </Form.Item>
+          <Form.Item label="属性名" rules={[{ required: true }]} name="propKey">
+            <Input />
+          </Form.Item>
+          <Form.Item valuePropName="checked" label="根属性" name="rootPropKey">
+            <Switch />
+          </Form.Item>
+
+          {
+            propPersistModel.currSettingPropItem.span !== -1 && (
+              <Form.Item label="宽度" name="span">
+                <Radio.Group >
+                  <Radio value={12}>半行</Radio>
+                  <Radio value={24}>整行</Radio>
+                </Radio.Group>
+              </Form.Item>)
+          }
 
 
-      <Form.Item dependencies={['type']} noStyle >
-        {({ getFieldValue }) => {
-          const type = getFieldValue('type');
-          const hasOption = ([PropItemType.Select, PropItemType.Radio, PropItemType.Checkbox, PropItemType.Button_Group]).includes(type);
+          <Form.Item dependencies={['type']} noStyle >
+            {({ getFieldValue }) => {
+              const type = getFieldValue('type');
+              const hasOption = ([PropItemType.Select, PropItemType.Radio, PropItemType.Checkbox, PropItemType.Button_Group]).includes(type);
 
-          return hasOption ? renderSelectFormItem() : null
-        }}
-      </Form.Item>
-    </Form>
+              return hasOption ? renderSelectFormItem() : null
+            }}
+          </Form.Item>
+        </Form>
+      )
+    }
   </Modal>)
 }
 

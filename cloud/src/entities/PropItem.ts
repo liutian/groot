@@ -18,9 +18,6 @@ export class PropItem extends BaseEntity {
   @Enum()
   type: PropItemType;
 
-  @Property({ length: 1024 })
-  defaultValue?: string;
-
   /**
    * 类型为多选，单选，下拉框时所对应选项列表，json化存储
    */
