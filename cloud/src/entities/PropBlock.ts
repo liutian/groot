@@ -48,4 +48,6 @@ export class PropBlock extends BaseEntity {
   @Enum()
   struct: PropBlockStructType = PropBlockStructType.Default;
 
+  @Property({ length: 1000 })
+  listStructData?: string;
 }

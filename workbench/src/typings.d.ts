@@ -38,8 +38,9 @@ type PropBlock = {
   struct: 'list' | 'default',
 
   // 分割线下面时界面属性
-  highlight?: boolean
-} & Omit<import("../../cloud/src/entities/PropBlock").PropBlock, 'propItemList' | 'layout' | 'struct'>;
+  highlight?: boolean,
+  listStructData: number[]
+} & Omit<import("../../cloud/src/entities/PropBlock").PropBlock, 'propItemList' | 'layout' | 'struct', 'listStructData'>;
 
 /**
  * 描述代码元数据配置的属性配置项类型
@@ -54,6 +55,10 @@ type PropItem = {
   // 分割线下面时界面属性
   highlight?: boolean,
   optionList: PropValueOption[],
+  extraUIData?: {
+    type: 'BlockListPrefs',
+    data?: any
+  }
 } & Omit<import("../../cloud/src/entities/PropItem").PropItem, 'type' | 'childGroup'>;
 
 type PropValueOption = {

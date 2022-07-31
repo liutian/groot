@@ -50,7 +50,7 @@ export default class PropHandleModel {
     }
 
     // 重置堆栈中item
-    this.cancelHighlightChain(removeList);
+    this.resetPropItem(removeList);
 
     const group = this.getPropGroup(item.groupId);
     group.highlight = true;
@@ -74,14 +74,14 @@ export default class PropHandleModel {
     const index = this.propItemStack.findIndex(item => item.id === propItem.id);
     if (index !== -1) {
       const isolateItemList = this.propItemStack.splice(index);
-      this.cancelHighlightChain(isolateItemList);
+      this.resetPropItem(isolateItemList);
     }
   }
   /**
    * 取消多个item高亮
    * @param itemList 数组
    */
-  private cancelHighlightChain(itemList: PropItem[]) {
+  private resetPropItem(itemList: PropItem[]) {
     itemList.forEach(item => {
       item.highlight = false;
 
@@ -90,6 +90,8 @@ export default class PropHandleModel {
 
       const block = group.propBlockList.find(b => b.id === item.blockId);
       block.highlight = false;
+
+      item.extraUIData = undefined;
     })
   }
 

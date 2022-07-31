@@ -326,4 +326,20 @@ export default class PropPersistModel {
       }
     })
   }
+
+  public saveBlockListPerfs(block: PropBlock, data: number[]) {
+    fetch(`${serverPath}/block/list-perfs/save`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        blockId: block.id,
+        data: JSON.stringify(data)
+      })
+    }).then(r => r.json()).then(() => {
+      block.listStructData = data;
+      this.propHandle.popPropItemStack(block.propItemList[0]);
+    })
+  }
 }

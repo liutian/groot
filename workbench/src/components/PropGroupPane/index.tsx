@@ -8,7 +8,7 @@ import styles from './index.module.less';
 import { useState } from "react";
 import PropPersistModel from "@model/PropPersistModel";
 import { PropBlockStructType } from "@grootio/common";
-import PropBlockListPane from "@components/PropBlockListPane";
+import PropBlockListStructPane from "@components/PropBlockListStructPane";
 
 type PropsType = {
   group: PropGroup,
@@ -100,7 +100,7 @@ const PropGroupPane: React.FC<PropsType> = ({ group }) => {
               block.struct === PropBlockStructType.Default ?
                 (<PropBlockPane block={block} />)
                 :
-                (<PropBlockListPane block={block} />)
+                (<PropBlockListStructPane block={block} />)
             }
 
           </Collapse.Panel>)

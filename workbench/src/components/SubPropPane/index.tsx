@@ -3,6 +3,7 @@ import { PropItemType } from '@grootio/common';
 import PropHandleModel from '@model/PropHandleModel';
 import { useModel } from '@util/robot';
 import { Button } from 'antd';
+import BlockListStructPrefs from 'pages/Scaffold/components/BlockListStructPrefs';
 import { useEffect, useRef } from 'react';
 
 import PropBlockPane from '../PropBlockPane';
@@ -21,9 +22,13 @@ const SubPropPane: React.FC<PropsType> = ({ item: propItem }) => {
 
   useEffect(() => {
     containerRef.current.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'end' });
-  }, []);
+  }, [propItem.id, propItem.extraUIData?.type]);
 
   const renderContent = () => {
+    if (propItem.extraUIData?.type === 'BlockListPrefs') {
+      return <BlockListStructPrefs block={propItem.extraUIData.data} />
+    }
+
     if (propItem.type === PropItemType.Flat) {
       return <PropBlockPane noWrapMode block={propItem.childGroup.propBlockList[0]} />;
     } else {

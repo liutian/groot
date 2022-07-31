@@ -96,4 +96,9 @@ export class WorkbenchController {
   async scaffoldDetail(@Param('scaffoldId') scaffoldId: number) {
     return this.scaffoldService.getDetail(scaffoldId);
   }
+
+  @Post('/block/list-struct-perfs/save')
+  async listStructPerfsSave(@Body('blockId') blockId: number, @Body('data') data: string) {
+    await this.blockService.listStructPerfsSave(blockId, data);
+  }
 }

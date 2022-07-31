@@ -182,6 +182,20 @@ export class PropBlockService {
     }
   }
 
+  async listStructPerfsSave(blockId: number, data: string) {
+    const em = RequestContext.getEntityManager();
+
+    const block = await em.findOne(PropBlock, blockId);
+
+    if (!block) {
+      throw new LogicException(`not found block id: ${blockId}`, LogicExceptionCode.NotFound);
+    }
+
+    block.listStructData = data;
+
+    await em.flush();
+  }
+
 }
 
 
