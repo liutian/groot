@@ -6,6 +6,7 @@ import { Component } from "./Component";
 import { Scaffold } from "./Scaffold";
 import { Application } from "./Application";
 import { Project } from "./Project";
+import { PropValueType } from "@grootio/common";
 
 @Entity()
 export class PropValue extends BaseEntity {
@@ -13,17 +14,26 @@ export class PropValue extends BaseEntity {
   @ManyToOne({ serializer: value => value?.id, serializedName: 'propItemId' })
   propItem: PropItem;
 
+  @Property({ persist: false })
+  propItemId?: number;
+
   @Property({ length: 5000 })
-  value: string;
+  value?: string;
 
   @ManyToMany(() => ComponentInstance, instance => instance.propValueList, { owner: true })
   componentInstanceList = new Collection<ComponentInstance>(this);
 
   @Property({ length: 5000 })
-  parentIds?: string;
+  parentIdChain?: string;
+
+  @Property()
+  parentId?: number;
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'componentId' })
   component: Component;
+
+  @Property({ persist: false })
+  componentId?: number;
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'applicationId' })
   application?: Application;
@@ -34,4 +44,9 @@ export class PropValue extends BaseEntity {
   @ManyToOne({ serializer: value => value?.id, serializedName: 'scaffoldId' })
   scaffold: Scaffold;
 
+  @Property({ persist: false })
+  scaffoldId?: number;
+
+  @Property()
+  type: PropValueType = PropValueType.Default;
 }

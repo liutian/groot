@@ -7,19 +7,25 @@ import { PropBlock } from '../../entities/PropBlock';
 import { PropGroup } from '../../entities/PropGroup';
 import { Application } from '../../entities/Application';
 import { Release } from '../../entities/Release';
-import { ComponentInstance } from '../../entities/ComponentInstance';
-import { PropValue } from '../../entities/PropValue';
 import { Scaffold } from '../../entities/Scaffold';
 import { PropBlockLayout, PropBlockStructType, PropItemType } from '@grootio/common';
+import { Project } from '../../entities/Project';
 
 export class DatabaseSeeder extends Seeder {
 
   async run(em: EntityManager): Promise<void> {
 
+    const project = em.create(Project, {
+      name: '后台系统'
+    });
+
+    await em.persistAndFlush(project);
+
     const application = em.create(Application, {
       name: '管理系统',
       remoteFrontEndUrl: 'https://demo.com',
-      playgroundPath: '/admin/groot/playground'
+      playgroundPath: '/admin/groot/playground',
+      project
     });
     await em.persistAndFlush(application);
 
@@ -115,34 +121,6 @@ export class DatabaseSeeder extends Seeder {
       component
     })
     await em.persistAndFlush(item);
-
-
-
-
-
-
-    const instance = em.create(ComponentInstance, {
-      name: '用户查询页面',
-      path: '/user/list',
-      component,
-      componentVersion
-    });
-    instance.releaseList.add(release);
-    await em.persistAndFlush(instance);
-
-    const propValue = em.create(PropValue, {
-      propItem: item,
-      value: 'hello',
-      component,
-      keyChain: ''
-    });
-    propValue.componentInstanceList.add(instance);
-    await em.persistAndFlush(propValue);
-
-
-
-
-
 
 
   }

@@ -9,15 +9,18 @@ import { PropBlockService } from 'service/prop-block.service';
 import { PropGroupService } from 'service/prop-group.service';
 import { PropItemService } from 'service/prop-item.service';
 import { ScaffoldService } from 'service/scaffold.service';
+import { PropValueService } from 'service/prop-value.service';
+import { PropValue } from 'entities/PropValue';
 @Controller('/workbench')
 export class WorkbenchController {
   constructor(
-    private readonly itemService: PropItemService,
+    private readonly propItemService: PropItemService,
     private readonly blockService: PropBlockService,
     private readonly groupService: PropGroupService,
     private readonly componentService: ComponentService,
     private readonly applicationService: ApplicationService,
-    private readonly scaffoldService: ScaffoldService
+    private readonly scaffoldService: ScaffoldService,
+    private readonly propValueService: PropValueService
   ) { }
 
   @Get('/component/instance/detail/:componentId')
@@ -53,7 +56,7 @@ export class WorkbenchController {
     } else if (data.type === 'block') {
       return await this.blockService.movePosition(data.originId, data.targetId);
     } else if (data.type === 'item') {
-      return await this.itemService.movePosition(data.originId, data.targetId);
+      return await this.propItemService.movePosition(data.originId, data.targetId);
     }
   }
 
@@ -74,17 +77,17 @@ export class WorkbenchController {
 
   @Post('/item/add')
   async itemAdd(@Body() item: PropItem) {
-    return this.itemService.add(item);
+    return this.propItemService.add(item);
   }
 
   @Get('/item/remove/:itemId')
   async itemRemove(@Param('itemId') itemId: number) {
-    return await this.itemService.remove(itemId);
+    return await this.propItemService.remove(itemId);
   }
 
   @Post('/item/update')
   async itemUpdate(@Body() item: PropItem) {
-    return await this.itemService.update(item);
+    return await this.propItemService.update(item);
   }
 
   @Get('/application/detail/:applicationId')
@@ -100,5 +103,20 @@ export class WorkbenchController {
   @Post('/block/list-struct-perfs/save')
   async listStructPerfsSave(@Body('blockId') blockId: number, @Body('data') data: string) {
     await this.blockService.listStructPerfsSave(blockId, data);
+  }
+
+  @Post('/value/list-for-prototype/add')
+  async valueListForPrototypeAdd(@Body() propValue: PropValue) {
+    await this.propValueService.valueListForPrototypeAdd(propValue);
+  }
+
+  @Get('/value/list-for-prototype/remove/:propValueId')
+  async valueListForPrototypeRemove(@Param('propValueId') propValueId: number) {
+    await this.propValueService.valueListForPrototypeRemove(propValueId);
+  }
+
+  @Post('/value/list-for-prototype/update-order')
+  async valueListForPrototypeUpdateOrder(@Body('propValueId') propValueId: number, @Body('value') value: string) {
+    await this.propValueService.valueListForPrototypeUpdateOrder(propValueId, value);
   }
 }

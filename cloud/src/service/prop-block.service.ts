@@ -5,10 +5,12 @@ import { LogicException, LogicExceptionCode } from 'config/logic.exception';
 import { PropBlock } from 'entities/PropBlock';
 import { PropGroup } from 'entities/PropGroup';
 import { PropItem } from 'entities/PropItem';
+import { PropValue } from 'entities/PropValue';
 import { pick } from 'util.ts/common';
 import { CommonService } from './common.service';
 import { PropGroupService } from './prop-group.service';
 import { PropItemService } from './prop-item.service';
+import { PropValueService } from './prop-value.service';
 
 
 @Injectable()
@@ -20,6 +22,7 @@ export class PropBlockService {
     @Inject(forwardRef(() => PropItemService))
     private propItemService: PropItemService,
     private commonService: CommonService,
+    private propValueService: PropValueService,
   ) { }
 
   async add(rawBlock: PropBlock, em = RequestContext.getEntityManager()) {
@@ -61,7 +64,7 @@ export class PropBlockService {
     const newCtx = em.getTransactionContext();
     em.setTransactionContext(newCtx);
 
-    let result: { newBlock: PropBlock, extra?: { newItem: PropItem, childGroup?: PropGroup } } = { newBlock };
+    let result: { newBlock: PropBlock, extra?: { newItem?: PropItem, propValue?: PropValue, childGroup?: PropGroup } } = { newBlock };
 
     try {
       await em.flush();

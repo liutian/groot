@@ -1,9 +1,11 @@
-import { EntityManager } from '@mikro-orm/core';
+import { PropValueType } from '@grootio/common';
+import { EntityManager, RequestContext } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { LogicException, LogicExceptionCode } from 'config/logic.exception';
 import { PropBlock } from 'entities/PropBlock';
 import { PropGroup } from 'entities/PropGroup';
 import { PropItem } from 'entities/PropItem';
+import { PropValue } from 'entities/PropValue';
 
 
 @Injectable()
@@ -160,6 +162,64 @@ export class CommonService {
     return chainList;
   }
 
+  public async collectParentNode(leafId: number, leafType: 'item' | 'block' | 'group', em: EntityManager) {
+    let ctxType = leafType, ctxId = leafId;
+    const parentNode: { type: 'item' | 'block' | 'group', parentId: number }[] = [];
+
+    do {
+      if (ctxType === 'item') {
+        const propItem = await em.findOne(PropItem, ctxId);
+        if (!propItem) {
+          throw new LogicException(`not found item id:${ctxId}`, LogicExceptionCode.NotFound);
+        }
+
+        parentNode.push({ type: 'block', parentId: propItem.block.id });
+        ctxType = 'block';
+        ctxId = propItem.block.id;
+      } else if (ctxType === 'block') {
+        const propBlock = await em.findOne(PropBlock, ctxId);
+        if (!propBlock) {
+          throw new LogicException(`not found block id:${ctxId}`, LogicExceptionCode.NotFound);
+        }
+
+        parentNode.push({ type: 'group', parentId: propBlock.group.id });
+        ctxType = 'group';
+        ctxId = propBlock.group.id;
+      } else if (ctxType === 'group') {
+        const propGroup = await em.findOne(PropGroup, ctxId);
+        if (!propGroup) {
+          throw new LogicException(`not found group id:${ctxId}`, LogicExceptionCode.NotFound);
+        }
+
+        if (propGroup.root || !propGroup.parentItem) {
+          ctxType = undefined;
+          ctxId = undefined;
+        } else {
+
+          parentNode.push({ type: 'item', parentId: propGroup.parentItem.id });
+        }
+      }
+    } while (ctxType && ctxId);
+
+    return parentNode;
+  }
+
+  public async getParentPropValueForPrototype(propItemId: number, em = RequestContext.getEntityManager()) {
+    const propItem = await em.findOne(PropItem, propItemId);
+    const propBlock = await em.findOne(PropBlock, propItem.block.id);
+    const propGroup = await em.findOne(PropGroup, propBlock.group.id);
+
+    if (!propGroup.root && propGroup.parentItem) {
+      const parentPropValue = await em.findOne(PropValue, {
+        component: propItem.component.id,
+        propItem: propGroup.parentItem.id,
+        type: { $in: [PropValueType.Prototype_List_Parent, PropValueType.Prototype_Nest_Parent] }
+      });
+      return parentPropValue;
+    }
+
+    return null;
+  }
 }
 
 

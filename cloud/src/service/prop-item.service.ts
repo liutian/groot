@@ -5,9 +5,11 @@ import { LogicException, LogicExceptionCode } from 'config/logic.exception';
 import { PropBlock } from 'entities/PropBlock';
 import { PropGroup } from 'entities/PropGroup';
 import { PropItem } from 'entities/PropItem';
+import { PropValue } from 'entities/PropValue';
 import { pick } from 'util.ts/common';
 import { CommonService } from './common.service';
 import { PropGroupService } from './prop-group.service';
+import { PropValueService } from './prop-value.service';
 
 @Injectable()
 export class PropItemService {
@@ -15,6 +17,7 @@ export class PropItemService {
   constructor(
     private propGroupService: PropGroupService,
     private commonService: CommonService,
+    private propValueService: PropValueService,
   ) { }
 
   async add(rawItem: PropItem, em = RequestContext.getEntityManager()) {
@@ -43,11 +46,11 @@ export class PropItemService {
       }
     }
 
-    let newItem: PropItem, childGroup: PropGroup;
+    let result: { newItem?: PropItem, childGroup?: PropGroup, propValue?: PropValue } = {};
 
     const firstItem = await em.findOne(PropItem, { block }, { orderBy: { order: 'DESC' } });
 
-    newItem = em.create(PropItem, {
+    result.newItem = em.create(PropItem, {
       ...pick(rawItem, ['label', 'propKey', 'rootPropKey', 'type', 'span', 'valueOptions']),
       block,
       group: block.group,
@@ -65,9 +68,9 @@ export class PropItemService {
 
       await em.flush();
 
-      if (newItem.type === PropItemType.Hierarchy || newItem.type === PropItemType.Flat) {
+      if (result.newItem.type === PropItemType.Hierarchy || result.newItem.type === PropItemType.Flat) {
         let struct = PropGroupStructType.Default;
-        if (newItem.type === PropItemType.Flat) {
+        if (result.newItem.type === PropItemType.Flat) {
           struct = PropGroupStructType.Flat
         }
         const rawGroup = {
@@ -77,8 +80,19 @@ export class PropItemService {
           root: false,
           struct
         } as PropGroup;
-        childGroup = await this.propGroupService.add(rawGroup);
-        newItem.childGroup = childGroup;
+        result.childGroup = await this.propGroupService.add(rawGroup);
+        result.childGroup.parentItem = result.newItem;
+        result.newItem.childGroup = result.childGroup;
+        await em.flush();
+
+        const parentPropValue = await this.commonService.getParentPropValueForPrototype(result.newItem.id, em);
+        const rawPropValue = {
+          propItemId: result.newItem.id,
+          componentId: block.component.id,
+          parentId: parentPropValue ? parentPropValue.id : undefined
+        } as PropValue;
+
+        result.propValue = await this.propValueService.valueListForPrototypeAdd(rawPropValue, em);
         await em.flush();
       }
 
@@ -90,7 +104,7 @@ export class PropItemService {
       em.setTransactionContext(parentCtx);
     }
 
-    return { newItem, childGroup }
+    return result;
   }
 
   /**

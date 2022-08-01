@@ -328,7 +328,7 @@ export default class PropPersistModel {
   }
 
   public saveBlockListPerfs(block: PropBlock, data: number[]) {
-    fetch(`${serverPath}/block/list-perfs/save`, {
+    fetch(`${serverPath}/block/list-struct-perfs/save`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
