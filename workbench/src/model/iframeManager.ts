@@ -1,4 +1,4 @@
-import { IframeDebuggerConfig, iframeNamePrefix, Metadata, PostMessageType, PropGroupStructType, PropItemType, PropMetadataType } from "@grootio/common";
+import { IframeDebuggerConfig, iframeNamePrefix, Metadata, PostMessageType, PropBlockStructType, PropItemType, PropMetadataType, PropValueType } from "@grootio/common";
 import PropHandleModel from "@model/PropHandleModel";
 import { fillPropChain, fillPropChainGreed } from "@util/utils";
 import WorkbenchModel from "./WorkbenchModel";
@@ -22,7 +22,7 @@ const instancePrototype = {
   refreshComponent,
   navigation,
   setBasePath,
-  buildMetadata,
+  createComponentMetadata,
   notifyIframe
 }
 
@@ -55,26 +55,6 @@ function onMessage(event: MessageEvent) {
       fetchPageCallback = null;
     }
   }
-}
-
-function buildMetadata(component: Component): Metadata {
-  const metadata = {
-    id: component.id,
-    packageName: component.packageName,
-    componentName: component.componentName,
-    propsObj: {},
-    advancedProps: []
-  } as Metadata;
-  propHandleModel.rootGroupList.forEach((group) => {
-    if (group.propKey) {
-      const ctx = fillPropChainGreed(metadata.propsObj, group.propKey);
-      buildPropObject(group, ctx, group.propKey, metadata);
-    } else {
-      buildPropObject(group, metadata.propsObj, '', metadata);
-    }
-  });
-
-  return metadata;
 }
 
 function navigation(path: string, callback: () => void) {
@@ -123,15 +103,23 @@ function notifyIframe(type: PostMessageType, data?: any) {
 
 }
 
+
 // todo
-function refreshComponent() {
-  const metadata: Metadata = {
-    packageName: workbenchModel.component.packageName,
-    componentName: workbenchModel.component.componentName,
-    id: workbenchModel.component.id,
+function refreshComponent(component: Component) {
+  const metadata = createComponentMetadata(component);
+  console.log('<=================== prop object build out =================>\n', metadata.propsObj);
+  notifyIframe(PostMessageType.Update_Component, metadata);
+}
+
+function createComponentMetadata(component: Component) {
+  const metadata = {
+    id: component.id,
+    packageName: component.packageName,
+    componentName: component.componentName,
     propsObj: {},
     advancedProps: []
-  };
+  } as Metadata;
+
   propHandleModel.rootGroupList.forEach((group) => {
     if (group.propKey) {
       const ctx = fillPropChainGreed(metadata.propsObj, group.propKey);
@@ -140,67 +128,106 @@ function refreshComponent() {
       buildPropObject(group, metadata.propsObj, '', metadata);
     }
   });
-  console.log('<=================== prop object build out =================>\n', metadata.propsObj);
-  notifyIframe(PostMessageType.Update_Component, metadata);
+
+  return metadata;
 }
 
-function buildPropObject(group: PropGroup, ctx: Object, ctxKeyChain: string, metadata: Metadata) {
-  group.propBlockList.forEach((block, index) => {
+function buildPropObject(group: PropGroup, ctx: Object, ctxKeyChain: string, metadata: Metadata, parentValue?: PropValue) {
+  group.propBlockList.forEach((block) => {
     const preCTX = ctx;
     const preCTXKeyChain = ctxKeyChain;
-    if (group.struct === PropGroupStructType.Default && block.propKey) {
+
+    if (block.propKey) {
       if (block.rootPropKey) {
-        ctx = fillPropChainGreed(metadata.propsObj, block.propKey);
+        ctx = fillPropChainGreed(metadata.propsObj, block.propKey, block.struct === PropBlockStructType.List);
         ctxKeyChain = block.propKey;
       } else {
-        ctx = fillPropChainGreed(ctx, block.propKey);
+        ctx = fillPropChainGreed(ctx, block.propKey, block.struct === PropBlockStructType.List);
         ctxKeyChain += `.${block.propKey}`;
+      }
+    } else {
+      if (block.struct === PropBlockStructType.List) {
+        throw new Error('when block struct list, propKey cannot be empty');
       }
     }
 
-    const blockFormObj = propHandleModel.blockFormInstanceMap.get(block.id)?.getFieldsValue() || {};
-    block.propItemList.forEach((item) => {
-      const preCTX = ctx;
-      const preCTXKeyChain = ctxKeyChain;
+    if (block.struct === PropBlockStructType.List) {
+      const childPropItem = block.propItemList[0];
+      const propValueList = (childPropItem.valueList || []).filter(v => v.type === PropValueType.Prototype_List_Child);
+      propValueList.forEach((propValue, propValueIndex) => {
+        const preCTX = ctx;
+        const preCTXKeyChain = ctxKeyChain;
 
-      if (!item.propKey && !item.childGroup) {
-        throw new Error('propKey can not null');
-      }
+        ctx = ctx[propValueIndex] = {};
+        ctxKeyChain += `[${propValueIndex}]`;
+        buildPropObject(childPropItem.childGroup, ctx, ctxKeyChain, metadata, propValue);
 
-      if (item.childGroup) {
-        if (item.rootPropKey) {
-          ctx = fillPropChainGreed(metadata.propsObj, item.propKey);
-          ctxKeyChain = item.propKey;
-        } else {
-          ctx = fillPropChainGreed(ctx, item.propKey);
-          ctxKeyChain += `.${item.propKey}`;
-        }
-        buildPropObject(item.childGroup, ctx, ctxKeyChain, metadata);
-      } else {
-        const [newCTX, propEnd] = fillPropChain(item.rootPropKey ? metadata.propsObj : ctx, item.propKey);
-        ctxKeyChain = item.rootPropKey ? item.propKey : `${ctxKeyChain}.${item.propKey}`;
-        newCTX[propEnd] = blockFormObj[item.propKey] || item.defaultValue;
-        ctxKeyChain = ctxKeyChain.replace(/^\./, '');
-        if (item.type === PropItemType.Json) {
-          metadata.advancedProps.push({
-            keyChain: ctxKeyChain,
-            type: PropMetadataType.Json,
-          })
-        } else if (item.type === PropItemType.Function) {
-          metadata.advancedProps.push({
-            keyChain: ctxKeyChain,
-            type: PropMetadataType.Function,
-          })
-        }
-      }
+        ctx = preCTX;
+        ctxKeyChain = preCTXKeyChain;
+      });
+    } else {
+      block.propItemList.forEach((propItem) => {
+        const preCTX = ctx;
+        const preCTXKeyChain = ctxKeyChain;
 
-      ctx = preCTX;
-      ctxKeyChain = preCTXKeyChain;
-    });
+        buildPropObjectForItem(propItem, ctx, ctxKeyChain, metadata, parentValue);
+
+        ctx = preCTX;
+        ctxKeyChain = preCTXKeyChain;
+      });
+    }
 
     ctx = preCTX;
-    ctxKeyChain = preCTXKeyChain
+    ctxKeyChain = preCTXKeyChain;
   })
+}
+
+function buildPropObjectForItem(item: PropItem, ctx: Object, ctxKeyChain: string, metadata: Metadata, parentValue?: PropValue) {
+  const preCTX = ctx;
+  const preCTXKeyChain = ctxKeyChain;
+
+  if (!item.propKey && !item.childGroup) {
+    throw new Error('propKey can not empty');
+  }
+
+  if (item.rootPropKey) {
+    ctx = fillPropChainGreed(metadata.propsObj, item.propKey);
+    ctxKeyChain = item.propKey;
+  } else {
+    ctx = fillPropChainGreed(ctx, item.propKey);
+    ctxKeyChain += `.${item.propKey}`;
+  }
+
+  let propValue;
+  if (parentValue) {
+    propValue = item.valueList.find(v => v.parentId === parentValue.id);
+  }
+  if (item.childGroup) {
+    buildPropObject(item.childGroup, ctx, ctxKeyChain, metadata, propValue);
+  } else {
+    buildPropObjectForLeafItem(item, ctx, ctxKeyChain, metadata, propValue);
+  }
+
+  ctx = preCTX;
+  ctxKeyChain = preCTXKeyChain;
+}
+
+function buildPropObjectForLeafItem(propItem: PropItem, ctx: Object, ctxKeyChain: string, metadata: Metadata, propValue?: PropValue) {
+  const [newCTX, propEnd] = fillPropChain(propItem.rootPropKey ? metadata.propsObj : ctx, propItem.propKey);
+  ctxKeyChain = propItem.rootPropKey ? propItem.propKey : `${ctxKeyChain}.${propItem.propKey}`;
+  newCTX[propEnd] = propValue?.value;
+  ctxKeyChain = ctxKeyChain.replace(/^\./, '');
+  if (propItem.type === PropItemType.Json) {
+    metadata.advancedProps.push({
+      keyChain: ctxKeyChain,
+      type: PropMetadataType.Json,
+    })
+  } else if (propItem.type === PropItemType.Function) {
+    metadata.advancedProps.push({
+      keyChain: ctxKeyChain,
+      type: PropMetadataType.Function,
+    })
+  }
 }
 
 function destroyIframe() {

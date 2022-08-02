@@ -39,7 +39,10 @@ type PropBlock = {
 
   // 分割线下面时界面属性
   highlight?: boolean,
-  listStructData: number[]
+  // 保存首要显示的PropItem ID
+  listStructData: number[],
+  // 首要显示的PropItem
+  primaryShowPropItemList: PropItem[]
 } & Omit<import("../../cloud/src/entities/PropBlock").PropBlock, 'propItemList' | 'layout' | 'struct', 'listStructData'>;
 
 /**
@@ -59,7 +62,9 @@ type PropItem = {
     type: 'BlockListPrefs',
     data?: any
   },
-  defaultValue: any
+  defaultValue: any,
+  // 上级block struct为List时，所有分组valueId
+  valueList: PropValue[]
 } & Omit<import("../../cloud/src/entities/PropItem").PropItem, 'type' | 'childGroup'>;
 
 type PropValueOption = {
@@ -73,6 +78,7 @@ type ComponentVersion = {
   groupList: PropGroup[],
   blockList: PropBlock[],
   itemList: PropItem[],
+  valueList: PropValue[]
 } & Omit<import("../../cloud/src/entities/ComponentVersion").ComponentVersion, 'groupList' | 'blockList' | 'itemList'>;
 
 type ComponentInstance = {

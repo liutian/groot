@@ -185,7 +185,7 @@ export class PropBlockService {
     }
   }
 
-  async listStructPerfsSave(blockId: number, data: string) {
+  async listStructPrimaryItemSave(blockId: number, data: string) {
     const em = RequestContext.getEntityManager();
 
     const block = await em.findOne(PropBlock, blockId);

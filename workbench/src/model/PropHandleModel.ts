@@ -1,6 +1,5 @@
-import { PropItemType } from "@grootio/common";
+import { PropBlockStructType, PropItemType } from "@grootio/common";
 import { parseOptions } from "@util/utils";
-import { FormInstance } from "antd";
 
 export default class PropHandleModel {
   static modelName = 'propHandle';
@@ -20,10 +19,6 @@ export default class PropHandleModel {
   public activePropItemId?: number;
 
 
-  /**
-   * 配置块关联表单实例，方便统一搜集所有配置项信息
-   */
-  public blockFormInstanceMap = new Map<number, FormInstance>();
   public rootGroupList: PropGroup[] = [];
 
   /**
@@ -140,7 +135,7 @@ export default class PropHandleModel {
   /**
    * 构建属性树
    */
-  public buildPropTree(groupList: PropGroup[], blockList: PropBlock[], itemList: PropItem[]) {
+  public buildPropTree(groupList: PropGroup[], blockList: PropBlock[], itemList: PropItem[], valueList: PropValue[]) {
     this.rootGroupList = [];
 
     const rootGroupIds = groupList.filter(g => g.root)
@@ -149,7 +144,7 @@ export default class PropHandleModel {
 
     for (let i = 0; i < rootGroupIds.length; i++) {
       const groupId = rootGroupIds[i];
-      const group = this.buildPropGroup(groupId, { groupList, blockList, itemList });
+      const group = this.buildPropGroup(groupId, { groupList, blockList, itemList, valueList });
       this.rootGroupList.push(group);
     }
 
@@ -164,7 +159,7 @@ export default class PropHandleModel {
    * @returns 构建好的配置分组
    */
   public buildPropGroup(groupIdOrObj: number | PropGroup,
-    store: { groupList: PropGroup[], blockList: PropBlock[], itemList: PropItem[] }) {
+    store: { groupList: PropGroup[], blockList: PropBlock[], itemList: PropItem[], valueList: PropValue[] }) {
     let group: PropGroup;
     if (typeof groupIdOrObj === 'number') {
       group = store.groupList.find(g => g.id === groupIdOrObj)!;
@@ -175,11 +170,9 @@ export default class PropHandleModel {
       group = groupIdOrObj;
     }
 
-    const blocks = store.blockList
+    const propBlockList = store.blockList
       .filter(b => b.groupId === group.id)
       .sort((a, b) => a.order - b.order)
-
-    const propBlockList = [...blocks];
 
     if (group.propBlockList?.length) {
       group.propBlockList.push(...propBlockList);
@@ -189,28 +182,37 @@ export default class PropHandleModel {
       group.expandBlockIdList = propBlockList.map(b => b.id);
     }
 
-    for (let blockIndex = 0; blockIndex < blocks.length; blockIndex++) {
-      const block = blocks[blockIndex];
-      const items = store.itemList
-        .filter(i => i.groupId === group.id && i.blockId === block.id)
-        .sort((a, b) => a.order - b.order)
+    for (let blockIndex = 0; blockIndex < propBlockList.length; blockIndex++) {
+      const propBlock = propBlockList[blockIndex];
 
-      if (block.propItemList?.length) {
-        block.propItemList.push(...items);
+      const propItemList = store.itemList
+        .filter(i => i.groupId === group.id && i.blockId === propBlock.id)
+        .sort((a, b) => a.order - b.order);
+
+      if (propBlock.propItemList?.length) {
+        propBlock.propItemList.push(...propItemList);
       } else {
-        block.propItemList = items;
+        propBlock.propItemList = propItemList;
       }
 
-      for (let itemIndex = 0; itemIndex < items.length; itemIndex++) {
-        const item = items[itemIndex];
-        if (item.type === PropItemType.Flat) {
-          const childGroup = this.buildPropGroup(item.childGroupId, store);
-          item.childGroup = childGroup;
-        } else if (item.type === PropItemType.Hierarchy) {
-          const childGroup = this.buildPropGroup(item.childGroupId, store);
-          item.childGroup = childGroup;
+      for (let itemIndex = 0; itemIndex < propItemList.length; itemIndex++) {
+        const propItem = propItemList[itemIndex];
+        propItem.valueList = store.valueList.filter(v => v.propItemId === propItem.id);
+        if (propItem.type === PropItemType.Flat) {
+          const childGroup = this.buildPropGroup(propItem.childGroupId, store);
+          propItem.childGroup = childGroup;
+        } else if (propItem.type === PropItemType.Hierarchy) {
+          const childGroup = this.buildPropGroup(propItem.childGroupId, store);
+          propItem.childGroup = childGroup;
         }
-        parseOptions(item);
+        parseOptions(propItem);
+      }
+
+      if (propBlock.struct === PropBlockStructType.List) {
+        if (!Array.isArray(propBlock.listStructData)) {
+          propBlock.listStructData = JSON.parse(propBlock.listStructData || '[]');
+          this.updateBlockPrimaryItem(propBlock);
+        }
       }
     }
 
@@ -296,5 +298,20 @@ export default class PropHandleModel {
     }
 
     return null;
+  }
+
+  updateBlockPrimaryItem(propBlock: PropBlock) {
+    const childPropItem = propBlock.propItemList[0];
+    const childPropBlockList = childPropItem.childGroup.propBlockList;
+    propBlock.primaryShowPropItemList = [];
+
+    propBlock.listStructData.forEach((propItemId) => {
+      childPropBlockList.forEach((block) => {
+        const propItem = block.propItemList.find(item => item.id === propItemId);
+        if (propItem) {
+          propBlock.primaryShowPropItemList.push(propItem);
+        }
+      })
+    });
   }
 }

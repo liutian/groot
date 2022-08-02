@@ -4,6 +4,7 @@ import { Component } from "./Component";
 import { PropBlock } from "./PropBlock";
 import { PropGroup } from "./PropGroup";
 import { PropItem } from "./PropItem";
+import { PropValue } from "./PropValue";
 
 @Entity()
 export class ComponentVersion extends BaseEntity {
@@ -28,4 +29,7 @@ export class ComponentVersion extends BaseEntity {
 
   @OneToMany(() => PropItem, item => item.componentVersion)
   itemList = new Collection<PropItem>(this);
+
+  @OneToMany(() => PropValue, value => value.componentVersion)
+  valueList = new Collection<PropValue>(this);
 }

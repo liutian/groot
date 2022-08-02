@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { Button, Checkbox, Col, DatePicker, Form, Input, InputNumber, Radio, Row, Select, Space, Switch, TimePicker, Tooltip, Typography } from "antd";
 import { VerticalAlignTopOutlined, DeleteOutlined, VerticalAlignBottomOutlined, EditOutlined } from '@ant-design/icons';
 
@@ -22,17 +21,6 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
   const [propHandleModel, propHandleUpdateAction] = useModel<PropHandleModel>(PropHandleModel.modelName);
   const [workbenchModel] = useModel<WorkbenchModel>(WorkbenchModel.modelName);
   const [form] = Form.useForm();
-
-  useEffect(() => {
-    propHandleModel.blockFormInstanceMap.set(block.id, form);
-
-    // 组件销毁时自动更新表单数据并删除表单对象
-    return () => {
-      const formObj = form.getFieldsValue();
-      propPersistModel.autoSavePropItemDefaultValue(block, formObj);
-      propHandleModel.blockFormInstanceMap.delete(block.id);
-    }
-  }, []);
 
   const renderItemSetting = (propItem: PropItem, itemIndex: number) => {
     if (!workbenchModel.prototypeMode || freezeSetting) return null;
@@ -147,7 +135,7 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
 
   return <div className={noWrapMode ? styles.containerWrap : ''}>
     <Form form={form} layout={block.layout} labelAlign="left" colon={false} className={styles.propForm}
-      onValuesChange={() => workbenchModel.iframeManager.refreshComponent()}>
+      onValuesChange={() => workbenchModel.iframeManager.refreshComponent(workbenchModel.component)}>
       <Row gutter={6}>
         {
           block.propItemList.map((item, index) => {

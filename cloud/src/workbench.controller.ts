@@ -100,9 +100,9 @@ export class WorkbenchController {
     return this.scaffoldService.getDetail(scaffoldId);
   }
 
-  @Post('/block/list-struct-perfs/save')
-  async listStructPerfsSave(@Body('blockId') blockId: number, @Body('data') data: string) {
-    await this.blockService.listStructPerfsSave(blockId, data);
+  @Post('/block/list-struct-primary-item/save')
+  async listStructPrimaryItemSave(@Body('blockId') blockId: number, @Body('data') data: string) {
+    await this.blockService.listStructPrimaryItemSave(blockId, data);
   }
 
   @Post('/value/list-for-prototype/add')

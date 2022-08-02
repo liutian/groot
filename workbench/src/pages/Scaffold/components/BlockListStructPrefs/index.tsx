@@ -52,7 +52,7 @@ const BlockListStructPrefs: React.FC<PropsType> = ({ block: propBlock }) => {
       })
     }
     <div>
-      <Button type="primary" onClick={() => propPersistModel.saveBlockListPerfs(propBlock, [...checkedSet])}>保存</Button>
+      <Button type="primary" onClick={() => propPersistModel.saveBlockListPrimaryItem(propBlock, [...checkedSet])}>保存</Button>
     </div>
   </div >
 }

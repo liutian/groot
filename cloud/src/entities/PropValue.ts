@@ -7,6 +7,7 @@ import { Scaffold } from "./Scaffold";
 import { Application } from "./Application";
 import { Project } from "./Project";
 import { PropValueType } from "@grootio/common";
+import { ComponentVersion } from "./ComponentVersion";
 
 @Entity()
 export class PropValue extends BaseEntity {
@@ -31,6 +32,9 @@ export class PropValue extends BaseEntity {
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'componentId' })
   component: Component;
+
+  @ManyToOne({ serializer: value => value?.id, serializedName: 'componentVersionId' })
+  componentVersion?: ComponentVersion;
 
   @Property({ persist: false })
   componentId?: number;

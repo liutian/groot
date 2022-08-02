@@ -34,7 +34,23 @@ export const fillPropChainGreed = (ctx: Object, propStr: string, isArray = false
   const propList = propStr.replace(/^\./, '').replace(/\.$/, '').replace(/\.{2,}/g, '').split('.');
   let result = propList.reduce((pre, current, index) => {
     if (index === propList.length - 1 && isArray) {
+      if (pre[current]) {
+        if (!Array.isArray(pre[current])) {
+          throw new Error('data struct error');
+        }
+
+        return pre[current];
+      }
+
       return pre[current] = [];
+    }
+
+    if (pre[current]) {
+      if (Array.isArray(pre[current])) {
+        throw new Error('data struct error');
+      }
+
+      return pre[current];
     }
     return pre[current] = {};
   }, ctx);
@@ -51,6 +67,13 @@ export const fillPropChainGreed = (ctx: Object, propStr: string, isArray = false
 export const fillPropChain = (ctx: Object, propStr: string): [Object, string] => {
   const propList = propStr.replace(/^\./, '').replace(/\.$/, '').replace(/\.{2,}/g, '').split('.');
   let result = propList.slice(0, -1).reduce((pre, current) => {
+    if (pre[current]) {
+      if (Array.isArray(pre[current])) {
+        throw new Error('data struct error');
+      }
+
+      return pre[current];
+    }
     return pre[current] = {};
   }, ctx);
 
@@ -67,4 +90,19 @@ export const stringifyOptions = (propItem: PropItem) => {
   if (([PropItemType.Checkbox, PropItemType.Radio, PropItemType.Select, PropItemType.Button_Group] as string[]).includes(propItem.type)) {
     propItem.valueOptions = JSON.stringify(propItem.optionList || []);
   }
+}
+
+export const appendPropValue = (propItem: PropItem, propValueList: PropValue[]) => {
+  const valueList = [];
+  for (let index = 0; index < propValueList.length; index++) {
+    const propValue = propValueList[index];
+    if (propValue.propItemId === propItem.id) {
+      valueList.push(propValue);
+      propValueList.splice(index, 1);
+      index--;
+    }
+  }
+
+  propItem.valueList = valueList;
+
 }

@@ -57,13 +57,13 @@ export default class WorkbenchModel {
     this.scaffold = scaffold;
     this.prototypeMode = true;
 
-    const { groupList, blockList, itemList } = component.version;
-    this.propHandle.buildPropTree(groupList, blockList, itemList);
+    const { groupList, blockList, itemList, valueList } = component.version;
+    this.propHandle.buildPropTree(groupList, blockList, itemList, valueList);
 
     this.applicationData = this.buildApplicationData(scaffold);
 
     this.iframeManager.navigation(this.scaffold.playgroundPath, () => {
-      const metadata = this.iframeManager.buildMetadata(this.component);
+      const metadata = this.iframeManager.createComponentMetadata(this.component);
       this.iframeManager.notifyIframe(PostMessageType.Init_Page, { path: this.scaffold.playgroundPath, metadataList: [metadata] });
     });
   }
@@ -73,8 +73,8 @@ export default class WorkbenchModel {
     this.application = application;
     this.prototypeMode = false;
 
-    const { groupList, blockList, itemList } = component.version;
-    this.propHandle.buildPropTree(groupList, blockList, itemList);
+    const { groupList, blockList, itemList, valueList } = component.version;
+    this.propHandle.buildPropTree(groupList, blockList, itemList, valueList);
 
     // this.applicationData = this.buildApplicationData(scaffold);
 

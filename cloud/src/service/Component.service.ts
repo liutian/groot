@@ -1,3 +1,4 @@
+import { PropValueType } from '@grootio/common';
 import { RequestContext, wrap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { LogicException, LogicExceptionCode } from 'config/logic.exception';
@@ -85,7 +86,7 @@ export class ComponentService {
     }
 
     const version = await em.findOne(ComponentVersion, versionId || component.recentVersion?.id,
-      { populate: ['groupList', 'blockList', 'itemList'] }
+      { populate: ['groupList', 'blockList', 'itemList', 'valueList'], populateWhere: { valueList: { type: { $ne: PropValueType.Default } } } }
     );
 
     if (!version) {

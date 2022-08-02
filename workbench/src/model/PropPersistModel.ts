@@ -1,4 +1,4 @@
-import { PropItemType } from "@grootio/common";
+import { PropBlockStructType, PropItemType } from "@grootio/common";
 import { autoIncrementForName, parseOptions, stringifyOptions } from "@util/utils";
 import { serverPath } from "config";
 import PropHandleModel from "./PropHandleModel";
@@ -144,7 +144,7 @@ export default class PropPersistModel {
         this.propHandle.rootGroupList.splice(groupIndex, 1, newGroup);
         this.settingModalLoading = false;
         this.currSettingPropGroup = undefined;
-        this.workbench.iframeManager.refreshComponent();
+        this.workbench.iframeManager.refreshComponent(this.workbench.component);
       })
     } else {
       fetch(`${serverPath}/group/add`, {
@@ -162,7 +162,7 @@ export default class PropPersistModel {
 
         this.settingModalLoading = false;
         this.currSettingPropGroup = undefined;
-        this.workbench.iframeManager.refreshComponent();
+        this.workbench.iframeManager.refreshComponent(this.workbench.component);
       })
     }
   }
@@ -184,7 +184,7 @@ export default class PropPersistModel {
         group.propBlockList.splice(blockIndex, 1, newBlock);
         this.settingModalLoading = false;
         this.currSettingPropBlock = undefined;
-        this.workbench.iframeManager.refreshComponent();
+        this.workbench.iframeManager.refreshComponent(this.workbench.component);
       });
     } else {
       fetch(`${serverPath}/block/add`, {
@@ -193,20 +193,29 @@ export default class PropPersistModel {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(newBlock)
-      }).then(r => r.json()).then((result: { data }) => {
-        const resultData: { newBlock: PropBlock, extra?: { newItem: PropItem, childGroup?: PropGroup } } = result.data;
+      }).then(r => r.json()).then((result: { data: { newBlock: PropBlock, extra?: { newItem: PropItem, childGroup?: PropGroup, propValue?: PropValue } } }) => {
+        const { newBlock, extra } = result.data;
 
-        group.propBlockList.push(resultData.newBlock);
-        if (resultData.extra?.childGroup) {
-          resultData.newBlock.propItemList[0].childGroup = resultData.extra.childGroup;
-          resultData.extra.childGroup.expandBlockIdList = [];
+        group.propBlockList.push(newBlock);
+        group.expandBlockIdList.push(newBlock.id);
+
+        if (extra?.childGroup) {
+          extra.childGroup.expandBlockIdList = [];
+          extra.newItem.childGroup = extra.childGroup;
+          extra.newItem.valueList = [extra.propValue];
+          newBlock.propItemList = [extra.newItem];
+
+          if (newBlock.struct === PropBlockStructType.List) {
+            if (!Array.isArray(newBlock.listStructData)) {
+              newBlock.listStructData = JSON.parse(newBlock.listStructData || '[]');
+              this.propHandle.updateBlockPrimaryItem(newBlock);
+            }
+          }
         }
-        // todo
-        group.expandBlockIdList.push(resultData.newBlock.id);
 
         this.settingModalLoading = false;
         this.currSettingPropBlock = undefined;
-        this.workbench.iframeManager.refreshComponent();
+        this.workbench.iframeManager.refreshComponent(this.workbench.component);
       })
 
     }
@@ -239,7 +248,7 @@ export default class PropPersistModel {
 
         this.settingModalLoading = false;
         this.currSettingPropItem = undefined;
-        this.workbench.iframeManager.refreshComponent();
+        this.workbench.iframeManager.refreshComponent(this.workbench.component);
       });
     } else {
       fetch(`${serverPath}/item/add`, {
@@ -248,21 +257,25 @@ export default class PropPersistModel {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(newItem)
-      }).then(r => r.json()).then((result: { data: { newItem: PropItem, childGroup: PropGroup } }) => {
-        if (result.data.childGroup) {
-          result.data.newItem.childGroup = result.data.childGroup;
-          result.data.childGroup.expandBlockIdList = [];
-        }
-        const block = this.propHandle.getPropBlock(newItem.blockId);
-        block.propItemList.push(result.data.newItem);
-        parseOptions(result.data.newItem);
+      }).then(r => r.json()).then((result: { data: { newItem: PropItem, childGroup?: PropGroup, propValue?: PropValue } }) => {
+        const { newItem, childGroup, propValue } = result.data;
 
+        const block = this.propHandle.getPropBlock(newItem.blockId);
+        block.propItemList.push(newItem);
         const group = this.propHandle.getPropGroup(block.groupId);
         group.expandBlockIdList.push(block.id);
 
+        if (childGroup) {
+          childGroup.expandBlockIdList = [];
+          newItem.childGroup = childGroup;
+          newItem.valueList = [propValue];
+        } else {
+          parseOptions(newItem);
+        }
+
         this.settingModalLoading = false;
         this.currSettingPropItem = undefined;
-        this.workbench.iframeManager.refreshComponent();
+        this.workbench.iframeManager.refreshComponent(this.workbench.component);
       })
     }
   }
@@ -276,7 +289,7 @@ export default class PropPersistModel {
       if (this.propHandle.activeGroupId === groupId) {
         this.propHandle.activeGroupId = this.propHandle.rootGroupList[0]?.id;
       }
-      this.workbench.iframeManager.refreshComponent();
+      this.workbench.iframeManager.refreshComponent(this.workbench.component);
     })
   }
 
@@ -284,7 +297,7 @@ export default class PropPersistModel {
     fetch(`${serverPath}/block/remove/${blockId}`).then(() => {
       let blockIndex = group.propBlockList.findIndex(b => b.id === blockId);
       group.propBlockList.splice(blockIndex, 1);
-      this.workbench.iframeManager.refreshComponent();
+      this.workbench.iframeManager.refreshComponent(this.workbench.component);
     })
   }
 
@@ -292,7 +305,7 @@ export default class PropPersistModel {
     fetch(`${serverPath}/item/remove/${itemId}`).then(r => r.json()).then(() => {
       let itemIndex = block.propItemList.findIndex(item => item.id === itemId);
       block.propItemList.splice(itemIndex, 1);
-      this.workbench.iframeManager.refreshComponent();
+      this.workbench.iframeManager.refreshComponent(this.workbench.component);
     })
   }
 
@@ -319,27 +332,21 @@ export default class PropPersistModel {
     } as PropItem;
   }
 
-  public autoSavePropItemDefaultValue(block: PropBlock, formObj: Object) {
-    block.propItemList.forEach((item) => {
-      if (formObj[item.propKey] !== undefined) {
-        item.defaultValue = formObj[item.propKey];
-      }
-    })
-  }
 
-  public saveBlockListPerfs(block: PropBlock, data: number[]) {
-    fetch(`${serverPath}/block/list-struct-perfs/save`, {
+  public saveBlockListPrimaryItem(propBlock: PropBlock, data: number[]) {
+    fetch(`${serverPath}/block/list-struct-primary-item/save`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        blockId: block.id,
+        blockId: propBlock.id,
         data: JSON.stringify(data)
       })
     }).then(r => r.json()).then(() => {
-      block.listStructData = data;
-      this.propHandle.popPropItemStack(block.propItemList[0]);
+      propBlock.listStructData = data;
+      this.propHandle.updateBlockPrimaryItem(propBlock);
+      this.propHandle.popPropItemStack(propBlock.propItemList[0]);
     })
   }
 }
