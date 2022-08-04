@@ -1,13 +1,13 @@
 import { Collection, Entity, ManyToMany, ManyToOne, Property } from "@mikro-orm/core";
 import { BaseEntity } from "./BaseEntity";
 import { ComponentInstance } from "./ComponentInstance";
-import { PropItem } from "./PropItem";
 import { Component } from "./Component";
 import { Scaffold } from "./Scaffold";
 import { Application } from "./Application";
 import { Project } from "./Project";
 import { PropValueType } from "@grootio/common";
 import { ComponentVersion } from "./ComponentVersion";
+import { PropItem } from "./PropItem";
 
 @Entity()
 export class PropValue extends BaseEntity {
@@ -18,23 +18,20 @@ export class PropValue extends BaseEntity {
   @Property({ persist: false })
   propItemId?: number;
 
-  @Property({ length: 5000 })
+  @Property({ length: 1000 })
   value?: string;
 
   @ManyToMany(() => ComponentInstance, instance => instance.propValueList, { owner: true })
   componentInstanceList = new Collection<ComponentInstance>(this);
 
-  @Property({ length: 5000 })
-  parentIdChain?: string;
-
-  @Property()
-  parentId?: number;
+  @Property({ length: 1000 })
+  propItemIdChain?: string;
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'componentId' })
   component: Component;
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'componentVersionId' })
-  componentVersion?: ComponentVersion;
+  componentVersion: ComponentVersion;
 
   @Property({ persist: false })
   componentId?: number;
@@ -53,4 +50,7 @@ export class PropValue extends BaseEntity {
 
   @Property()
   type: PropValueType = PropValueType.Default;
+
+  @Property()
+  order?: number;
 }

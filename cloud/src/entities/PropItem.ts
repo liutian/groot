@@ -67,5 +67,8 @@ export class PropItem extends BaseEntity {
    */
   @Property()
   versionTraceId?: number;
+
+  @Property({ length: 1000 })
+  defaultValue?: string;
 }
 

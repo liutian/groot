@@ -105,7 +105,7 @@ const PropItemSetting: React.FC = () => {
             <Input />
           </Form.Item>
           <Form.Item label="类型" name="type" rules={[{ required: true }]}>
-            <Select disabled={!!propPersistModel.currSettingPropItem.id} options={typeList} />
+            <Select options={typeList} />
           </Form.Item>
           <Form.Item label="属性名" rules={[{ required: true }]} name="propKey">
             <Input />

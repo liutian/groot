@@ -257,8 +257,8 @@ export default class PropPersistModel {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(newItem)
-      }).then(r => r.json()).then((result: { data: { newItem: PropItem, childGroup?: PropGroup, propValue?: PropValue } }) => {
-        const { newItem, childGroup, propValue } = result.data;
+      }).then(r => r.json()).then((result: { data: { newItem: PropItem, childGroup?: PropGroup } }) => {
+        const { newItem, childGroup } = result.data;
 
         const block = this.propHandle.getPropBlock(newItem.blockId);
         block.propItemList.push(newItem);
@@ -268,7 +268,6 @@ export default class PropPersistModel {
         if (childGroup) {
           childGroup.expandBlockIdList = [];
           newItem.childGroup = childGroup;
-          newItem.valueList = [propValue];
         } else {
           parseOptions(newItem);
         }

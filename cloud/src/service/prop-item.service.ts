@@ -1,4 +1,4 @@
-import { PropGroupStructType, PropItemType } from '@grootio/common';
+import { PropGroupStructType, PropItemType, PropValueType } from '@grootio/common';
 import { RequestContext } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { LogicException, LogicExceptionCode } from 'config/logic.exception';
@@ -7,9 +7,9 @@ import { PropGroup } from 'entities/PropGroup';
 import { PropItem } from 'entities/PropItem';
 import { PropValue } from 'entities/PropValue';
 import { pick } from 'util.ts/common';
+import { forkTransaction } from 'util.ts/ormUtil';
 import { CommonService } from './common.service';
 import { PropGroupService } from './prop-group.service';
-import { PropValueService } from './prop-value.service';
 
 @Injectable()
 export class PropItemService {
@@ -17,7 +17,6 @@ export class PropItemService {
   constructor(
     private propGroupService: PropGroupService,
     private commonService: CommonService,
-    private propValueService: PropValueService,
   ) { }
 
   async add(rawItem: PropItem, em = RequestContext.getEntityManager()) {
@@ -37,7 +36,7 @@ export class PropItemService {
         repeatChainMap = await this.commonService.checkPropKeyUnique(block.component.id, block.componentVersion.id, em, rawItem.propKey);
       } else {
         const blockPropKeyChain = await this.commonService.calcPropKeyChain('block', block.id, em);
-        const extraChain = `${blockPropKeyChain}.${rawItem.propKey}`.replace(/^\.|\.$/igm, '');
+        const extraChain = blockPropKeyChain ? `${blockPropKeyChain}.${rawItem.propKey}` : rawItem.propKey;
         repeatChainMap = await this.commonService.checkPropKeyUnique(block.component.id, block.componentVersion.id, em, extraChain);
       }
 
@@ -46,12 +45,12 @@ export class PropItemService {
       }
     }
 
-    let result: { newItem?: PropItem, childGroup?: PropGroup, propValue?: PropValue } = {};
+    let result: { newItem?: PropItem, childGroup?: PropGroup } = {};
 
     const firstItem = await em.findOne(PropItem, { block }, { orderBy: { order: 'DESC' } });
 
     result.newItem = em.create(PropItem, {
-      ...pick(rawItem, ['label', 'propKey', 'rootPropKey', 'type', 'span', 'valueOptions']),
+      ...pick(rawItem, ['label', 'propKey', 'rootPropKey', 'type', 'span', 'valueOptions', 'versionTraceId']),
       block,
       group: block.group,
       component: block.component,
@@ -59,41 +58,33 @@ export class PropItemService {
       order: firstItem ? firstItem.order + 1000 : 1000,
     });
 
-    const parentCtx = em.getTransactionContext();
-    await em.begin({ ctx: parentCtx });
-    const newCtx = em.getTransactionContext();
-    em.setTransactionContext(newCtx);
+    const parentCtx = await forkTransaction(em);
 
     try {
 
       await em.flush();
 
+      if (!rawItem.versionTraceId) {
+        result.newItem.versionTraceId = result.newItem.id;
+      }
+
       if (result.newItem.type === PropItemType.Hierarchy || result.newItem.type === PropItemType.Flat) {
-        let struct = PropGroupStructType.Default;
+        let groupStruct = PropGroupStructType.Default;
         if (result.newItem.type === PropItemType.Flat) {
-          struct = PropGroupStructType.Flat
+          groupStruct = PropGroupStructType.Flat
         }
         const rawGroup = {
           name: '内嵌分组',
           componentId: block.component.id,
           componentVersionId: block.componentVersion.id,
           root: false,
-          struct
+          struct: groupStruct
         } as PropGroup;
         result.childGroup = await this.propGroupService.add(rawGroup);
         result.childGroup.parentItem = result.newItem;
         result.newItem.childGroup = result.childGroup;
         await em.flush();
 
-        const parentPropValue = await this.commonService.getParentPropValueForPrototype(result.newItem.id, em);
-        const rawPropValue = {
-          propItemId: result.newItem.id,
-          componentId: block.component.id,
-          parentId: parentPropValue ? parentPropValue.id : undefined
-        } as PropValue;
-
-        result.propValue = await this.propValueService.valueListForPrototypeAdd(rawPropValue, em);
-        await em.flush();
       }
 
       await em.commit();
@@ -142,12 +133,24 @@ export class PropItemService {
       throw new LogicException(`not found item id:${itemId}`, LogicExceptionCode.NotFound);
     }
 
-    await em.removeAndFlush(propItem);
+    const parentCtx = await forkTransaction(em);
+    await em.begin();
+    try {
+      await em.removeAndFlush(propItem);
 
-    if (!!propItem.childGroup) {
-      await this.propGroupService.remove(propItem.childGroup.id);
+      if (!!propItem.childGroup) {
+        await this.propGroupService.remove(propItem.childGroup.id);
+      }
+
+      await em.nativeDelete(PropValue, { propItemIdChain: { $like: `${propItem.id}` }, type: PropValueType.Prototype_List });
+
+      await em.commit();
+    } catch (e) {
+      await em.rollback();
+      throw e;
+    } finally {
+      em.setTransactionContext(parentCtx);
     }
-
   }
 
   async update(rawItem: PropItem) {
@@ -163,9 +166,15 @@ export class PropItemService {
       throw new LogicException(`type can not update item id: ${rawItem.id}`, LogicExceptionCode.ParamError);
     }
 
+    const parentCtx = await forkTransaction(em);
     await em.begin();
 
     try {
+      if (rawItem.type !== propItem.type) {
+        propItem.versionTraceId = propItem.id;
+        await em.nativeDelete(PropValue, { propItemIdChain: { $like: `${propItem.id}` }, type: PropValueType.Prototype_List });
+      }
+
       pick(rawItem, ['label', 'propKey', 'rootPropKey', 'type', 'span', 'valueOptions'], propItem);
 
       await em.flush();
@@ -183,6 +192,8 @@ export class PropItemService {
     } catch (e) {
       await em.rollback();
       throw e;
+    } finally {
+      em.setTransactionContext(parentCtx);
     }
 
     return propItem;

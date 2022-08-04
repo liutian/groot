@@ -132,7 +132,7 @@ function createComponentMetadata(component: Component) {
   return metadata;
 }
 
-function buildPropObject(group: PropGroup, ctx: Object, ctxKeyChain: string, metadata: Metadata, parentValue?: PropValue) {
+function buildPropObject(group: PropGroup, ctx: Object, ctxKeyChain: string, metadata: Metadata, parentValueList?: PropValue[]) {
   group.propBlockList.forEach((block) => {
     const preCTX = ctx;
     const preCTXKeyChain = ctxKeyChain;
@@ -153,14 +153,19 @@ function buildPropObject(group: PropGroup, ctx: Object, ctxKeyChain: string, met
 
     if (block.struct === PropBlockStructType.List) {
       const childPropItem = block.propItemList[0];
-      const propValueList = (childPropItem.valueList || []).filter(v => v.type === PropValueType.Prototype_List_Child);
+      const propValueList = childPropItem.valueList;
       propValueList.forEach((propValue, propValueIndex) => {
         const preCTX = ctx;
         const preCTXKeyChain = ctxKeyChain;
 
         ctx = ctx[propValueIndex] = {};
         ctxKeyChain += `[${propValueIndex}]`;
-        buildPropObject(childPropItem.childGroup, ctx, ctxKeyChain, metadata, propValue);
+        if (Array.isArray(parentValueList)) {
+          parentValueList.push(propValue);
+        } else {
+          parentValueList = [propValue];
+        }
+        buildPropObject(childPropItem.childGroup, ctx, ctxKeyChain, metadata, parentValueList);
 
         ctx = preCTX;
         ctxKeyChain = preCTXKeyChain;
@@ -170,7 +175,7 @@ function buildPropObject(group: PropGroup, ctx: Object, ctxKeyChain: string, met
         const preCTX = ctx;
         const preCTXKeyChain = ctxKeyChain;
 
-        buildPropObjectForItem(propItem, ctx, ctxKeyChain, metadata, parentValue);
+        buildPropObjectForItem(propItem, ctx, ctxKeyChain, metadata, parentValueList);
 
         ctx = preCTX;
         ctxKeyChain = preCTXKeyChain;
@@ -182,7 +187,7 @@ function buildPropObject(group: PropGroup, ctx: Object, ctxKeyChain: string, met
   })
 }
 
-function buildPropObjectForItem(item: PropItem, ctx: Object, ctxKeyChain: string, metadata: Metadata, parentValue?: PropValue) {
+function buildPropObjectForItem(item: PropItem, ctx: Object, ctxKeyChain: string, metadata: Metadata, parentValueList?: PropValue[]) {
   const preCTX = ctx;
   const preCTXKeyChain = ctxKeyChain;
 
@@ -198,25 +203,32 @@ function buildPropObjectForItem(item: PropItem, ctx: Object, ctxKeyChain: string
     ctxKeyChain += `.${item.propKey}`;
   }
 
-  let propValue;
-  if (parentValue) {
-    propValue = item.valueList.find(v => v.parentId === parentValue.id);
-  }
   if (item.childGroup) {
-    buildPropObject(item.childGroup, ctx, ctxKeyChain, metadata, propValue);
+    buildPropObject(item.childGroup, ctx, ctxKeyChain, metadata, parentValueList);
   } else {
-    buildPropObjectForLeafItem(item, ctx, ctxKeyChain, metadata, propValue);
+    buildPropObjectForLeafItem(item, ctx, ctxKeyChain, metadata, parentValueList);
   }
 
   ctx = preCTX;
   ctxKeyChain = preCTXKeyChain;
 }
 
-function buildPropObjectForLeafItem(propItem: PropItem, ctx: Object, ctxKeyChain: string, metadata: Metadata, propValue?: PropValue) {
+function buildPropObjectForLeafItem(propItem: PropItem, ctx: Object, ctxKeyChain: string, metadata: Metadata, parentValueList?: PropValue[]) {
   const [newCTX, propEnd] = fillPropChain(propItem.rootPropKey ? metadata.propsObj : ctx, propItem.propKey);
   ctxKeyChain = propItem.rootPropKey ? propItem.propKey : `${ctxKeyChain}.${propItem.propKey}`;
-  newCTX[propEnd] = propValue?.value;
-  ctxKeyChain = ctxKeyChain.replace(/^\./, '');
+
+  if (parentValueList?.length) {
+    const propValueRegex = new RegExp(parentValueList.join(',.*'));
+    const propValue = propItem.valueList.find((v) => propValueRegex.test(v.propItemIdChain));
+    if (propValue) {
+      newCTX[propEnd] = propValue.value;
+    }
+  } else if (propItem.valueList?.length) {
+    newCTX[propEnd] = propItem.valueList[0]?.value;
+  } else {
+    newCTX[propEnd] = propItem.defaultValue;
+  }
+
   if (propItem.type === PropItemType.Json) {
     metadata.advancedProps.push({
       keyChain: ctxKeyChain,

@@ -6,6 +6,7 @@ import { PropBlock } from 'entities/PropBlock';
 import { PropGroup } from 'entities/PropGroup';
 import { PropItem } from 'entities/PropItem';
 import { pick } from 'util.ts/common';
+import { forkTransaction } from 'util.ts/ormUtil';
 import { CommonService } from './common.service';
 import { PropBlockService } from './prop-block.service';
 
@@ -82,43 +83,22 @@ export class PropGroupService {
       throw new LogicException(`not found group id: ${groupId}`, LogicExceptionCode.NotFound);
     }
 
-    const innerGroupIds = [];
+    const parentCtx = await forkTransaction(em);
     await em.begin();
     try {
       const blockList = group.propBlockList.getItems();
       for (let blockIndex = 0; blockIndex < blockList.length; blockIndex++) {
         const block = blockList[blockIndex];
-
-        const itemList = block.propItemList.getItems();
-        for (let itemIndex = 0; itemIndex < itemList.length; itemIndex++) {
-          const item = itemList[itemIndex];
-
-          await em.removeAndFlush(item);
-          if (item.childGroup) {
-            innerGroupIds.push(item.childGroup.id);
-          }
-        }
-
-        await em.removeAndFlush(block);
+        await this.propBlockService.remove(block.id);
       }
 
       await em.removeAndFlush(group);
-
       await em.commit();
     } catch (e) {
       await em.rollback();
       throw e;
-    }
-
-    for (let index = 0; index < innerGroupIds.length; index++) {
-      const groupId = innerGroupIds[index];
-      try {
-        // wraning ... 嵌套避免多个commit
-        await this.remove(groupId);
-      } catch (e) {
-        console.error(`remove group fail id:${groupId}`);
-        console.error(e);
-      }
+    } finally {
+      em.setTransactionContext(parentCtx);
     }
   }
 
@@ -131,6 +111,7 @@ export class PropGroupService {
       throw new LogicException(`not found group id: ${rawGroup.id}`, LogicExceptionCode.NotFound);
     }
 
+    const parentCtx = await forkTransaction(em);
     await em.begin();
     try {
       pick(rawGroup, ['name', 'propKey'], group);
@@ -149,6 +130,8 @@ export class PropGroupService {
     } catch (e) {
       await em.rollback();
       throw e;
+    } finally {
+      em.setTransactionContext(parentCtx);
     }
   }
 

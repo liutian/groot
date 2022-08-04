@@ -172,8 +172,9 @@ export default class PropHandleModel {
 
     const propBlockList = store.blockList
       .filter(b => b.groupId === group.id)
-      .sort((a, b) => a.order - b.order)
+      .sort((a, b) => a.order - b.order);
 
+    // 支持增量添加PropBlock
     if (group.propBlockList?.length) {
       group.propBlockList.push(...propBlockList);
       group.expandBlockIdList.push(...propBlockList.map(b => b.id));
@@ -184,11 +185,13 @@ export default class PropHandleModel {
 
     for (let blockIndex = 0; blockIndex < propBlockList.length; blockIndex++) {
       const propBlock = propBlockList[blockIndex];
+      propBlock.group = group;
 
       const propItemList = store.itemList
         .filter(i => i.groupId === group.id && i.blockId === propBlock.id)
         .sort((a, b) => a.order - b.order);
 
+      // 支持增量添加PropItem
       if (propBlock.propItemList?.length) {
         propBlock.propItemList.push(...propItemList);
       } else {
@@ -197,12 +200,16 @@ export default class PropHandleModel {
 
       for (let itemIndex = 0; itemIndex < propItemList.length; itemIndex++) {
         const propItem = propItemList[itemIndex];
+        propItem.block = propBlock;
+
         propItem.valueList = store.valueList.filter(v => v.propItemId === propItem.id);
         if (propItem.type === PropItemType.Flat) {
           const childGroup = this.buildPropGroup(propItem.childGroupId, store);
+          childGroup.parentItem = propItem;
           propItem.childGroup = childGroup;
         } else if (propItem.type === PropItemType.Hierarchy) {
           const childGroup = this.buildPropGroup(propItem.childGroupId, store);
+          childGroup.parentItem = propItem;
           propItem.childGroup = childGroup;
         }
         parseOptions(propItem);

@@ -22,12 +22,13 @@ interface Window {
  */
 type PropGroup = {
   propBlockList: PropBlock[],
+  parentItem?: PropItem,
 
   // 分割线下面时界面属性
   highlight?: boolean,
   expandBlockIdList: number[],
   templateDesignMode?: boolean
-} & Omit<import("../../cloud/src/entities/PropGroup").PropGroup, 'propBlockList'>;
+} & Omit<import("../../cloud/src/entities/PropGroup").PropGroup, 'propBlockList' | 'parentItem'>;
 
 /**
  * 描述代码元数据配置的属性配置块类型
@@ -36,6 +37,7 @@ type PropBlock = {
   propItemList: PropItem[],
   layout: 'horizontal' | 'vertical',
   struct: 'list' | 'default',
+  group: PropGroup,
 
   // 分割线下面时界面属性
   highlight?: boolean,
@@ -43,7 +45,7 @@ type PropBlock = {
   listStructData: number[],
   // 首要显示的PropItem
   primaryShowPropItemList: PropItem[]
-} & Omit<import("../../cloud/src/entities/PropBlock").PropBlock, 'propItemList' | 'layout' | 'struct', 'listStructData'>;
+} & Omit<import("../../cloud/src/entities/PropBlock").PropBlock, 'propItemList' | 'layout' | 'struct' | 'listStructData' | 'group'>;
 
 /**
  * 描述代码元数据配置的属性配置项类型
@@ -51,7 +53,7 @@ type PropBlock = {
 type PropItem = {
   childGroup?: PropGroup,
   type: 'text' | 'textarea' | 'number' | 'slider' | 'button_group' | 'switch' | 'select' | 'radio' | 'checkbox' | 'date_picker' | 'time_picker' | 'hierarchy' | 'flat' | 'json' | 'function',
-
+  block: PropBlock,
   groupId: number,
   childGroupId?: number,
 
@@ -65,7 +67,7 @@ type PropItem = {
   defaultValue: any,
   // 上级block struct为List时，所有分组valueId
   valueList: PropValue[]
-} & Omit<import("../../cloud/src/entities/PropItem").PropItem, 'type' | 'childGroup'>;
+} & Omit<import("../../cloud/src/entities/PropItem").PropItem, 'type' | 'childGroup' | 'block'>;
 
 type PropValueOption = {
   label: string,
@@ -91,7 +93,7 @@ type Release = {
 
 type PropValue = {
 
-} & Omit<import("../../cloud/src/entities/PropValue").PropValue, ''>;
+} & Omit<import("../../cloud/src/entities/PropValue").PropValue>;
 
 type Component = {
   version: ComponentVersion,

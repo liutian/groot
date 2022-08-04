@@ -1,5 +1,4 @@
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
-import { LogicException, LogicExceptionCode } from 'config/logic.exception';
 import { PropBlock } from 'entities/PropBlock';
 import { PropGroup } from 'entities/PropGroup';
 import { PropItem } from 'entities/PropItem';
@@ -105,18 +104,4 @@ export class WorkbenchController {
     await this.blockService.listStructPrimaryItemSave(blockId, data);
   }
 
-  @Post('/value/list-for-prototype/add')
-  async valueListForPrototypeAdd(@Body() propValue: PropValue) {
-    await this.propValueService.valueListForPrototypeAdd(propValue);
-  }
-
-  @Get('/value/list-for-prototype/remove/:propValueId')
-  async valueListForPrototypeRemove(@Param('propValueId') propValueId: number) {
-    await this.propValueService.valueListForPrototypeRemove(propValueId);
-  }
-
-  @Post('/value/list-for-prototype/update-order')
-  async valueListForPrototypeUpdateOrder(@Body('propValueId') propValueId: number, @Body('value') value: string) {
-    await this.propValueService.valueListForPrototypeUpdateOrder(propValueId, value);
-  }
 }

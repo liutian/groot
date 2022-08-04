@@ -7,6 +7,7 @@ import { PropGroup } from 'entities/PropGroup';
 import { PropItem } from 'entities/PropItem';
 import { PropValue } from 'entities/PropValue';
 import { pick } from 'util.ts/common';
+import { forkTransaction } from 'util.ts/ormUtil';
 import { CommonService } from './common.service';
 import { PropGroupService } from './prop-group.service';
 import { PropItemService } from './prop-item.service';
@@ -59,10 +60,7 @@ export class PropBlockService {
     });
 
 
-    const parentCtx = em.getTransactionContext();
-    await em.begin({ ctx: parentCtx });
-    const newCtx = em.getTransactionContext();
-    em.setTransactionContext(newCtx);
+    const parentCtx = await forkTransaction(em);
 
     let result: { newBlock: PropBlock, extra?: { newItem?: PropItem, propValue?: PropValue, childGroup?: PropGroup } } = { newBlock };
 
@@ -123,16 +121,13 @@ export class PropBlockService {
 
     const innerGroupIds: number[] = [];
 
+    const parentCtx = await forkTransaction(em);
     await em.begin();
     try {
       const itemList = block.propItemList.getItems();
       for (let itemIndex = 0; itemIndex < itemList.length; itemIndex++) {
         const item = itemList[itemIndex];
-
-        await em.removeAndFlush(item);
-        if (item.childGroup) {
-          innerGroupIds.push(item.childGroup.id);
-        }
+        await this.propItemService.remove(item.id);
       }
 
       await em.removeAndFlush(block);
@@ -140,6 +135,8 @@ export class PropBlockService {
     } catch (e) {
       await em.rollback();
       throw e;
+    } finally {
+      em.setTransactionContext(parentCtx);
     }
 
     for (let index = 0; index < innerGroupIds.length; index++) {
@@ -162,6 +159,7 @@ export class PropBlockService {
       throw new LogicException(`not found block id: ${rawBlock.id}`, LogicExceptionCode.NotFound);
     }
 
+    const parentCtx = await forkTransaction(em);
     await em.begin();
 
     try {
@@ -182,6 +180,8 @@ export class PropBlockService {
     } catch (e) {
       await em.rollback();
       throw e;
+    } finally {
+      em.setTransactionContext(parentCtx);
     }
   }
 

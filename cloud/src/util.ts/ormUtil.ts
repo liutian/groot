@@ -1,4 +1,4 @@
-import { Utils, wrap } from '@mikro-orm/core';
+import { EntityManager, Utils, wrap } from '@mikro-orm/core';
 import { AutoPath } from '@mikro-orm/core/typings';
 
 export function omitProps<O, P extends string>(instance: O, propKeys: AutoPath<O, P>[]) {
@@ -139,3 +139,11 @@ function wrapToJSON(keys: string[]) {
 
 // type ExtractType<T> = T extends Loadable<infer U> ? U : T;
 
+export async function forkTransaction(em: EntityManager) {
+  const parentCtx = em.getTransactionContext();
+  await em.begin({ ctx: parentCtx });
+  const newCtx = em.getTransactionContext();
+  em.setTransactionContext(newCtx);
+
+  return parentCtx;
+}
