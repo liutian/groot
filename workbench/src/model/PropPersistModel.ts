@@ -197,13 +197,17 @@ export default class PropPersistModel {
         const { newBlock, extra } = result.data;
 
         group.propBlockList.push(newBlock);
+        newBlock.group = group;
         group.expandBlockIdList.push(newBlock.id);
 
         if (extra?.childGroup) {
           extra.childGroup.expandBlockIdList = [];
           extra.newItem.childGroup = extra.childGroup;
-          extra.newItem.valueList = [extra.propValue];
+          extra.newItem.valueList = [];
+
           newBlock.propItemList = [extra.newItem];
+          extra.newItem.block = newBlock;
+          extra.childGroup.parentItem = extra.newItem;
 
           if (newBlock.struct === PropBlockStructType.List) {
             if (!Array.isArray(newBlock.listStructData)) {
@@ -263,12 +267,14 @@ export default class PropPersistModel {
         newItem.valueList = [];
         const block = this.propHandle.getPropBlock(newItem.blockId);
         block.propItemList.push(newItem);
+        newItem.block = block;
         const group = this.propHandle.getPropGroup(block.groupId);
         group.expandBlockIdList.push(block.id);
 
         if (childGroup) {
           childGroup.expandBlockIdList = [];
           newItem.childGroup = childGroup;
+          childGroup.parentItem = newItem;
         } else {
           parseOptions(newItem);
         }
