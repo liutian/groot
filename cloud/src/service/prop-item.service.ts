@@ -142,7 +142,7 @@ export class PropItemService {
         await this.propGroupService.remove(propItem.childGroup.id);
       }
 
-      await em.nativeDelete(PropValue, { propItemIdChain: { $like: `${propItem.id}` }, type: PropValueType.Prototype_List });
+      await em.nativeDelete(PropValue, { propValueIdChainForBlockListStruct: { $like: `${propItem.id}` }, type: { $ne: PropValueType.Default } });
 
       await em.commit();
     } catch (e) {
@@ -172,7 +172,7 @@ export class PropItemService {
     try {
       if (rawItem.type !== propItem.type) {
         propItem.versionTraceId = propItem.id;
-        await em.nativeDelete(PropValue, { propItemIdChain: { $like: `${propItem.id}` }, type: PropValueType.Prototype_List });
+        await em.nativeDelete(PropValue, { propValueIdChainForBlockListStruct: { $like: `${propItem.id}` }, type: { $ne: PropValueType.Default } });
       }
 
       pick(rawItem, ['label', 'propKey', 'rootPropKey', 'type', 'span', 'valueOptions'], propItem);

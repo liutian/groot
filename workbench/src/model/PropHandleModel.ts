@@ -78,6 +78,7 @@ export default class PropHandleModel {
    */
   private resetPropItem(itemList: PropItem[]) {
     itemList.forEach(item => {
+      item.parentPropValueId = null;
       item.highlight = false;
 
       const group = this.getPropGroup(item.groupId);

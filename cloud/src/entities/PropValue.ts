@@ -25,16 +25,19 @@ export class PropValue extends BaseEntity {
   componentInstanceList = new Collection<ComponentInstance>(this);
 
   @Property({ length: 1000 })
-  propItemIdChain?: string;
+  propValueIdChainForBlockListStruct?: string;
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'componentId' })
   component: Component;
+
+  @Property({ persist: false })
+  componentId?: number;
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'componentVersionId' })
   componentVersion: ComponentVersion;
 
   @Property({ persist: false })
-  componentId?: number;
+  componentVersionId?: number;
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'applicationId' })
   application?: Application;

@@ -104,4 +104,13 @@ export class WorkbenchController {
     await this.blockService.listStructPrimaryItemSave(blockId, data);
   }
 
+  @Post('/value/block-list-struct/add')
+  async blockListStructAdd(@Body() rawPropValue: PropValue) {
+    return await this.propValueService.blockListStructAdd(rawPropValue);
+  }
+
+  @Get('/value/block-list-struct/remove/:propValueId')
+  async blockListStructRemove(@Param('propValueId') propValueId: number) {
+    return await this.propValueService.blockListStructRemove(propValueId);
+  }
 }

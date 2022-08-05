@@ -219,7 +219,7 @@ function buildPropObjectForLeafItem(propItem: PropItem, ctx: Object, ctxKeyChain
 
   if (parentValueList?.length) {
     const propValueRegex = new RegExp(parentValueList.join(',.*'));
-    const propValue = propItem.valueList.find((v) => propValueRegex.test(v.propItemIdChain));
+    const propValue = propItem.valueList.find((v) => propValueRegex.test(v.propValueIdChainForBlockListStruct));
     if (propValue) {
       newCTX[propEnd] = propValue.value;
     }

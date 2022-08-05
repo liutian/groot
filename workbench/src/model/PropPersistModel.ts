@@ -260,6 +260,7 @@ export default class PropPersistModel {
       }).then(r => r.json()).then((result: { data: { newItem: PropItem, childGroup?: PropGroup } }) => {
         const { newItem, childGroup } = result.data;
 
+        newItem.valueList = [];
         const block = this.propHandle.getPropBlock(newItem.blockId);
         block.propItemList.push(newItem);
         const group = this.propHandle.getPropGroup(block.groupId);
@@ -331,7 +332,6 @@ export default class PropPersistModel {
     } as PropItem;
   }
 
-
   public saveBlockListPrimaryItem(propBlock: PropBlock, data: number[]) {
     fetch(`${serverPath}/block/list-struct-primary-item/save`, {
       method: 'POST',
@@ -346,6 +346,38 @@ export default class PropPersistModel {
       propBlock.listStructData = data;
       this.propHandle.updateBlockPrimaryItem(propBlock);
       this.propHandle.popPropItemStack(propBlock.propItemList[0]);
+    })
+  }
+
+  public addBlockListStructChildItem = (propItem: PropItem) => {
+    let ctxPropItem = propItem;
+    let propValueIdList = [];
+    do {
+      if (ctxPropItem.parentPropValueId) {
+        propValueIdList.push(ctxPropItem.parentPropValueId);
+      }
+      ctxPropItem = ctxPropItem.block.group.parentItem;
+    } while (ctxPropItem);
+    fetch(`${serverPath}/value/block-list-struct/add`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        propItemId: propItem.id,
+        propValueIdChainForBlockListStruct: propValueIdList.reverse().join(','),
+        componentVersionId: this.workbench.component.version.id,
+        componentId: this.workbench.component.id,
+        scaffoldId: this.workbench.component.scaffoldId
+      })
+    }).then(r => r.json()).then((result: { data: PropValue }) => {
+      propItem.valueList.push(result.data);
+    })
+  }
+
+  public removeBlockListStructChildItem = (propValueId: number, propItem: PropItem) => {
+    fetch(`${serverPath}/value/block-list-struct/remove/${propValueId}`).then(r => r.json()).then(() => {
+      propItem.valueList = propItem.valueList.filter(v => v.id !== propValueId);
     })
   }
 }

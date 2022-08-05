@@ -55,4 +55,7 @@ export class Component extends BaseEntity {
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'scaffoldId' })
   scaffold: Scaffold;
+
+  @Property({ persist: false })
+  scaffoldId?: number;
 }
