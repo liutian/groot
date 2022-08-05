@@ -1,5 +1,5 @@
 import { PropGroupStructType, PropItemType, PropValueType } from '@grootio/common';
-import { RequestContext } from '@mikro-orm/core';
+import { EntityManager, RequestContext } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { LogicException, LogicExceptionCode } from 'config/logic.exception';
 import { PropBlock } from 'entities/PropBlock';
@@ -124,8 +124,8 @@ export class PropItemService {
 
   }
 
-  async remove(itemId: number) {
-    const em = RequestContext.getEntityManager();
+  async remove(itemId: number, parentEm?: EntityManager) {
+    let em = parentEm || RequestContext.getEntityManager();
 
     const propItem = await em.findOne(PropItem, itemId);
 
@@ -133,13 +133,16 @@ export class PropItemService {
       throw new LogicException(`not found item id:${itemId}`, LogicExceptionCode.NotFound);
     }
 
-    const parentCtx = await forkTransaction(em);
+    let parentCtx = em.getTransactionContext();;
+    if (!parentEm) {
+      parentCtx = await forkTransaction(em);
+    }
     await em.begin();
     try {
       await em.removeAndFlush(propItem);
 
       if (!!propItem.childGroup) {
-        await this.propGroupService.remove(propItem.childGroup.id);
+        await this.propGroupService.remove(propItem.childGroup.id, em);
       }
 
       await em.nativeDelete(PropValue, { propValueIdChainForBlockListStruct: { $like: `${propItem.id}` }, type: { $ne: PropValueType.Default } });

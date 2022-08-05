@@ -1,5 +1,5 @@
 import { PropGroupStructType } from '@grootio/common';
-import { RequestContext } from '@mikro-orm/core';
+import { EntityManager, RequestContext } from '@mikro-orm/core';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { LogicException, LogicExceptionCode } from 'config/logic.exception';
 import { PropBlock } from 'entities/PropBlock';
@@ -70,8 +70,8 @@ export class PropGroupService {
     return newGroup;
   }
 
-  async remove(groupId: number) {
-    const em = RequestContext.getEntityManager();
+  async remove(groupId: number, parentEm?: EntityManager) {
+    let em = parentEm || RequestContext.getEntityManager();
 
     const group = await em.findOne(PropGroup, groupId, {
       populate: [
@@ -83,13 +83,16 @@ export class PropGroupService {
       throw new LogicException(`not found group id: ${groupId}`, LogicExceptionCode.NotFound);
     }
 
-    const parentCtx = await forkTransaction(em);
+    let parentCtx = em.getTransactionContext();;
+    if (!parentEm) {
+      parentCtx = await forkTransaction(em);
+    }
     await em.begin();
     try {
       const blockList = group.propBlockList.getItems();
       for (let blockIndex = 0; blockIndex < blockList.length; blockIndex++) {
         const block = blockList[blockIndex];
-        await this.propBlockService.remove(block.id);
+        await this.propBlockService.remove(block.id, em);
       }
 
       await em.removeAndFlush(group);

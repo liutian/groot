@@ -1,5 +1,5 @@
 import { PropBlockStructType, PropItemType } from '@grootio/common';
-import { RequestContext } from '@mikro-orm/core';
+import { EntityManager, RequestContext } from '@mikro-orm/core';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { LogicException, LogicExceptionCode } from 'config/logic.exception';
 import { PropBlock } from 'entities/PropBlock';
@@ -110,8 +110,8 @@ export class PropBlockService {
     await em.flush();
   }
 
-  async remove(blockId: number) {
-    const em = RequestContext.getEntityManager();
+  async remove(blockId: number, parentEm?: EntityManager) {
+    let em = parentEm || RequestContext.getEntityManager();
 
     const block = await em.findOne(PropBlock, blockId, { populate: ['propItemList'] });
 
@@ -119,15 +119,17 @@ export class PropBlockService {
       throw new LogicException(`not found block id : ${blockId}`, LogicExceptionCode.NotFound);
     }
 
-    const innerGroupIds: number[] = [];
+    let parentCtx = em.getTransactionContext();;
+    if (!parentEm) {
+      parentCtx = await forkTransaction(em);
+    }
 
-    const parentCtx = await forkTransaction(em);
     await em.begin();
     try {
       const itemList = block.propItemList.getItems();
       for (let itemIndex = 0; itemIndex < itemList.length; itemIndex++) {
         const item = itemList[itemIndex];
-        await this.propItemService.remove(item.id);
+        await this.propItemService.remove(item.id, em);
       }
 
       await em.removeAndFlush(block);
@@ -137,16 +139,6 @@ export class PropBlockService {
       throw e;
     } finally {
       em.setTransactionContext(parentCtx);
-    }
-
-    for (let index = 0; index < innerGroupIds.length; index++) {
-      const groupId = innerGroupIds[index];
-      try {
-        await this.propGroupService.remove(groupId);
-      } catch (e) {
-        console.error(`remove group fail id:${groupId}`);
-        console.error(e);
-      }
     }
   }
 
