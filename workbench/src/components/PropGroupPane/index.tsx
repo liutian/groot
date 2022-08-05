@@ -9,6 +9,7 @@ import { useState } from "react";
 import PropPersistModel from "@model/PropPersistModel";
 import { PropBlockStructType } from "@grootio/common";
 import PropBlockListStructPane from "@components/PropBlockListStructPane";
+import { stringify } from "@util/utils";
 
 type PropsType = {
   group: PropGroup,
@@ -21,7 +22,7 @@ const PropGroupPane: React.FC<PropsType> = ({ group }) => {
 
   const editBlock = (block: PropBlock) => {
     propPersistAction(() => {
-      propPersistModel.currSettingPropBlock = JSON.parse(JSON.stringify(block));
+      propPersistModel.currSettingPropBlock = JSON.parse(stringify(block));
     })
   }
 

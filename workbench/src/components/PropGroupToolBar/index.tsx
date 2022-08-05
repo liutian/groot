@@ -8,6 +8,7 @@ import WorkbenchModel from "@model/WorkbenchModel";
 import { useModel } from "@util/robot";
 
 import styles from './index.module.less';
+import { stringify } from "@util/utils";
 
 const PropGroupToolBar: React.FC = () => {
   const [propPersistModel, propPersistAction] = useModel<PropPersistModel>(PropPersistModel.modelName);
@@ -30,7 +31,7 @@ const PropGroupToolBar: React.FC = () => {
 
       <Typography.Link onClick={() => {
         propPersistAction(() => {
-          propPersistModel.currSettingPropGroup = JSON.parse(JSON.stringify(group));
+          propPersistModel.currSettingPropGroup = JSON.parse(stringify(group));
         });
       }}>
         <EditOutlined />

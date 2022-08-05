@@ -9,6 +9,7 @@ import PropHandleModel from "@model/PropHandleModel";
 import { PropItemType } from "@grootio/common";
 import NumberSlider from "@components/NumberSlider";
 import TextEditor from "@components/TextEditor";
+import { stringify } from "@util/utils";
 
 type PropType = {
   block: PropBlock,
@@ -27,7 +28,7 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
 
     const editPropItem = () => {
       propPersistAction(() => {
-        propPersistModel.currSettingPropItem = JSON.parse(JSON.stringify(propItem));
+        propPersistModel.currSettingPropItem = JSON.parse(stringify(propItem));
       })
     }
 

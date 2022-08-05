@@ -106,3 +106,17 @@ export const appendPropValue = (propItem: PropItem, propValueList: PropValue[]) 
   propItem.valueList = valueList;
 
 }
+
+
+export const stringify = (obj) => {
+  return JSON.stringify(obj, function (_, value) {
+    if (value === this['']) {
+      return value;
+    }
+
+    if (Object.prototype.toString.call(value) === '[object Object]') {
+      return null;
+    }
+    return value;
+  })
+}
