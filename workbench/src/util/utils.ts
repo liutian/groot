@@ -142,3 +142,19 @@ export const processPropItemValue = (propItem: PropItem, value?: any) => {
   }
   return value;
 }
+
+export const assignBaseType = (targetObj, originObj) => {
+  Object.keys(originObj).filter(key => isBaseType(originObj[key])).reduce((obj, key) => {
+    if (originObj[key] !== undefined) {
+      obj[key] = originObj[key];
+    }
+    return obj;
+  }, targetObj);
+  return targetObj;
+}
+
+const typeList = ['Number', 'String', 'Null', 'Undefined', 'Boolean', 'Symbol', 'BigInt'];
+export const isBaseType = (value: any) => {
+  const typeStr = Object.prototype.toString.apply(value);
+  return typeList.some(type => typeStr.includes(type));
+}

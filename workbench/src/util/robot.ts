@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import 'zone.js';
+import { isBaseType } from "./utils";
 
 const store = new Map<string, ModelContainer>();
 
@@ -167,12 +168,6 @@ function execInZone(modelKey: string, type: string, runFn: Function, triggerFn: 
   })
 
   return resultOfRun;
-}
-
-const typeList = ['Number', 'String', 'Null', 'Undefined', 'Boolean', 'Symbol', 'BigInt'];
-function isBaseType(value: any) {
-  const typeStr = Object.prototype.toString.apply(value);
-  return typeList.some(type => typeStr.includes(type));
 }
 
 type ModelContainer = {
