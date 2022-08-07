@@ -23,12 +23,12 @@ export class WorkbenchController {
   ) { }
 
   @Get('/component/instance/detail/:componentId')
-  async getComponent(@Param('componentId') componentId: number, @Query('releaseId') releaseId?: number) {
+  async componentInstanceDetail(@Param('componentId') componentId: number, @Query('releaseId') releaseId?: number) {
     return this.componentService.getComponentInstance(componentId, releaseId);
   }
 
   @Get('/component/prototype/detail/:componentId')
-  async getComponentForEdit(@Param('componentId') componentId: number, @Query('versionId') versionId?: number) {
+  async componentPrototypeDetail(@Param('componentId') componentId: number, @Query('versionId') versionId?: number) {
     return this.componentService.getComponentPrototype(componentId, versionId);
   }
 
@@ -100,17 +100,22 @@ export class WorkbenchController {
   }
 
   @Post('/block/list-struct-primary-item/save')
-  async listStructPrimaryItemSave(@Body('blockId') blockId: number, @Body('data') data: string) {
+  async blockListStructPrimaryItemSave(@Body('blockId') blockId: number, @Body('data') data: string) {
     await this.blockService.listStructPrimaryItemSave(blockId, data);
   }
 
   @Post('/value/block-list-struct/add')
-  async blockListStructAdd(@Body() rawPropValue: PropValue) {
+  async valueBlockListStructAdd(@Body() rawPropValue: PropValue) {
     return await this.propValueService.blockListStructAdd(rawPropValue);
   }
 
   @Get('/value/block-list-struct/remove/:propValueId')
-  async blockListStructRemove(@Param('propValueId') propValueId: number) {
+  async valueBlockListStructRemove(@Param('propValueId') propValueId: number) {
     return await this.propValueService.blockListStructRemove(propValueId);
+  }
+
+  @Post('/value/update-for-prototype')
+  async valueUpdateForPrototype(@Body() rawPropValue: PropValue) {
+    return await this.propValueService.updateForPrototype(rawPropValue);
   }
 }
