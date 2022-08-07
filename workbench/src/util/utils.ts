@@ -1,4 +1,5 @@
 import { PropItemType } from "@grootio/common";
+import moment from "moment";
 
 export const uuid = (() => {
   let id = 0xaaaaaaaa;
@@ -119,4 +120,25 @@ export const stringify = (obj) => {
     }
     return value;
   })
+}
+
+export const calcPropValueIdChain = (propItem: PropItem) => {
+  let ctxPropItem = propItem;
+  let propValueIdList = [];
+  do {
+    if (ctxPropItem.parentPropValueId) {
+      propValueIdList.push(ctxPropItem.parentPropValueId);
+    }
+    ctxPropItem = ctxPropItem.block.group.parentItem;
+  } while (ctxPropItem);
+
+  return propValueIdList.reverse().join(',');
+}
+
+export const processPropItemValue = (propItem: PropItem, value?: any) => {
+  value = value || propItem.defaultValue
+  if (propItem.type === PropItemType.Date_Picker || propItem.type === PropItemType.Time_Picker) {
+    value = moment(value);
+  }
+  return value;
 }

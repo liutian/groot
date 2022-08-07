@@ -9,7 +9,8 @@ import PropHandleModel from "@model/PropHandleModel";
 import { PropItemType } from "@grootio/common";
 import NumberSlider from "@components/NumberSlider";
 import TextEditor from "@components/TextEditor";
-import { stringify } from "@util/utils";
+import { calcPropValueIdChain, processPropItemValue, stringify } from "@util/utils";
+import { useState } from "react";
 
 type PropType = {
   block: PropBlock,
@@ -22,9 +23,26 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
   const [propHandleModel, propHandleUpdateAction] = useModel<PropHandleModel>(PropHandleModel.modelName);
   const [workbenchModel] = useModel<WorkbenchModel>(WorkbenchModel.modelName);
   const [form] = Form.useForm();
+  const noSetting = !workbenchModel.prototypeMode || freezeSetting || block.group.parentItem?.noSetting;
+
+  const [getInitValue] = useState(() => {
+    const cacheMap = new Map<PropItem, any>();
+
+    return (propItem: PropItem) => {
+      const hitValue = cacheMap.get(propItem);
+      if (hitValue) {
+        return hitValue;
+      }
+
+      const valueIdChain = calcPropValueIdChain(propItem);
+      const propValue = propItem.valueList.find(v => v.propValueIdChainForBlockListStruct === valueIdChain);
+      const value = processPropItemValue(propItem, propValue?.value);
+      cacheMap.set(propItem, value);
+    }
+  })
 
   const renderItemSetting = (propItem: PropItem, itemIndex: number) => {
-    if (!workbenchModel.prototypeMode || freezeSetting) return null;
+    if (noSetting) return null;
 
     const editPropItem = () => {
       propPersistAction(() => {
@@ -134,9 +152,15 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
     return <>not found item</>
   }
 
+  const updateValue = (changedValues: any) => {
+    const updateKey = Object.keys(changedValues)[0];
+    const propItem = block.propItemList.find(item => item.propKey === updateKey);
+    propPersistModel.updateValueForPrototype(propItem, changedValues[updateKey]);
+  }
+
   return <div className={noWrapMode ? styles.containerWrap : ''}>
     <Form form={form} layout={block.layout} labelAlign="left" colon={false} className={styles.propForm}
-      onValuesChange={() => workbenchModel.iframeManager.refreshComponent(workbenchModel.component)}>
+      onValuesChange={(changedValues) => { updateValue(changedValues); }}>
       <Row gutter={6}>
         {
           block.propItemList.map((item, index) => {
@@ -150,11 +174,11 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
                   propHandleModel.activePropItemPath = '';
                 })
               }}>
-              <div className={`${styles.propItemContainer} ${!workbenchModel.prototypeMode || freezeSetting || block.layout === 'vertical' ? '' : styles.hasAction}`}>
+              <div className={`${styles.propItemContainer} ${noSetting || block.layout === 'vertical' ? '' : styles.hasAction}`}>
                 <div className="content">
                   <Form.Item
                     className={styles.propItem} label={renderItemLabel(item, index)} name={item.propKey} preserve={false}
-                    valuePropName={item.type === 'switch' ? 'checked' : 'value'} initialValue={item.defaultValue}>
+                    valuePropName={item.type === 'switch' ? 'checked' : 'value'} initialValue={getInitValue(item)}>
                     {renderFormItem(item)}
                   </Form.Item>
                 </div>
@@ -166,7 +190,7 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
       </Row>
     </Form>
     {
-      (workbenchModel.prototypeMode && noWrapMode) ? (
+      (!noSetting && noWrapMode) ? (
         <Button type="primary" ghost block onClick={() => {
           propPersistModel.showPropItemSettinngForCreate(block)
         }}>

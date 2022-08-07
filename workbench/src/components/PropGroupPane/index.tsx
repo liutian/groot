@@ -19,6 +19,7 @@ const PropGroupPane: React.FC<PropsType> = ({ group }) => {
   const [propPersistModel, propPersistAction] = useModel<PropPersistModel>(PropPersistModel.modelName);
   const [workbenchModel] = useModel<WorkbenchModel>(WorkbenchModel.modelName);
   const [, refresh] = useState(0);
+  const noSetting = !workbenchModel.prototypeMode || group.parentItem?.noSetting;
 
   const editBlock = (block: PropBlock) => {
     propPersistAction(() => {
@@ -36,7 +37,7 @@ const PropGroupPane: React.FC<PropsType> = ({ group }) => {
   }
 
   const renderBlockSetting = (block: PropBlock, blockIndex: number) => {
-    if (!workbenchModel.prototypeMode) return null;
+    if (noSetting) return null;
 
     return (<Space size="small" >
       {
@@ -110,7 +111,7 @@ const PropGroupPane: React.FC<PropsType> = ({ group }) => {
     </Collapse>
     <div className={styles.footerAction}>
       {
-        workbenchModel.prototypeMode && (
+        !noSetting && (
           <Button type="primary" ghost block onClick={() => {
             propPersistModel.showPropBlockSettinngForCreate(group);
           }}>

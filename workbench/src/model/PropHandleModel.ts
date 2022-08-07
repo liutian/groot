@@ -55,6 +55,9 @@ export default class PropHandleModel {
 
     item.highlight = true;
 
+    if (this.propItemStack.length) {
+      item.noSetting = this.propItemStack.at(-1).noSetting;
+    }
     this.propItemStack.push(item);
 
     item.childGroup.templateDesignMode = false;
@@ -80,6 +83,7 @@ export default class PropHandleModel {
     itemList.forEach(item => {
       item.parentPropValueId = null;
       item.highlight = false;
+      item.noSetting = false;
 
       const group = this.getPropGroup(item.groupId);
       group.highlight = false;

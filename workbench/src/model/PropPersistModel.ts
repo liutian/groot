@@ -1,5 +1,5 @@
 import { PropBlockStructType, PropItemType } from "@grootio/common";
-import { autoIncrementForName, parseOptions, stringifyOptions } from "@util/utils";
+import { autoIncrementForName, calcPropValueIdChain, parseOptions, stringifyOptions } from "@util/utils";
 import { serverPath } from "config";
 import PropHandleModel from "./PropHandleModel";
 import WorkbenchModel from "./WorkbenchModel";
@@ -356,14 +356,7 @@ export default class PropPersistModel {
   }
 
   public addBlockListStructChildItem = (propItem: PropItem) => {
-    let ctxPropItem = propItem;
-    let propValueIdList = [];
-    do {
-      if (ctxPropItem.parentPropValueId) {
-        propValueIdList.push(ctxPropItem.parentPropValueId);
-      }
-      ctxPropItem = ctxPropItem.block.group.parentItem;
-    } while (ctxPropItem);
+    const propValueIdChainForBlockListStruct = calcPropValueIdChain(propItem);
     fetch(`${serverPath}/value/block-list-struct/add`, {
       method: 'POST',
       headers: {
@@ -371,7 +364,7 @@ export default class PropPersistModel {
       },
       body: JSON.stringify({
         propItemId: propItem.id,
-        propValueIdChainForBlockListStruct: propValueIdList.reverse().join(','),
+        propValueIdChainForBlockListStruct,
         componentVersionId: this.workbench.component.version.id,
         componentId: this.workbench.component.id,
         scaffoldId: this.workbench.component.scaffoldId
@@ -385,5 +378,45 @@ export default class PropPersistModel {
     fetch(`${serverPath}/value/block-list-struct/remove/${propValueId}`).then(r => r.json()).then(() => {
       propItem.valueList = propItem.valueList.filter(v => v.id !== propValueId);
     })
+  }
+
+  public updateValueForPrototype = (propItem: PropItem, value: string, parentPropValueId = '') => {
+    const propValueIdChainForBlockListStruct = calcPropValueIdChain(propItem) + parentPropValueId;
+    const propValue = propItem.valueList.find(v => v.propValueIdChainForBlockListStruct === propValueIdChainForBlockListStruct);
+
+    let paramData = {} as PropValue;
+
+    if (propValue) {
+      paramData.id = propValue.id;
+      paramData.value = value;
+    } else if (propValueIdChainForBlockListStruct) {
+      paramData.propValueIdChainForBlockListStruct = propValueIdChainForBlockListStruct;
+      paramData.propItemId = propItem.id;
+      paramData.componentId = this.workbench.component.id;
+      paramData.componentVersionId = this.workbench.component.version.id;
+      paramData.scaffoldId = this.workbench.component.scaffoldId;
+      paramData.value = value;
+    } else {
+      paramData.propItemId = propItem.id;
+      paramData.value = value;
+    }
+
+    fetch(`${serverPath}/value/update-for-prototype`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(paramData)
+    }).then(r => r.json()).then((result: { data: PropValue }) => {
+      if (propValue) {
+        propValue.value = value;
+      } else if (propValueIdChainForBlockListStruct) {
+        propItem.valueList.push(result.data);
+      } else {
+        propItem.defaultValue = value;
+      }
+
+      this.workbench.iframeManager.refreshComponent(this.workbench.component)
+    });
   }
 }

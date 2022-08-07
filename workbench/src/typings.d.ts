@@ -67,7 +67,8 @@ type PropItem = {
   defaultValue: any,
   // 上级block struct为List时，所有分组valueId
   valueList: PropValue[],
-  parentPropValueId: number
+  parentPropValueId: number,
+  noSetting: boolean
 } & Omit<import("../../cloud/src/entities/PropItem").PropItem, 'type' | 'childGroup' | 'block'>;
 
 type PropValueOption = {

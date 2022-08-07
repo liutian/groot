@@ -4,7 +4,9 @@ import PropHandleModel from "@model/PropHandleModel";
 import PropPersistModel from "@model/PropPersistModel";
 import WorkbenchModel from "@model/WorkbenchModel";
 import { useModel } from "@util/robot";
+import { processPropItemValue } from "@util/utils";
 import { DatePicker, Form, Input, InputNumber, Select, Space, Switch, Table, TimePicker, Typography } from "antd";
+import { useState } from "react";
 
 import styles from './index.module.less';
 
@@ -13,15 +15,35 @@ type PropsType = {
 }
 
 const PropBlockListStructPane: React.FC<PropsType> = ({ block: propBlock }) => {
+  const childPropItem = propBlock.propItemList[0];
   const [propHandleModel] = useModel<PropHandleModel>(PropHandleModel.modelName);
   const [workbenchModel] = useModel<WorkbenchModel>(WorkbenchModel.modelName);
   const [propPersistModel] = useModel<PropPersistModel>(PropPersistModel.modelName);
   const [form] = Form.useForm();
 
-  const childPropItem = propBlock.propItemList[0];
+  const [getInitValue] = useState(() => {
+    const cacheMap = new Map<PropItem, Map<number, any>>();
+
+    return (propItem: PropItem, parentValueId: number) => {
+      const hitValue = cacheMap.get(propItem)?.get(parentValueId);
+      if (hitValue) {
+        return hitValue;
+      }
+
+      const propValue = propItem.valueList.find(v => v.propValueIdChainForBlockListStruct.endsWith(`${parentValueId}`));
+      const value = processPropItemValue(propItem, propValue?.value);
+      let valuesMap = cacheMap.get(propItem);
+      if (!valuesMap) {
+        valuesMap = new Map();
+        cacheMap.set(propItem, valuesMap);
+      }
+      valuesMap.set(parentValueId, value);
+
+      return value;
+    }
+  });
 
   let dataSource = [];
-  let initialValues = {};
   const columns = propBlock.primaryShowPropItemList.map((propItem) => {
     return {
       title: propItem.label,
@@ -29,7 +51,7 @@ const PropBlockListStructPane: React.FC<PropsType> = ({ block: propBlock }) => {
       width: '',
       render: (_, record) => {
         return (
-          <Form.Item name={`propItemId_${propItem.id}_parentValueId_${record.parentValueId}`} preserve={false}>
+          <Form.Item name={`propItemId_${propItem.id}_parentValueId_${record.parentValueId}`} initialValue={getInitValue(propItem, record.parentValueId)} preserve={false}>
             {renderFormItem(propItem)}
           </Form.Item>
         )
@@ -62,16 +84,10 @@ const PropBlockListStructPane: React.FC<PropsType> = ({ block: propBlock }) => {
       dataSource.push({
         parentValueId: parentValue.id
       });
-
-      propBlock.primaryShowPropItemList.forEach((propItem) => {
-        const propValue = propItem.valueList.find(v => v.propValueIdChainForBlockListStruct.endsWith(`${parentValue.id}`));
-        initialValues[`propItemId_${propItem.id}_parentValueId_${parentValue.id}`] = propValue?.value || propItem.defaultValue;
-      });
     })
   } else {
 
   }
-
 
   const showPrimaryItem = () => {
     propHandleModel.pushPropItemStack(childPropItem);
@@ -99,17 +115,29 @@ const PropBlockListStructPane: React.FC<PropsType> = ({ block: propBlock }) => {
     return <>not found item</>
   }
 
-  const addBlockListStructChildItem = () => {
-    propPersistModel.addBlockListStructChildItem(childPropItem);
-  }
-
   const showPropItemSetting = (parentValueId: number) => {
     childPropItem.parentPropValueId = parentValueId;
+    childPropItem.noSetting = true;
     propHandleModel.pushPropItemStack(childPropItem);
   }
 
+  const updateValue = (changedValues: any) => {
+    const updateKey = Object.keys(changedValues)[0];
+    const [propItemId, parentValueId] = updateKey.replace('propItemId_', '').replace('_parentValueId_', '$').split('$');
+    let propItem;
+    childPropItem.childGroup.propBlockList.forEach((block) => {
+      block.propItemList.forEach((item) => {
+        if (item.id === +propItemId) {
+          propItem = item;
+        }
+      })
+    });
+
+    propPersistModel.updateValueForPrototype(propItem, changedValues[updateKey], parentValueId);
+  }
+
   return <div className={styles.container}>
-    <Form form={form} layout="vertical" initialValues={initialValues}>
+    <Form form={form} layout="vertical" onValuesChange={(changedValues) => { updateValue(changedValues) }}>
 
       <Table className={styles.tablePatch} rowKey="parentValueId" columns={columns} dataSource={dataSource} size="small" pagination={false} ></Table>
 
@@ -117,7 +145,11 @@ const PropBlockListStructPane: React.FC<PropsType> = ({ block: propBlock }) => {
 
     <div>
       <Space>
-        <Typography.Link onClick={() => addBlockListStructChildItem()}>添加子项</Typography.Link>
+        <Typography.Link
+          onClick={() => propPersistModel.addBlockListStructChildItem(childPropItem)}
+          disabled={!propBlock.listStructData.length}>
+          添加子项
+        </Typography.Link>
         <Typography.Link hidden={!workbenchModel.prototypeMode}
           onClick={() => showPrimaryItem()}>
           首要显示项
