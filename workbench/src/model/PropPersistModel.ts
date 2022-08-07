@@ -1,5 +1,5 @@
 import { PropBlockStructType, PropItemType } from "@grootio/common";
-import { autoIncrementForName, calcPropValueIdChain, parseOptions, stringifyOptions } from "@util/utils";
+import { assignBaseType, autoIncrementForName, calcPropValueIdChain, parseOptions, stringifyOptions } from "@util/utils";
 import { serverPath } from "config";
 import PropHandleModel from "./PropHandleModel";
 import WorkbenchModel from "./WorkbenchModel";
@@ -141,7 +141,9 @@ export default class PropPersistModel {
         body: JSON.stringify(newGroup)
       }).then(r => r.json()).then(() => {
         let groupIndex = this.propHandle.rootGroupList.findIndex(g => g.id === newGroup.id);
-        this.propHandle.rootGroupList.splice(groupIndex, 1, newGroup);
+        // this.propHandle.rootGroupList.splice(groupIndex, 1, newGroup);
+        assignBaseType(this.propHandle.rootGroupList[groupIndex], newGroup);
+
         this.settingModalLoading = false;
         this.currSettingPropGroup = undefined;
         this.workbench.iframeManager.refreshComponent(this.workbench.component);
@@ -181,7 +183,8 @@ export default class PropPersistModel {
         body: JSON.stringify(newBlock)
       }).then(r => r.json()).then(() => {
         let blockIndex = group.propBlockList.findIndex(b => b.id === newBlock.id);
-        group.propBlockList.splice(blockIndex, 1, newBlock);
+        // group.propBlockList.splice(blockIndex, 1, newBlock);
+        assignBaseType(group.propBlockList[blockIndex], newBlock);
         this.settingModalLoading = false;
         this.currSettingPropBlock = undefined;
         this.workbench.iframeManager.refreshComponent(this.workbench.component);
@@ -248,7 +251,8 @@ export default class PropPersistModel {
         parseOptions(propItem);
         const block = this.propHandle.getPropBlock(propItem.blockId);
         let itemIndex = block.propItemList.findIndex(item => item.id === propItem.id);
-        block.propItemList.splice(itemIndex, 1, propItem);
+        // block.propItemList.splice(itemIndex, 1, propItem);
+        assignBaseType(block.propItemList[itemIndex], newItem);
 
         this.settingModalLoading = false;
         this.currSettingPropItem = undefined;
