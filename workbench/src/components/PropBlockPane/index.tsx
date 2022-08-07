@@ -38,6 +38,8 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
       const propValue = propItem.valueList.find(v => v.propValueIdChainForBlockListStruct === valueIdChain);
       const value = processPropItemValue(propItem, propValue?.value);
       cacheMap.set(propItem, value);
+
+      return value;
     }
   })
 
