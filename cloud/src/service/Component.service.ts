@@ -86,7 +86,7 @@ export class ComponentService {
     }
 
     const version = await em.findOne(ComponentVersion, versionId || component.recentVersion?.id,
-      { populate: ['groupList', 'blockList', 'itemList', 'valueList'], populateWhere: { valueList: { type: PropValueType.Prototype_List } } }
+      { populate: ['groupList', 'blockList', 'itemList', 'valueList'], populateWhere: { valueList: { type: { $ne: PropValueType.Default } } } }
     );
 
     if (!version) {
