@@ -166,6 +166,7 @@ function buildPropObject(group: PropGroup, ctx: Object, ctxKeyChain: string, met
           parentValueList = [propValue];
         }
         buildPropObject(childPropItem.childGroup, ctx, ctxKeyChain, metadata, parentValueList);
+        parentValueList.pop();
 
         ctx = preCTX;
         ctxKeyChain = preCTXKeyChain;
@@ -195,15 +196,15 @@ function buildPropObjectForItem(item: PropItem, ctx: Object, ctxKeyChain: string
     throw new Error('propKey can not empty');
   }
 
-  if (item.rootPropKey) {
-    ctx = fillPropChainGreed(metadata.propsObj, item.propKey);
-    ctxKeyChain = item.propKey;
-  } else {
-    ctx = fillPropChainGreed(ctx, item.propKey);
-    ctxKeyChain += `.${item.propKey}`;
-  }
-
   if (item.childGroup) {
+    if (item.rootPropKey) {
+      ctx = fillPropChainGreed(metadata.propsObj, item.propKey);
+      ctxKeyChain = item.propKey;
+    } else {
+      ctx = fillPropChainGreed(ctx, item.propKey);
+      ctxKeyChain += `.${item.propKey}`;
+    }
+
     buildPropObject(item.childGroup, ctx, ctxKeyChain, metadata, parentValueList);
   } else {
     buildPropObjectForLeafItem(item, ctx, ctxKeyChain, metadata, parentValueList);
@@ -217,16 +218,14 @@ function buildPropObjectForLeafItem(propItem: PropItem, ctx: Object, ctxKeyChain
   const [newCTX, propEnd] = fillPropChain(propItem.rootPropKey ? metadata.propsObj : ctx, propItem.propKey);
   ctxKeyChain = propItem.rootPropKey ? propItem.propKey : `${ctxKeyChain}.${propItem.propKey}`;
 
+  newCTX[propEnd] = propItem.defaultValue;
+
   if (parentValueList?.length) {
-    const propValueRegex = new RegExp(parentValueList.join(',.*'));
+    const propValueRegex = new RegExp(parentValueList.map(v => v.id).join(',.*'));
     const propValue = propItem.valueList.find((v) => propValueRegex.test(v.propValueIdChainForBlockListStruct));
     if (propValue) {
       newCTX[propEnd] = propValue.value;
     }
-  } else if (propItem.valueList?.length) {
-    newCTX[propEnd] = propItem.valueList[0]?.value;
-  } else {
-    newCTX[propEnd] = propItem.defaultValue;
   }
 
   if (propItem.type === PropItemType.Json) {
