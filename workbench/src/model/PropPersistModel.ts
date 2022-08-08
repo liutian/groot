@@ -375,12 +375,14 @@ export default class PropPersistModel {
       })
     }).then(r => r.json()).then((result: { data: PropValue }) => {
       propItem.valueList.push(result.data);
+      this.workbench.iframeManager.refreshComponent(this.workbench.component);
     })
   }
 
   public removeBlockListStructChildItem = (propValueId: number, propItem: PropItem) => {
     fetch(`${serverPath}/value/block-list-struct/remove/${propValueId}`).then(r => r.json()).then(() => {
       propItem.valueList = propItem.valueList.filter(v => v.id !== propValueId);
+      this.workbench.iframeManager.refreshComponent(this.workbench.component);
     })
   }
 
@@ -420,7 +422,7 @@ export default class PropPersistModel {
         propItem.defaultValue = value;
       }
 
-      this.workbench.iframeManager.refreshComponent(this.workbench.component)
+      this.workbench.iframeManager.refreshComponent(this.workbench.component);
     });
   }
 }
