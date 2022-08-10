@@ -34,19 +34,28 @@ export function autoIncrementForName(names: string[]) {
 }
 
 // 校验字符串代表的属性是否在类型下存在
-type AutoPath<O, P extends string> = (P extends `${infer A}.${infer B}` ?
-  (A extends StringKeys<O> ? `${A}.${AutoPath<GetStringKey<O, A>, B>}` : never)
-  :
-  (P extends StringKeys<O> ?
-    (StringKeys<GetStringKey<O, P>> extends never ? never : `${P}.`)
-    :
-    StringKeys<O>
-  )
-);
 
-type GetStringKey<T, K> = K extends keyof T ? T[K] : never;
+export type AutoPath<O, P> = P extends string ?
 
-type StringKeys<T> = Exclude<keyof T, symbol> | '**' | WrapMinus<Exclude<keyof T, symbol>>;
+  ((P & `${string}.` extends never ? P : P & `${string}.`) extends infer Q ?
+
+    (Q extends `${infer A}.${infer B}` ?
+
+      (A extends StringKeyOf<O> ? `${A}.${AutoPath<GetKeyType<O, A>, B>}` : never)
+      :
+      (Q extends StringKeyOf<O> ? P : StringKeyOf<O>))
+
+    : never)
+
+  : never;
+
+type StringKeyOf<T, E extends string = never> =
+  T extends Array<any> ? ConvertArray<T> : (T extends object ? `${Exclude<keyof T | '**' | WrapMinus<keyof T> | E, symbol>}` : never)
+
+type GetKeyType<T, K> = K extends keyof T ? ConvertArray<T[K]> : never;
+
+type ConvertArray<T> = T extends Array<infer U> ? ConvertArray<U> : T;
 
 type WrapMinus<T> = T extends string ? `-${T}` : never;
+
 
