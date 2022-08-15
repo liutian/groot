@@ -5,8 +5,8 @@ import { LogicException, LogicExceptionCode } from 'config/logic.exception';
 import { PropBlock } from 'entities/PropBlock';
 import { PropGroup } from 'entities/PropGroup';
 import { PropItem } from 'entities/PropItem';
-import { pick } from 'util.ts/common';
-import { forkTransaction } from 'util.ts/ormUtil';
+import { pick } from 'util/common';
+import { forkTransaction } from 'util/ormUtil';
 import { CommonService } from './common.service';
 import { PropBlockService } from './prop-block.service';
 

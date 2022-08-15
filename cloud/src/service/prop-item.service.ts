@@ -6,8 +6,8 @@ import { PropBlock } from 'entities/PropBlock';
 import { PropGroup } from 'entities/PropGroup';
 import { PropItem } from 'entities/PropItem';
 import { PropValue } from 'entities/PropValue';
-import { pick } from 'util.ts/common';
-import { forkTransaction } from 'util.ts/ormUtil';
+import { pick } from 'util/common';
+import { forkTransaction } from 'util/ormUtil';
 import { CommonService } from './common.service';
 import { PropGroupService } from './prop-group.service';
 
