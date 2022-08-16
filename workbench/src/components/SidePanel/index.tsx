@@ -15,7 +15,7 @@ import SubPropPane from "../SubPropPane";
 import PropHandleModel from "@model/PropHandleModel";
 
 type PropsType = {
-  extraTabPanes?: React.ReactNode
+  extraTabPanes?: { key: string, tab: string, content: React.ReactNode }[]
 } & HTMLAttributes<HTMLDivElement>;
 
 const SidePanel: React.FC<PropsType> = ({ extraTabPanes, ...props }) => {
@@ -54,7 +54,11 @@ const SidePanel: React.FC<PropsType> = ({ extraTabPanes, ...props }) => {
 
       <Tabs.TabPane key="data-sources" tab="数据源"></Tabs.TabPane>
       <Tabs.TabPane key="vars" tab="变量"></Tabs.TabPane>
-      {extraTabPanes}
+
+
+      {extraTabPanes.map(({ key, tab, content }) => {
+        return <Tabs.TabPane key={key} tab={tab}>{content}</Tabs.TabPane>
+      })}
     </Tabs>
 
 

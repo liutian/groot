@@ -7,7 +7,7 @@ import { useModel } from '@util/robot';
 import styles from './index.module.less';
 
 type PropsType = {
-  extraTabPanes?: React.ReactNode
+  extraTabPanes?: { key: string, tab: string, content: React.ReactNode }[]
 }
 
 const Workbench: React.FC<PropsType> = ({ extraTabPanes }) => {

@@ -57,17 +57,19 @@ const Editor: React.FC = () => {
       </>
     }
 
-    return <Tabs.TabPane key="application" tab="应用页面">
-      <Menu mode="inline" className={styles.menuContainer} expandIcon={renderActions()} selectedKeys={[`${workbenchModel.component?.id}`]} items={componentTypes} />
-    </Tabs.TabPane>
+    return <Menu mode="inline" className={styles.menuContainer} expandIcon={renderActions()} selectedKeys={[`${workbenchModel.component?.id}`]} items={componentTypes} />
   }
+
+  const extraTabPanes = [
+    { key: 'application', tab: '应用页面', content: renderList() }
+  ]
 
   if (editorModel.application === undefined) {
     return <>loading</>
   } else if (editorModel.application === null) {
     return <>notfound component</>
   } else {
-    return (<Workbench extraTabPanes={renderList()} />);
+    return (<Workbench extraTabPanes={extraTabPanes} />);
   }
 }
 
