@@ -1,15 +1,20 @@
 import { BellOutlined, BlockOutlined, BranchesOutlined, CommentOutlined, NumberOutlined } from '@ant-design/icons';
 import { useModel } from '@util/robot';
 import { Typography } from 'antd';
-import { HTMLAttributes } from 'react';
+import { HTMLAttributes, useEffect, useRef } from 'react';
 import styles from './index.module.less';
 
 import WorkbenchModel from '@model/WorkbenchModel';
-import PropHandleModel from '@model/PropHandleModel';
 
 const SideFooter: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
   const [workbenchModel, workbenchUpdateAction] = useModel<WorkbenchModel>(WorkbenchModel.modelName);
-  const [propHandleModel] = useModel<PropHandleModel>(PropHandleModel.modelName);
+  const propPathChainRef = useRef<HTMLElement>();
+
+  useEffect(() => {
+    workbenchUpdateAction(() => {
+      workbenchModel.propPathChainEle = propPathChainRef.current;
+    }, false)
+  }, [propPathChainRef.current])
 
   const switchWidgetWidnwo = () => {
     workbenchUpdateAction(() => {
@@ -28,9 +33,9 @@ const SideFooter: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
         <span>{workbenchModel.component?.version.name}</span>
       </div>
     </div>
-    <Typography.Text ellipsis={{ tooltip: 'columns.[].form.lable' }} className={styles.content} >
+    <Typography.Text ellipsis={{ tooltip: 'columns.[].form.lable' }} className={styles.propPathChain} >
       <NumberOutlined />&nbsp;
-      <span>{propHandleModel.activePropItemPath}</span>
+      <span ref={propPathChainRef}></span>
     </Typography.Text>
     <div >
       <div className={styles.actionItem} onClick={switchWidgetWidnwo}>

@@ -168,13 +168,10 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
           block.propItemList.map((item, index) => {
             return <Col span={block.layout === 'vertical' ? item.span : 24} key={item.id}
               onMouseEnter={() => {
-                propHandleModel.setActivePropItemPath(item.id);
+                workbenchModel.setPropPathChain(item.id);
               }}
               onMouseLeave={() => {
-                propHandleUpdateAction(() => {
-                  propHandleModel.activePropItemId = 0;
-                  propHandleModel.activePropItemPath = '';
-                })
+                workbenchModel.setPropPathChain();
               }}>
               <div className={`${styles.propItemContainer} ${noSetting || block.layout === 'vertical' ? '' : styles.hasAction}`}>
                 <div className="content">

@@ -12,13 +12,6 @@ export default class PropHandleModel {
    */
   public activeGroupId?: number;
 
-  /**
-   * 当前鼠标移入属性的全路径，在面板底部展示
-   */
-  public activePropItemPath = '';
-  public activePropItemId?: number;
-
-
   public rootGroupList: PropGroup[] = [];
 
   /**
@@ -95,38 +88,6 @@ export default class PropHandleModel {
     })
   }
 
-  public setActivePropItemPath = (itemId: number): void => {
-    if (this.activePropItemId === itemId) {
-      return;
-    }
-
-    let path = [];
-    const result = this.getPropItem(itemId, path as any);
-    if (!result) {
-      throw new Error(`not found propItem id: ${itemId}`);
-    }
-    const propKeyList = path.reduce((pre, current, index) => {
-      if (index % 3 === 0) {
-        const group = current as PropGroup;
-        if (group.root && group.propKey) {
-          pre.push(group.propKey);
-        }
-      } else if (index % 3 === 1) {
-        const block = current as PropBlock;
-        if (block.propKey) {
-          pre.push(block.propKey);
-        }
-      } else if (index % 3 === 2) {
-        const item = current as PropItem;
-        pre.push(item.propKey);
-      }
-
-      return pre;
-    }, []) as string[];
-
-    this.activePropItemPath = propKeyList.join('.');
-    this.activePropItemId = itemId;
-  }
 
   public switchActiveGroup = (id: number) => {
     const group = this.rootGroupList.find(g => g.id === id);
@@ -236,7 +197,7 @@ export default class PropHandleModel {
    * @param blockId 配置块id
    * @returns 配置块对象
    */
-  getPropBlock = (blockId: number, path?: [PropItem | PropBlock | PropGroup]): PropBlock => {
+  getPropBlock(blockId: number, path?: [PropItem | PropBlock | PropGroup]): PropBlock {
     return this.getPropBlockOrGroupOrItem(blockId, 'block', path);
   }
 
@@ -245,15 +206,15 @@ export default class PropHandleModel {
    * @param groupId 配置组ID
    * @returns 配置组对象
    */
-  getPropGroup = (groupId: number, path?: [PropItem | PropBlock | PropGroup]): PropGroup => {
+  getPropGroup(groupId: number, path?: [PropItem | PropBlock | PropGroup]): PropGroup {
     return this.getPropBlockOrGroupOrItem(groupId, 'group', path);
   }
 
-  getPropItem = (itemId: number, path?: [PropItem | PropBlock | PropGroup]): PropItem => {
+  getPropItem(itemId: number, path?: [PropItem | PropBlock | PropGroup]): PropItem {
     return this.getPropBlockOrGroupOrItem(itemId, 'item', path)
   }
 
-  getPropBlockOrGroupOrItem = (id: number, type: 'group' | 'block' | 'item', path?: [PropItem | PropBlock | PropGroup]) => {
+  getPropBlockOrGroupOrItem(id: number, type: 'group' | 'block' | 'item', path?: [PropItem | PropBlock | PropGroup]) {
     if (!path) {
       path = [] as any;
     }
@@ -269,7 +230,7 @@ export default class PropHandleModel {
   }
 
   // 使用范型会导致sourceMap信息丢失
-  getProp = (id: number, type: 'block' | 'group' | 'item', group: PropGroup, stash?: [PropItem | PropBlock | PropGroup]) => {
+  getProp(id: number, type: 'block' | 'group' | 'item', group: PropGroup, stash?: [PropItem | PropBlock | PropGroup]) {
     if (type === 'group' && group.id === id) {
       stash.push(group);
       return group;

@@ -35,6 +35,8 @@ export default class WorkbenchModel {
 
   public applicationData: ApplicationData;
 
+  public propPathChainEle: HTMLElement;
+
   private destroy = false;
   private propHandle: PropHandleModel;
 
@@ -102,6 +104,50 @@ export default class WorkbenchModel {
     };
 
     return applicationData;
+  }
+
+  public setPropPathChain(itemId?: number) {
+    if (!this.propPathChainEle) {
+      return;
+    }
+
+    if (!itemId) {
+      this.propPathChainEle.innerText = '';
+      this.propPathChainEle.dataset['activeId'] = '';
+      return;
+    }
+
+    const activeId = this.propPathChainEle.dataset['activeId'];
+    if (+activeId === itemId) {
+      return;
+    }
+
+    let path = [];
+    const result = this.propHandle.getPropItem(itemId, path as any);
+    if (!result) {
+      throw new Error(`not found propItem id: ${itemId}`);
+    }
+    const propKeyList = path.reduce((pre, current, index) => {
+      if (index % 3 === 0) {
+        const group = current as PropGroup;
+        if (group.root && group.propKey) {
+          pre.push(group.propKey);
+        }
+      } else if (index % 3 === 1) {
+        const block = current as PropBlock;
+        if (block.propKey) {
+          pre.push(block.propKey);
+        }
+      } else if (index % 3 === 2) {
+        const item = current as PropItem;
+        pre.push(item.propKey);
+      }
+
+      return pre;
+    }, []) as string[];
+
+    this.propPathChainEle.innerText = propKeyList.join('.');
+    this.propPathChainEle.dataset['activeId'] = `${itemId}`;
   }
 
 }
