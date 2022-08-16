@@ -124,7 +124,7 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
     } else if (item.type === PropItemType.Button_Group) {
       return <Radio.Group>
         {item.optionList.map((option) => {
-          return <Tooltip title={option.title}>
+          return <Tooltip title={option.title} key={option.value}>
             <Radio.Button value={option.value}>{option.label}</Radio.Button>
           </Tooltip>
         })}
