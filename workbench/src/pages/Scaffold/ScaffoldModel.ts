@@ -4,8 +4,10 @@ import WorkbenchModel from "../../model/WorkbenchModel";
 export default class ScaffoldModel {
   static modelName = 'scaffold';
 
-  public loadComponent: 'doing' | 'notfound' | 'over' = 'doing';
   public scaffold: Scaffold;
+  public loadComponent: 'doing' | 'notfound' | 'over' = 'doing';
+  public componentAddFetchLoading = false;
+  public showComponentAddModal = false;
   private workbench: WorkbenchModel;
 
   public inject(workbench: WorkbenchModel) {
@@ -32,5 +34,23 @@ export default class ScaffoldModel {
     }).catch((e) => {
       this.scaffold = null;
     })
+  }
+
+  public addComponent = (rawComponent: Component) => {
+    this.componentAddFetchLoading = true;
+    return fetch(`${serverPath}/component/add`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        ...rawComponent,
+        scaffoldId: this.scaffold.id
+      })
+    }).then(res => res.json()).then(({ data: newComponent }: { data: Component }) => {
+      this.componentAddFetchLoading = false;
+      this.showComponentAddModal = false;
+      this.scaffold.componentList.push(newComponent);
+    });
   }
 }

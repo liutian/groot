@@ -10,6 +10,7 @@ import { PropItemService } from 'service/prop-item.service';
 import { ScaffoldService } from 'service/scaffold.service';
 import { PropValueService } from 'service/prop-value.service';
 import { PropValue } from 'entities/PropValue';
+import { Component } from 'entities/Component';
 @Controller('/workbench')
 export class WorkbenchController {
   constructor(
@@ -117,5 +118,10 @@ export class WorkbenchController {
   @Post('/value/update-for-prototype')
   async valueUpdateForPrototype(@Body() rawPropValue: PropValue) {
     return await this.propValueService.updateForPrototype(rawPropValue);
+  }
+
+  @Post('/component/add')
+  async componentAdd(@Body() component: Component) {
+    return await this.componentService.add(component);
   }
 }

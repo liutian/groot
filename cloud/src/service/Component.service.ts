@@ -6,6 +6,8 @@ import { Component } from 'entities/Component';
 import { ComponentInstance } from 'entities/ComponentInstance';
 import { ComponentVersion } from 'entities/ComponentVersion';
 import { Release } from 'entities/Release';
+import { Scaffold } from 'entities/Scaffold';
+import { pick } from 'util/common';
 
 
 @Injectable()
@@ -96,6 +98,43 @@ export class ComponentService {
     component.version = wrap(version).toObject() as any;
 
     return component;
+  }
+
+  async add(rawComponent: Component) {
+    const em = RequestContext.getEntityManager();
+    if (!rawComponent.packageName || !rawComponent.componentName) {
+      throw new LogicException('packageName and componentName can not both empty', LogicExceptionCode.ParamEmpty);
+    } else if (!rawComponent.scaffoldId) {
+      throw new LogicException('scaffoldId can not empty', LogicExceptionCode.ParamEmpty);
+    }
+
+    const scaffold = await em.findOne(Scaffold, rawComponent.scaffoldId);
+
+    if (!scaffold) {
+      throw new LogicException('scaffold not found', LogicExceptionCode.NotFound);
+    }
+
+    const count = await em.count(Component, {
+      packageName: rawComponent.packageName,
+      componentName: rawComponent.componentName,
+    });
+
+    if (count > 0) {
+      throw new LogicException('packageName and componentName must unique', LogicExceptionCode.NotUnique);
+    }
+
+    const newComponent = await em.create(Component, pick(rawComponent, ['name', 'componentName', 'packageName', 'container']));
+    newComponent.scaffold = scaffold;
+    await em.flush();
+
+    await em.create(ComponentVersion, {
+      name: '0.0.1',
+      component: newComponent
+    });
+
+    await em.flush();
+
+    return newComponent;
   }
 }
 
