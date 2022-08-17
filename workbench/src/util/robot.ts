@@ -90,6 +90,10 @@ function wrapper(modelKey: string, target: any): any {
       if (isBaseType(value)) {
         return value;
       } else if (Object.prototype.toString.apply(value) !== '[object Function]') {
+        // React.Element不做任何处理
+        if (value.$$typeof) {
+          return value;
+        }
         // 除函数之外引用数据类型需要递归包裹生成代理对象
         return wrapper(modelKey, value);
       }
