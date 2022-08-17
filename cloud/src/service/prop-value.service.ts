@@ -22,7 +22,7 @@ export class PropValueService {
 
     const lastPropValue = await em.findOne(PropValue, query, { orderBy: { order: 'DESC' } });
 
-    const newPropValue = await em.create(PropValue, {
+    const newPropValue = em.create(PropValue, {
       ...query,
       order: (lastPropValue?.order || 0) + 1000
     });
@@ -65,7 +65,7 @@ export class PropValueService {
 
       return null;
     } else if (rawPropValue.propValueIdChainForBlockListStruct) {
-      const newPropValue = await em.create(PropValue, {
+      const newPropValue = em.create(PropValue, {
         propValueIdChainForBlockListStruct: rawPropValue.propValueIdChainForBlockListStruct,
         propItem: rawPropValue.propItemId,
         component: rawPropValue.componentId,

@@ -61,7 +61,7 @@ export class ComponentVersionService {
     const itemMap = new Map<number, PropItem>();
     const valueMap = new Map<number, PropValue>();
 
-    const componentVersion = await em.create(ComponentVersion, {
+    const componentVersion = em.create(ComponentVersion, {
       name: rawComponentVersion.name,
       component: imageComponentVersion.component
     });
@@ -73,7 +73,7 @@ export class ComponentVersionService {
 
       for (let groupIndex = 0; groupIndex < originGroupList.length; groupIndex++) {
         const originGroup = originGroupList[groupIndex];
-        const group = await em.create(PropGroup, {
+        const group = em.create(PropGroup, {
           ...pick(originGroup,
             ['name', 'root', 'propKey', 'order', 'component', 'struct']
           ),
@@ -85,7 +85,7 @@ export class ComponentVersionService {
 
       for (let blockIndex = 0; blockIndex < originBlockList.length; blockIndex++) {
         const originBlock = originBlockList[blockIndex];
-        const block = await em.create(PropBlock, {
+        const block = em.create(PropBlock, {
           ...pick(originBlock,
             ['name', 'rootPropKey', 'propKey', 'order', 'component', 'struct', 'layout']
           ),
@@ -98,7 +98,7 @@ export class ComponentVersionService {
 
       for (let itemIndex = 0; itemIndex < originItemList.length; itemIndex++) {
         const originItem = originItemList[itemIndex];
-        const item = await em.create(PropItem, {
+        const item = em.create(PropItem, {
           ...pick(originItem,
             ['label', 'propKey', 'type', 'valueOptions', 'span', 'rootPropKey', 'order', 'component', 'versionTraceId', 'defaultValue']
           ),
@@ -111,7 +111,7 @@ export class ComponentVersionService {
 
       for (let valueIndex = 0; valueIndex < originValueList.length; valueIndex++) {
         const originValue = originValueList[valueIndex];
-        const value = await em.create(PropValue, {
+        const value = em.create(PropValue, {
           ...pick(originValue,
             ['value', 'propValueIdChainForBlockListStruct', 'component', 'application', 'project', 'scaffold', 'type', 'order']
           ),

@@ -123,11 +123,11 @@ export class ComponentService {
       throw new LogicException('packageName and componentName must unique', LogicExceptionCode.NotUnique);
     }
 
-    const newComponent = await em.create(Component, pick(rawComponent, ['name', 'componentName', 'packageName', 'container']));
+    const newComponent = em.create(Component, pick(rawComponent, ['name', 'componentName', 'packageName', 'container']));
     newComponent.scaffold = scaffold;
     await em.flush();
 
-    await em.create(ComponentVersion, {
+    em.create(ComponentVersion, {
       name: '0.0.1',
       component: newComponent
     });
