@@ -10,6 +10,7 @@ import { Release } from '../../entities/Release';
 import { Scaffold } from '../../entities/Scaffold';
 import { PropBlockLayout, PropBlockStructType, PropItemType } from '@grootio/common';
 import { Project } from '../../entities/Project';
+import { ComponentInstance } from '../../entities/ComponentInstance';
 
 export class DatabaseSeeder extends Seeder {
 
@@ -123,5 +124,13 @@ export class DatabaseSeeder extends Seeder {
     await em.persistAndFlush(item);
 
 
+    const componentInstance = em.create(ComponentInstance, {
+      name: 'demo',
+      path: 'demo',
+      component: component_table,
+      componentVersion: component_table_version,
+    });
+    componentInstance.releaseList.add(release);
+    await em.persistAndFlush(componentInstance);
   }
 }
