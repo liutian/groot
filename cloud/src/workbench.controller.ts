@@ -11,6 +11,8 @@ import { ScaffoldService } from 'service/scaffold.service';
 import { PropValueService } from 'service/prop-value.service';
 import { PropValue } from 'entities/PropValue';
 import { Component } from 'entities/Component';
+import { ComponentVersionService } from 'service/component-version.service';
+import { ComponentVersion } from 'entities/ComponentVersion';
 @Controller('/workbench')
 export class WorkbenchController {
   constructor(
@@ -20,7 +22,8 @@ export class WorkbenchController {
     private readonly componentService: ComponentService,
     private readonly applicationService: ApplicationService,
     private readonly scaffoldService: ScaffoldService,
-    private readonly propValueService: PropValueService
+    private readonly propValueService: PropValueService,
+    private readonly componentVersionService: ComponentVersionService,
   ) { }
 
   @Get('/component/instance/detail/:componentId')
@@ -123,5 +126,10 @@ export class WorkbenchController {
   @Post('/component/add')
   async componentAdd(@Body() component: Component) {
     return await this.componentService.add(component);
+  }
+
+  @Post('/component-version/add')
+  async componentVersionAdd(@Body() componentVersion: ComponentVersion) {
+    return await this.componentVersionService.add(componentVersion);
   }
 }

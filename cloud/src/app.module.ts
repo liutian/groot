@@ -12,6 +12,7 @@ import { ApplicationService } from 'service/application.service';
 import { ScaffoldService } from 'service/scaffold.service';
 import { CommonService } from 'service/common.service';
 import { PropValueService } from 'service/prop-value.service';
+import { ComponentVersionService } from 'service/component-version.service';
 @Module({
   imports: [
     MikroOrmModule.forRoot(config)
@@ -30,7 +31,8 @@ import { PropValueService } from 'service/prop-value.service';
     ApplicationService,
     ScaffoldService,
     CommonService,
-    PropValueService
+    PropValueService,
+    ComponentVersionService
   ],
 })
 export class AppModule { }

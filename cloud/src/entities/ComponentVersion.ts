@@ -15,6 +15,9 @@ export class ComponentVersion extends BaseEntity {
   @ManyToOne({ serializer: value => value?.id, serializedName: 'componentId' })
   component: Component;
 
+  @Property({ persist: false })
+  imageVersionId?: number;
+
   /**
    * 组件版本发布之后，禁止修改配置
    */
