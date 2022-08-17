@@ -26,9 +26,12 @@ const Scaffold: React.FC = () => {
     scaffoldModel.inject(workbenchModel);
     workbenchModel.inject(propHandleModel);
     workbenchUpdateAction(() => {
-      workbenchModel.extraTabPanes.push((<Tabs.TabPane key="scaffold" tab="脚手架">
-        {<ComponentList />}
-      </Tabs.TabPane>));
+      Object.getPrototypeOf(workbenchModel).renderExtraTabPanes = () => {
+        return (<Tabs.TabPane key="scaffold" tab="脚手架">
+          {<ComponentList />}
+        </Tabs.TabPane>)
+      };
+
       workbenchModel.footerLeftActionItems.push((<div onClick={() => scaffoldUpdateAction(() => scaffoldModel.showComponentVersionAddModal = true)}>
         <PlusOutlined />
       </div>));

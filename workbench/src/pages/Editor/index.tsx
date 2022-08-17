@@ -23,11 +23,13 @@ const Editor: React.FC = () => {
     propPersistModel.inject(workbenchModel, propHandleModel);
     editorModel.inject(workbenchModel);
     workbenchModel.inject(propHandleModel);
-    workbenchModel.extraTabPanes.push((
-      <Tabs.TabPane key="application" tab="应用页面">
-        {renderList()}
-      </Tabs.TabPane>
-    ))
+    Object.getPrototypeOf(workbenchModel).renderExtraTabPanes = () => {
+      return (
+        <Tabs.TabPane key="application" tab="应用页面">
+          {renderList()}
+        </Tabs.TabPane>
+      )
+    }
 
     editorModel.fetchApplication(+searchParams.get('applicationId'));
   }, []);

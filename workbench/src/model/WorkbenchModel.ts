@@ -38,9 +38,9 @@ export default class WorkbenchModel {
 
   public propPathChainEle: HTMLElement;
 
-  public extraTabPanes: ReactNode[] = [];
   public footerLeftActionItems: ReactNode[] = [];
   public switchComponent: (componentId: number, versionId?: number) => void;
+  public renderExtraTabPanes: () => ReactNode;
 
   private destroy = false;
   private propHandle: PropHandleModel;
