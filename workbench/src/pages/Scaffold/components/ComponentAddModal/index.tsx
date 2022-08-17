@@ -21,7 +21,7 @@ const ComponentAddModal: React.FC = () => {
 
   return <Modal visible={scaffoldModel.showComponentAddModal} mask={false} title="新增组件"
     confirmLoading={scaffoldModel.componentAddFetchLoading} onOk={handleOk} onCancel={handleCancel}>
-    <Form form={form}>
+    <Form form={form} colon={false} labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
       <Form.Item label="名称" name="name" rules={[{ required: true }]}>
         <Input />
       </Form.Item>
