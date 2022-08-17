@@ -1,6 +1,6 @@
-import { BellOutlined, BlockOutlined, BranchesOutlined, CommentOutlined, NumberOutlined } from '@ant-design/icons';
+import { BellOutlined, BlockOutlined, BranchesOutlined, CommentOutlined, NumberOutlined, PlusOutlined } from '@ant-design/icons';
 import { useModel } from '@util/robot';
-import { Typography } from 'antd';
+import { Dropdown, Menu, Typography } from 'antd';
 import { HTMLAttributes, useEffect, useRef } from 'react';
 import styles from './index.module.less';
 
@@ -26,12 +26,29 @@ const SideFooter: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
     });
   }
 
+  const versionListMenu = workbenchModel.component?.versionList.map((version) => {
+    return {
+      key: version.id,
+      label: (<a onClick={() => workbenchModel.switchComponent(workbenchModel.component.id, version.id)}>{version.name}</a>)
+    }
+  })
+
   return <div {...props}>
     <div >
-      <div className={styles.actionItem}>
-        <BranchesOutlined title="版本" />
-        <span>{workbenchModel.component?.version.name}</span>
-      </div>
+      <Dropdown className={styles.actionItem} placement="topLeft" overlay={<Menu items={versionListMenu} />}>
+        <span>
+          <BranchesOutlined title="版本" />
+          <span>{workbenchModel.component?.version.name}</span>
+        </span>
+      </Dropdown>
+
+      {
+        workbenchModel.footerLeftActionItems.map((actionItem, index) => {
+          return <div className={styles.actionItem} key={index}>
+            {actionItem}
+          </div>
+        })
+      }
     </div>
     <Typography.Text ellipsis={{ tooltip: 'columns.[].form.lable' }} className={styles.propPathChain} >
       <NumberOutlined />&nbsp;

@@ -7,7 +7,9 @@ export default class ScaffoldModel {
   public scaffold: Scaffold;
   public loadComponent: 'doing' | 'notfound' | 'over' = 'doing';
   public componentAddFetchLoading = false;
+  public componentVersionAddFetchLoading = false;
   public showComponentAddModal = false;
+  public showComponentVersionAddModal = false;
   private workbench: WorkbenchModel;
 
   public inject(workbench: WorkbenchModel) {
@@ -51,6 +53,24 @@ export default class ScaffoldModel {
       this.componentAddFetchLoading = false;
       this.showComponentAddModal = false;
       this.scaffold.componentList.push(newComponent);
+    });
+  }
+
+  public addComponentVersion = (rawComponentVersion: ComponentVersion) => {
+    this.componentVersionAddFetchLoading = true;
+    return fetch(`${serverPath}/component-version/add`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        ...rawComponentVersion,
+      })
+    }).then(res => res.json()).then(({ data: newComponentVersion }: { data: ComponentVersion }) => {
+      this.componentVersionAddFetchLoading = false;
+      this.showComponentVersionAddModal = false;
+      this.workbench.component.versionList.push(newComponentVersion);
+      this.switchComponent(this.workbench.component.id, newComponentVersion.id);
     });
   }
 }
