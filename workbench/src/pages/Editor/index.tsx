@@ -31,6 +31,17 @@ const Editor: React.FC = () => {
       )
     }
 
+
+    workbenchModel.renderFooterLeftActionItems.push(() => {
+      return (<span>{workbenchModel.component?.version.name}</span>)
+    });
+
+    workbenchModel.renderFooterLeftActionItems.push(() => {
+      return (<div >
+        <PlusOutlined />
+      </div>)
+    });
+
     editorModel.fetchApplication(+searchParams.get('applicationId'));
   }, []);
 

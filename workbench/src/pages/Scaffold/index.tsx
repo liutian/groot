@@ -10,8 +10,8 @@ import Workbench from "@components/Workbench";
 import ComponentList from "./components/ComponentList";
 import ComponentAddModal from "./components/ComponentAddModal";
 import ComponentVersionAddModal from "./components/ComponentVersionAddModal";
-import { Tabs } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
+import { Dropdown, Menu, Tabs } from "antd";
+import { BranchesOutlined, PlusOutlined } from "@ant-design/icons";
 
 const Scaffold: React.FC = () => {
   const [scaffoldModel, scaffoldUpdateAction] = useRegisterModel<ScaffoldModel>(ScaffoldModel.modelName, new ScaffoldModel());
@@ -32,9 +32,27 @@ const Scaffold: React.FC = () => {
         </Tabs.TabPane>)
       };
 
-      workbenchModel.footerLeftActionItems.push((<div onClick={() => scaffoldUpdateAction(() => scaffoldModel.showComponentVersionAddModal = true)}>
-        <PlusOutlined />
-      </div>));
+      workbenchModel.renderFooterLeftActionItems.push(() => {
+        const versionListMenu = workbenchModel.component?.versionList.map((version) => {
+          return {
+            key: version.id,
+            label: (<a onClick={() => workbenchModel.switchComponent(workbenchModel.component.id, version.id)}>{version.name}</a>)
+          }
+        })
+
+        return (<Dropdown placement="topLeft" overlay={<Menu items={versionListMenu} />}>
+          <span>
+            <BranchesOutlined title="版本" />
+            <span>{workbenchModel.component?.version.name}</span>
+          </span>
+        </Dropdown>)
+      });
+
+      workbenchModel.renderFooterLeftActionItems.push(() => {
+        return (<div onClick={() => scaffoldUpdateAction(() => scaffoldModel.showComponentVersionAddModal = true)}>
+          <PlusOutlined />
+        </div>)
+      });
       workbenchModel.switchComponent = scaffoldModel.switchComponent;
     }, false)
 

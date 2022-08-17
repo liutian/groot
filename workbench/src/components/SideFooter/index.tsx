@@ -26,26 +26,12 @@ const SideFooter: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
     });
   }
 
-  const versionListMenu = workbenchModel.component?.versionList.map((version) => {
-    return {
-      key: version.id,
-      label: (<a onClick={() => workbenchModel.switchComponent(workbenchModel.component.id, version.id)}>{version.name}</a>)
-    }
-  })
-
   return <div {...props}>
     <div >
-      <Dropdown className={styles.actionItem} placement="topLeft" overlay={<Menu items={versionListMenu} />}>
-        <span>
-          <BranchesOutlined title="版本" />
-          <span>{workbenchModel.component?.version.name}</span>
-        </span>
-      </Dropdown>
-
       {
-        workbenchModel.footerLeftActionItems.map((actionItem, index) => {
+        workbenchModel.renderFooterLeftActionItems.map((render, index) => {
           return <div className={styles.actionItem} key={index}>
-            {actionItem}
+            {render()}
           </div>
         })
       }

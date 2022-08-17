@@ -38,7 +38,7 @@ export default class WorkbenchModel {
 
   public propPathChainEle: HTMLElement;
 
-  public footerLeftActionItems: ReactNode[] = [];
+  public renderFooterLeftActionItems: (() => ReactNode)[] = [];
   public switchComponent: (componentId: number, versionId?: number) => void;
   public renderExtraTabPanes: () => ReactNode;
 
