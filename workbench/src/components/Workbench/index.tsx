@@ -7,10 +7,9 @@ import { useModel } from '@util/robot';
 import styles from './index.module.less';
 
 type PropsType = {
-  extraTabPanes?: { key: string, tab: string, content: React.ReactNode }[]
 }
 
-const Workbench: React.FC<PropsType> = ({ extraTabPanes }) => {
+const Workbench: React.FC<PropsType> = () => {
   const [workbenchModel] = useModel<WorkbenchModel>(WorkbenchModel.modelName);
   const iframeRef = useRef<HTMLIFrameElement>({} as any);
 
@@ -34,7 +33,7 @@ const Workbench: React.FC<PropsType> = ({ extraTabPanes }) => {
 
     <WidgetWindow />
 
-    <SidePanel className={styles.sidePanel} extraTabPanes={extraTabPanes} />
+    <SidePanel className={styles.sidePanel} />
   </div>)
 }
 

@@ -1,5 +1,6 @@
 import { ApplicationData, PostMessageType } from "@grootio/common";
 import { IframeManagerInstance, launchIframeManager } from "@model/iframeManager";
+import { ReactNode } from "react";
 import PropHandleModel from "./PropHandleModel";
 
 
@@ -36,6 +37,10 @@ export default class WorkbenchModel {
   public applicationData: ApplicationData;
 
   public propPathChainEle: HTMLElement;
+
+  public extraTabPanes: ReactNode[] = [];
+  public footerLeftActionItems: ReactNode[] = [];
+  public switchComponent: (componentId: number, versionId?: number) => void;
 
   private destroy = false;
   private propHandle: PropHandleModel;

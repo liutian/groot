@@ -23,6 +23,11 @@ const Editor: React.FC = () => {
     propPersistModel.inject(workbenchModel, propHandleModel);
     editorModel.inject(workbenchModel);
     workbenchModel.inject(propHandleModel);
+    workbenchModel.extraTabPanes.push((
+      <Tabs.TabPane key="application" tab="应用页面">
+        {renderList()}
+      </Tabs.TabPane>
+    ))
 
     editorModel.fetchApplication(+searchParams.get('applicationId'));
   }, []);
@@ -60,16 +65,12 @@ const Editor: React.FC = () => {
     return <Menu mode="inline" className={styles.menuContainer} expandIcon={renderActions()} selectedKeys={[`${workbenchModel.component?.id}`]} items={componentTypes} />
   }
 
-  const extraTabPanes = [
-    { key: 'application', tab: '应用页面', content: renderList() }
-  ]
-
   if (editorModel.application === undefined) {
     return <>loading</>
   } else if (editorModel.application === null) {
     return <>notfound component</>
   } else {
-    return (<Workbench extraTabPanes={extraTabPanes} />);
+    return (<Workbench />);
   }
 }
 

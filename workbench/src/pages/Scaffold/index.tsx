@@ -9,10 +9,13 @@ import ScaffoldModel from "pages/Scaffold/ScaffoldModel";
 import Workbench from "@components/Workbench";
 import ComponentList from "./components/ComponentList";
 import ComponentAddModal from "./components/ComponentAddModal";
+import ComponentVersionAddModal from "./components/ComponentVersionAddModal";
+import { Tabs } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
 
 const Scaffold: React.FC = () => {
-  const [scaffoldModel] = useRegisterModel<ScaffoldModel>(ScaffoldModel.modelName, new ScaffoldModel());
-  const [workbenchModel] = useRegisterModel<WorkbenchModel>(WorkbenchModel.modelName, new WorkbenchModel());
+  const [scaffoldModel, scaffoldUpdateAction] = useRegisterModel<ScaffoldModel>(ScaffoldModel.modelName, new ScaffoldModel());
+  const [workbenchModel, workbenchUpdateAction] = useRegisterModel<WorkbenchModel>(WorkbenchModel.modelName, new WorkbenchModel());
   const [propHandleModel] = useRegisterModel<PropHandleModel>(PropHandleModel.modelName, new PropHandleModel());
   const [propPersistModel] = useRegisterModel<PropPersistModel>(PropPersistModel.modelName, new PropPersistModel());
 
@@ -22,13 +25,18 @@ const Scaffold: React.FC = () => {
     propPersistModel.inject(workbenchModel, propHandleModel);
     scaffoldModel.inject(workbenchModel);
     workbenchModel.inject(propHandleModel);
+    workbenchUpdateAction(() => {
+      workbenchModel.extraTabPanes.push((<Tabs.TabPane key="scaffold" tab="脚手架">
+        {<ComponentList />}
+      </Tabs.TabPane>));
+      workbenchModel.footerLeftActionItems.push((<div onClick={() => scaffoldUpdateAction(() => scaffoldModel.showComponentVersionAddModal = true)}>
+        <PlusOutlined />
+      </div>));
+      workbenchModel.switchComponent = scaffoldModel.switchComponent;
+    }, false)
 
     scaffoldModel.fetchScaffold(+searchParams.get('scaffoldId'));
   }, []);
-
-  const extraTabPanes = [
-    { key: "scaffold", tab: "脚手架", content: <ComponentList /> }
-  ]
 
   if (scaffoldModel.scaffold === undefined) {
     return <>loading</>
@@ -36,8 +44,9 @@ const Scaffold: React.FC = () => {
     return <>notfound component</>
   } else {
     return (<>
-      <Workbench extraTabPanes={extraTabPanes} />
+      <Workbench />
       <ComponentAddModal />
+      <ComponentVersionAddModal />
     </>);
   }
 }
