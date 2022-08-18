@@ -136,6 +136,14 @@ export class ComponentService {
 
     return newComponent;
   }
+
+  async list(container: string) {
+    const em = RequestContext.getEntityManager();
+
+    const list = await em.find(Component, { container: container === 'true' });
+
+    return list;
+  }
 }
 
 

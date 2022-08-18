@@ -13,6 +13,8 @@ import { PropValue } from 'entities/PropValue';
 import { Component } from 'entities/Component';
 import { ComponentVersionService } from 'service/component-version.service';
 import { ComponentVersion } from 'entities/ComponentVersion';
+import { ComponentInstanceService } from 'service/component-instance.service';
+import { ComponentInstance } from 'entities/ComponentInstance';
 @Controller('/workbench')
 export class WorkbenchController {
   constructor(
@@ -24,6 +26,7 @@ export class WorkbenchController {
     private readonly scaffoldService: ScaffoldService,
     private readonly propValueService: PropValueService,
     private readonly componentVersionService: ComponentVersionService,
+    private readonly componentInstanceService: ComponentInstanceService,
   ) { }
 
   @Get('/component/instance/detail/:componentId')
@@ -131,5 +134,15 @@ export class WorkbenchController {
   @Post('/component-version/add')
   async componentVersionAdd(@Body() componentVersion: ComponentVersion) {
     return await this.componentVersionService.add(componentVersion);
+  }
+
+  @Post('/page/add')
+  async pageAdd(@Body() componentInstance: ComponentInstance) {
+    return await this.componentInstanceService.addPage(componentInstance);
+  }
+
+  @Get('/component/list')
+  async componentList(@Query('container') container: string) {
+    return await this.componentService.list(container);
   }
 }

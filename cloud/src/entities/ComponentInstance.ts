@@ -39,5 +39,8 @@ export class ComponentInstance extends BaseEntity {
   parentInstance?: ComponentInstance;
 
   @Property({ persist: false })
-  componentId: number;
+  componentId?: number;
+
+  @Property({ persist: false })
+  releaseId?: number;
 }

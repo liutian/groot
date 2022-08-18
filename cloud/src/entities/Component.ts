@@ -27,7 +27,7 @@ export class Component extends BaseEntity {
    * 是否是容器组件
    */
   @Property()
-  container = true;
+  container = false;
 
   /**
    * 组件版本列表
