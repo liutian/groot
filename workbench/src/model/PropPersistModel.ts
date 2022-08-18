@@ -386,25 +386,27 @@ export default class PropPersistModel {
     })
   }
 
-  public updateValueForPrototype = (propItem: PropItem, value: string, parentPropValueId = '') => {
+  public updateValueForPrototype = (propItem: PropItem, value: any, parentPropValueId = '') => {
     const propValueIdChainForBlockListStruct = calcPropValueIdChain(propItem) + parentPropValueId;
     const propValue = propItem.valueList.find(v => v.propValueIdChainForBlockListStruct === propValueIdChainForBlockListStruct);
 
     let paramData = {} as PropValue;
 
+    const valueStr = JSON.stringify(value);
+
     if (propValue) {
       paramData.id = propValue.id;
-      paramData.value = value;
+      paramData.value = valueStr;
     } else if (propValueIdChainForBlockListStruct) {
       paramData.propValueIdChainForBlockListStruct = propValueIdChainForBlockListStruct;
       paramData.propItemId = propItem.id;
       paramData.componentId = this.workbench.component.id;
       paramData.componentVersionId = this.workbench.component.version.id;
       paramData.scaffoldId = this.workbench.component.scaffoldId;
-      paramData.value = value;
+      paramData.value = valueStr;
     } else {
       paramData.propItemId = propItem.id;
-      paramData.value = value;
+      paramData.value = valueStr;
     }
 
     fetch(`${serverPath}/value/update-for-prototype`, {
@@ -415,11 +417,11 @@ export default class PropPersistModel {
       body: JSON.stringify(paramData)
     }).then(r => r.json()).then((result: { data: PropValue }) => {
       if (propValue) {
-        propValue.value = value;
+        propValue.value = valueStr;
       } else if (propValueIdChainForBlockListStruct) {
         propItem.valueList.push(result.data);
       } else {
-        propItem.defaultValue = value;
+        propItem.defaultValue = valueStr;
       }
 
       this.workbench.iframeManager.refreshComponent(this.workbench.component);

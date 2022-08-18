@@ -139,7 +139,10 @@ export const processPropItemValue = (propItem: PropItem, value?: any) => {
   value = value || propItem.defaultValue
   if (propItem.type === PropItemType.Date_Picker || propItem.type === PropItemType.Time_Picker) {
     value = moment(value);
+  } else if (value !== undefined) {
+    value = JSON.parse(value);
   }
+
   return value;
 }
 

@@ -1,6 +1,7 @@
 import { IframeDebuggerConfig, iframeNamePrefix, Metadata, PostMessageType, PropBlockStructType, PropItemType, PropMetadataType, PropValueType } from "@grootio/common";
 import PropHandleModel from "@model/PropHandleModel";
-import { fillPropChain, fillPropChainGreed } from "@util/utils";
+import { fillPropChain, fillPropChainGreed, processPropItemValue } from "@util/utils";
+import moment from "moment";
 import WorkbenchModel from "./WorkbenchModel";
 
 let iframe: HTMLIFrameElement;
@@ -218,15 +219,14 @@ function buildPropObjectForLeafItem(propItem: PropItem, ctx: Object, ctxKeyChain
   const [newCTX, propEnd] = fillPropChain(propItem.rootPropKey ? metadata.propsObj : ctx, propItem.propKey);
   ctxKeyChain = propItem.rootPropKey ? propItem.propKey : `${ctxKeyChain}.${propItem.propKey}`;
 
-  newCTX[propEnd] = propItem.defaultValue;
+  let propValue;
 
   if (parentValueList?.length) {
     const propValueRegex = new RegExp(parentValueList.map(v => v.id).join(',.*'));
-    const propValue = propItem.valueList.find((v) => propValueRegex.test(v.propValueIdChainForBlockListStruct));
-    if (propValue) {
-      newCTX[propEnd] = propValue.value;
-    }
+    propValue = propItem.valueList.find((v) => propValueRegex.test(v.propValueIdChainForBlockListStruct));
   }
+
+  newCTX[propEnd] = processPropItemValue(propItem, propValue?.value);
 
   if (propItem.type === PropItemType.Json) {
     metadata.advancedProps.push({
