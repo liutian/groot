@@ -51,7 +51,7 @@ export class ComponentService {
     component.instance = wrap(instance).toObject() as any;
 
     const version = await em.findOne(ComponentVersion, instance.componentVersion,
-      { populate: ['groupList', 'blockList', 'itemList'] }
+      { populate: ['groupList', 'blockList', 'itemList', 'valueList'] }
     );
     component.version = wrap(version).toObject() as any;
 
