@@ -67,7 +67,7 @@ export default class WorkbenchModel {
     const { groupList, blockList, itemList, valueList } = component.version;
     this.propHandle.buildPropTree(groupList, blockList, itemList, valueList);
 
-    this.applicationData = this.buildApplicationData(scaffold);
+    this.applicationData = this.buildApplicationData(scaffold.name, scaffold.playgroundPath);
 
     this.iframeManager.navigation(this.scaffold.playgroundPath, () => {
       const metadata = this.iframeManager.createComponentMetadata(this.component);
@@ -77,18 +77,19 @@ export default class WorkbenchModel {
 
   public startApplication(component: Component, application: Application) {
     this.component = component;
+    this.componentInstance = component.instance;
     this.application = application;
     this.prototypeMode = false;
 
     const { groupList, blockList, itemList, valueList } = component.version;
     this.propHandle.buildPropTree(groupList, blockList, itemList, valueList);
 
-    // this.applicationData = this.buildApplicationData(scaffold);
+    this.applicationData = this.buildApplicationData(application.name, this.application.playgroundPath);
 
-    // this.iframeManager.navigation(this.application.playgroundPath, () => {
-    //   const metadata = this.iframeManager.buildMetadata(this.component);
-    //   this.iframeManager.notifyIframe(PostMessageType.Init_Page, { path: this.scaffold.playgroundPath, metadataList: [metadata] });
-    // });
+    this.iframeManager.navigation(this.application.playgroundPath, () => {
+      const metadata = this.iframeManager.createComponentMetadata(this.component);
+      this.iframeManager.notifyIframe(PostMessageType.Init_Page, { path: this.application.playgroundPath, metadataList: [metadata] });
+    });
   }
 
   public destroyModel() {
@@ -96,14 +97,14 @@ export default class WorkbenchModel {
     this.iframeManager?.destroyIframe();
   }
 
-  private buildApplicationData(scaffold: Scaffold) {
+  private buildApplicationData(name: string, playgroundPath: string) {
     const pageData = {
-      path: scaffold.playgroundPath,
+      path: playgroundPath,
       metadataList: []
     };
 
     const applicationData = {
-      name: scaffold.name,
+      name,
       key: 'scaffold-demo',
       pages: [pageData]
     };

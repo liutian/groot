@@ -29,9 +29,9 @@ export class WorkbenchController {
     private readonly componentInstanceService: ComponentInstanceService,
   ) { }
 
-  @Get('/component/instance/detail/:componentId')
-  async componentInstanceDetail(@Param('componentId') componentId: number, @Query('releaseId') releaseId?: number) {
-    return this.componentService.getComponentInstance(componentId, releaseId);
+  @Get('/component/instance/detail/:instanceId')
+  async componentInstanceDetail(@Param('instanceId') instanceId: number, @Query('releaseId') releaseId?: number) {
+    return this.componentInstanceService.getComponent(instanceId, releaseId);
   }
 
   @Get('/component/prototype/detail/:componentId')

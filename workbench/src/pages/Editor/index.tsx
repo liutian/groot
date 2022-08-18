@@ -10,9 +10,10 @@ import PropPersistModel from "@model/PropPersistModel";
 import PropHandleModel from "@model/PropHandleModel";
 import Workbench from "@components/Workbench";
 import EditorModel from "./EditorModel";
+import PageAddModal from "./components/PageAddModal";
 
 const Editor: React.FC = () => {
-  const [editorModel] = useRegisterModel<EditorModel>(EditorModel.modelName, new EditorModel());
+  const [editorModel, editorUpdateAction] = useRegisterModel<EditorModel>(EditorModel.modelName, new EditorModel());
   const [workbenchModel, workbenchUpdateAction] = useRegisterModel<WorkbenchModel>(WorkbenchModel.modelName, new WorkbenchModel());
   const [propHandleModel] = useRegisterModel<PropHandleModel>(PropHandleModel.modelName, new PropHandleModel());
   const [propPersistModel] = useRegisterModel<PropPersistModel>(PropPersistModel.modelName, new PropPersistModel());
@@ -64,6 +65,11 @@ const Editor: React.FC = () => {
       };
     });
 
+    const showPageAdd = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
+      editorUpdateAction(() => editorModel.showPageAddModal = true);
+      e.stopPropagation();
+    }
+
     const componentTypes = [
       { label: '页面', key: 'page', children: componentList },
       { label: '公共模版', key: 'templatePage', children: [] },
@@ -71,11 +77,11 @@ const Editor: React.FC = () => {
 
     const renderActions = () => {
       return <>
-        <Button icon={<PlusOutlined />} type="link" />
+        <Button icon={<PlusOutlined />} type="link" onClick={showPageAdd} />
       </>
     }
 
-    return <Menu mode="inline" className={styles.menuContainer} expandIcon={renderActions()} selectedKeys={[`${workbenchModel.component?.id}`]} items={componentTypes} />
+    return <Menu mode="inline" className={styles.menuContainer} expandIcon={renderActions()} selectedKeys={[`${workbenchModel.componentInstance?.id}`]} items={componentTypes} />
   }
 
   if (editorModel.application === undefined) {
@@ -83,7 +89,10 @@ const Editor: React.FC = () => {
   } else if (editorModel.application === null) {
     return <>notfound component</>
   } else {
-    return (<Workbench />);
+    return (<>
+      <Workbench />
+      <PageAddModal />
+    </>);
   }
 }
 
