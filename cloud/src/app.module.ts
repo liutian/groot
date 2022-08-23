@@ -14,6 +14,7 @@ import { CommonService } from 'service/common.service';
 import { PropValueService } from 'service/prop-value.service';
 import { ComponentVersionService } from 'service/component-version.service';
 import { ComponentInstanceService } from 'service/component-instance.service';
+import { ReleaseService } from 'service/release.service';
 @Module({
   imports: [
     MikroOrmModule.forRoot(config)
@@ -34,7 +35,8 @@ import { ComponentInstanceService } from 'service/component-instance.service';
     CommonService,
     PropValueService,
     ComponentVersionService,
-    ComponentInstanceService
+    ComponentInstanceService,
+    ReleaseService
   ],
 })
 export class AppModule { }

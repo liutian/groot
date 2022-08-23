@@ -15,6 +15,8 @@ import { ComponentVersionService } from 'service/component-version.service';
 import { ComponentVersion } from 'entities/ComponentVersion';
 import { ComponentInstanceService } from 'service/component-instance.service';
 import { ComponentInstance } from 'entities/ComponentInstance';
+import { ReleaseService } from 'service/release.service';
+import { Release } from 'entities/Release';
 @Controller('/workbench')
 export class WorkbenchController {
   constructor(
@@ -27,6 +29,7 @@ export class WorkbenchController {
     private readonly propValueService: PropValueService,
     private readonly componentVersionService: ComponentVersionService,
     private readonly componentInstanceService: ComponentInstanceService,
+    private readonly releaseService: ReleaseService
   ) { }
 
   @Get('/component/instance/detail/:instanceId')
@@ -145,4 +148,11 @@ export class WorkbenchController {
   async componentList(@Query('container') container: string) {
     return await this.componentService.list(container);
   }
+
+  // 基于特定迭代创建新迭代
+  @Post('/release/add')
+  async releaseAdd(@Body() release: Release) {
+    return await this.releaseService.add(release);
+  }
+
 }
