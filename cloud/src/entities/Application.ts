@@ -25,9 +25,6 @@ export class Application extends BaseEntity {
   @ManyToOne()
   onlineRelease?: Release;
 
-  @OneToMany(() => Release, release => release.application)
-  releaseList = new Collection<Release>(this);
-
   @Property({ length: 100 })
   remoteFrontEndUrl: string;
 
