@@ -23,17 +23,15 @@ export class ComponentInstance extends BaseEntity {
   @Property({ length: 100 })
   path?: string;
 
-  @ManyToMany(() => PropValue, propValue => propValue.componentInstanceList)
+
+  @OneToMany(() => PropValue, propValue => propValue.componentInstance)
   propValueList = new Collection<PropValue>(this);
 
   /**
-   * 一个实例可以被多个迭代引用，只有组件版本升级会导致实例变化
-   */
-  @ManyToMany(() => Release, release => release.instanceList, { owner: true })
-  releaseList = new Collection<Release>(this);
-
-  @OneToMany(() => ComponentInstance, instance => instance.parentInstance)
-  subInstanceList = new Collection<ComponentInstance>(this);
+ * 一个实例可以被多个迭代引用，只有组件版本升级会导致实例变化
+ */
+  @ManyToOne({ serializer: value => value?.id, serializedName: 'releaseId' })
+  release: Release;
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'parentInstanceId' })
   parentInstance?: ComponentInstance;

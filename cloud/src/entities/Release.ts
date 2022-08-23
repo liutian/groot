@@ -1,4 +1,4 @@
-import { Collection, Entity, ManyToMany, ManyToOne, Property } from "@mikro-orm/core";
+import { Collection, Entity, ManyToOne, OneToMany, Property } from "@mikro-orm/core";
 import { BaseEntity } from "./BaseEntity";
 import { ComponentInstance } from "./ComponentInstance";
 import { Application } from "./Application";
@@ -18,6 +18,11 @@ export class Release extends BaseEntity {
   @Property()
   freeze = false;
 
-  @ManyToMany(() => ComponentInstance, componentInstance => componentInstance.releaseList)
+
+  @Property({ persist: false })
+  imageReleaseId: number;
+
+  @OneToMany(() => ComponentInstance, componentInstance => componentInstance.release)
   instanceList = new Collection<ComponentInstance>(this);
+
 }

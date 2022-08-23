@@ -1,4 +1,4 @@
-import { Collection, Entity, ManyToMany, ManyToOne, Property } from "@mikro-orm/core";
+import { Entity, ManyToOne, Property } from "@mikro-orm/core";
 import { BaseEntity } from "./BaseEntity";
 import { ComponentInstance } from "./ComponentInstance";
 import { Component } from "./Component";
@@ -8,6 +8,7 @@ import { Project } from "./Project";
 import { PropValueType } from "@grootio/common";
 import { ComponentVersion } from "./ComponentVersion";
 import { PropItem } from "./PropItem";
+import { Release } from "./Release";
 
 @Entity()
 export class PropValue extends BaseEntity {
@@ -21,8 +22,8 @@ export class PropValue extends BaseEntity {
   @Property({ length: 1000 })
   value?: string;
 
-  @ManyToMany(() => ComponentInstance, instance => instance.propValueList, { owner: true })
-  componentInstanceList = new Collection<ComponentInstance>(this);
+  @ManyToOne({ serializer: value => value?.id, serializedName: 'instanceId' })
+  componentInstance: ComponentInstance;
 
   @Property({ length: 1000 })
   propValueIdChainForBlockListStruct?: string;
@@ -56,4 +57,7 @@ export class PropValue extends BaseEntity {
 
   @Property()
   order?: number;
+
+  @ManyToOne({ serializer: value => value?.id, serializedName: 'releaseId' })
+  release: Release;
 }

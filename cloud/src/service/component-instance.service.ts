@@ -35,9 +35,8 @@ export class ComponentInstanceService {
       path: rawInstance.path,
       component,
       componentVersion: component.recentVersion,
+      release
     });
-
-    newInstance.releaseList.add(release);
 
     await em.flush();
 
@@ -48,10 +47,7 @@ export class ComponentInstanceService {
   async getComponent(instancceId: number, releaseId?: number) {
     const em = RequestContext.getEntityManager();
 
-    const instance = await em.findOne(ComponentInstance, {
-      id: instancceId,
-      releaseList: [releaseId]
-    }, { populate: ['propValueList'] });
+    const instance = await em.findOne(ComponentInstance, { id: instancceId, release: releaseId }, { populate: ['propValueList'] });
 
     if (!instance) {
       throw new LogicException('not found instance', LogicExceptionCode.NotFound);

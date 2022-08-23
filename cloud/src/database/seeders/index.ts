@@ -129,8 +129,8 @@ export class DatabaseSeeder extends Seeder {
       path: 'demo',
       component: component_table,
       componentVersion: component_table_version,
+      release
     });
-    componentInstance.releaseList.add(release);
     await em.persistAndFlush(componentInstance);
   }
 }
