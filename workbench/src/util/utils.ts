@@ -149,7 +149,7 @@ export const processPropItemValue = (propItem: PropItem, value?: any) => {
 
 export const assignBaseType = (targetObj, originObj) => {
   Object.keys(originObj).filter(key => isBaseType(originObj[key])).reduce((obj, key) => {
-    if (originObj[key] !== undefined) {
+    if (originObj[key] !== undefined && originObj[key] !== null) {
       obj[key] = originObj[key];
     }
     return obj;
