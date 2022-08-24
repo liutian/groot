@@ -74,7 +74,7 @@ export default class PropHandleModel {
    */
   private resetPropItem(itemList: PropItem[]) {
     itemList.forEach(item => {
-      item.parentPropValueId = null;
+      item.tempAbstractValueId = null;
       item.highlight = false;
       item.noSetting = false;
 

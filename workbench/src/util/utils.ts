@@ -93,21 +93,6 @@ export const stringifyOptions = (propItem: PropItem) => {
   }
 }
 
-export const appendPropValue = (propItem: PropItem, propValueList: PropValue[]) => {
-  const valueList = [];
-  for (let index = 0; index < propValueList.length; index++) {
-    const propValue = propValueList[index];
-    if (propValue.propItemId === propItem.id) {
-      valueList.push(propValue);
-      propValueList.splice(index, 1);
-      index--;
-    }
-  }
-
-  propItem.valueList = valueList;
-
-}
-
 
 export const stringify = (obj) => {
   return JSON.stringify(obj, function (_, value) {
@@ -122,12 +107,12 @@ export const stringify = (obj) => {
   })
 }
 
-export const calcPropValueIdChain = (propItem: PropItem) => {
+export const calcPropValueIdChain = (propItem: PropItem, defaultValueId?: number) => {
   let ctxPropItem = propItem;
-  let propValueIdList = [];
+  let propValueIdList = defaultValueId ? [defaultValueId] : [];
   do {
-    if (ctxPropItem.parentPropValueId) {
-      propValueIdList.push(ctxPropItem.parentPropValueId);
+    if (ctxPropItem.tempAbstractValueId) {
+      propValueIdList.push(ctxPropItem.tempAbstractValueId);
     }
     ctxPropItem = ctxPropItem.block.group.parentItem;
   } while (ctxPropItem);

@@ -24,20 +24,22 @@ const PropBlockListStructPane: React.FC<PropsType> = ({ block: propBlock }) => {
   const [getInitValue] = useState(() => {
     const cacheMap = new Map<PropItem, Map<number, any>>();
 
-    return (propItem: PropItem, parentValueId: number) => {
-      const hitValue = cacheMap.get(propItem)?.get(parentValueId);
+    return (propItem: PropItem, abstractValueId: number) => {
+      const hitValue = cacheMap.get(propItem)?.get(abstractValueId);
       if (hitValue) {
         return hitValue;
       }
 
-      const propValue = propItem.valueList.find(v => v.propValueIdChainForBlockListStruct.endsWith(`${parentValueId}`));
+      const propValue = propItem.valueList.find(v => {
+        return v.abstractValueIdChainForBlockListStruct.endsWith(`${abstractValueId}`)
+      });
       const value = processPropItemValue(propItem, propValue?.value);
       let valuesMap = cacheMap.get(propItem);
       if (!valuesMap) {
         valuesMap = new Map();
         cacheMap.set(propItem, valuesMap);
       }
-      valuesMap.set(parentValueId, value);
+      valuesMap.set(abstractValueId, value);
 
       return value;
     }
@@ -51,7 +53,7 @@ const PropBlockListStructPane: React.FC<PropsType> = ({ block: propBlock }) => {
       width: '',
       render: (_, record) => {
         return (
-          <Form.Item name={`propItemId_${propItem.id}_parentValueId_${record.parentValueId}`} initialValue={getInitValue(propItem, record.parentValueId)} preserve={false}>
+          <Form.Item name={`propItemId_${propItem.id}_abstractValueId_${record.abstractValueId}`} initialValue={getInitValue(propItem, record.abstractValueId)} preserve={false}>
             {renderFormItem(propItem)}
           </Form.Item>
         )
@@ -66,11 +68,11 @@ const PropBlockListStructPane: React.FC<PropsType> = ({ block: propBlock }) => {
       render: (_, record) => {
         return (<Space>
           <Typography.Link >
-            <SettingOutlined onClick={() => showPropItemSetting(record.parentValueId)} />
+            <SettingOutlined onClick={() => showPropItemSetting(record.abstractValueId)} />
           </Typography.Link>
 
           <Typography.Link>
-            <DeleteOutlined onClick={() => propPersistModel.removeBlockListStructChildItem(record.parentValueId, childPropItem)} />
+            <DeleteOutlined onClick={() => propPersistModel.removeBlockListStructChildItem(record.abstractValueId, childPropItem)} />
           </Typography.Link>
 
           <Typography.Link>
@@ -80,9 +82,9 @@ const PropBlockListStructPane: React.FC<PropsType> = ({ block: propBlock }) => {
       }
     });
 
-    childPropItem.valueList.forEach((parentValue: PropValue) => {
+    childPropItem.valueList.forEach((abstractValue: PropValue) => {
       dataSource.push({
-        parentValueId: parentValue.id
+        abstractValueId: abstractValue.id
       });
     })
   } else {
@@ -115,15 +117,15 @@ const PropBlockListStructPane: React.FC<PropsType> = ({ block: propBlock }) => {
     return <>not found item</>
   }
 
-  const showPropItemSetting = (parentValueId: number) => {
-    childPropItem.parentPropValueId = parentValueId;
+  const showPropItemSetting = (abstractValueId: number) => {
+    childPropItem.tempAbstractValueId = abstractValueId;
     childPropItem.noSetting = true;
     propHandleModel.pushPropItemStack(childPropItem);
   }
 
   const updateValue = (changedValues: any) => {
     const updateKey = Object.keys(changedValues)[0];
-    const [propItemId, parentValueId] = updateKey.replace('propItemId_', '').replace('_parentValueId_', '$').split('$');
+    const [propItemId, abstractValueId] = updateKey.replace('propItemId_', '').replace('_abstractValueId_', '$').split('$');
     let propItem;
     childPropItem.childGroup.propBlockList.forEach((block) => {
       block.propItemList.forEach((item) => {
@@ -133,13 +135,13 @@ const PropBlockListStructPane: React.FC<PropsType> = ({ block: propBlock }) => {
       })
     });
 
-    propPersistModel.updateValueForPrototype(propItem, changedValues[updateKey], parentValueId);
+    propPersistModel.updateValue(propItem, changedValues[updateKey], +abstractValueId);
   }
 
   return <div className={styles.container}>
     <Form form={form} layout="vertical" onValuesChange={(changedValues) => { updateValue(changedValues) }}>
 
-      <Table className={styles.tablePatch} rowKey="parentValueId" columns={columns} dataSource={dataSource} size="small" pagination={false} ></Table>
+      <Table className={styles.tablePatch} rowKey="abstractValueId" columns={columns} dataSource={dataSource} size="small" pagination={false} ></Table>
 
     </Form>
 

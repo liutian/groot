@@ -113,7 +113,7 @@ export class ComponentVersionService {
         const originValue = originValueList[valueIndex];
         const value = em.create(PropValue, {
           ...pick(originValue,
-            ['value', 'propValueIdChainForBlockListStruct', 'component', 'application', 'project', 'scaffold', 'type', 'order']
+            ['value', 'abstractValueIdChainForBlockListStruct', 'component', 'application', 'project', 'scaffold', 'type', 'order']
           ),
           componentVersion,
           propItem: tempIdData.itemId
@@ -128,12 +128,12 @@ export class ComponentVersionService {
         const originValue = originValueList[valueIndex];
         const value = valueMap.get(originValue.id);
         value.propItem = itemMap.get(originValue.propItem.id);
-        if (originValue.propValueIdChainForBlockListStruct) {
-          const valueIdList = originValue.propValueIdChainForBlockListStruct.split(',');
+        if (originValue.abstractValueIdChainForBlockListStruct) {
+          const valueIdList = originValue.abstractValueIdChainForBlockListStruct.split(',');
           const newValueIdList = valueIdList.map((valueId) => {
             return valueMap.get(+valueId).id;
           });
-          value.propValueIdChainForBlockListStruct = newValueIdList.join(',');
+          value.abstractValueIdChainForBlockListStruct = newValueIdList.join(',');
         }
       }
 

@@ -35,7 +35,7 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
       }
 
       const valueIdChain = calcPropValueIdChain(propItem);
-      const propValue = propItem.valueList.find(v => v.propValueIdChainForBlockListStruct === valueIdChain);
+      const propValue = propItem.valueList.find(v => v.abstractValueIdChainForBlockListStruct === valueIdChain);
       const value = processPropItemValue(propItem, propValue?.value);
       cacheMap.set(propItem, value);
 
@@ -157,7 +157,7 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
   const updateValue = (changedValues: any) => {
     const updateKey = Object.keys(changedValues)[0];
     const propItem = block.propItemList.find(item => item.propKey === updateKey);
-    propPersistModel.updateValueForPrototype(propItem, changedValues[updateKey]);
+    propPersistModel.updateValue(propItem, changedValues[updateKey]);
   }
 
   return <div className={noWrapMode ? styles.containerWrap : ''}>
