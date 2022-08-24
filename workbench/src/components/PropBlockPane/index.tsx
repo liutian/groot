@@ -35,7 +35,7 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
       }
 
       const valueIdChain = calcPropValueIdChain(propItem);
-      const propValue = propItem.valueList.find(v => v.abstractValueIdChainForBlockListStruct === valueIdChain);
+      const propValue = propItem.valueList.find(value => value.abstractValueIdChain === valueIdChain);
       const value = processPropItemValue(propItem, propValue?.value);
       cacheMap.set(propItem, value);
 

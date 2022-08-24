@@ -8,12 +8,12 @@ import { PropValue } from 'entities/PropValue';
 
 @Injectable()
 export class PropValueService {
-  async blockListStructAdd(rawPropValue: PropValue) {
+  async abstractTypeAdd(rawPropValue: PropValue) {
     const em = RequestContext.getEntityManager();
 
     const query = {
       propItem: rawPropValue.propItemId,
-      abstractValueIdChainForBlockListStruct: rawPropValue.abstractValueIdChainForBlockListStruct,
+      abstractValueIdChain: rawPropValue.abstractValueIdChain,
       component: rawPropValue.componentId,
       componentVersion: rawPropValue.componentVersionId,
       scaffold: rawPropValue.scaffoldId,
@@ -32,13 +32,13 @@ export class PropValueService {
     return newPropValue;
   }
 
-  async blockListStructRemove(propValueId: number) {
+  async abstractTypeRemove(propValueId: number) {
     const em = RequestContext.getEntityManager();
 
     const propValue = await em.findOne(PropValue, propValueId);
 
     await em.nativeDelete(PropValue, {
-      abstractValueIdChainForBlockListStruct: { $like: `${propValue.id}` },
+      abstractValueIdChain: { $like: `${propValue.id}` },
       component: propValue.componentId,
       componentVersion: propValue.componentVersionId,
       scaffold: propValue.scaffoldId,
@@ -69,15 +69,15 @@ export class PropValueService {
         componentVersion: rawPropValue.componentVersionId,
         scaffold: rawPropValue.scaffoldId,
         value: rawPropValue.value,
-        abstractValueIdChainForBlockListStruct: rawPropValue.abstractValueIdChainForBlockListStruct,
+        abstractValueIdChain: rawPropValue.abstractValueIdChain,
         release: rawPropValue.releaseId,
         componentInstance: rawPropValue.componentInstanceId,
-        type: rawPropValue.abstractValueIdChainForBlockListStruct ? PropValueType.Instance_List_Item : PropValueType.Default
+        type: rawPropValue.abstractValueIdChain ? PropValueType.Instance_List_Item : PropValueType.Default
       });
       await em.flush();
       return newPropValue;
     } else {
-      if (rawPropValue.abstractValueIdChainForBlockListStruct) {
+      if (rawPropValue.abstractValueIdChain) {
         const newPropValue = em.create(PropValue, {
           propItem: rawPropValue.propItemId,
           component: rawPropValue.componentId,
@@ -85,7 +85,7 @@ export class PropValueService {
           scaffold: rawPropValue.scaffoldId,
           value: rawPropValue.value,
           type: PropValueType.Prototype_List_Item,
-          abstractValueIdChainForBlockListStruct: rawPropValue.abstractValueIdChainForBlockListStruct
+          abstractValueIdChain: rawPropValue.abstractValueIdChain
         });
 
         await em.flush();

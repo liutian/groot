@@ -26,7 +26,7 @@ export class PropValue extends BaseEntity {
   componentInstance?: ComponentInstance;
 
   @Property({ length: 1000 })
-  abstractValueIdChainForBlockListStruct?: string;
+  abstractValueIdChain?: string;
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'componentId' })
   component: Component;

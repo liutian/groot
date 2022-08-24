@@ -30,8 +30,8 @@ const PropBlockListStructPane: React.FC<PropsType> = ({ block: propBlock }) => {
         return hitValue;
       }
 
-      const propValue = propItem.valueList.find(v => {
-        return v.abstractValueIdChainForBlockListStruct.endsWith(`${abstractValueId}`)
+      const propValue = propItem.valueList.find(value => {
+        return value.abstractValueIdChain.endsWith(`${abstractValueId}`)
       });
       const value = processPropItemValue(propItem, propValue?.value);
       let valuesMap = cacheMap.get(propItem);

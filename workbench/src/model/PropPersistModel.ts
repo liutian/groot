@@ -360,18 +360,18 @@ export default class PropPersistModel {
   }
 
   public addItemParentForBlockListStruct = (propItem: PropItem) => {
-    const abstractValueIdChainForBlockListStruct = calcPropValueIdChain(propItem);
-    fetch(`${serverPath}/value/block-list-struct/add`, {
+    const abstractValueIdChain = calcPropValueIdChain(propItem);
+    fetch(`${serverPath}/value/abstract-type/add`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
         propItemId: propItem.id,
-        abstractValueIdChainForBlockListStruct,
+        abstractValueIdChain,
         componentVersionId: this.workbench.component.version.id,
         componentId: this.workbench.component.id,
-        scaffoldId: this.workbench.component.scaffoldId
+        scaffoldId: this.workbench.component.scaffoldId,
       })
     }).then(r => r.json()).then((result: { data: PropValue }) => {
       propItem.valueList.push(result.data);
@@ -380,15 +380,15 @@ export default class PropPersistModel {
   }
 
   public removeBlockListStructChildItem = (propValueId: number, propItem: PropItem) => {
-    fetch(`${serverPath}/value/block-list-struct/remove/${propValueId}`).then(r => r.json()).then(() => {
+    fetch(`${serverPath}/value/abstract-type/remove/${propValueId}`).then(r => r.json()).then(() => {
       propItem.valueList = propItem.valueList.filter(v => v.id !== propValueId);
       this.workbench.iframeManager.refreshComponent(this.workbench.component);
     })
   }
 
   public updateValue = (propItem: PropItem, value: any, abstractValueId?: number) => {
-    const abstractValueIdChainForBlockListStruct = calcPropValueIdChain(propItem, abstractValueId);
-    const propValue = propItem.valueList.find(v => v.abstractValueIdChainForBlockListStruct === abstractValueIdChainForBlockListStruct);
+    const abstractValueIdChain = calcPropValueIdChain(propItem, abstractValueId);
+    const propValue = propItem.valueList.find(value => value.abstractValueIdChain === abstractValueIdChain);
 
     let paramData = {} as PropValue;
 
@@ -399,7 +399,7 @@ export default class PropPersistModel {
       paramData.value = valueStr;
     } else {
 
-      paramData.abstractValueIdChainForBlockListStruct = abstractValueIdChainForBlockListStruct;
+      paramData.abstractValueIdChain = abstractValueIdChain;
       paramData.propItemId = propItem.id;
       paramData.componentId = this.workbench.component.id;
       paramData.componentVersionId = this.workbench.component.version.id;
@@ -427,7 +427,7 @@ export default class PropPersistModel {
         propValue.value = valueStr;
       } else if ((paramData as any).type === 'instance') {
         propItem.valueList.push(result.data);
-      } else if (abstractValueIdChainForBlockListStruct) {
+      } else if (abstractValueIdChain) {
         propItem.valueList.push(result.data);
       } else {
         propItem.defaultValue = valueStr;

@@ -114,18 +114,18 @@ export class WorkbenchController {
     await this.blockService.listStructPrimaryItemSave(blockId, data);
   }
 
-  @Post('/value/block-list-struct/add')
-  async valueBlockListStructAdd(@Body() rawPropValue: PropValue) {
-    return await this.propValueService.blockListStructAdd(rawPropValue);
+  @Post('/value/abstract-type/add')
+  async valueAbstractTypeAdd(@Body() rawPropValue: PropValue) {
+    return await this.propValueService.abstractTypeAdd(rawPropValue);
   }
 
-  @Get('/value/block-list-struct/remove/:propValueId')
-  async valueBlockListStructRemove(@Param('propValueId') propValueId: number) {
-    return await this.propValueService.blockListStructRemove(propValueId);
+  @Get('/value/abstract-type/remove/:propValueId')
+  async valueAbstractTypeRemove(@Param('propValueId') propValueId: number) {
+    return await this.propValueService.abstractTypeRemove(propValueId);
   }
 
   @Post('/value/update')
-  async valueUpdateForPrototype(@Body() rawPropValue: PropValue, @Body('type') type: 'instance' | 'prototype') {
+  async valueUpdate(@Body() rawPropValue: PropValue, @Body('type') type: 'instance' | 'prototype') {
     return await this.propValueService.update(rawPropValue, type);
   }
 

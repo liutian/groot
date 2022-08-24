@@ -77,7 +77,7 @@ export class ReleaseService {
           const originPropValue = originPropValueList[propValueIndex];
           em.create(PropValue, {
             ...pick(originPropValue, [
-              'propItem', 'value', 'abstractValueIdChainForBlockListStruct',
+              'propItem', 'value', 'abstractValueIdChain',
               'component', 'componentVersion', 'application', 'project', 'scaffold', 'type',
               'order'
             ]),

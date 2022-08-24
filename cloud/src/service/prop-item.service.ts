@@ -146,7 +146,7 @@ export class PropItemService {
       }
 
       await em.nativeDelete(PropValue, {
-        abstractValueIdChainForBlockListStruct: { $like: `${propItem.id}` },
+        abstractValueIdChain: { $like: `${propItem.id}` },
         type: { $nin: [PropValueType.Default, PropValueType.Instance_List_Item, PropValueType.Instance_List_Parent] }
       });
 
@@ -179,7 +179,7 @@ export class PropItemService {
       if (rawItem.type !== propItem.type) {
         propItem.versionTraceId = propItem.id;
         await em.nativeDelete(PropValue, {
-          abstractValueIdChainForBlockListStruct: { $like: `${propItem.id}` },
+          abstractValueIdChain: { $like: `${propItem.id}` },
           type: { $nin: [PropValueType.Default, PropValueType.Instance_List_Item, PropValueType.Instance_List_Parent] }
         });
       }
