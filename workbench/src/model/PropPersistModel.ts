@@ -360,7 +360,7 @@ export default class PropPersistModel {
   }
 
   public addBlockListStructChildItem = (propItem: PropItem) => {
-    const propValueIdChainForBlockListStruct = calcPropValueIdChain(propItem);
+    const abstractValueIdChainForBlockListStruct = calcPropValueIdChain(propItem);
     fetch(`${serverPath}/value/block-list-struct/add`, {
       method: 'POST',
       headers: {
@@ -368,7 +368,7 @@ export default class PropPersistModel {
       },
       body: JSON.stringify({
         propItemId: propItem.id,
-        propValueIdChainForBlockListStruct,
+        abstractValueIdChainForBlockListStruct,
         componentVersionId: this.workbench.component.version.id,
         componentId: this.workbench.component.id,
         scaffoldId: this.workbench.component.scaffoldId
@@ -386,9 +386,9 @@ export default class PropPersistModel {
     })
   }
 
-  public updateValueForPrototype = (propItem: PropItem, value: any, parentPropValueId = '') => {
-    const propValueIdChainForBlockListStruct = calcPropValueIdChain(propItem) + parentPropValueId;
-    const propValue = propItem.valueList.find(v => v.propValueIdChainForBlockListStruct === propValueIdChainForBlockListStruct);
+  public updateValue = (propItem: PropItem, value: any, abstractValueId?: number) => {
+    const abstractValueIdChainForBlockListStruct = calcPropValueIdChain(propItem, abstractValueId);
+    const propValue = propItem.valueList.find(v => v.abstractValueIdChainForBlockListStruct === abstractValueIdChainForBlockListStruct);
 
     let paramData = {} as PropValue;
 
@@ -397,19 +397,26 @@ export default class PropPersistModel {
     if (propValue) {
       paramData.id = propValue.id;
       paramData.value = valueStr;
-    } else if (propValueIdChainForBlockListStruct) {
-      paramData.propValueIdChainForBlockListStruct = propValueIdChainForBlockListStruct;
+    } else {
+
+      paramData.abstractValueIdChainForBlockListStruct = abstractValueIdChainForBlockListStruct;
       paramData.propItemId = propItem.id;
       paramData.componentId = this.workbench.component.id;
       paramData.componentVersionId = this.workbench.component.version.id;
       paramData.scaffoldId = this.workbench.component.scaffoldId;
       paramData.value = valueStr;
-    } else {
-      paramData.propItemId = propItem.id;
-      paramData.value = valueStr;
+
+      if (this.workbench.prototypeMode) {
+        (paramData as any).type = 'prototype';
+      } else {
+        (paramData as any).type = 'instance';
+        paramData.releaseId = this.workbench.application.release.id;
+        paramData.componentInstanceId = this.workbench.componentInstance.id;
+      }
     }
 
-    fetch(`${serverPath}/value/update-for-prototype`, {
+
+    fetch(`${serverPath}/value/update`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -418,7 +425,9 @@ export default class PropPersistModel {
     }).then(r => r.json()).then((result: { data: PropValue }) => {
       if (propValue) {
         propValue.value = valueStr;
-      } else if (propValueIdChainForBlockListStruct) {
+      } else if ((paramData as any).type === 'instance') {
+        propItem.valueList.push(result.data);
+      } else if (abstractValueIdChainForBlockListStruct) {
         propItem.valueList.push(result.data);
       } else {
         propItem.defaultValue = valueStr;

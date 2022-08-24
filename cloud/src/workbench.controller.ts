@@ -124,9 +124,9 @@ export class WorkbenchController {
     return await this.propValueService.blockListStructRemove(propValueId);
   }
 
-  @Post('/value/update-for-prototype')
-  async valueUpdateForPrototype(@Body() rawPropValue: PropValue) {
-    return await this.propValueService.updateForPrototype(rawPropValue);
+  @Post('/value/update')
+  async valueUpdateForPrototype(@Body() rawPropValue: PropValue, @Body('type') type: 'instance' | 'prototype') {
+    return await this.propValueService.update(rawPropValue, type);
   }
 
   @Post('/component/add')

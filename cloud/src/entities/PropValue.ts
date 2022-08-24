@@ -23,10 +23,10 @@ export class PropValue extends BaseEntity {
   value?: string;
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'instanceId' })
-  componentInstance: ComponentInstance;
+  componentInstance?: ComponentInstance;
 
   @Property({ length: 1000 })
-  propValueIdChainForBlockListStruct?: string;
+  abstractValueIdChainForBlockListStruct?: string;
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'componentId' })
   component: Component;
@@ -59,5 +59,13 @@ export class PropValue extends BaseEntity {
   order?: number;
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'releaseId' })
-  release: Release;
+  release?: Release;
+
+  @Property({ persist: false })
+  releaseId?: number;
+
+
+  @Property({ persist: false })
+  componentInstanceId?: number;
+
 }

@@ -13,7 +13,7 @@ export class PropValueService {
 
     const query = {
       propItem: rawPropValue.propItemId,
-      propValueIdChainForBlockListStruct: rawPropValue.propValueIdChainForBlockListStruct,
+      abstractValueIdChainForBlockListStruct: rawPropValue.abstractValueIdChainForBlockListStruct,
       component: rawPropValue.componentId,
       componentVersion: rawPropValue.componentVersionId,
       scaffold: rawPropValue.scaffoldId,
@@ -38,7 +38,7 @@ export class PropValueService {
     const propValue = await em.findOne(PropValue, propValueId);
 
     await em.nativeDelete(PropValue, {
-      propValueIdChainForBlockListStruct: { $like: `${propValue.id}` },
+      abstractValueIdChainForBlockListStruct: { $like: `${propValue.id}` },
       component: propValue.componentId,
       componentVersion: propValue.componentVersionId,
       scaffold: propValue.scaffoldId,
@@ -51,7 +51,7 @@ export class PropValueService {
 
   }
 
-  async updateForPrototype(rawPropValue: PropValue) {
+  async update(rawPropValue: PropValue, type: 'prototype' | 'instance') {
     const em = RequestContext.getEntityManager();
 
     if (rawPropValue.id) {
@@ -62,31 +62,44 @@ export class PropValueService {
 
       propValue.value = rawPropValue.value;
       await em.flush();
-
       return null;
-    } else if (rawPropValue.propValueIdChainForBlockListStruct) {
+    } else if (type === 'instance') {
       const newPropValue = em.create(PropValue, {
-        propValueIdChainForBlockListStruct: rawPropValue.propValueIdChainForBlockListStruct,
         propItem: rawPropValue.propItemId,
         component: rawPropValue.componentId,
         componentVersion: rawPropValue.componentVersionId,
         scaffold: rawPropValue.scaffoldId,
         value: rawPropValue.value,
-        type: PropValueType.Prototype
+        abstractValueIdChainForBlockListStruct: rawPropValue.abstractValueIdChainForBlockListStruct,
+        release: rawPropValue.releaseId,
+        componentInstance: rawPropValue.componentInstanceId,
+        type: rawPropValue.abstractValueIdChainForBlockListStruct ? PropValueType.Instance_List : PropValueType.Default
       });
-
       await em.flush();
-
       return newPropValue;
     } else {
-      const propItem = await em.findOne(PropItem, rawPropValue.propItemId);
-      if (!propItem) {
-        throw new LogicException(`not found propItem id: ${rawPropValue.propItemId}`, LogicExceptionCode.NotFound);
-      }
+      if (rawPropValue.abstractValueIdChainForBlockListStruct) {
+        const newPropValue = em.create(PropValue, {
+          propItem: rawPropValue.propItemId,
+          component: rawPropValue.componentId,
+          componentVersion: rawPropValue.componentVersionId,
+          scaffold: rawPropValue.scaffoldId,
+          value: rawPropValue.value,
+          type: PropValueType.Prototype_List,
+          abstractValueIdChainForBlockListStruct: rawPropValue.abstractValueIdChainForBlockListStruct
+        });
 
-      propItem.defaultValue = rawPropValue.value;
-      await em.flush();
-      return null;
+        await em.flush();
+        return newPropValue;
+      } else {
+        const propItem = await em.findOne(PropItem, rawPropValue.propItemId);
+        if (!propItem) {
+          throw new LogicException(`not found propItem id: ${rawPropValue.propItemId}`, LogicExceptionCode.NotFound);
+        }
+        propItem.defaultValue = rawPropValue.value;
+        await em.flush();
+        return null;
+      }
     }
   }
 }
