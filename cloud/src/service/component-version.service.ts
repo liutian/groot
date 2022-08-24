@@ -39,7 +39,10 @@ export class ComponentVersionService {
     }
 
     const imageComponentVersion = await em.findOne(ComponentVersion, rawComponentVersion.imageVersionId,
-      { populate: ['groupList', 'blockList', 'itemList', 'valueList'], populateWhere: { valueList: { type: { $ne: PropValueType.Default } } } }
+      {
+        populate: ['groupList', 'blockList', 'itemList', 'valueList'],
+        populateWhere: { valueList: { type: { $nin: [PropValueType.Default, PropValueType.Instance_List_Item, PropValueType.Instance_List_Parent] } } }
+      }
     );
     if (!imageComponentVersion) {
       throw new LogicException(`componentVersion not found id:${rawComponentVersion.imageVersionId}`, LogicExceptionCode.NotFound);

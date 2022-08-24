@@ -17,7 +17,7 @@ export class PropValueService {
       component: rawPropValue.componentId,
       componentVersion: rawPropValue.componentVersionId,
       scaffold: rawPropValue.scaffoldId,
-      type: PropValueType.Prototype_List,
+      type: rawPropValue.type,
     };
 
     const lastPropValue = await em.findOne(PropValue, query, { orderBy: { order: 'DESC' } });
@@ -42,7 +42,6 @@ export class PropValueService {
       component: propValue.componentId,
       componentVersion: propValue.componentVersionId,
       scaffold: propValue.scaffoldId,
-      type: { $ne: PropValueType.Default }
     });
 
     em.remove(propValue);
@@ -73,7 +72,7 @@ export class PropValueService {
         abstractValueIdChainForBlockListStruct: rawPropValue.abstractValueIdChainForBlockListStruct,
         release: rawPropValue.releaseId,
         componentInstance: rawPropValue.componentInstanceId,
-        type: rawPropValue.abstractValueIdChainForBlockListStruct ? PropValueType.Instance_List : PropValueType.Default
+        type: rawPropValue.abstractValueIdChainForBlockListStruct ? PropValueType.Instance_List_Item : PropValueType.Default
       });
       await em.flush();
       return newPropValue;
@@ -85,7 +84,7 @@ export class PropValueService {
           componentVersion: rawPropValue.componentVersionId,
           scaffold: rawPropValue.scaffoldId,
           value: rawPropValue.value,
-          type: PropValueType.Prototype_List,
+          type: PropValueType.Prototype_List_Item,
           abstractValueIdChainForBlockListStruct: rawPropValue.abstractValueIdChainForBlockListStruct
         });
 

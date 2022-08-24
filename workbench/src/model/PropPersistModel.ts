@@ -359,7 +359,7 @@ export default class PropPersistModel {
     })
   }
 
-  public addBlockListStructChildItem = (propItem: PropItem) => {
+  public addItemParentForBlockListStruct = (propItem: PropItem) => {
     const abstractValueIdChainForBlockListStruct = calcPropValueIdChain(propItem);
     fetch(`${serverPath}/value/block-list-struct/add`, {
       method: 'POST',

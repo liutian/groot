@@ -148,7 +148,7 @@ const PropBlockListStructPane: React.FC<PropsType> = ({ block: propBlock }) => {
     <div>
       <Space>
         <Typography.Link
-          onClick={() => propPersistModel.addBlockListStructChildItem(childPropItem)}
+          onClick={() => propPersistModel.addItemParentForBlockListStruct(childPropItem)}
           disabled={!propBlock.listStructData.length}>
           添加子项
         </Typography.Link>
