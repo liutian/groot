@@ -125,8 +125,8 @@ export class WorkbenchController {
   }
 
   @Post('/value/update')
-  async valueUpdate(@Body() rawPropValue: PropValue, @Body('type') type: 'instance' | 'prototype') {
-    return await this.propValueService.update(rawPropValue, type);
+  async valueUpdate(@Body() rawPropValue: PropValue) {
+    return await this.propValueService.update(rawPropValue);
   }
 
   @Post('/component/add')

@@ -147,7 +147,7 @@ export class PropItemService {
 
       await em.nativeDelete(PropValue, {
         abstractValueIdChain: { $like: `${propItem.id}` },
-        type: { $nin: [PropValueType.Default, PropValueType.Instance_List_Item, PropValueType.Instance_List_Parent] }
+        type: PropValueType.Prototype
       });
 
       await em.commit();
@@ -180,7 +180,7 @@ export class PropItemService {
         propItem.versionTraceId = propItem.id;
         await em.nativeDelete(PropValue, {
           abstractValueIdChain: { $like: `${propItem.id}` },
-          type: { $nin: [PropValueType.Default, PropValueType.Instance_List_Item, PropValueType.Instance_List_Parent] }
+          type: PropValueType.Prototype
         });
       }
 

@@ -53,7 +53,7 @@ export class PropValue extends BaseEntity {
   scaffoldId?: number;
 
   @Property()
-  type: PropValueType = PropValueType.Default;
+  type: PropValueType;
 
   @Property()
   order?: number;

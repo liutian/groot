@@ -107,10 +107,6 @@ export enum PropBlockStructType {
 }
 
 export enum PropValueType {
-  Default = 'default',
-  Prototype_List_Item = 'prototype_list_item',
-  Instance_List_Item = 'instance_list_item',
-  Prototype_List_Parent = 'prototype_list_parent',
-  Instance_List_Parent = 'instance_list_parent',
-  Prototype_List_Parent_Prototype = 'prototype_list_parent_prototype',
+  Instance = 'instance',
+  Prototype = 'prototype',
 }

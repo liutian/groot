@@ -41,7 +41,7 @@ export class ComponentVersionService {
     const imageComponentVersion = await em.findOne(ComponentVersion, rawComponentVersion.imageVersionId,
       {
         populate: ['groupList', 'blockList', 'itemList', 'valueList'],
-        populateWhere: { valueList: { type: { $nin: [PropValueType.Default, PropValueType.Instance_List_Item, PropValueType.Instance_List_Parent] } } }
+        populateWhere: { valueList: { type: PropValueType.Prototype } }
       }
     );
     if (!imageComponentVersion) {

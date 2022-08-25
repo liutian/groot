@@ -11,6 +11,10 @@ export class PropValueService {
   async abstractTypeAdd(rawPropValue: PropValue) {
     const em = RequestContext.getEntityManager();
 
+    if (!rawPropValue.type) {
+      throw new LogicException('type can not empty', LogicExceptionCode.ParamEmpty);
+    }
+
     const query = {
       propItem: rawPropValue.propItemId,
       abstractValueIdChain: rawPropValue.abstractValueIdChain,
@@ -18,7 +22,12 @@ export class PropValueService {
       componentVersion: rawPropValue.componentVersionId,
       scaffold: rawPropValue.scaffoldId,
       type: rawPropValue.type,
-    };
+    } as any;
+
+    if (rawPropValue.type === PropValueType.Instance) {
+      query.release = rawPropValue.releaseId;
+      query.componentInstance = rawPropValue.componentInstanceId
+    }
 
     const lastPropValue = await em.findOne(PropValue, query, { orderBy: { order: 'DESC' } });
 
@@ -50,7 +59,7 @@ export class PropValueService {
 
   }
 
-  async update(rawPropValue: PropValue, type: 'prototype' | 'instance') {
+  async update(rawPropValue: PropValue) {
     const em = RequestContext.getEntityManager();
 
     if (rawPropValue.id) {
@@ -62,7 +71,7 @@ export class PropValueService {
       propValue.value = rawPropValue.value;
       await em.flush();
       return null;
-    } else if (type === 'instance') {
+    } else if (rawPropValue.type === 'instance') {
       const newPropValue = em.create(PropValue, {
         propItem: rawPropValue.propItemId,
         component: rawPropValue.componentId,
@@ -72,7 +81,7 @@ export class PropValueService {
         abstractValueIdChain: rawPropValue.abstractValueIdChain,
         release: rawPropValue.releaseId,
         componentInstance: rawPropValue.componentInstanceId,
-        type: rawPropValue.abstractValueIdChain ? PropValueType.Instance_List_Item : PropValueType.Default
+        type: PropValueType.Instance
       });
       await em.flush();
       return newPropValue;
@@ -84,7 +93,7 @@ export class PropValueService {
           componentVersion: rawPropValue.componentVersionId,
           scaffold: rawPropValue.scaffoldId,
           value: rawPropValue.value,
-          type: PropValueType.Prototype_List_Item,
+          type: PropValueType.Prototype,
           abstractValueIdChain: rawPropValue.abstractValueIdChain
         });
 

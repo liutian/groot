@@ -1,4 +1,4 @@
-import { PropBlockStructType, PropItemType } from "@grootio/common";
+import { PropBlockStructType, PropItemType, PropValueType } from "@grootio/common";
 import { assignBaseType, autoIncrementForName, calcPropValueIdChain, parseOptions, stringifyOptions } from "@util/utils";
 import { serverPath } from "config";
 import PropHandleModel from "./PropHandleModel";
@@ -359,20 +359,31 @@ export default class PropPersistModel {
     })
   }
 
-  public addItemParentForBlockListStruct = (propItem: PropItem) => {
+  public addAbstractTypeValue = (propItem: PropItem) => {
     const abstractValueIdChain = calcPropValueIdChain(propItem);
+
+    const paramsData = {
+      propItemId: propItem.id,
+      abstractValueIdChain,
+      componentVersionId: this.workbench.component.version.id,
+      componentId: this.workbench.component.id,
+      scaffoldId: this.workbench.component.scaffoldId
+    } as PropValue;
+
+    if (this.workbench.prototypeMode) {
+      paramsData.type = PropValueType.Prototype;
+    } else {
+      paramsData.type = PropValueType.Instance;
+      paramsData.releaseId = this.workbench.application.release.id;
+      paramsData.componentInstanceId = this.workbench.componentInstance.id;
+    }
+
     fetch(`${serverPath}/value/abstract-type/add`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        propItemId: propItem.id,
-        abstractValueIdChain,
-        componentVersionId: this.workbench.component.version.id,
-        componentId: this.workbench.component.id,
-        scaffoldId: this.workbench.component.scaffoldId,
-      })
+      body: JSON.stringify(paramsData)
     }).then(r => r.json()).then((result: { data: PropValue }) => {
       propItem.valueList.push(result.data);
       this.workbench.iframeManager.refreshComponent(this.workbench.component);
@@ -407,9 +418,9 @@ export default class PropPersistModel {
       paramData.value = valueStr;
 
       if (this.workbench.prototypeMode) {
-        (paramData as any).type = 'prototype';
+        paramData.type = PropValueType.Prototype;
       } else {
-        (paramData as any).type = 'instance';
+        paramData.type = PropValueType.Instance;
         paramData.releaseId = this.workbench.application.release.id;
         paramData.componentInstanceId = this.workbench.componentInstance.id;
       }
