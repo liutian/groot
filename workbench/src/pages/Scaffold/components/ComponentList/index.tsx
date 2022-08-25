@@ -22,6 +22,7 @@ const ComponentList: React.FC = () => {
           workbenchModel.currActiveTab = 'props';
         });
         scaffoldModel.switchComponent(component.id, component.recentVersionId);
+        window.history.pushState(null, '', `?scaffoldId=${scaffoldModel.scaffold.id}&versionId=${component.recentVersionId}&componentId=${component.id}`);
       }
     };
   });

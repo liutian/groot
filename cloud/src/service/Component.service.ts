@@ -17,7 +17,7 @@ export class ComponentService {
    * @param versionId 组件版本
    * @returns 组件信息
    */
-  async getComponentPrototype(id: number, versionId?: number) {
+  async getComponentPrototype(id: number, versionId: number) {
     const em = RequestContext.getEntityManager();
     const component = await em.findOne(Component, id, { populate: ['versionList'] });
 
@@ -25,11 +25,11 @@ export class ComponentService {
       throw new LogicException(`not found component id: ${id}`, LogicExceptionCode.NotFound);
     }
 
-    if (!versionId && !component.recentVersion?.id) {
+    if (!versionId) {
       throw new LogicException('not found component version id', LogicExceptionCode.NotFound);
     }
 
-    const version = await em.findOne(ComponentVersion, versionId || component.recentVersion?.id,
+    const version = await em.findOne(ComponentVersion, versionId,
       { populate: ['groupList', 'blockList', 'itemList', 'valueList'], populateWhere: { valueList: { type: PropValueType.Prototype } } }
     );
 

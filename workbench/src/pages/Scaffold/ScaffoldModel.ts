@@ -16,7 +16,7 @@ export default class ScaffoldModel {
     this.workbench = workbench;
   }
 
-  public switchComponent = (componentId: number, versionId?: number) => {
+  public switchComponent = (componentId: number, versionId: number) => {
     const url = `${serverPath}/component/prototype/detail/${componentId}?versionId=${versionId}`;
     this.loadComponent = 'doing';
     fetch(url).then(res => res.json()).then(({ data }: { data: Component }) => {
@@ -29,12 +29,9 @@ export default class ScaffoldModel {
     const url = `${serverPath}/scaffold/detail/${scaffoldId}`;
     return fetch(url).then(res => res.json()).then(({ data }: { data: Scaffold }) => {
       this.scaffold = data;
-      if (data.componentList.length) {
-        const component = data.componentList[0];
-        this.switchComponent(component.id, component.recentVersionId);
-      }
     }).catch((e) => {
       this.scaffold = null;
+      return Promise.reject(e);
     })
   }
 

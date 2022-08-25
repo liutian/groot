@@ -14,8 +14,8 @@ export default class EditorModel {
     this.workbench = workbench;
   }
 
-  public switchComponent = (instancceId: number, releaseId?: number) => {
-    const url = `${serverPath}/component/instance/detail/${instancceId}?releaseId=${releaseId}`;
+  public switchComponent = (instanceId: number, releaseId: number) => {
+    const url = `${serverPath}/component/instance/detail/${instanceId}?releaseId=${releaseId}`;
     this.loadComponent = 'doing';
     fetch(url).then(res => res.json()).then(({ data }: { data: Component }) => {
       this.loadComponent = 'over';
@@ -24,15 +24,13 @@ export default class EditorModel {
     })
   }
 
-  public fetchApplication = (applicationId: number) => {
-    const url = `${serverPath}/application/detail/${applicationId}`;
+  public fetchApplication = (applicationId: number, releaseId: number) => {
+    const url = `${serverPath}/application/detail/${applicationId}?releaseId=${releaseId}`;
     return fetch(url).then(res => res.json()).then(({ data }: { data: Application }) => {
       this.application = data;
-      const pageComponentInstance = data.release.instanceList;
-      this.workbench.componentInstance = pageComponentInstance[0];
-      this.switchComponent(this.workbench.componentInstance.id, data.release.id);
     }).catch((e) => {
       this.application = null;
+      return Promise.reject(e);
     })
   }
 

@@ -33,12 +33,12 @@ export class WorkbenchController {
   ) { }
 
   @Get('/component/instance/detail/:instanceId')
-  async componentInstanceDetail(@Param('instanceId') instanceId: number, @Query('releaseId') releaseId?: number) {
+  async componentInstanceDetail(@Param('instanceId') instanceId: number, @Query('releaseId') releaseId: number) {
     return this.componentInstanceService.getComponent(instanceId, releaseId);
   }
 
   @Get('/component/prototype/detail/:componentId')
-  async componentPrototypeDetail(@Param('componentId') componentId: number, @Query('versionId') versionId?: number) {
+  async componentPrototypeDetail(@Param('componentId') componentId: number, @Query('versionId') versionId: number) {
     return this.componentService.getComponentPrototype(componentId, versionId);
   }
 

@@ -90,7 +90,7 @@ export class ComponentInstanceService {
   }
 
   // todo **id为componentInstanceId**
-  async getComponent(instancceId: number, releaseId?: number) {
+  async getComponent(instancceId: number, releaseId: number) {
     const em = RequestContext.getEntityManager();
 
     const instance = await em.findOne(ComponentInstance, { id: instancceId, release: releaseId }, {

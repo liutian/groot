@@ -32,7 +32,6 @@ const Editor: React.FC = () => {
       )
     }
 
-
     workbenchModel.renderFooterLeftActionItems.push(() => {
       return (<span>{workbenchModel.component?.version.name}</span>)
     });
@@ -43,7 +42,17 @@ const Editor: React.FC = () => {
       </div>)
     });
 
-    editorModel.fetchApplication(+searchParams.get('applicationId'));
+    const applicationId = +searchParams.get('applicationId');
+    const releaseId = +searchParams.get('releaseId');
+    const instanceId = +searchParams.get('instanceId');
+    editorModel.fetchApplication(applicationId, releaseId).then(() => {
+      if (instanceId) {
+        editorModel.switchComponent(instanceId, releaseId);
+      } else if (editorModel.application.release.instanceList.length) {
+        const instance = editorModel.application.release.instanceList[0];
+        editorModel.switchComponent(instance.id, releaseId);
+      }
+    })
   }, []);
 
   const renderList = () => {
@@ -61,6 +70,7 @@ const Editor: React.FC = () => {
             workbenchModel.currActiveTab = 'props';
           });
           editorModel.switchComponent(componentInstance.id, editorModel.application.release.id);
+          window.history.pushState(null, '', `?applicationId=${editorModel.application.id}&releaseId=${editorModel.application.release.id}&instanceId=${componentInstance.id}`);
         }
       };
     });

@@ -56,7 +56,17 @@ const Scaffold: React.FC = () => {
       workbenchModel.switchComponent = scaffoldModel.switchComponent;
     }, false)
 
-    scaffoldModel.fetchScaffold(+searchParams.get('scaffoldId'));
+    const componentId = +searchParams.get('componentId');
+    const versionId = +searchParams.get('versionId');
+    const scaffoldId = +searchParams.get('scaffoldId');
+    scaffoldModel.fetchScaffold(scaffoldId).then(() => {
+      if (componentId) {
+        scaffoldModel.switchComponent(componentId, versionId);
+      } else if (scaffoldModel.scaffold.componentList.length) {
+        const component = scaffoldModel.scaffold.componentList[0];
+        scaffoldModel.switchComponent(component.id, versionId);
+      }
+    })
   }, []);
 
   if (scaffoldModel.scaffold === undefined) {
