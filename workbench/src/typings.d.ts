@@ -83,11 +83,11 @@ type ComponentVersion = {
   blockList: PropBlock[],
   itemList: PropItem[],
   valueList: PropValue[]
-} & Omit<import("../../cloud/src/entities/ComponentVersion").ComponentVersion, 'groupList' | 'blockList' | 'itemList'>;
+} & Omit<import("../../cloud/src/entities/ComponentVersion").ComponentVersion, 'groupList' | 'blockList' | 'itemList' | 'valueList'>;
 
 type ComponentInstance = {
-
-} & Omit<import("../../cloud/src/entities/ComponentInstance").ComponentInstance, ''>;
+  valueList: PropValue[]
+} & Omit<import("../../cloud/src/entities/ComponentInstance").ComponentInstance, 'valueList'>;
 
 type Release = {
   instanceList: ComponentInstance[]
@@ -99,7 +99,8 @@ type PropValue = {
 
 type Component = {
   version: ComponentVersion,
-  recentVersionId: number
+  instance: ComponentInstance,
+  recentVersionId: number,
 
   versionList: ComponentVersion[]
 } & Omit<import("../../cloud/src/entities/Component").Component, 'version'>;

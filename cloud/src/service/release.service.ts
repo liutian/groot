@@ -27,7 +27,7 @@ export class ReleaseService {
       throw new LogicException('imageReleaseId can not empty', LogicExceptionCode.ParamEmpty);
     }
 
-    const imageRelease = await em.findOne(Release, rawRelease.imageReleaseId, { populate: ['instanceList.propValueList'] });
+    const imageRelease = await em.findOne(Release, rawRelease.imageReleaseId, { populate: ['instanceList.valueList'] });
     if (!imageRelease) {
       throw new LogicException(`release not found id:${rawRelease.imageReleaseId}`, LogicExceptionCode.NotFound);
     }
@@ -71,7 +71,7 @@ export class ReleaseService {
           instance.parentInstance = instanceMap.get(originInstance.parentInstance.id);
         }
 
-        const originPropValueList = originInstance.propValueList.getItems();
+        const originPropValueList = originInstance.valueList.getItems();
 
         for (let propValueIndex = 0; propValueIndex < originPropValueList.length; propValueIndex++) {
           const originPropValue = originPropValueList[propValueIndex];

@@ -139,9 +139,9 @@ export class WorkbenchController {
     return await this.componentVersionService.add(componentVersion);
   }
 
-  @Post('/page/add')
-  async pageAdd(@Body() componentInstance: ComponentInstance) {
-    return await this.componentInstanceService.addPage(componentInstance);
+  @Post('/component-instance/add')
+  async componentInstanceAdd(@Body() componentInstance: ComponentInstance) {
+    return await this.componentInstanceService.add(componentInstance);
   }
 
   @Get('/component/list')

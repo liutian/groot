@@ -25,7 +25,7 @@ export class ComponentInstance extends BaseEntity {
 
 
   @OneToMany(() => PropValue, propValue => propValue.componentInstance)
-  propValueList = new Collection<PropValue>(this);
+  valueList = new Collection<PropValue>(this);
 
   /**
  * 一个实例可以被多个迭代引用，只有组件版本升级会导致实例变化
@@ -41,4 +41,7 @@ export class ComponentInstance extends BaseEntity {
 
   @Property({ persist: false })
   releaseId?: number;
+
+  @Property({ persist: false })
+  componentVersionId?: number;
 }

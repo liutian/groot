@@ -19,6 +19,7 @@ export default class EditorModel {
     this.loadComponent = 'doing';
     fetch(url).then(res => res.json()).then(({ data }: { data: Component }) => {
       this.loadComponent = 'over';
+      data.version.valueList = data.instance.valueList;
       this.workbench.startApplication(data, this.application);
     })
   }
@@ -37,7 +38,7 @@ export default class EditorModel {
 
   public addPage = (rawComponentInstance: ComponentInstance) => {
     this.pageAddFetchLoading = true;
-    return fetch(`${serverPath}/page/add`, {
+    return fetch(`${serverPath}/component-instance/add`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
