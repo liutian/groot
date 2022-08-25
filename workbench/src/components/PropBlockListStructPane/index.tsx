@@ -20,6 +20,7 @@ const PropBlockListStructPane: React.FC<PropsType> = ({ block: propBlock }) => {
   const [workbenchModel] = useModel<WorkbenchModel>(WorkbenchModel.modelName);
   const [propPersistModel] = useModel<PropPersistModel>(PropPersistModel.modelName);
   const [form] = Form.useForm();
+  const dataSourceEditable = !!childPropItem.block.group.root || childPropItem.block.group.parentItem?.tempAbstractValueId;
 
   const [getInitValue] = useState(() => {
     const cacheMap = new Map<PropItem, Map<number, any>>();
@@ -60,35 +61,42 @@ const PropBlockListStructPane: React.FC<PropsType> = ({ block: propBlock }) => {
       }
     }
   });
-  if (workbenchModel.prototypeMode) {
-    columns.push({
-      title: '',
-      dataIndex: '#action',
-      width: '50px',
-      render: (_, record) => {
-        return (<Space>
-          <Typography.Link >
-            <SettingOutlined onClick={() => showPropItemSetting(record.abstractValueId)} />
-          </Typography.Link>
+  columns.push({
+    title: '',
+    dataIndex: '#action',
+    width: '50px',
+    render: (_, record) => {
+      return (<Space>
+        <Typography.Link >
+          <SettingOutlined onClick={() => showPropItemSetting(record.abstractValueId)} />
+        </Typography.Link>
 
-          <Typography.Link>
-            <DeleteOutlined onClick={() => propPersistModel.removeBlockListStructChildItem(record.abstractValueId, childPropItem)} />
-          </Typography.Link>
+        <Typography.Link>
+          <DeleteOutlined onClick={() => propPersistModel.removeBlockListStructChildItem(record.abstractValueId, childPropItem)} />
+        </Typography.Link>
 
-          <Typography.Link>
-            <DragOutlined />
-          </Typography.Link>
-        </Space>)
-      }
-    });
+        <Typography.Link>
+          <DragOutlined />
+        </Typography.Link>
+      </Space>)
+    }
+  });
 
-    childPropItem.valueList.forEach((abstractValue: PropValue) => {
+  if (dataSourceEditable) {
+    let valueList = childPropItem.valueList;
+    if (childPropItem.block.group.parentItem?.tempAbstractValueId) {
+      const tempAbstractValueId = childPropItem.block.group.parentItem?.tempAbstractValueId;
+      const regex = new RegExp(`^${tempAbstractValueId}$|,${tempAbstractValueId}$`);
+      valueList = childPropItem.valueList.filter(value => {
+        return regex.test(value.abstractValueIdChain);
+      });
+    }
+
+    valueList.forEach((abstractValue: PropValue) => {
       dataSource.push({
         abstractValueId: abstractValue.id
       });
     })
-  } else {
-
   }
 
   const showPrimaryItem = () => {
@@ -147,19 +155,28 @@ const PropBlockListStructPane: React.FC<PropsType> = ({ block: propBlock }) => {
 
     <div>
       <Space>
-        <Typography.Link
-          onClick={() => propPersistModel.addItemParentForBlockListStruct(childPropItem)}
-          disabled={!propBlock.listStructData.length}>
-          添加子项
-        </Typography.Link>
-        <Typography.Link hidden={!workbenchModel.prototypeMode}
-          onClick={() => showPrimaryItem()}>
-          首要显示项
-        </Typography.Link>
-        <Typography.Link hidden={!workbenchModel.prototypeMode}
-          onClick={() => propHandleModel.pushPropItemStack(childPropItem)}>
-          子项模版配置
-        </Typography.Link>
+        {
+          (dataSourceEditable) && <Typography.Link
+            onClick={() => propPersistModel.addAbstractTypeValue(childPropItem)}
+            disabled={!propBlock.listStructData.length}>
+            添加子项
+          </Typography.Link>
+        }
+
+        {
+          workbenchModel.prototypeMode && (
+            <>
+              <Typography.Link hidden={!workbenchModel.prototypeMode}
+                onClick={() => showPrimaryItem()}>
+                首要显示项
+              </Typography.Link>
+              <Typography.Link hidden={!workbenchModel.prototypeMode}
+                onClick={() => propHandleModel.pushPropItemStack(childPropItem)}>
+                子项模版配置
+              </Typography.Link>
+            </>
+          )
+        }
       </Space>
     </div>
   </div>
