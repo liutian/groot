@@ -32,6 +32,26 @@ export class ComponentInstanceService {
       throw new LogicException(`can not found release id:${rawInstance.releaseId}`, LogicExceptionCode.NotFound);
     }
 
+    if (rawInstance.path) {
+      const count = await em.count(ComponentInstance, {
+        path: rawInstance.path,
+        release
+      });
+
+      if (count > 0) {
+        throw new LogicException(`path not unique path: ${rawInstance.path}`, LogicExceptionCode.NotUnique);
+      }
+    } else {
+      const count = await em.count(ComponentInstance, {
+        name: rawInstance.name,
+        release
+      });
+
+      if (count > 0) {
+        throw new LogicException(`name not unique name: ${rawInstance.name}`, LogicExceptionCode.NotUnique);
+      }
+    }
+
     const newInstance = em.create(ComponentInstance, {
       name: rawInstance.name,
       path: rawInstance.path,
