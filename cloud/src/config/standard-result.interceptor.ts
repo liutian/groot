@@ -11,7 +11,7 @@ export class StandardResultInterceptor implements NestInterceptor {
       timeout(isDevMode() ? 1000 * 60 * 5 : 1000 * 60),
       map(value => value === null || value === undefined ? '' : value),
       map((value) => {
-        if (Array.isArray(value)) {
+        if (Array.isArray(value) && typeof value[0] === 'string' && typeof value[1] === 'string') {
           return {
             code: value[0],
             message: value[1],
