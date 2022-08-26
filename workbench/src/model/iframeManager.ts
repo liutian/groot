@@ -219,7 +219,7 @@ function buildPropObjectForLeafItem(propItem: PropItem, ctx: Object, ctxKeyChain
   const [newCTX, propEnd] = fillPropChain(propItem.rootPropKey ? metadata.propsObj : ctx, propItem.propKey);
   ctxKeyChain = propItem.rootPropKey ? propItem.propKey : `${ctxKeyChain}.${propItem.propKey}`;
 
-  let propValue;
+  let propValue = propItem.valueList[0];
 
   if (parentValueList?.length) {
     const propValueRegex = new RegExp(parentValueList.map(v => v.id).join(',.*'));
