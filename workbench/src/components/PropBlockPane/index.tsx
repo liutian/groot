@@ -49,6 +49,9 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
     const editPropItem = () => {
       propPersistAction(() => {
         propPersistModel.currSettingPropItem = JSON.parse(stringify(propItem));
+        if (propItem.optionList?.length) {
+          propPersistModel.currSettingPropItem.optionList = propItem.optionList.map(option => JSON.parse(stringify(option)));
+        }
       })
     }
 

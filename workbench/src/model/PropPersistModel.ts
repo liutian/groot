@@ -252,7 +252,8 @@ export default class PropPersistModel {
         const block = this.propHandle.getPropBlock(propItem.blockId);
         let itemIndex = block.propItemList.findIndex(item => item.id === propItem.id);
         // block.propItemList.splice(itemIndex, 1, propItem);
-        assignBaseType(block.propItemList[itemIndex], newItem);
+        assignBaseType(block.propItemList[itemIndex], propItem);
+        block.propItemList[itemIndex].optionList = propItem.optionList;
 
         this.settingModalLoading = false;
         this.currSettingPropItem = undefined;
