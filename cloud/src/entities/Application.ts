@@ -34,6 +34,9 @@ export class Application extends BaseEntity {
   @Property({ persist: false })
   release: Release;
 
+  @Property({ persist: false })
+  releaseList: Release[];
+
   @ManyToOne({ serializer: value => value?.id, serializedName: 'projectId' })
   project: Project;
 

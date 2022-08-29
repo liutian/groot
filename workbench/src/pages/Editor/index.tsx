@@ -1,7 +1,7 @@
 import { useEffect, } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Button, Menu, Tabs } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
+import { Button, Dropdown, Menu, Tabs } from "antd";
+import { BranchesOutlined, PlusOutlined } from "@ant-design/icons";
 
 import styles from './index.module.less';
 import { useRegisterModel } from "@util/robot";
@@ -11,6 +11,7 @@ import PropHandleModel from "@model/PropHandleModel";
 import Workbench from "@components/Workbench";
 import EditorModel from "./EditorModel";
 import PageAddModal from "./components/PageAddModal";
+import ReleaseAddModal from "./components/ReleaseAddModal";
 
 const Editor: React.FC = () => {
   const [editorModel, editorUpdateAction] = useRegisterModel<EditorModel>(EditorModel.modelName, new EditorModel());
@@ -19,6 +20,12 @@ const Editor: React.FC = () => {
   const [propPersistModel] = useRegisterModel<PropPersistModel>(PropPersistModel.modelName, new PropPersistModel());
 
   let [searchParams] = useSearchParams();
+
+  const releaseAdd = () => {
+    editorUpdateAction(() => {
+      editorModel.showReleaseAddModal = true;
+    })
+  }
 
   useEffect(() => {
     propPersistModel.inject(workbenchModel, propHandleModel);
@@ -33,11 +40,26 @@ const Editor: React.FC = () => {
     }
 
     workbenchModel.renderFooterLeftActionItems.push(() => {
-      return (<span>{workbenchModel.component?.version.name}</span>)
+      const releaseListMenu = editorModel.application.releaseList.map((release) => {
+        return {
+          key: release.id,
+          label: (<a >{release.name}</a>),
+          onClick: () => {
+            editorModel.switchRelease(release.id);
+          }
+        }
+      })
+
+      return (<Dropdown placement="topLeft" overlay={<Menu items={releaseListMenu} />}>
+        <span >
+          <BranchesOutlined title="迭代" />
+          <span>{editorModel.application.release.name}</span>
+        </span>
+      </Dropdown>)
     });
 
     workbenchModel.renderFooterLeftActionItems.push(() => {
-      return (<div >
+      return (<div onClick={releaseAdd}>
         <PlusOutlined />
       </div>)
     });
@@ -47,10 +69,10 @@ const Editor: React.FC = () => {
     const instanceId = +searchParams.get('instanceId');
     editorModel.fetchApplication(applicationId, releaseId).then(() => {
       if (instanceId) {
-        editorModel.switchComponent(instanceId, releaseId);
+        editorModel.switchComponentInstance(instanceId);
       } else if (editorModel.application.release.instanceList.length) {
         const instance = editorModel.application.release.instanceList[0];
-        editorModel.switchComponent(instance.id, releaseId);
+        editorModel.switchComponentInstance(instance.id);
       }
     })
   }, []);
@@ -69,7 +91,7 @@ const Editor: React.FC = () => {
           workbenchUpdateAction(() => {
             workbenchModel.currActiveTab = 'props';
           });
-          editorModel.switchComponent(componentInstance.id, editorModel.application.release.id);
+          editorModel.switchComponentInstance(componentInstance.id);
           window.history.pushState(null, '', `?applicationId=${editorModel.application.id}&releaseId=${editorModel.application.release.id}&instanceId=${componentInstance.id}`);
         }
       };
@@ -102,6 +124,7 @@ const Editor: React.FC = () => {
     return (<>
       <Workbench />
       <PageAddModal />
+      <ReleaseAddModal />
     </>);
   }
 }

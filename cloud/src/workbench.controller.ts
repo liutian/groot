@@ -33,8 +33,8 @@ export class WorkbenchController {
   ) { }
 
   @Get('/component/instance/detail/:instanceId')
-  async componentInstanceDetail(@Param('instanceId') instanceId: number, @Query('releaseId') releaseId: number) {
-    return this.componentInstanceService.getComponent(instanceId, releaseId);
+  async componentInstanceDetail(@Param('instanceId') instanceId: number) {
+    return this.componentInstanceService.getComponent(instanceId);
   }
 
   @Get('/component/prototype/detail/:componentId')
@@ -155,4 +155,9 @@ export class WorkbenchController {
     return await this.releaseService.add(release);
   }
 
+
+  @Get('/release/detail/:releaseId')
+  async releaseDetail(@Param('releaseId') releaseId: number) {
+    return await this.releaseService.detail(releaseId);
+  }
 }

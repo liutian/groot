@@ -17,6 +17,11 @@ export class ApplicationService {
       populateWhere: { instanceList: { path: { $ne: null } } }
     });
     application.release = wrap(release).toObject() as any;
+
+    application.releaseList = await em.find(Release, {
+      application: applicationId
+    });
+
     return application;
   }
 

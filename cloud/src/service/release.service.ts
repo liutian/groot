@@ -41,6 +41,8 @@ export class ReleaseService {
     const originInstanceList = imageRelease.instanceList.getItems();
 
     const instanceMap = new Map<number, ComponentInstance>();
+    const valueMap = new Map<number, PropValue>();
+    const newValueList = [];
 
     const release = em.create(Release, {
       name: rawRelease.name,
@@ -51,21 +53,17 @@ export class ReleaseService {
     try {
       await em.flush();
 
-      for (let instanceIndex = 0; instanceIndex < originInstanceList.length; instanceIndex++) {
-        const originInstance = originInstanceList[instanceIndex];
-
+      originInstanceList.forEach((originInstance) => {
         const instance = em.create(ComponentInstance, {
           ...pick(originInstance, ['name', 'component', 'componentVersion', 'path']),
           release
         });
         instanceMap.set(originInstance.id, instance);
-      }
+      })
 
       await em.flush();
 
-      for (let instanceIndex = 0; instanceIndex < originInstanceList.length; instanceIndex++) {
-        const originInstance = originInstanceList[instanceIndex];
-
+      originInstanceList.forEach((originInstance) => {
         const instance = instanceMap.get(originInstance.id);
         if (originInstance.parentInstance) {
           instance.parentInstance = instanceMap.get(originInstance.parentInstance.id);
@@ -73,9 +71,8 @@ export class ReleaseService {
 
         const originPropValueList = originInstance.valueList.getItems();
 
-        for (let propValueIndex = 0; propValueIndex < originPropValueList.length; propValueIndex++) {
-          const originPropValue = originPropValueList[propValueIndex];
-          em.create(PropValue, {
+        originPropValueList.forEach((originPropValue) => {
+          const newPropValue = em.create(PropValue, {
             ...pick(originPropValue, [
               'propItem', 'value', 'abstractValueIdChain',
               'component', 'componentVersion', 'application', 'project', 'scaffold', 'type',
@@ -84,8 +81,20 @@ export class ReleaseService {
             release,
             componentInstance: instance
           });
-        }
-      }
+          valueMap.set(originPropValue.id, newPropValue);
+          newValueList.push(newPropValue);
+        })
+      })
+
+      await em.flush();
+
+      newValueList.forEach((newPropValue) => {
+        const abstractValueIdChain = (newPropValue.abstractValueIdChain?.split(',') || []).filter(id => !!id).map(valueId => {
+          return valueMap.get(+valueId).id;
+        }).join(',');
+
+        newPropValue.abstractValueIdChain = abstractValueIdChain;
+      });
 
       await em.flush();
 
@@ -95,9 +104,23 @@ export class ReleaseService {
       throw e;
     }
 
-    return release;
+    const newRelease = await em.findOne(Release, release.id, {
+      populate: ['instanceList'],
+      populateWhere: { instanceList: { path: { $ne: null } } }
+    });
+
+    return newRelease;
   }
 
+  async detail(releaseId: number) {
+    const em = RequestContext.getEntityManager();
+    const release = await em.findOne(Release, releaseId, {
+      populate: ['instanceList'],
+      populateWhere: { instanceList: { path: { $ne: null } } }
+    });
+
+    return release;
+  }
 }
 
 

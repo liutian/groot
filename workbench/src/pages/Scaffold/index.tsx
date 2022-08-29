@@ -36,7 +36,7 @@ const Scaffold: React.FC = () => {
         const versionListMenu = workbenchModel.component?.versionList.map((version) => {
           return {
             key: version.id,
-            label: (<a onClick={() => workbenchModel.switchComponent(workbenchModel.component.id, version.id)}>{version.name}</a>)
+            label: (<a onClick={() => scaffoldModel.switchComponent(workbenchModel.component.id, version.id)}>{version.name}</a>)
           }
         })
 
@@ -53,7 +53,6 @@ const Scaffold: React.FC = () => {
           <PlusOutlined />
         </div>)
       });
-      workbenchModel.switchComponent = scaffoldModel.switchComponent;
     }, false)
 
     const componentId = +searchParams.get('componentId');
