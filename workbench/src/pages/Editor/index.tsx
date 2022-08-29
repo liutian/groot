@@ -43,7 +43,13 @@ const Editor: React.FC = () => {
       const releaseListMenu = editorModel.application.releaseList.map((release) => {
         return {
           key: release.id,
-          label: (<a >{release.name}</a>),
+          label: (<a >
+            {release.name}
+            {editorModel.application.devReleaseId === release.id ? <strong style={{ color: 'green' }}>DEV</strong> : null}
+            {editorModel.application.qaReleaseId === release.id ? <strong style={{ color: 'blue' }}>QA</strong> : null}
+            {editorModel.application.plReleaseId === release.id ? <strong style={{ color: 'orange' }}>PL</strong> : null}
+            {editorModel.application.onlineReleaseId === release.id ? <strong style={{ color: 'red' }}>OL</strong> : null}
+          </a>),
           onClick: () => {
             editorModel.switchRelease(release.id);
           }
