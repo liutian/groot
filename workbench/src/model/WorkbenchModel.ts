@@ -41,6 +41,9 @@ export default class WorkbenchModel {
   public renderFooterLeftActionItems: (() => ReactNode)[] = [];
   public renderExtraTabPanes: () => ReactNode;
 
+  public renderToolBarBreadcrumb: () => ReactNode;
+  public renderToolBarAction: () => ReactNode;
+
   private destroy = false;
   private propHandle: PropHandleModel;
 

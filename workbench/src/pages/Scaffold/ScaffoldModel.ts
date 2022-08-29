@@ -70,4 +70,19 @@ export default class ScaffoldModel {
       this.switchComponent(this.workbench.component.id, newComponentVersion.id);
     });
   }
+
+  public publish = (componentId: number, versioinId: number) => {
+    fetch(`${serverPath}/component-version/publish`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        componentId,
+        versioinId
+      })
+    }).then(res => res.json()).then(() => {
+      this.workbench.component.recentVersionId = versioinId;
+    });
+  }
 }

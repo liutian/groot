@@ -1,7 +1,7 @@
 import { useEffect, } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Button, Dropdown, Menu, Tabs } from "antd";
-import { BranchesOutlined, PlusOutlined } from "@ant-design/icons";
+import { Breadcrumb, Button, Dropdown, Menu, Tabs } from "antd";
+import { BranchesOutlined, HomeOutlined, PlusOutlined, SendOutlined } from "@ant-design/icons";
 
 import styles from './index.module.less';
 import { useRegisterModel } from "@util/robot";
@@ -55,6 +55,23 @@ const Editor: React.FC = () => {
           }
         }
       })
+
+      Object.getPrototypeOf(workbenchModel).renderToolBarAction = () => {
+        return (<>
+          <Button type="link" title="部署" icon={<SendOutlined />} />
+        </>)
+      }
+
+      Object.getPrototypeOf(workbenchModel).renderToolBarBreadcrumb = () => {
+        return (<>
+          <Breadcrumb separator=">">
+            <Breadcrumb.Item>
+              <HomeOutlined />
+            </Breadcrumb.Item>
+            <Breadcrumb.Item href="">{workbenchModel.componentInstance.name}</Breadcrumb.Item>
+          </Breadcrumb>
+        </>)
+      }
 
       return (<Dropdown placement="topLeft" overlay={<Menu items={releaseListMenu} />}>
         <span >

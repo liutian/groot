@@ -12,6 +12,7 @@ import { PropItemService } from './prop-item.service';
 
 import { pick } from 'util/common';
 import { PropValueType } from '@grootio/common';
+import { Component } from 'entities/Component';
 
 const tempIdData = {
   itemId: 1,
@@ -181,6 +182,28 @@ export class ComponentVersionService {
     }
 
     return componentVersion;
+  }
+
+  async publish(componentId: number, versionId: number) {
+    const em = RequestContext.getEntityManager();
+    const component = await em.findOne(Component, componentId);
+
+    if (!component) {
+      throw new LogicException(`not found component id: ${componentId}`, LogicExceptionCode.NotFound);
+    }
+
+    const componentVersion = await em.findOne(ComponentVersion, versionId);
+    if (!componentVersion) {
+      throw new LogicException(`not found componentVersion id: ${versionId}`, LogicExceptionCode.NotFound);
+    }
+
+    if (componentVersion.component.id !== componentId) {
+      throw new LogicException(`versionId Illegal id: ${versionId}`, LogicExceptionCode.ParamError);
+    }
+
+    component.recentVersion = componentVersion;
+    componentVersion.publish = true;
+    await em.flush();
   }
 
 }

@@ -165,4 +165,9 @@ export class WorkbenchController {
   async componentInstanceDetailIdByTrackId(@Query('releaseId') releaseId: number, @Query('trackId') trackId: number) {
     return await this.componentInstanceService.detailIdByTrackId(trackId, releaseId);
   }
+
+  @Post('/component-version/publish')
+  async componentVersionPublish(@Body('componentId') componentId: number, @Body('versioinId') versionId: number) {
+    await this.componentVersionService.publish(componentId, versionId);
+  }
 }
