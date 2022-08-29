@@ -57,7 +57,8 @@ export class ComponentInstanceService {
       path: rawInstance.path,
       component,
       componentVersion: component.recentVersion,
-      release
+      release,
+      trackId: 0
     });
 
     const valueMap = new Map<number, PropValue>();
@@ -67,6 +68,8 @@ export class ComponentInstanceService {
     try {
 
       await em.flush();
+
+      newInstance.trackId = newInstance.id;
 
       const valueList = await em.find(PropValue, {
         component,
@@ -133,6 +136,14 @@ export class ComponentInstanceService {
     component.version = wrap(version).toObject() as any;
 
     return component;
+  }
+
+  async detailIdByTrackId(trackId: number, releaseId: number) {
+    const em = RequestContext.getEntityManager();
+
+    const instance = await em.findOne(ComponentInstance, { trackId, release: releaseId });
+
+    return instance?.id;
   }
 }
 

@@ -71,10 +71,19 @@ export default class EditorModel {
       this.application.release = newRelease;
       this.application.releaseList.push(newRelease);
 
-      if (newRelease.instanceList.length) {
-        const instance = newRelease.instanceList[0];
-        this.switchComponentInstance(instance.id);
-      }
+      const currInstance = this.workbench.componentInstance;
+      fetch(`${serverPath}/component-instance/detail-id?releaseId=${newRelease.id}&trackId=${currInstance.trackId}`, {
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      }).then(res => res.json()).then(({ data: instanceId }: { data: number }) => {
+        if (instanceId) {
+          this.switchComponentInstance(instanceId);
+        } else if (newRelease.instanceList.length) {
+          const instance = newRelease.instanceList[0];
+          this.switchComponentInstance(instance.id);
+        }
+      })
     });
   }
 
@@ -85,10 +94,21 @@ export default class EditorModel {
       },
     }).then(res => res.json()).then(({ data: release }: { data: Release }) => {
       this.application.release = release;
-      if (release.instanceList.length) {
-        const instance = release.instanceList[0];
-        this.switchComponentInstance(instance.id);
-      }
+
+      const currInstance = this.workbench.componentInstance;
+      fetch(`${serverPath}/component-instance/detail-id?releaseId=${releaseId}&trackId=${currInstance.trackId}`, {
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      }).then(res => res.json()).then(({ data: instanceId }: { data: number }) => {
+        if (instanceId) {
+          this.switchComponentInstance(instanceId);
+        } else if (release.instanceList.length) {
+          const instance = release.instanceList[0];
+          this.switchComponentInstance(instance.id);
+        }
+      })
+
     });
   }
 }

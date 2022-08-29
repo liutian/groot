@@ -146,8 +146,13 @@ const PropBlockListStructPane: React.FC<PropsType> = ({ block: propBlock }) => {
     propPersistModel.updateValue(propItem, changedValues[updateKey], +abstractValueId);
   }
 
+  // 避免切换组件实例时表单控件无法刷新的问题
+  const formKey = workbenchModel.prototypeMode ?
+    `componentId:${workbenchModel.component?.id}|versionId:${workbenchModel.component?.version.id}`
+    : `releaseId:${workbenchModel.application?.release.id}|instanceId:${workbenchModel.componentInstance?.id}`;
+
   return <div className={styles.container}>
-    <Form form={form} layout="vertical" onValuesChange={(changedValues) => { updateValue(changedValues) }}>
+    <Form form={form} layout="vertical" key={formKey} onValuesChange={(changedValues) => { updateValue(changedValues) }}>
 
       <Table className={styles.tablePatch} rowKey="abstractValueId" columns={columns} dataSource={dataSource} size="small" pagination={false} ></Table>
 

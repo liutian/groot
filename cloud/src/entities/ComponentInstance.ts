@@ -44,4 +44,7 @@ export class ComponentInstance extends BaseEntity {
 
   @Property({ persist: false })
   componentVersionId?: number;
+
+  @Property()
+  trackId: number;
 }

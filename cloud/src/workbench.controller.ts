@@ -160,4 +160,9 @@ export class WorkbenchController {
   async releaseDetail(@Param('releaseId') releaseId: number) {
     return await this.releaseService.detail(releaseId);
   }
+
+  @Get('/component-instance/detail-id')
+  async componentInstanceDetailIdByTrackId(@Query('releaseId') releaseId: number, @Query('trackId') trackId: number) {
+    return await this.componentInstanceService.detailIdByTrackId(trackId, releaseId);
+  }
 }

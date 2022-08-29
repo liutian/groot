@@ -291,10 +291,13 @@ export class DatabaseSeeder extends Seeder {
       path: '/search',
       component: searchComponent,
       componentVersion: searchComponentVersion,
-      release
+      release,
+      trackId: 0
     });
     await em.persistAndFlush(tableComponentInstance);
 
+    tableComponentInstance.trackId = tableComponentInstance.id;
+    await em.persistAndFlush(tableComponentInstance);
 
     // 创建组件
     const btnComponent = em.create(Component, {
@@ -365,8 +368,12 @@ export class DatabaseSeeder extends Seeder {
       path: '/button',
       component: btnComponent,
       componentVersion: btnComponentVersion,
-      release
+      release,
+      trackId: 0
     });
+    await em.persistAndFlush(btnComponentInstance);
+
+    btnComponentInstance.trackId = btnComponentInstance.id;
     await em.persistAndFlush(btnComponentInstance);
   }
 }

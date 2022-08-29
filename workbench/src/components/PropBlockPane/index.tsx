@@ -163,8 +163,13 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
     propPersistModel.updateValue(propItem, changedValues[updateKey]);
   }
 
+  // 避免切换组件实例时表单控件无法刷新的问题
+  const formKey = workbenchModel.prototypeMode ?
+    `componentId:${workbenchModel.component?.id}|versionId:${workbenchModel.component?.version.id}`
+    : `releaseId:${workbenchModel.application?.release.id}|instanceId:${workbenchModel.componentInstance?.id}`;
+
   return <div className={noWrapMode ? styles.containerWrap : ''}>
-    <Form form={form} layout={block.layout} labelAlign="left" colon={false} className={styles.propForm}
+    <Form form={form} key={formKey} layout={block.layout} labelAlign="left" colon={false} className={styles.propForm}
       onValuesChange={(changedValues) => { updateValue(changedValues); }}>
       <Row gutter={6}>
         {
