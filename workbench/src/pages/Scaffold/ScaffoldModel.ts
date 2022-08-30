@@ -50,6 +50,10 @@ export default class ScaffoldModel {
       this.componentAddFetchLoading = false;
       this.showComponentAddModal = false;
       this.scaffold.componentList.push(newComponent);
+
+      this.workbench.currActiveTab = 'props';
+      this.switchComponent(newComponent.id, newComponent.recentVersionId);
+      window.history.pushState(null, '', `?scaffoldId=${this.scaffold.id}&versionId=${newComponent.recentVersionId}&componentId=${newComponent.id}`);
     });
   }
 

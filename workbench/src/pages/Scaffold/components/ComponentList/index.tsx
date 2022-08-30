@@ -11,7 +11,7 @@ const ComponentList: React.FC = () => {
 
   const componentList = scaffoldModel.scaffold.componentList.map((component) => {
     return {
-      label: component.componentName,
+      label: component.name,
       key: component.id,
       onClick: () => {
         if (workbenchModel.component.id === component.id) {
