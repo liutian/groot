@@ -6,6 +6,13 @@
   --prop-pane-padding-x: 16px;
   --prop-pane-padding-y: 10px;
   --font-color: rgba(0, 0, 0, 0.65);
+  --theme-color: #0095ff;
+  --theme-color-darken: darken(#0095ff, 10%);
+
+  &.prototypeMode {
+    --theme-color: #cc6633;
+    --theme-color-darken: darken(#cc6633, 10%);
+  }
 
   &:global(.drag-active) {
     user-select: none;

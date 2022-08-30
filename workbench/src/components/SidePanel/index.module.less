@@ -41,19 +41,12 @@
 }
 
 .footerContainer {
-  --bg-color: #0095ff;
-  --bg-color-darken: darken(#0095ff, 10%);
   display: flex;
   padding: 0 var(--prop-pane-padding-x);
   line-height: 28px;
   height: 28px;
   color: #fff;
-  background-color: var(--bg-color);
-
-  &.designMode {
-    --bg-color: #cc6633;
-    --bg-color-darken: darken(#cc6633, 10%);
-  }
+  background-color: var(--theme-color);
 
   > :first-child {
     margin-left: -8px;

@@ -23,7 +23,7 @@ const Workbench: React.FC<PropsType> = () => {
     }
   }, [])
 
-  return (<div className={styles.container} >
+  return (<div className={`${styles.container} ${workbenchModel.prototypeMode ? styles.prototypeMode : ''}`} >
 
     <div className={styles.preview}>
       <iframe ref={iframeRef}></iframe>

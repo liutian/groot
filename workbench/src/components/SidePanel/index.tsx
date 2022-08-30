@@ -59,7 +59,7 @@ const SidePanel: React.FC<PropsType> = ({ ...props }) => {
     </Tabs>
 
 
-    <SideFooter className={`${styles.footerContainer} ${workbenchModel.prototypeMode ? styles.designMode : ''}`} />
+    <SideFooter className={`${styles.footerContainer} `} />
 
     <PropGroupSetting />
     <PropBlockSetting />
