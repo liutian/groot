@@ -52,6 +52,10 @@ export default class EditorModel {
       this.pageAddFetchLoading = false;
       this.showPageAddModal = false;
       this.application.release.instanceList.push(newComponentInstance);
+
+      this.workbench.currActiveTab = 'props';
+      this.switchComponentInstance(newComponentInstance.id);
+      window.history.pushState(null, '', `?applicationId=${this.application.id}&releaseId=${this.application.release.id}&instanceId=${newComponentInstance.id}`);
     });
   }
 
