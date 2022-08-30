@@ -4,6 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { LogicException, LogicExceptionCode } from 'config/logic.exception';
 import { Component } from 'entities/Component';
 import { ComponentVersion } from 'entities/ComponentVersion';
+import { PropGroup } from 'entities/PropGroup';
 import { Scaffold } from 'entities/Scaffold';
 import { pick } from 'util/common';
 
@@ -56,25 +57,40 @@ export class ComponentService {
       throw new LogicException('scaffold not found', LogicExceptionCode.NotFound);
     }
 
-    const count = await em.count(Component, {
-      packageName: rawComponent.packageName,
-      componentName: rawComponent.componentName,
-    });
-
-    if (count > 0) {
-      throw new LogicException('packageName and componentName must unique', LogicExceptionCode.NotUnique);
-    }
-
     const newComponent = em.create(Component, pick(rawComponent, ['name', 'componentName', 'packageName', 'container']));
     newComponent.scaffold = scaffold;
-    await em.flush();
 
-    em.create(ComponentVersion, {
-      name: '0.0.1',
-      component: newComponent
-    });
+    await em.begin();
 
-    await em.flush();
+    try {
+      await em.flush();
+
+      const newVersion = em.create(ComponentVersion, {
+        name: '0.0.1',
+        component: newComponent
+      });
+
+      await em.flush();
+
+      newComponent.recentVersion = newVersion;
+
+      await em.flush();
+
+      em.create(PropGroup, {
+        name: '常用配置',
+        order: 1000,
+        componentVersion: newVersion,
+        component: newComponent
+      });
+
+      await em.flush();
+
+      await em.commit();
+    } catch (e) {
+      await em.rollback();
+      throw e;
+    }
+
 
     return newComponent;
   }
