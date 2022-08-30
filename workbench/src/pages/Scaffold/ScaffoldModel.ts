@@ -16,12 +16,17 @@ export default class ScaffoldModel {
     this.workbench = workbench;
   }
 
-  public switchComponent = (componentId: number, versionId: number) => {
+  public switchComponent = (componentId: number, versionId: number, changeHistory = false) => {
     const url = `${serverPath}/component/prototype/detail/${componentId}?versionId=${versionId}`;
     this.loadComponent = 'doing';
-    fetch(url).then(res => res.json()).then(({ data }: { data: Component }) => {
+    return fetch(url).then(res => res.json()).then(({ data }: { data: Component }) => {
       this.loadComponent = 'over';
       this.workbench.startScaffold(data, this.scaffold);
+
+      if (changeHistory) {
+        this.workbench.currActiveTab = 'props';
+        window.history.pushState(null, '', `?scaffoldId=${this.scaffold.id}&versionId=${versionId}&componentId=${componentId}`);
+      }
     })
   }
 
@@ -51,9 +56,7 @@ export default class ScaffoldModel {
       this.showComponentAddModal = false;
       this.scaffold.componentList.push(newComponent);
 
-      this.workbench.currActiveTab = 'props';
-      this.switchComponent(newComponent.id, newComponent.recentVersionId);
-      window.history.pushState(null, '', `?scaffoldId=${this.scaffold.id}&versionId=${newComponent.recentVersionId}&componentId=${newComponent.id}`);
+      this.switchComponent(newComponent.id, newComponent.recentVersionId, true);
     });
   }
 
@@ -71,7 +74,7 @@ export default class ScaffoldModel {
       this.componentVersionAddFetchLoading = false;
       this.showComponentVersionAddModal = false;
       this.workbench.component.versionList.push(newComponentVersion);
-      this.switchComponent(this.workbench.component.id, newComponentVersion.id);
+      this.switchComponent(this.workbench.component.id, newComponentVersion.id, true);
     });
   }
 

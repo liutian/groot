@@ -17,13 +17,18 @@ export default class EditorModel {
     this.workbench = workbench;
   }
 
-  public switchComponentInstance = (instanceId: number) => {
+  public switchComponentInstance = (instanceId: number, changeHistory = false) => {
     const url = `${serverPath}/component/instance/detail/${instanceId}`;
     this.loadComponent = 'doing';
-    fetch(url).then(res => res.json()).then(({ data }: { data: Component }) => {
+    return fetch(url).then(res => res.json()).then(({ data }: { data: Component }) => {
       this.loadComponent = 'over';
       data.version.valueList = data.instance.valueList;
       this.workbench.startApplication(data, this.application);
+
+      if (changeHistory) {
+        this.workbench.currActiveTab = 'props';
+        window.history.pushState(null, '', `?applicationId=${this.application.id}&releaseId=${this.application.release.id}&instanceId=${instanceId}`);
+      }
     })
   }
 
@@ -53,9 +58,7 @@ export default class EditorModel {
       this.showPageAddModal = false;
       this.application.release.instanceList.push(newComponentInstance);
 
-      this.workbench.currActiveTab = 'props';
-      this.switchComponentInstance(newComponentInstance.id);
-      window.history.pushState(null, '', `?applicationId=${this.application.id}&releaseId=${this.application.release.id}&instanceId=${newComponentInstance.id}`);
+      return this.switchComponentInstance(newComponentInstance.id, true);
     });
   }
 
@@ -76,18 +79,7 @@ export default class EditorModel {
       this.application.releaseList.push(newRelease);
 
       const currInstance = this.workbench.componentInstance;
-      fetch(`${serverPath}/component-instance/detail-id?releaseId=${newRelease.id}&trackId=${currInstance.trackId}`, {
-        headers: {
-          'Content-Type': 'application/json'
-        },
-      }).then(res => res.json()).then(({ data: instanceId }: { data: number }) => {
-        if (instanceId) {
-          this.switchComponentInstance(instanceId);
-        } else if (newRelease.instanceList.length) {
-          const instance = newRelease.instanceList[0];
-          this.switchComponentInstance(instance.id);
-        }
-      })
+      return this.switchReleaseByTrackId(newRelease.id, currInstance.trackId);
     });
   }
 
@@ -100,19 +92,24 @@ export default class EditorModel {
       this.application.release = release;
 
       const currInstance = this.workbench.componentInstance;
-      fetch(`${serverPath}/component-instance/detail-id?releaseId=${releaseId}&trackId=${currInstance.trackId}`, {
-        headers: {
-          'Content-Type': 'application/json'
-        },
-      }).then(res => res.json()).then(({ data: instanceId }: { data: number }) => {
-        if (instanceId) {
-          this.switchComponentInstance(instanceId);
-        } else if (release.instanceList.length) {
-          const instance = release.instanceList[0];
-          this.switchComponentInstance(instance.id);
-        }
-      })
-
+      return this.switchReleaseByTrackId(release.id, currInstance.trackId);
     });
+  }
+
+  private switchReleaseByTrackId = (releaseId: number, trackId: number) => {
+    return fetch(`${serverPath}/component-instance/detail-id?releaseId=${releaseId}&trackId=${trackId}`, {
+      headers: {
+        'Content-Type': 'application/json'
+      },
+    }).then(res => res.json()).then(({ data: instanceId }: { data: number }) => {
+      if (instanceId) {
+        return this.switchComponentInstance(instanceId, true);
+      } else if (this.application.release.instanceList.length) {
+        const instance = this.application.release.instanceList[0];
+        return this.switchComponentInstance(instance.id, true);
+      } else {
+        return Promise.resolve();
+      }
+    })
   }
 }

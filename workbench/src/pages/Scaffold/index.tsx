@@ -37,7 +37,9 @@ const Scaffold: React.FC = () => {
           return {
             key: version.id,
             label: (<a
-              onClick={() => scaffoldModel.switchComponent(workbenchModel.component.id, version.id)}>
+              onClick={() => {
+                scaffoldModel.switchComponent(workbenchModel.component.id, version.id, true);
+              }}>
               {version.name}
               {workbenchModel.component.recentVersionId === version.id ? <strong>Active</strong> : null}
             </a>)

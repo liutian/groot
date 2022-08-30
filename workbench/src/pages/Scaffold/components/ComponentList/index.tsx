@@ -18,11 +18,7 @@ const ComponentList: React.FC = () => {
           return;
         }
 
-        workbenchUpdateAction(() => {
-          workbenchModel.currActiveTab = 'props';
-        });
-        scaffoldModel.switchComponent(component.id, component.recentVersionId);
-        window.history.pushState(null, '', `?scaffoldId=${scaffoldModel.scaffold.id}&versionId=${component.recentVersionId}&componentId=${component.id}`);
+        scaffoldModel.switchComponent(component.id, component.recentVersionId, true);
       }
     };
   });

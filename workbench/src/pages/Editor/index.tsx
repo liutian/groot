@@ -115,11 +115,7 @@ const Editor: React.FC = () => {
             return;
           }
 
-          workbenchUpdateAction(() => {
-            workbenchModel.currActiveTab = 'props';
-          });
-          editorModel.switchComponentInstance(componentInstance.id);
-          window.history.pushState(null, '', `?applicationId=${editorModel.application.id}&releaseId=${editorModel.application.release.id}&instanceId=${componentInstance.id}`);
+          editorModel.switchComponentInstance(componentInstance.id, true);
         }
       };
     });
