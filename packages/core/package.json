@@ -17,5 +17,8 @@
   "files": [
     "package.json",
     "dist"
-  ]
+  ],
+  "dependencies": {
+    "moment": "2.29.4"
+  }
 }

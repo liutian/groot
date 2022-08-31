@@ -1,10 +1,10 @@
 import { DeleteOutlined, DragOutlined, SettingOutlined } from "@ant-design/icons";
 import { PropItemType } from "@grootio/common";
+import { processPropItemValue } from "@grootio/core";
 import PropHandleModel from "@model/PropHandleModel";
 import PropPersistModel from "@model/PropPersistModel";
 import WorkbenchModel from "@model/WorkbenchModel";
 import { useModel } from "@util/robot";
-import { processPropItemValue } from "@util/utils";
 import { DatePicker, Form, Input, InputNumber, Select, Space, Switch, Table, TimePicker, Typography } from "antd";
 import { useState } from "react";
 

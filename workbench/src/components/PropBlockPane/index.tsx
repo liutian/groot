@@ -9,8 +9,9 @@ import PropHandleModel from "@model/PropHandleModel";
 import { PropItemType } from "@grootio/common";
 import NumberSlider from "@components/NumberSlider";
 import TextEditor from "@components/TextEditor";
-import { calcPropValueIdChain, processPropItemValue, stringify } from "@util/utils";
+import { calcPropValueIdChain, stringify } from "@util/utils";
 import { useState } from "react";
+import { processPropItemValue } from "@grootio/core";
 
 type PropType = {
   block: PropBlock,

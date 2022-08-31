@@ -1,4 +1,5 @@
 import { ApplicationData, PostMessageType } from "@grootio/common";
+import { metadataFactory } from "@grootio/core";
 import { IframeManagerInstance, launchIframeManager } from "@model/iframeManager";
 import { ReactNode } from "react";
 import PropHandleModel from "./PropHandleModel";
@@ -72,7 +73,7 @@ export default class WorkbenchModel {
     this.applicationData = this.buildApplicationData(scaffold.name, scaffold.playgroundPath);
 
     this.iframeManager.navigation(this.scaffold.playgroundPath, () => {
-      const metadata = this.iframeManager.createComponentMetadata(this.component);
+      const metadata = metadataFactory(this.propHandle.rootGroupList, this.component);
       this.iframeManager.notifyIframe(PostMessageType.Init_Page, { path: this.scaffold.playgroundPath, metadataList: [metadata] });
     });
   }
@@ -89,7 +90,7 @@ export default class WorkbenchModel {
     this.applicationData = this.buildApplicationData(application.name, this.application.playgroundPath);
 
     this.iframeManager.navigation(this.application.playgroundPath, () => {
-      const metadata = this.iframeManager.createComponentMetadata(this.component);
+      const metadata = metadataFactory(this.propHandle.rootGroupList, this.component);
       this.iframeManager.notifyIframe(PostMessageType.Init_Page, { path: this.application.playgroundPath, metadataList: [metadata] });
     });
   }

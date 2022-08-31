@@ -113,3 +113,36 @@ export enum AssetType {
   Application = 'application',
   Instance = 'instance'
 }
+
+export interface IPropGroup {
+  propKey?: string,
+  propBlockList: IPropBlock[]
+}
+
+export interface IPropBlock {
+  propKey?: string,
+  rootPropKey: boolean,
+  struct: PropBlockStructType,
+  propItemList: IPropItem[],
+}
+
+export interface IPropItem {
+  propKey?: string,
+  rootPropKey: boolean,
+  valueList: IPropValue[],
+  childGroup?: IPropGroup,
+  type: PropItemType,
+  defaultValue: string
+}
+
+export interface IPropValue {
+  id: number,
+  abstractValueIdChain?: string,
+  value?: string,
+}
+
+export interface IComponent {
+  id: number,
+  packageName: string,
+  componentName: string
+}
