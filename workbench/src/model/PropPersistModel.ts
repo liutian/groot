@@ -1,5 +1,6 @@
-import { PropBlockStructType, PropItemType, PropValueType } from "@grootio/common";
-import { assignBaseType, autoIncrementForName, calcPropValueIdChain, parseOptions, stringifyOptions } from "@util/utils";
+import { PropItemType, PropValueType, } from "@grootio/common";
+
+import { assignBaseType, autoIncrementForName, calcPropValueIdChain, stringifyOptions } from "@util/utils";
 import { serverPath } from "config";
 import PropHandleModel from "./PropHandleModel";
 import WorkbenchModel from "./WorkbenchModel";
@@ -211,13 +212,6 @@ export default class PropPersistModel {
           newBlock.propItemList = [extra.newItem];
           extra.newItem.block = newBlock;
           extra.childGroup.parentItem = extra.newItem;
-
-          if (newBlock.struct === PropBlockStructType.List) {
-            if (!Array.isArray(newBlock.listStructData)) {
-              newBlock.listStructData = JSON.parse(newBlock.listStructData || '[]');
-              this.propHandle.updateBlockPrimaryItem(newBlock);
-            }
-          }
         }
 
         this.settingModalLoading = false;
@@ -248,12 +242,10 @@ export default class PropPersistModel {
         body: JSON.stringify(newItem)
       }).then(r => r.json()).then((result: { data: PropItem }) => {
         const propItem = result.data;
-        parseOptions(propItem);
         const block = this.propHandle.getPropBlock(propItem.blockId);
         let itemIndex = block.propItemList.findIndex(item => item.id === propItem.id);
         // block.propItemList.splice(itemIndex, 1, propItem);
         assignBaseType(block.propItemList[itemIndex], propItem);
-        block.propItemList[itemIndex].optionList = propItem.optionList;
 
         this.settingModalLoading = false;
         this.currSettingPropItem = undefined;
@@ -280,8 +272,6 @@ export default class PropPersistModel {
           childGroup.expandBlockIdList = [];
           newItem.childGroup = childGroup;
           childGroup.parentItem = newItem;
-        } else {
-          parseOptions(newItem);
         }
 
         this.settingModalLoading = false;
@@ -355,7 +345,6 @@ export default class PropPersistModel {
       })
     }).then(r => r.json()).then(() => {
       propBlock.listStructData = data;
-      this.propHandle.updateBlockPrimaryItem(propBlock);
       this.propHandle.popPropItemStack(propBlock.propItemList[0]);
     })
   }

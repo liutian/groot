@@ -89,6 +89,10 @@ const PropGroupPane: React.FC<PropsType> = ({ group }) => {
     </Space>)
   }
 
+  if (!Array.isArray(group.expandBlockIdList)) {
+    group.expandBlockIdList = group.propBlockList.map(block => block.id);
+  }
+
   return (<>
     <Collapse activeKey={group.expandBlockIdList} onChange={onChangeCollapse} bordered={false}
       expandIconPosition="end" expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}>

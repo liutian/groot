@@ -1,5 +1,5 @@
 import { DeleteOutlined, DragOutlined, SettingOutlined } from "@ant-design/icons";
-import { PropItemType } from "@grootio/common";
+import { PropBlockStructType, PropItemType } from "@grootio/common";
 import { processPropItemValue } from "@grootio/core";
 import PropHandleModel from "@model/PropHandleModel";
 import PropPersistModel from "@model/PropPersistModel";
@@ -15,12 +15,16 @@ type PropsType = {
 }
 
 const PropBlockListStructPane: React.FC<PropsType> = ({ block: propBlock }) => {
+  propBlock.primaryShowPropItemList = [];
   const childPropItem = propBlock.propItemList[0];
+  const childPropBlockList = childPropItem.childGroup.propBlockList;
+  const dataSourceEditable = !!childPropItem.block.group.root || childPropItem.block.group.parentItem?.tempAbstractValueId;
+  const dataSource = [];
+
   const [propHandleModel] = useModel<PropHandleModel>(PropHandleModel.modelName);
   const [workbenchModel] = useModel<WorkbenchModel>(WorkbenchModel.modelName);
   const [propPersistModel] = useModel<PropPersistModel>(PropPersistModel.modelName);
   const [form] = Form.useForm();
-  const dataSourceEditable = !!childPropItem.block.group.root || childPropItem.block.group.parentItem?.tempAbstractValueId;
 
   const [getInitValue] = useState(() => {
     const cacheMap = new Map<PropItem, Map<number, any>>();
@@ -46,7 +50,21 @@ const PropBlockListStructPane: React.FC<PropsType> = ({ block: propBlock }) => {
     }
   });
 
-  let dataSource = [];
+  if (propBlock.struct === PropBlockStructType.List) {
+    if (!Array.isArray(propBlock.listStructData)) {
+      propBlock.listStructData = JSON.parse(propBlock.listStructData || '[]');
+    }
+  }
+
+  propBlock.listStructData.forEach((propItemId) => {
+    childPropBlockList.forEach((block) => {
+      const propItem = block.propItemList.find(item => item.id === propItemId);
+      if (propItem) {
+        propBlock.primaryShowPropItemList.push(propItem);
+      }
+    })
+  });
+
   const columns = propBlock.primaryShowPropItemList.map((propItem) => {
     return {
       title: propItem.label,

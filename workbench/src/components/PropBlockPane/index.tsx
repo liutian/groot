@@ -117,6 +117,12 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
   }
 
   const renderFormItem = (item: PropItem) => {
+    if (([PropItemType.Checkbox, PropItemType.Radio, PropItemType.Select, PropItemType.Button_Group] as string[]).includes(item.type)) {
+      if (item.valueOptions && !item.optionList) {
+        item.optionList = JSON.parse(item.valueOptions || '[]');
+      }
+    }
+
     if (item.type === PropItemType.Text) {
       return <Input />;
     } else if (item.type === PropItemType.Textarea) {

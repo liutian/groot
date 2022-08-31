@@ -23,11 +23,7 @@ export function autoIncrementForName(names: string[]) {
 export const propKeyRule = /^[_a-zA-Z][\w\.]*$/i;
 
 
-export const parseOptions = (propItem: PropItem) => {
-  if (([PropItemType.Checkbox, PropItemType.Radio, PropItemType.Select, PropItemType.Button_Group] as string[]).includes(propItem.type)) {
-    propItem.optionList = JSON.parse(propItem.valueOptions || '[]');
-  }
-}
+
 
 export const stringifyOptions = (propItem: PropItem) => {
   if (([PropItemType.Checkbox, PropItemType.Radio, PropItemType.Select, PropItemType.Button_Group] as string[]).includes(propItem.type)) {
