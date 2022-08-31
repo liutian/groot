@@ -5,7 +5,6 @@
   "description": "component assembly workshop",
   "workspaces": [
     "packages/core",
-    "packages/runtime",
     "packages/renderer",
     "packages/common"
   ],
