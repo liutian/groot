@@ -1,7 +1,6 @@
 import { IframeDebuggerConfig, iframeNamePrefix, Metadata, PostMessageType, PropBlockStructType, PropItemType, PropMetadataType, PropValueType } from "@grootio/common";
 import PropHandleModel from "@model/PropHandleModel";
 import { fillPropChain, fillPropChainGreed, processPropItemValue } from "@util/utils";
-import moment from "moment";
 import WorkbenchModel from "./WorkbenchModel";
 
 let iframe: HTMLIFrameElement;

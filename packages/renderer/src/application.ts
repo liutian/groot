@@ -98,8 +98,8 @@ function fetchApplicationData(): Promise<ApplicationData> {
     });
   }
 
-  if (globalConfig.cloudServer && globalConfig.applicationKey) {
-    return window.fetch(globalConfig.cloudServer + '/application/detail/' + globalConfig.applicationKey).then(response => response.json());
+  if (globalConfig.appDataUrl) {
+    return window.fetch(globalConfig.appDataUrl).then(response => response.json());
   } else if (window._grootApplicationData) {
     return Promise.resolve(window._grootApplicationData);
   } else {

@@ -15,17 +15,14 @@ import { PropValueService } from 'service/prop-value.service';
 import { ComponentVersionService } from 'service/component-version.service';
 import { ComponentInstanceService } from 'service/component-instance.service';
 import { ReleaseService } from 'service/release.service';
+import { AssetService } from 'service/asset.service';
+import { AssetController } from 'asset.controller';
 @Module({
   imports: [
     MikroOrmModule.forRoot(config)
   ],
-  controllers: [WorkbenchController],
+  controllers: [WorkbenchController, AssetController],
   providers: [
-    {
-      provide: APP_INTERCEPTOR,
-      // 格式化响应结果
-      useClass: StandardResultInterceptor
-    },
     PropItemService,
     PropBlockService,
     PropGroupService,
@@ -36,7 +33,8 @@ import { ReleaseService } from 'service/release.service';
     PropValueService,
     ComponentVersionService,
     ComponentInstanceService,
-    ReleaseService
+    ReleaseService,
+    AssetService
   ],
 })
 export class AppModule { }

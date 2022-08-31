@@ -121,6 +121,10 @@ export class ReleaseService {
 
     return release;
   }
+
+  async publish(releaseId: number) {
+
+  }
 }
 
 

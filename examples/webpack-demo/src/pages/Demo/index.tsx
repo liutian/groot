@@ -7,8 +7,7 @@ import * as tslib from 'tslib';
 import * as jsxRuntime from 'react/jsx-runtime';
 
 UIManager.init({
-  cloudServer: 'http://localhost:3000',
-  applicationKey: 'project1',
+  appDataUrl: 'http://localhost:3000/asset/application/1',
   debug: true,
   modules: {
     react,

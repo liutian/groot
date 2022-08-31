@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, UseInterceptors } from '@nestjs/common';
 import { PropBlock } from 'entities/PropBlock';
 import { PropGroup } from 'entities/PropGroup';
 import { PropItem } from 'entities/PropItem';
@@ -17,6 +17,10 @@ import { ComponentInstanceService } from 'service/component-instance.service';
 import { ComponentInstance } from 'entities/ComponentInstance';
 import { ReleaseService } from 'service/release.service';
 import { Release } from 'entities/Release';
+import { AssetService } from 'service/asset.service';
+import { StandardResultInterceptor } from 'config/standard-result.interceptor';
+
+@UseInterceptors(StandardResultInterceptor)
 @Controller('/workbench')
 export class WorkbenchController {
   constructor(
@@ -29,7 +33,7 @@ export class WorkbenchController {
     private readonly propValueService: PropValueService,
     private readonly componentVersionService: ComponentVersionService,
     private readonly componentInstanceService: ComponentInstanceService,
-    private readonly releaseService: ReleaseService
+    private readonly releaseService: ReleaseService,
   ) { }
 
   @Get('/component/instance/detail/:instanceId')
@@ -169,5 +173,11 @@ export class WorkbenchController {
   @Post('/component-version/publish')
   async componentVersionPublish(@Body('componentId') componentId: number, @Body('versioinId') versionId: number) {
     await this.componentVersionService.publish(componentId, versionId);
+  }
+
+
+  @Post('/release/publish')
+  async releasePublish(@Body('releaseId') releaseId: number) {
+    return this.releaseService.publish(releaseId);
   }
 }

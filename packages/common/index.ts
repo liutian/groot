@@ -5,9 +5,7 @@ export type UIManagerConfig = {
   /**
    * 服务器地址
    */
-  cloudServer?: string;
-  applicationKey?: string;
-  applicationSecret?: string;
+  appDataUrl?: string;
   lazyLoadApplication?: boolean;
   beforeLoadApplication?: Promise<void> | Function;
   debug?: boolean;
@@ -109,4 +107,9 @@ export enum PropBlockStructType {
 export enum PropValueType {
   Instance = 'instance',
   Prototype = 'prototype',
+}
+
+export enum AssetType {
+  Application = 'application',
+  Instance = 'instance'
 }
