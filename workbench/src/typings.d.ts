@@ -35,8 +35,6 @@ type PropGroup = {
  */
 type PropBlock = {
   propItemList: PropItem[],
-  layout: 'horizontal' | 'vertical',
-  struct: 'list' | 'default',
   group: PropGroup,
 
   // 分割线下面时界面属性
@@ -45,14 +43,13 @@ type PropBlock = {
   listStructData: number[],
   // 首要显示的PropItem
   primaryShowPropItemList: PropItem[]
-} & Omit<import("../../cloud/src/entities/PropBlock").PropBlock, 'propItemList' | 'layout' | 'struct' | 'listStructData' | 'group'>;
+} & Omit<import("../../cloud/src/entities/PropBlock").PropBlock, 'propItemList' | 'listStructData' | 'group'>;
 
 /**
  * 描述代码元数据配置的属性配置项类型
  */
 type PropItem = {
   childGroup?: PropGroup,
-  type: 'text' | 'textarea' | 'number' | 'slider' | 'button_group' | 'switch' | 'select' | 'radio' | 'checkbox' | 'date_picker' | 'time_picker' | 'hierarchy' | 'flat' | 'json' | 'function',
   block: PropBlock,
   groupId: number,
   childGroupId?: number,
@@ -69,11 +66,11 @@ type PropItem = {
   valueList: PropValue[],
   tempAbstractValueId: number,
   noSetting: boolean
-} & Omit<import("../../cloud/src/entities/PropItem").PropItem, 'type' | 'childGroup' | 'block'>;
+} & Omit<import("../../cloud/src/entities/PropItem").PropItem, 'childGroup' | 'block'>;
 
 type PropValueOption = {
   label: string,
-  value: PropItemType,
+  value: string,
   title?: string,
   icon?: string
 };
