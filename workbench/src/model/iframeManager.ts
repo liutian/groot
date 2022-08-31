@@ -1,4 +1,4 @@
-import { IframeDebuggerConfig, iframeNamePrefix, Metadata, PostMessageType, PropBlockStructType, PropItemType, PropMetadataType, PropValueType } from "@grootio/common";
+import { IframeDebuggerConfig, iframeNamePrefix, PostMessageType } from "@grootio/common";
 import { metadataFactory } from '@grootio/core';
 
 import PropHandleModel from "@model/PropHandleModel";

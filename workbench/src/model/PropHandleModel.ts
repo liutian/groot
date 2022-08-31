@@ -1,5 +1,5 @@
-import { PropBlockStructType, PropItemType } from "@grootio/common";
-import { parseOptions } from "@util/utils";
+import { PropItemType } from "@grootio/common";
+import { propTreeFactory } from "@grootio/core";
 
 export default class PropHandleModel {
   static modelName = 'propHandle';
@@ -102,95 +102,12 @@ export default class PropHandleModel {
    * 构建属性树
    */
   public buildPropTree(groupList: PropGroup[], blockList: PropBlock[], itemList: PropItem[], valueList: PropValue[]) {
-    this.rootGroupList = [];
-
-    const rootGroupIds = groupList.filter(g => g.root)
-      .sort((a, b) => a.order - b.order)
-      .map(g => g.id);
-
-    for (let i = 0; i < rootGroupIds.length; i++) {
-      const groupId = rootGroupIds[i];
-      const group = this.buildPropGroup(groupId, { groupList, blockList, itemList, valueList });
-      this.rootGroupList.push(group);
-    }
+    this.rootGroupList = propTreeFactory(groupList, blockList, itemList, valueList) as any as PropGroup[];
 
     this.activeGroupId = this.rootGroupList[0].id;
     console.log('<=================== prop tree built out =================>\n', this.rootGroupList);
   }
 
-  /**
-   * 构建一个属性配置分组
-   * @param groupIdOrObj 分组ID或者组对象
-   * @param store 数据源
-   * @returns 构建好的配置分组
-   */
-  public buildPropGroup(groupIdOrObj: number | PropGroup,
-    store: { groupList: PropGroup[], blockList: PropBlock[], itemList: PropItem[], valueList: PropValue[] }) {
-    let group: PropGroup;
-    if (typeof groupIdOrObj === 'number') {
-      group = store.groupList.find(g => g.id === groupIdOrObj)!;
-      if (!group) {
-        throw new Error(`can not find group[${groupIdOrObj}]`);
-      }
-    } else {
-      group = groupIdOrObj;
-    }
-
-    const propBlockList = store.blockList
-      .filter(b => b.groupId === group.id)
-      .sort((a, b) => a.order - b.order);
-
-    // 支持增量添加PropBlock
-    if (group.propBlockList?.length) {
-      group.propBlockList.push(...propBlockList);
-      group.expandBlockIdList.push(...propBlockList.map(b => b.id));
-    } else {
-      group.propBlockList = propBlockList;
-      group.expandBlockIdList = propBlockList.map(b => b.id);
-    }
-
-    for (let blockIndex = 0; blockIndex < propBlockList.length; blockIndex++) {
-      const propBlock = propBlockList[blockIndex];
-      propBlock.group = group;
-
-      const propItemList = store.itemList
-        .filter(i => i.groupId === group.id && i.blockId === propBlock.id)
-        .sort((a, b) => a.order - b.order);
-
-      // 支持增量添加PropItem
-      if (propBlock.propItemList?.length) {
-        propBlock.propItemList.push(...propItemList);
-      } else {
-        propBlock.propItemList = propItemList;
-      }
-
-      for (let itemIndex = 0; itemIndex < propItemList.length; itemIndex++) {
-        const propItem = propItemList[itemIndex];
-        propItem.block = propBlock;
-
-        propItem.valueList = store.valueList.filter(v => v.propItemId === propItem.id);
-        if (propItem.type === PropItemType.Flat) {
-          const childGroup = this.buildPropGroup(propItem.childGroupId, store);
-          childGroup.parentItem = propItem;
-          propItem.childGroup = childGroup;
-        } else if (propItem.type === PropItemType.Hierarchy) {
-          const childGroup = this.buildPropGroup(propItem.childGroupId, store);
-          childGroup.parentItem = propItem;
-          propItem.childGroup = childGroup;
-        }
-        parseOptions(propItem);
-      }
-
-      if (propBlock.struct === PropBlockStructType.List) {
-        if (!Array.isArray(propBlock.listStructData)) {
-          propBlock.listStructData = JSON.parse(propBlock.listStructData || '[]');
-          this.updateBlockPrimaryItem(propBlock);
-        }
-      }
-    }
-
-    return group;
-  }
 
   /**
    * 根据ID在属性树中查找对应配置块对象
@@ -273,18 +190,4 @@ export default class PropHandleModel {
     return null;
   }
 
-  updateBlockPrimaryItem(propBlock: PropBlock) {
-    const childPropItem = propBlock.propItemList[0];
-    const childPropBlockList = childPropItem.childGroup.propBlockList;
-    propBlock.primaryShowPropItemList = [];
-
-    propBlock.listStructData.forEach((propItemId) => {
-      childPropBlockList.forEach((block) => {
-        const propItem = block.propItemList.find(item => item.id === propItemId);
-        if (propItem) {
-          propBlock.primaryShowPropItemList.push(propItem);
-        }
-      })
-    });
-  }
 }
