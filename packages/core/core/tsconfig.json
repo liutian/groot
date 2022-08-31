@@ -1,0 +1,18 @@
+{
+  "extends": "../../base.tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "../../legacy/core/src",
+    "outDir": "../../legacy/core/dist",
+    "lib": [
+      "ES2021",
+      "DOM"
+    ],
+    "resolveJsonModule": true
+  },
+  "include": [
+    "../../legacy/core/src"
+  ],
+  "files": [
+    "../../legacy/core/index.ts"
+  ]
+}

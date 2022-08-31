@@ -1,5 +1,4 @@
 import * as monaco from 'monaco-editor';
-import { metadataSchema } from '@grootio/core';
 import { useEffect, useRef, useState } from 'react';
 
 type propsType = {
@@ -28,10 +27,6 @@ function TextEditor({ onChange, value, type = 'json' }: propsType) {
         {
           uri: 'https://groot.dev/metadata-list.schema.json',
           fileMatch: [modelUri.toString()],
-          schema: {
-            type: 'array',
-            items: metadataSchema
-          }
         }
       ]
     });
