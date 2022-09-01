@@ -1,4 +1,5 @@
-import { Collection, Entity, ManyToMany, ManyToOne, OneToMany, Property } from "@mikro-orm/core";
+import { Collection, Entity, ManyToOne, OneToMany, Property } from "@mikro-orm/core";
+import { Asset } from "./Asset";
 import { BaseEntity } from "./BaseEntity";
 import { Component } from "./Component";
 import { ComponentVersion } from "./ComponentVersion";
@@ -45,6 +46,10 @@ export class ComponentInstance extends BaseEntity {
   @Property({ persist: false })
   componentVersionId?: number;
 
+  // 迭代版本之间确定组件实例唯一的标志
   @Property()
   trackId: number;
+
+  @ManyToOne()
+  asset?: Asset;
 }

@@ -1,4 +1,4 @@
-import { Collection, Entity, ManyToOne, OneToMany, Property } from "@mikro-orm/core";
+import { Entity, ManyToOne, Property } from "@mikro-orm/core";
 import { BaseEntity } from "./BaseEntity";
 import { Project } from "./Project";
 import { Release } from "./Release";
@@ -8,6 +8,9 @@ export class Application extends BaseEntity {
 
   @Property({ length: 100 })
   name: string;
+
+  @Property({ length: 100 })
+  key: string;
 
   // 此处必须为可选，否则创建application会引发devRelease非空校验
   @ManyToOne({ serializer: value => value?.id, serializedName: 'devReleaseId' })

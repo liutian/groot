@@ -1,4 +1,4 @@
-import { IPropBlock, IPropGroup, IPropItem, IPropValue, PropBlockStructType, PropItemType } from "@grootio/common";
+import { IPropBlock, IPropGroup, IPropItem, IPropValue, PropItemType } from "@grootio/common";
 
 export function propTreeFactory(groupList: IPropGroup[], blockList: IPropBlock[], itemList: IPropItem[], valueList: IPropValue[]) {
   const rootGroupList: IPropGroup[] = [];

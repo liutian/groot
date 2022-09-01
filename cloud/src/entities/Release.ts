@@ -13,11 +13,13 @@ export class Release extends BaseEntity {
   application: Application;
 
   /**
-   * 是否冻结，true组件实例不能在调整，online环境自动设置为true
+   * 是否归档，true组件实例不能在调整，关联online环境时，上一个release自动设置为true
    */
   @Property()
-  freeze = false;
+  archive = false;
 
+  @Property()
+  published = false;
 
   @Property({ persist: false })
   imageReleaseId: number;

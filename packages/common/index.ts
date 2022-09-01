@@ -42,7 +42,6 @@ export type Metadata = {
     [key: string]: any
   }
 
-  refresh?: Function
 }
 
 export type PropMetadata = {
@@ -110,8 +109,15 @@ export enum PropValueType {
 }
 
 export enum AssetType {
-  Application = 'application',
+  Release = 'release',
   Instance = 'instance'
+}
+
+export enum EnvType {
+  Dev = 'dev',
+  Qa = 'qa',
+  Pl = 'pl',
+  Ol = 'online'
 }
 
 export interface IPropGroup {

@@ -17,8 +17,8 @@ import { ComponentInstanceService } from 'service/component-instance.service';
 import { ComponentInstance } from 'entities/ComponentInstance';
 import { ReleaseService } from 'service/release.service';
 import { Release } from 'entities/Release';
-import { AssetService } from 'service/asset.service';
 import { StandardResultInterceptor } from 'config/standard-result.interceptor';
+import { EnvType } from '@grootio/common';
 
 @UseInterceptors(StandardResultInterceptor)
 @Controller('/workbench')
@@ -177,7 +177,7 @@ export class WorkbenchController {
 
 
   @Post('/release/publish')
-  async releasePublish(@Body('releaseId') releaseId: number) {
-    return this.releaseService.publish(releaseId);
+  async releasePublish(@Body('releaseId') releaseId: number, @Body('env') env: EnvType) {
+    return this.releaseService.publish(releaseId, env);
   }
 }
