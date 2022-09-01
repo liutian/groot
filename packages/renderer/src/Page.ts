@@ -1,7 +1,7 @@
 import { Metadata, PageData, PostMessageType } from "@grootio/common";
 import { buildComponent, reBuildProps } from "./compiler";
 import { controlMode, errorInfo } from "./util";
-
+import { instance } from './application';
 export class Page extends EventTarget {
   path!: string;
   metadataUrl: string;
@@ -71,7 +71,8 @@ export class Page extends EventTarget {
       metadata.propsObj = newMetadata.propsObj;
       metadata.advancedProps = newMetadata.advancedProps;
       reBuildProps(metadata, this.metadataList);
-      metadata.refresh();
+      const refresh = instance.getRefresh(metadata);
+      refresh();
     }
   }
 }

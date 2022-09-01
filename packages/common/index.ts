@@ -3,9 +3,12 @@
  */
 export type UIManagerConfig = {
   /**
-   * 服务器地址
+   * 应用资源数据地址
    */
   appDataUrl?: string;
+  appKey: string,
+  appEnv: string,
+  serverUrl?: string,
   lazyLoadApplication?: boolean;
   beforeLoadApplication?: Promise<void> | Function;
   debug?: boolean;

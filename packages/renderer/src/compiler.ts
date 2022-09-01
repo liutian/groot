@@ -2,6 +2,7 @@ import { Metadata, PropMetadataType } from "@grootio/common";
 import React, { useState } from "react";
 import { globalConfig } from "./config";
 import { debugInfo, controlMode, errorInfo } from "./util";
+import { instance } from './application';
 
 export const buildComponent = (root: Metadata, store: Metadata[]) => {
   const component = createComponent(root, store);
@@ -28,7 +29,8 @@ const createComponentWrapper = (metadata: Metadata) => {
 
   function ComponentFunction() {
     const [, switchBool] = useState(true);
-    metadata.refresh = () => switchBool(b => !b);
+    const metadataRefresh = () => switchBool(b => !b);
+    instance.setRefresh(metadata, metadataRefresh);
     if (controlMode) {
       debugInfo(`component refresh name:${componentName}`)
     }

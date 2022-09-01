@@ -1,17 +1,19 @@
 import { Page } from './Page';
 import { ApplicationStatus } from './types';
-import { ApplicationData, IframeDebuggerConfig, PostMessageType, UIManagerConfig } from '@grootio/common';
+import { ApplicationData, IframeDebuggerConfig, Metadata, PostMessageType, UIManagerConfig } from '@grootio/common';
 import { controlMode } from './util';
 import { globalConfig, setConfig } from './config';
 
 
 // 应用实例对象
-const instance = {
+export const instance = {
   status: ApplicationStatus.Unset,
   load: loadApplication,
   hasPage,
   pageLoading,
-  loadPage
+  loadPage,
+  getRefresh,
+  setRefresh
 };
 
 export type ApplicationInstance = typeof instance;
@@ -26,6 +28,8 @@ const allPageMap = new Map<string, Page>();
 const loadedPageMap = new Map<string, Page>();
 // 正在加载中的页面
 const loadingPages = new Set();
+
+const metadataRefreshFnMap = new Map<Metadata, Function>();
 
 
 export function bootstrap(customConfig: UIManagerConfig): ApplicationInstance {
@@ -96,14 +100,14 @@ function fetchApplicationData(): Promise<ApplicationData> {
         reject(new Error('load application timeout'))
       }, 3000);
     });
-  }
-
-  if (globalConfig.appDataUrl) {
-    return window.fetch(globalConfig.appDataUrl).then(response => response.json());
   } else if (window._grootApplicationData) {
     return Promise.resolve(window._grootApplicationData);
+  } else if (globalConfig.appDataUrl) {
+    return window.fetch(globalConfig.appDataUrl).then(response => response.json());
   } else {
-    return Promise.reject(new Error('not found cloudServer and applicationKey'));
+    const serverUrl = globalConfig.serverUrl || 'https://api.groot.com';
+    const appDataUrl = `${serverUrl}/asset/application/${globalConfig.appKey}/${globalConfig.appEnv}`;
+    return window.fetch(appDataUrl).then(response => response.json());
   }
 }
 
@@ -148,4 +152,12 @@ function loadPage(path: string): Promise<Page> | Page {
     page.compile();
     return page;
   });
+}
+
+function setRefresh(metadata: Metadata, fn: Function) {
+  metadataRefreshFnMap.set(metadata, fn)
+}
+
+function getRefresh(metadata: Metadata) {
+  return metadataRefreshFnMap.get(metadata);
 }
