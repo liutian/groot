@@ -10,6 +10,14 @@ export default class EditorModel {
   public pageAddFetchLoading = false;
   public showReleaseAddModal = false;
   public releaseAddFetchLoading = false;
+  public showAssetBuildModal = false;
+  public assetBuildStatus: 'init' | 'analyseOver' | 'building' | 'buildOver' | 'approve' = 'init';
+  public deployBundleId: number;
+
+  public showAssetDeployModal = false;
+  public assetDeployFetchLoading = false;
+
+
   private workbench: WorkbenchModel;
 
 
@@ -110,6 +118,39 @@ export default class EditorModel {
       } else {
         return Promise.resolve();
       }
+    })
+  }
+
+  public assetBuild = () => {
+    this.assetBuildStatus = 'building';
+    return fetch(`${serverPath}/asset/build`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        releaseId: this.application.release.id
+      })
+    }).then(res => res.json()).then(({ data: bundleId }) => {
+      this.assetBuildStatus = 'buildOver';
+      this.deployBundleId = bundleId;
+    })
+  }
+
+  public assetDeploy = (formData: any) => {
+    this.assetDeployFetchLoading = true;
+    return fetch(`${serverPath}/asset/deploy`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        ...formData,
+        bundleId: this.deployBundleId
+      })
+    }).then(res => res.json()).then((assetId: number) => {
+      this.assetDeployFetchLoading = false;
+      this.showAssetDeployModal = false;
     })
   }
 }

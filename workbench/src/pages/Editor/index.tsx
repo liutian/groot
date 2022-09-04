@@ -12,6 +12,8 @@ import Workbench from "@components/Workbench";
 import EditorModel from "./EditorModel";
 import PageAddModal from "./components/PageAddModal";
 import ReleaseAddModal from "./components/ReleaseAddModal";
+import BuildModal from "./components/BuildModal";
+import DeployModal from "./components/DeployModal";
 
 const Editor: React.FC = () => {
   const [editorModel, editorUpdateAction] = useRegisterModel<EditorModel>(EditorModel.modelName, new EditorModel());
@@ -75,7 +77,11 @@ const Editor: React.FC = () => {
 
       Object.getPrototypeOf(workbenchModel).renderToolBarAction = () => {
         return (<>
-          <Button type="link" title="部署" icon={<SendOutlined />} />
+          <Button type="link" title="部署" icon={<SendOutlined />} onClick={() => {
+            editorUpdateAction(() => {
+              editorModel.showAssetBuildModal = true;
+            })
+          }} />
         </>)
       }
 
@@ -148,6 +154,8 @@ const Editor: React.FC = () => {
       <Workbench />
       <PageAddModal />
       <ReleaseAddModal />
+      <BuildModal />
+      <DeployModal />
     </>);
   }
 }

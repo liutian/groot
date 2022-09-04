@@ -25,10 +25,12 @@ export class DatabaseSeeder extends Seeder {
 
     // 创建应用
     const application = em.create(Application, {
+      key: 'demo',
       name: '管理端应用',
       remoteFrontEndUrl: 'https://backend.com',
       playgroundPath: '/admin/groot/playground',
-      project
+      project,
+      pathPrefix: '/admin/groot'
     });
     await em.persistAndFlush(application);
 

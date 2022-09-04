@@ -11,12 +11,12 @@ export class AssetController {
 
 
   @Get('/instance/:instanceId')
-  async assetInstanceDetail(@Param('instanceId') instanceId: number) {
+  async instanceDetail(@Param('instanceId') instanceId: number) {
     return this.assetService.instanceDetail(instanceId);
   }
 
   @Get('/application/:appKey/:appEnv')
-  async assetApplicationDetail(@Param('appKey') appKey: string, @Param('appEnv') appEnv: EnvType) {
+  async applicationDetail(@Param('appKey') appKey: string, @Param('appEnv') appEnv: EnvType) {
     return this.assetService.appReleaseDetail(appKey, appEnv);
   }
 

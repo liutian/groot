@@ -25,6 +25,7 @@ export type ApplicationData = {
   name: string,
   key: string,
   pages: PageData[],
+  envData: Record<string, any>
 }
 
 export type PageData = {
@@ -111,11 +112,6 @@ export enum PropValueType {
   Prototype = 'prototype',
 }
 
-export enum AssetType {
-  Release = 'release',
-  Instance = 'instance'
-}
-
 export enum EnvType {
   Dev = 'dev',
   Qa = 'qa',
@@ -169,4 +165,10 @@ export interface IComponent {
   id: number,
   packageName: string,
   componentName: string
+}
+
+export enum DeployStatusType {
+  Approval = 'approval',
+  Online = 'online',
+  Archive = 'archive'
 }

@@ -18,6 +18,7 @@ import { ComponentInstance } from 'entities/ComponentInstance';
 import { ReleaseService } from 'service/release.service';
 import { Release } from 'entities/Release';
 import { StandardResultInterceptor } from 'config/standard-result.interceptor';
+import { AssetService } from 'service/asset.service';
 import { EnvType } from '@grootio/common';
 
 @UseInterceptors(StandardResultInterceptor)
@@ -34,6 +35,7 @@ export class WorkbenchController {
     private readonly componentVersionService: ComponentVersionService,
     private readonly componentInstanceService: ComponentInstanceService,
     private readonly releaseService: ReleaseService,
+    private readonly assetService: AssetService
   ) { }
 
   @Get('/component/instance/detail/:instanceId')
@@ -175,9 +177,13 @@ export class WorkbenchController {
     await this.componentVersionService.publish(componentId, versionId);
   }
 
+  @Post('/asset/build')
+  async assetBuild(@Body('releaseId') releaseId: number) {
+    return this.assetService.build(releaseId);
+  }
 
-  @Post('/release/publish')
-  async releasePublish(@Body('releaseId') releaseId: number, @Body('env') env: EnvType) {
-    return this.releaseService.publish(releaseId, env);
+  @Post('/asset/deploy')
+  async assetDeploy(@Body('bundleId') bundleId: number, @Body('env') env: EnvType, @Body('remark') remark: string) {
+    return this.assetService.deploy(bundleId, env, remark);
   }
 }

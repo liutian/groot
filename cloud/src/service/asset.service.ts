@@ -1,23 +1,27 @@
-import { AssetType, EnvType } from '@grootio/common';
-import { RequestContext } from '@mikro-orm/core';
+import { ApplicationData, DeployStatusType, EnvType, IComponent, IPropBlock, IPropGroup, IPropItem, IPropValue, Metadata } from '@grootio/common';
+import { RequestContext, wrap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
+import { propTreeFactory, metadataFactory } from '@grootio/core';
+
 import { LogicException, LogicExceptionCode } from 'config/logic.exception';
 import { Application } from 'entities/Application';
-import { Asset } from 'entities/Asset';
+import { ComponentInstance } from 'entities/ComponentInstance';
+import { Release } from 'entities/Release';
+import { Bundle } from 'entities/Bundle';
+import { InstanceAsset } from 'entities/InstanceAsset';
+import { ReleaseAsset } from 'entities/ReleaseAsset';
+import { Deploy } from 'entities/Deploy';
 
 @Injectable()
 export class AssetService {
 
-  async instanceDetail(instanceId: number) {
+  async instanceDetail(assetId: number) {
     const em = RequestContext.getEntityManager();
 
-    const asset = await em.findOne(Asset, {
-      type: AssetType.Instance,
-      relativeId: instanceId
-    });
+    const asset = await em.findOne(InstanceAsset, assetId);
 
     if (!asset) {
-      throw new LogicException(`not found asset`, LogicExceptionCode.NotFound);
+      throw new LogicException(`not found asset id: ${assetId}`, LogicExceptionCode.NotFound);
     }
 
     return asset.content;
@@ -35,12 +39,152 @@ export class AssetService {
       [EnvType.Ol]: application.onlineRelease
     }[appEnv];
 
-    const asset = await em.findOne(Asset, {
-      type: AssetType.Release,
-      relativeId: release.id
-    });
+    const asset = await em.findOne(ReleaseAsset, { release }, { orderBy: { createdAt: 'DESC' } });
 
     return asset.content;
+  }
+
+  async build(releaseId: number) {
+    const em = RequestContext.getEntityManager();
+
+    const release = await em.findOne(Release, releaseId, {
+      populate: [
+        'instanceList.valueList',
+        'instanceList.component',
+        'instanceList.componentVersion.groupList',
+        'instanceList.componentVersion.blockList',
+        'instanceList.componentVersion.itemList'
+      ],
+      populateWhere: {
+        instanceList: { path: { $ne: null } }
+      }
+    });
+
+    if (!release) {
+      throw new LogicException(`not find release id:${releaseId}`, LogicExceptionCode.NotFound);
+    }
+
+    const instanceList = release.instanceList.getItems();
+    const instanceMetadataMap = new Map<ComponentInstance, Metadata>();
+    instanceList.forEach((instance) => {
+      const groupList = instance.componentVersion.groupList.getItems() as any;
+      const blockList = instance.componentVersion.blockList.getItems() as any;
+      const itemList = instance.componentVersion.itemList.getItems() as any;
+      const valueList = instance.valueList.getItems() as any;
+      const rootGroupList = propTreeFactory(
+        groupList.map(g => wrap(g).toObject()) as IPropGroup[],
+        blockList.map(b => wrap(b).toObject()) as IPropBlock[],
+        itemList.map(i => wrap(i).toObject()) as IPropItem[],
+        valueList.map(v => wrap(v).toObject()) as IPropValue[]
+      );
+
+      const metadata = metadataFactory(rootGroupList, instance.component as IComponent);
+      instanceMetadataMap.set(instance, metadata);
+    })
+
+    const application = await em.findOne(Application, release.application.id, { populate: ['onlineRelease'] });
+
+    const bundle = await em.create(Bundle, {
+      release,
+      application,
+      appKey: application.key,
+      appName: application.name
+    });
+
+    await em.begin();
+    try {
+
+      await em.flush();
+
+      const newAssetList = [];
+      instanceList.forEach((instance) => {
+        const metadata = instanceMetadataMap.get(instance);
+        const asset = em.create(InstanceAsset, {
+          content: JSON.stringify([metadata]),
+          componetInstace: instance,
+          bundle,
+          path: instance.path
+        });
+        newAssetList.push(asset);
+      });
+
+      await em.flush();
+
+      bundle.newAssetList.add(...newAssetList);
+
+      await em.flush();
+
+      await em.commit();
+    } catch (e) {
+      await em.rollback();
+      throw e;
+    }
+
+    return bundle.id;
+  }
+
+  async deploy(bundleId: number, env: EnvType, remark: string) {
+    const em = RequestContext.getEntityManager();
+
+    const bundle = await em.findOne(Bundle, bundleId, {
+      populate: [
+        'application.onlineRelease',
+        'release',
+        'newAssetList'
+      ]
+    });
+
+    if (!bundle) {
+      throw new LogicException(`not found bundle id:${bundleId}`, LogicExceptionCode.NotFound);
+    }
+
+    if (env === EnvType.Dev) {
+      bundle.application.devRelease = bundle.release;
+    } else if (env === EnvType.Qa) {
+      bundle.application.qaRelease = bundle.release;
+    } else if (env === EnvType.Pl) {
+      bundle.application.plRelease = bundle.release;
+    } else if (env === EnvType.Ol) {
+      bundle.application.onlineRelease.archive = true;
+      bundle.application.onlineRelease = bundle.release;
+    }
+
+    const newAssetList = bundle.newAssetList.getItems();
+    const pathPrefix = bundle.application.pathPrefix || '';
+    const pages = newAssetList.map((asset) => {
+      return {
+        path: pathPrefix + asset.path,
+        metadataUrl: `http://127.0.0.1:3000/asset/instance/${asset.id}`
+      }
+    })
+
+    const appData: ApplicationData = {
+      name: bundle.appName,
+      key: bundle.appKey,
+      pages,
+      envData: {}
+    }
+
+    const asset = em.create(ReleaseAsset, {
+      content: JSON.stringify(appData),
+      release: bundle.release,
+      bundle
+    });
+
+    await em.flush();
+
+    em.create(Deploy, {
+      release: bundle.release,
+      application: bundle.application,
+      asset,
+      env,
+      remark,
+      status: DeployStatusType.Online
+    });
+
+    await em.flush();
+
+    return asset.id;
   }
 }
 

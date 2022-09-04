@@ -1,5 +1,4 @@
 import { Collection, Entity, ManyToOne, OneToMany, Property } from "@mikro-orm/core";
-import { Asset } from "./Asset";
 import { BaseEntity } from "./BaseEntity";
 import { Component } from "./Component";
 import { ComponentVersion } from "./ComponentVersion";
@@ -50,6 +49,4 @@ export class ComponentInstance extends BaseEntity {
   @Property()
   trackId: number;
 
-  @ManyToOne()
-  asset?: Asset;
 }

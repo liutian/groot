@@ -109,7 +109,8 @@ export default class WorkbenchModel {
     const applicationData = {
       name,
       key: 'scaffold-demo',
-      pages: [pageData]
+      pages: [pageData],
+      envData: {}
     };
 
     return applicationData;

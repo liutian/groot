@@ -18,9 +18,6 @@ export class Release extends BaseEntity {
   @Property()
   archive = false;
 
-  @Property()
-  published = false;
-
   @Property({ persist: false })
   imageReleaseId: number;
 
