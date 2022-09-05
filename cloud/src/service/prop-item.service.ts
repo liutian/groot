@@ -22,9 +22,7 @@ export class PropItemService {
   async add(rawItem: PropItem, em = RequestContext.getEntityManager()) {
 
     const block = await em.findOne(PropBlock, rawItem.blockId);
-    if (!block) {
-      throw new LogicException(`not found block id: ${rawItem.blockId}`, LogicExceptionCode.NotFound);
-    }
+    LogicException.assertNotFound(block, 'PropBlock', rawItem.blockId);
 
     if (rawItem.type !== PropItemType.Flat && rawItem.type !== PropItemType.Hierarchy && !rawItem.propKey) {
       throw new LogicException(`propKey cannot empty `, LogicExceptionCode.ParamError);
@@ -106,15 +104,11 @@ export class PropItemService {
 
     const originItem = await em.findOne(PropItem, originId);
 
-    if (!originItem) {
-      throw new LogicException(`not found item id: ${originId}`, LogicExceptionCode.NotFound);
-    }
+    LogicException.assertNotFound(originItem, 'PropItem', originId);
 
     const targetItem = await em.findOne(PropItem, targetId);
 
-    if (!targetItem) {
-      throw new LogicException(`not found item id:${targetId}`, LogicExceptionCode.NotFound);
-    }
+    LogicException.assertNotFound(targetItem, 'PropItem', targetId);
 
     const order = targetItem.order;
     targetItem.order = originItem.order;
@@ -129,9 +123,7 @@ export class PropItemService {
 
     const propItem = await em.findOne(PropItem, itemId);
 
-    if (!propItem) {
-      throw new LogicException(`not found item id:${itemId}`, LogicExceptionCode.NotFound);
-    }
+    LogicException.assertNotFound(propItem, 'PropItem', itemId);
 
     let parentCtx = em.getTransactionContext();;
     if (!parentEm) {
@@ -164,9 +156,7 @@ export class PropItemService {
 
     const propItem = await em.findOne(PropItem, rawItem.id);
 
-    if (!propItem) {
-      throw new LogicException(`not found item id: ${rawItem.id}`, LogicExceptionCode.NotFound);
-    }
+    LogicException.assertNotFound(propItem, 'PropItem', rawItem.id);
 
     if (rawItem.type !== propItem.type && (propItem.type === PropItemType.Flat || propItem.type === PropItemType.Hierarchy)) {
       throw new LogicException(`type can not update item id: ${rawItem.id}`, LogicExceptionCode.ParamError);

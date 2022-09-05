@@ -51,9 +51,7 @@ export class CommonService {
         } else {
           propItem = await em.findOne(PropItem, ctxId, { fields: ['propKey', 'rootPropKey', 'block'] });
         }
-        if (!propItem) {
-          throw new LogicException(`not found item id:${ctxId}`, LogicExceptionCode.NotFound);
-        }
+        LogicException.assertNotFound(propItem, 'PropItem', ctxId);
 
         if (propItem.propKey) {
           chainList.push(propItem.propKey);
@@ -74,9 +72,7 @@ export class CommonService {
           propBlock = await em.findOne(PropBlock, ctxId, { fields: ['propKey', 'rootPropKey', 'group'] });
         }
 
-        if (!propBlock) {
-          throw new LogicException(`not found block id:${ctxId}`, LogicExceptionCode.NotFound);
-        }
+        LogicException.assertNotFound(propBlock, 'PropBlock', ctxId);
 
         if (propBlock.propKey) {
           chainList.push(propBlock.propKey);
@@ -96,9 +92,7 @@ export class CommonService {
         } else {
           propGroup = await em.findOne(PropGroup, ctxId, { fields: ['propKey', 'parentItem', 'root'] });
         }
-        if (!propGroup) {
-          throw new LogicException(`not found group id:${ctxId}`, LogicExceptionCode.NotFound);
-        }
+        LogicException.assertNotFound(propGroup, 'PropGroup', ctxId);
 
         if (propGroup.propKey) {
           chainList.push(propGroup.propKey);

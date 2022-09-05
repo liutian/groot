@@ -64,9 +64,7 @@ export class PropValueService {
 
     if (rawPropValue.id) {
       const propValue = await em.findOne(PropValue, rawPropValue.id);
-      if (!propValue) {
-        throw new LogicException(`not found propValue id: ${rawPropValue.id}`, LogicExceptionCode.NotFound);
-      }
+      LogicException.assertNotFound(propValue, 'PropValue', rawPropValue.id);
 
       propValue.value = rawPropValue.value;
       await em.flush();
@@ -101,9 +99,7 @@ export class PropValueService {
         return newPropValue;
       } else {
         const propItem = await em.findOne(PropItem, rawPropValue.propItemId);
-        if (!propItem) {
-          throw new LogicException(`not found propItem id: ${rawPropValue.propItemId}`, LogicExceptionCode.NotFound);
-        }
+        LogicException.assertNotFound(propItem, 'PropItem', rawPropValue.propItemId);
         propItem.defaultValue = rawPropValue.value;
         await em.flush();
         return null;

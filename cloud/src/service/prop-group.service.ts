@@ -44,9 +44,7 @@ export class PropGroupService {
 
     if (rawGroup.parentItemId) {
       const parentItem = await em.findOne(PropItem, rawGroup.parentItemId);
-      if (!parentItem) {
-        throw new LogicException(`not found parentItem id: ${rawGroup.parentItemId}`, LogicExceptionCode.NotFound);
-      }
+      LogicException.assertNotFound(parentItem, 'PropItem', rawGroup.parentItemId);
       newGroup.parentItem = parentItem;
     }
 
@@ -79,9 +77,7 @@ export class PropGroupService {
       ]
     });
 
-    if (!group) {
-      throw new LogicException(`not found group id: ${groupId}`, LogicExceptionCode.NotFound);
-    }
+    LogicException.assertNotFound(group, 'PropGroup', groupId);
 
     let parentCtx = em.getTransactionContext();;
     if (!parentEm) {
@@ -110,9 +106,7 @@ export class PropGroupService {
 
     const group = await em.findOne(PropGroup, rawGroup.id);
 
-    if (!group) {
-      throw new LogicException(`not found group id: ${rawGroup.id}`, LogicExceptionCode.NotFound);
-    }
+    LogicException.assertNotFound(group, 'PropGroup', rawGroup.id);
 
     const parentCtx = await forkTransaction(em);
     await em.begin();
@@ -142,9 +136,7 @@ export class PropGroupService {
     const em = RequestContext.getEntityManager();
     const originGroup = await em.findOne(PropGroup, originId);
 
-    if (!originGroup) {
-      throw new LogicException(`not found group id: ${originId}`, LogicExceptionCode.NotFound);
-    }
+    LogicException.assertNotFound(originGroup, 'PropGroup', originId);
 
     if (!targetId) {
       const firstGroup = await em.findOne(PropGroup, {
@@ -156,9 +148,7 @@ export class PropGroupService {
     } else {
       const targetGroup = await em.findOne(PropGroup, targetId);
 
-      if (!targetGroup) {
-        throw new LogicException(`not found group id: ${targetId}`, LogicExceptionCode.NotFound);
-      }
+      LogicException.assertNotFound(targetGroup, 'PropGroup', targetId);
 
       const targetOrder = targetGroup.order;
       const originOrder = originGroup.order;

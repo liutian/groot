@@ -23,14 +23,10 @@ export class ComponentInstanceService {
     }
 
     const component = await em.findOne(Component, rawInstance.componentId);
-    if (!component) {
-      throw new LogicException(`can not found component id:${rawInstance.componentId}`, LogicExceptionCode.NotFound);
-    }
+    LogicException.assertNotFound(component, 'Component', rawInstance.componentId);
 
     const release = await em.findOne(Release, rawInstance.releaseId);
-    if (!release) {
-      throw new LogicException(`can not found release id:${rawInstance.releaseId}`, LogicExceptionCode.NotFound);
-    }
+    LogicException.assertNotFound(release, 'Release', rawInstance.releaseId);
 
     if (rawInstance.path) {
       const count = await em.count(ComponentInstance, {
@@ -116,14 +112,12 @@ export class ComponentInstanceService {
   async getComponent(instancceId: number) {
     const em = RequestContext.getEntityManager();
 
-    const instance = await em.findOne(ComponentInstance, { id: instancceId }, {
+    const instance = await em.findOne(ComponentInstance, instancceId, {
       populate: ['valueList'],
       populateWhere: { valueList: { type: PropValueType.Instance } }
     });
 
-    if (!instance) {
-      throw new LogicException('not found instance', LogicExceptionCode.NotFound);
-    }
+    LogicException.assertNotFound(instance, 'ComponentInstance', instancceId);
 
     const component = await em.findOne(Component, instance.component.id);
     component.instance = wrap(instance).toObject() as any;

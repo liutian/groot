@@ -45,9 +45,7 @@ export class ComponentVersionService {
         populateWhere: { valueList: { type: PropValueType.Prototype } }
       }
     );
-    if (!imageComponentVersion) {
-      throw new LogicException(`componentVersion not found id:${rawComponentVersion.imageVersionId}`, LogicExceptionCode.NotFound);
-    }
+    LogicException.assertNotFound(imageComponentVersion, 'ComponentVersion', rawComponentVersion.imageVersionId);
 
     const count = await em.count(ComponentVersion, { component: imageComponentVersion.component, name: rawComponentVersion.name });
 
@@ -188,14 +186,10 @@ export class ComponentVersionService {
     const em = RequestContext.getEntityManager();
     const component = await em.findOne(Component, componentId);
 
-    if (!component) {
-      throw new LogicException(`not found component id: ${componentId}`, LogicExceptionCode.NotFound);
-    }
+    LogicException.assertNotFound(component, 'Component', componentId);
 
     const componentVersion = await em.findOne(ComponentVersion, versionId);
-    if (!componentVersion) {
-      throw new LogicException(`not found componentVersion id: ${versionId}`, LogicExceptionCode.NotFound);
-    }
+    LogicException.assertNotFound(componentVersion, 'ComponentVersion', versionId);
 
     if (componentVersion.component.id !== componentId) {
       throw new LogicException(`versionId Illegal id: ${versionId}`, LogicExceptionCode.ParamError);

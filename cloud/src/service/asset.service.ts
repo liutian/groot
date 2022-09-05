@@ -3,7 +3,7 @@ import { RequestContext, wrap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { propTreeFactory, metadataFactory } from '@grootio/core';
 
-import { LogicException, LogicExceptionCode } from 'config/logic.exception';
+import { LogicException } from 'config/logic.exception';
 import { Application } from 'entities/Application';
 import { ComponentInstance } from 'entities/ComponentInstance';
 import { Release } from 'entities/Release';
@@ -20,9 +20,7 @@ export class AssetService {
 
     const asset = await em.findOne(InstanceAsset, assetId);
 
-    if (!asset) {
-      throw new LogicException(`not found asset id: ${assetId}`, LogicExceptionCode.NotFound);
-    }
+    LogicException.assertNotFound(asset, 'InstanceAsset', assetId);
 
     return asset.content;
   }
@@ -32,6 +30,8 @@ export class AssetService {
 
     const application = await em.findOne(Application, { key: appKey });
 
+    LogicException.assertNotFound(application, 'Application', `key: ${appKey}`);
+
     const release = {
       [EnvType.Dev]: application.devRelease,
       [EnvType.Qa]: application.qaRelease,
@@ -40,6 +40,8 @@ export class AssetService {
     }[appEnv];
 
     const asset = await em.findOne(ReleaseAsset, { release }, { orderBy: { createdAt: 'DESC' } });
+
+    LogicException.assertNotFound(asset, 'ReleaseAsset', `releaseId: ${release.id}`);
 
     return asset.content;
   }
@@ -60,9 +62,7 @@ export class AssetService {
       }
     });
 
-    if (!release) {
-      throw new LogicException(`not find release id:${releaseId}`, LogicExceptionCode.NotFound);
-    }
+    LogicException.assertNotFound(release, 'Release', releaseId);
 
     const instanceList = release.instanceList.getItems();
     const instanceMetadataMap = new Map<ComponentInstance, Metadata>();
@@ -134,9 +134,7 @@ export class AssetService {
       ]
     });
 
-    if (!bundle) {
-      throw new LogicException(`not found bundle id:${bundleId}`, LogicExceptionCode.NotFound);
-    }
+    LogicException.assertNotFound(bundle, 'Bundle', bundleId);
 
     if (env === EnvType.Dev) {
       bundle.application.devRelease = bundle.release;

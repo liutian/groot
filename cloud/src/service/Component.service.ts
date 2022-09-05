@@ -22,21 +22,15 @@ export class ComponentService {
     const em = RequestContext.getEntityManager();
     const component = await em.findOne(Component, id, { populate: ['versionList'] });
 
-    if (!component) {
-      throw new LogicException(`not found component id: ${id}`, LogicExceptionCode.NotFound);
-    }
+    LogicException.assertNotFound(component, 'Component', id);
 
-    if (!versionId) {
-      throw new LogicException('not found component version id', LogicExceptionCode.NotFound);
-    }
+    LogicException.assertParamEmpty(versionId, 'versionId');
 
     const version = await em.findOne(ComponentVersion, versionId,
       { populate: ['groupList', 'blockList', 'itemList', 'valueList'], populateWhere: { valueList: { type: PropValueType.Prototype } } }
     );
 
-    if (!version) {
-      throw new LogicException('not found component version ', LogicExceptionCode.NotFound);
-    }
+    LogicException.assertNotFound(version, 'ComponentVersion', versionId);
 
     component.version = wrap(version).toObject() as any;
 
@@ -53,9 +47,7 @@ export class ComponentService {
 
     const scaffold = await em.findOne(Scaffold, rawComponent.scaffoldId);
 
-    if (!scaffold) {
-      throw new LogicException('scaffold not found', LogicExceptionCode.NotFound);
-    }
+    LogicException.assertNotFound(scaffold, 'Scaffold', rawComponent.scaffoldId);
 
     const newComponent = em.create(Component, pick(rawComponent, ['name', 'componentName', 'packageName', 'container']));
     newComponent.scaffold = scaffold;

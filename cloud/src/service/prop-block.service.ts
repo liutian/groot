@@ -29,9 +29,7 @@ export class PropBlockService {
   async add(rawBlock: PropBlock, em = RequestContext.getEntityManager()) {
 
     const group = await em.findOne(PropGroup, rawBlock.groupId);
-    if (!group) {
-      throw new LogicException(`not found group id: ${rawBlock.groupId}`, LogicExceptionCode.NotFound);
-    }
+    LogicException.assertNotFound(group, 'PropGroup', rawBlock.groupId);
 
     if (rawBlock.propKey) {
       let repeatChainMap: Map<string, number>;
@@ -93,15 +91,11 @@ export class PropBlockService {
     const em = RequestContext.getEntityManager();
     const originBlock = await em.findOne(PropBlock, originId);
 
-    if (!originBlock) {
-      throw new LogicException(`not found block id: ${originId}`, LogicExceptionCode.NotFound);
-    }
+    LogicException.assertNotFound(originBlock, 'PropBlock', originId);
 
     const targetBlock = await em.findOne(PropBlock, targetId);
 
-    if (!targetBlock) {
-      throw new LogicException(`not found block id:${targetId}`, LogicExceptionCode.NotFound);
-    }
+    LogicException.assertNotFound(targetBlock, 'PropBlock', targetId);
 
     const order = targetBlock.order;
     targetBlock.order = originBlock.order;
@@ -115,9 +109,7 @@ export class PropBlockService {
 
     const block = await em.findOne(PropBlock, blockId, { populate: ['propItemList'] });
 
-    if (!block) {
-      throw new LogicException(`not found block id : ${blockId}`, LogicExceptionCode.NotFound);
-    }
+    LogicException.assertNotFound(block, 'PropBlock', blockId);
 
     let parentCtx = em.getTransactionContext();;
     if (!parentEm) {
@@ -147,9 +139,7 @@ export class PropBlockService {
 
     const block = await em.findOne(PropBlock, rawBlock.id);
 
-    if (!block) {
-      throw new LogicException(`not found block id: ${rawBlock.id}`, LogicExceptionCode.NotFound);
-    }
+    LogicException.assertNotFound(block, 'PropBlock', rawBlock.id);
 
     const parentCtx = await forkTransaction(em);
     await em.begin();
@@ -182,9 +172,7 @@ export class PropBlockService {
 
     const block = await em.findOne(PropBlock, blockId);
 
-    if (!block) {
-      throw new LogicException(`not found block id: ${blockId}`, LogicExceptionCode.NotFound);
-    }
+    LogicException.assertNotFound(block, 'PropBlock', blockId);
 
     block.listStructData = data;
 

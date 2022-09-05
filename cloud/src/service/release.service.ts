@@ -27,9 +27,7 @@ export class ReleaseService {
     }
 
     const imageRelease = await em.findOne(Release, rawRelease.imageReleaseId, { populate: ['instanceList.valueList'] });
-    if (!imageRelease) {
-      throw new LogicException(`release not found id:${rawRelease.imageReleaseId}`, LogicExceptionCode.NotFound);
-    }
+    LogicException.assertNotFound(imageRelease, 'Release', rawRelease.imageReleaseId);
 
     const count = await em.count(Release, { application: imageRelease.application, name: rawRelease.name });
 
