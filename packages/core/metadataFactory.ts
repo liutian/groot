@@ -111,6 +111,7 @@ function buildPropObjectForItem(item: IPropItem, ctx: Object, ctxKeyChain: strin
 function buildPropObjectForLeafItem(propItem: IPropItem, ctx: Object, ctxKeyChain: string, metadata: Metadata, parentValueList?: IPropValue[]) {
   const [newCTX, propEnd] = fillPropChain(propItem.rootPropKey ? metadata.propsObj : ctx, propItem.propKey);
   ctxKeyChain = propItem.rootPropKey ? propItem.propKey : `${ctxKeyChain}.${propItem.propKey}`;
+  ctxKeyChain = ctxKeyChain.replace(/^\.|\.$/g, '');
 
   let propValue = propItem.valueList[0];
 
