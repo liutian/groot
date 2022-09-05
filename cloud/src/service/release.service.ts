@@ -20,11 +20,8 @@ export class ReleaseService {
 
   async add(rawRelease: Release) {
     const em = RequestContext.getEntityManager();
-    if (!rawRelease.name) {
-      throw new LogicException('name can not empty', LogicExceptionCode.ParamEmpty);
-    } else if (!rawRelease.imageReleaseId) {
-      throw new LogicException('imageReleaseId can not empty', LogicExceptionCode.ParamEmpty);
-    }
+    LogicException.assertParamEmpty(rawRelease.imageReleaseId, 'imageReleaseId');
+    LogicException.assertParamEmpty(rawRelease.name, 'name');
 
     const imageRelease = await em.findOne(Release, rawRelease.imageReleaseId, { populate: ['instanceList.valueList'] });
     LogicException.assertNotFound(imageRelease, 'Release', rawRelease.imageReleaseId);

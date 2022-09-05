@@ -33,11 +33,8 @@ export class ComponentVersionService {
 
   async add(rawComponentVersion: ComponentVersion) {
     const em = RequestContext.getEntityManager();
-    if (!rawComponentVersion.name) {
-      throw new LogicException('name can not empty', LogicExceptionCode.ParamEmpty);
-    } else if (!rawComponentVersion.imageVersionId) {
-      throw new LogicException('imageVersionId can not empty', LogicExceptionCode.ParamEmpty);
-    }
+    LogicException.assertParamEmpty(rawComponentVersion.name, 'name');
+    LogicException.assertParamEmpty(rawComponentVersion.imageVersionId, 'imageVersionId');
 
     const imageComponentVersion = await em.findOne(ComponentVersion, rawComponentVersion.imageVersionId,
       {

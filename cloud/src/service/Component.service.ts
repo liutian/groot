@@ -41,9 +41,8 @@ export class ComponentService {
     const em = RequestContext.getEntityManager();
     if (!rawComponent.packageName || !rawComponent.componentName) {
       throw new LogicException('packageName and componentName can not both empty', LogicExceptionCode.ParamEmpty);
-    } else if (!rawComponent.scaffoldId) {
-      throw new LogicException('scaffoldId can not empty', LogicExceptionCode.ParamEmpty);
     }
+    LogicException.assertParamEmpty(rawComponent.scaffoldId, 'scaffoldId');
 
     const scaffold = await em.findOne(Scaffold, rawComponent.scaffoldId);
 

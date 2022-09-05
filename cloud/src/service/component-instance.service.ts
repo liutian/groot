@@ -14,13 +14,9 @@ import { pick } from 'util/common';
 export class ComponentInstanceService {
   async add(rawInstance: ComponentInstance) {
     const em = RequestContext.getEntityManager();
-    if (!rawInstance.name) {
-      throw new LogicException('name can not empty', LogicExceptionCode.ParamEmpty);
-    } else if (!rawInstance.componentId) {
-      throw new LogicException('componentId can not empty', LogicExceptionCode.ParamEmpty);
-    } else if (!rawInstance.releaseId) {
-      throw new LogicException('releaseId can not empty', LogicExceptionCode.ParamEmpty);
-    }
+    LogicException.assertParamEmpty(rawInstance.name, 'name');
+    LogicException.assertParamEmpty(rawInstance.componentId, 'componentId');
+    LogicException.assertParamEmpty(rawInstance.releaseId, 'releaseId');
 
     const component = await em.findOne(Component, rawInstance.componentId);
     LogicException.assertNotFound(component, 'Component', rawInstance.componentId);

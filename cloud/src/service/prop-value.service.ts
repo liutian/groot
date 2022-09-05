@@ -11,9 +11,7 @@ export class PropValueService {
   async abstractTypeAdd(rawPropValue: PropValue) {
     const em = RequestContext.getEntityManager();
 
-    if (!rawPropValue.type) {
-      throw new LogicException('type can not empty', LogicExceptionCode.ParamEmpty);
-    }
+    LogicException.assertParamEmpty(rawPropValue.type, 'type');
 
     const query = {
       propItem: rawPropValue.propItemId,
