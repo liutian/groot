@@ -10,10 +10,12 @@ const PageAddModal: React.FC = () => {
   const [componentList, setComponentList] = useState<Component[]>([]);
 
   useEffect(() => {
-    fetch(`${serverPath}/component/list?container=false`).then(res => res.json()).then(({ data: list }: { data: Component[] }) => {
-      setComponentList(list);
-    })
-  }, []);
+    if (editorModel.showPageAddModal) {
+      fetch(`${serverPath}/component/list?container=false`).then(res => res.json()).then(({ data: list }: { data: Component[] }) => {
+        setComponentList(list);
+      })
+    }
+  }, [editorModel.showPageAddModal]);
 
   const handleOk = async () => {
     const formData = await form.validateFields();
