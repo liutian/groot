@@ -14,6 +14,7 @@ import PageAddModal from "./components/PageAddModal";
 import ReleaseAddModal from "./components/ReleaseAddModal";
 import BuildModal from "./components/BuildModal";
 import DeployModal from "./components/DeployModal";
+import { DragComponentList } from "./components/DragComponentList";
 
 const Editor: React.FC = () => {
   const [editorModel, editorUpdateAction] = useRegisterModel<EditorModel>(EditorModel.modelName, new EditorModel());
@@ -36,13 +37,22 @@ const Editor: React.FC = () => {
 
     workbenchUpdateAction(() => {
 
-      Object.getPrototypeOf(workbenchModel).renderExtraTabPanes = () => {
+      workbenchModel.renderExtraTabPanes.push(() => {
         return (
           <Tabs.TabPane key="application" tab="应用页面">
-            {renderList()}
+            {renderAppTab()}
           </Tabs.TabPane>
         )
-      }
+      });
+
+      workbenchModel.renderExtraTabPanes.push(() => {
+        return (
+          <Tabs.TabPane key="component" tab="组件列表">
+            <DragComponentList />
+          </Tabs.TabPane>
+        )
+      });
+
 
       workbenchModel.renderFooterLeftActionItems.push(() => {
         const releaseListMenu = editorModel.application.releaseList.map((release) => {
@@ -110,7 +120,7 @@ const Editor: React.FC = () => {
     })
   }, []);
 
-  const renderList = () => {
+  const renderAppTab = () => {
     const pageComponentInstanceList = editorModel.application.release.instanceList;
     const componentList = pageComponentInstanceList.map((componentInstance) => {
       return {

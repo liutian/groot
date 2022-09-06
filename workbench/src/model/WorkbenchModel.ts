@@ -40,7 +40,7 @@ export default class WorkbenchModel {
   public propPathChainEle: HTMLElement;
 
   public renderFooterLeftActionItems: (() => ReactNode)[] = [];
-  public renderExtraTabPanes: () => ReactNode;
+  public renderExtraTabPanes: (() => ReactNode)[] = [];
 
   public renderToolBarBreadcrumb: () => ReactNode;
   public renderToolBarAction: () => ReactNode;
