@@ -1,9 +1,5 @@
 import { Tabs, Typography } from "antd";
 import { PlusOutlined } from '@ant-design/icons';
-import React from "react";
-import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
-import DraggableTabNode from "../DraggableTabNode";
 
 import { useModel } from '@util/robot';
 import PropGroupPane from "../PropGroupPane";
@@ -19,17 +15,6 @@ function PropPane() {
   const [propHandleModel] = useModel<PropHandleModel>(PropHandleModel.modelName);
   const [propPersistModel, propPersistAction] = useModel<PropPersistModel>(PropPersistModel.modelName);
   const [workbenchModel] = useModel<WorkbenchModel>(WorkbenchModel.modelName);
-
-  // 自定义渲染TabBar，实现拖拽功能 todo 自己做一个
-  const renderTabBar = (props: any, DefaultTabBar: React.ElementType) => (
-    <DefaultTabBar {...props}>
-      {(node: React.ReactElement) => (
-        <DraggableTabNode key={node.key} style={{ marginRight: '15px' }} nodeKey={node.key as string} moveNode={propPersistModel.movePropGroup}>
-          {node as any}
-        </DraggableTabNode>
-      )}
-    </DefaultTabBar>
-  );
 
   const renderTabBarItem = (group: PropGroup) => {
     return <div>{group.name}<i className="highlight" hidden={!group.highlight} /></div>;
@@ -72,12 +57,10 @@ function PropPane() {
 
   /////////////////////////////////////////////////////////////////////////////
   return <>
-    <DndProvider backend={HTML5Backend}>
-      <Tabs size="small" activeKey={propHandleModel.activeGroupId?.toString()}
-        onChange={tabOnChange} renderTabBar={renderTabBar} tabBarExtraContent={<PropGroupToolBar />}>
-        {renderTabContent()}
-      </Tabs>
-    </DndProvider>
+    <Tabs size="small" activeKey={propHandleModel.activeGroupId?.toString()}
+      onChange={tabOnChange} tabBarExtraContent={<PropGroupToolBar />}>
+      {renderTabContent()}
+    </Tabs>
   </>
 }
 
