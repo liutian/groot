@@ -26,9 +26,9 @@ const Workbench: React.FC<PropsType> = () => {
   return (<div className={`${styles.container} ${workbenchModel.prototypeMode ? styles.prototypeMode : ''}`} >
 
     <div className={styles.preview}>
-      <iframe ref={iframeRef}></iframe>
       {/* 防止拖拽缩放过程中由于鼠标移入iframe中丢失鼠标移动事件 */}
-      <div className="drag-mask"></div>
+      <div id={workbenchModel.iframeDragMaskId}></div>
+      <iframe ref={iframeRef}></iframe>
     </div>
 
     <WidgetWindow />

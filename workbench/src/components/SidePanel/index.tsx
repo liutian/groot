@@ -69,7 +69,7 @@ const SidePanel: React.FC<PropsType> = ({ ...props }) => {
       cursor="col-resize"
       className={styles.moveHandle}
       start={() => {
-        containerRef.current.parentElement.classList.add('drag-active');
+        document.getElementById(workbenchModel.iframeDragMaskId).classList.add('show');
         return containerRef.current.getBoundingClientRect().width;
       }}
       move={(x, _y, originData) => {
@@ -82,7 +82,7 @@ const SidePanel: React.FC<PropsType> = ({ ...props }) => {
         containerRef.current.parentElement!.style.setProperty('--side-width', `${sideWidth}px`);
       }}
       end={() => {
-        containerRef.current.parentElement.classList.remove('drag-active');
+        document.getElementById(workbenchModel.iframeDragMaskId).classList.remove('show');
       }}
     />
   </div >

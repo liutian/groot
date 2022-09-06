@@ -14,11 +14,7 @@
     --theme-color-darken: darken(#cc6633, 10%);
   }
 
-  &:global(.drag-active) {
-    user-select: none;
-  }
-
-  &:global(.drag-active .drag-mask) {
+  :global(#iframe-drag-mask.show) {
     position: absolute;
     top: 0;
     left: 0;

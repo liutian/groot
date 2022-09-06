@@ -25,7 +25,7 @@ const WidgetWindow: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
       <Button type="text" icon={<FullscreenOutlined onClick={() => updateAction(() => workbenchModel.widgetWindowRect = 'full')} />} />
       <MouseFollow
         start={() => {
-          containerRef.current.parentElement!.classList.add('drag-active');
+          document.getElementById(workbenchModel.iframeDragMaskId).classList.add('show');
           return containerRef.current!.getBoundingClientRect();
         }}
         move={(x, y, originData) => {
@@ -35,7 +35,7 @@ const WidgetWindow: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
           containerRef.current!.style.left = `${left}px`;
         }}
         end={() => {
-          containerRef.current.parentElement!.classList.remove('drag-active');
+          document.getElementById(workbenchModel.iframeDragMaskId).classList.remove('show');
         }}
       >
         <Button type="text" icon={<DragOutlined />} />;

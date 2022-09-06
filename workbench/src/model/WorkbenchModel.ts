@@ -45,6 +45,8 @@ export default class WorkbenchModel {
   public renderToolBarBreadcrumb: () => ReactNode;
   public renderToolBarAction: () => ReactNode;
 
+  public iframeDragMaskId = 'iframe-drag-mask';
+
   private destroy = false;
   private propHandle: PropHandleModel;
 
