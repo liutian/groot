@@ -75,7 +75,7 @@ export default class WorkbenchModel {
     this.applicationData = this.buildApplicationData(scaffold.name, scaffold.playgroundPath);
 
     this.iframeManager.navigation(this.scaffold.playgroundPath, () => {
-      const metadata = metadataFactory(this.propHandle.rootGroupList, this.component);
+      const metadata = metadataFactory(this.propHandle.rootGroupList, this.component, this.component.id);
       this.iframeManager.notifyIframe(PostMessageType.Init_Page, { path: this.scaffold.playgroundPath, metadataList: [metadata] });
     });
   }
@@ -92,7 +92,7 @@ export default class WorkbenchModel {
     this.applicationData = this.buildApplicationData(application.name, this.application.playgroundPath);
 
     this.iframeManager.navigation(this.application.playgroundPath, () => {
-      const metadata = metadataFactory(this.propHandle.rootGroupList, this.component);
+      const metadata = metadataFactory(this.propHandle.rootGroupList, this.component, this.componentInstance.id);
       this.iframeManager.notifyIframe(PostMessageType.Init_Page, { path: this.application.playgroundPath, metadataList: [metadata] });
     });
   }

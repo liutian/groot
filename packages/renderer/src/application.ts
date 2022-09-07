@@ -3,6 +3,7 @@ import { ApplicationStatus } from './types';
 import { ApplicationData, IframeDebuggerConfig, Metadata, PostMessageType, UIManagerConfig } from '@grootio/common';
 import { controlMode } from './util';
 import { globalConfig, setConfig } from './config';
+import { DragSlot } from './modules/DragSlot';
 
 
 // 应用实例对象
@@ -65,6 +66,14 @@ function onMessage(event: any) {
     if (activePage.path === event.data.data.path) {
       activePage.fetchMetadataResolve(event.data.data.metadataList);
     }
+  } else if (messageType === PostMessageType.Drag_Component_Over) {
+    DragSlot.respondDragOver(event.data.data.positionX, event.data.data.positionY);
+  } else if (messageType === PostMessageType.Drag_Component_Enter) {
+    DragSlot.respondDragEnter();
+  } else if (messageType === PostMessageType.Drag_Component_Leave) {
+    DragSlot.respondDragLeave();
+  } else if (messageType === PostMessageType.Drag_Component_Drop) {
+    DragSlot.respondDragDrop(event.data.data.positionX, event.data.data.positionY, event.data.data.component);
   }
 }
 

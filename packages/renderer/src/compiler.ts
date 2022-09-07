@@ -31,11 +31,14 @@ const createComponentWrapper = (metadata: Metadata) => {
     const [, switchBool] = useState(true);
     const metadataRefresh = () => switchBool(b => !b);
     instance.setRefresh(metadata, metadataRefresh);
+
     if (controlMode) {
-      debugInfo(`component refresh name:${componentName}`)
+      debugInfo(`component refresh name:${componentName}`);
     }
 
-    return React.createElement(module, metadata.propsObj);
+    return React.createElement('div', { 'data-groot-component-id': metadata.id },
+      React.createElement(module, metadata.propsObj)
+    );
   }
 
   ComponentFunction.displayName = `${componentName}_Wrapper`;

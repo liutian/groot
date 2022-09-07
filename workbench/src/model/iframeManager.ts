@@ -55,6 +55,8 @@ function onMessage(event: MessageEvent) {
       fetchPagePath = null;
       fetchPageCallback = null;
     }
+  } else if (event.data.type === PostMessageType.Drag_Hit_Slot) {
+    alert('drag hit ' + event.data.data);
   }
 }
 
@@ -96,9 +98,7 @@ function notifyIframe(type: PostMessageType, data?: any) {
     iframe.contentWindow.postMessage({ type, data: data || workbenchModel.applicationData }, '*');
   } else if (type === PostMessageType.Init_Config) {
     iframe.contentWindow.postMessage({ type, data: data || iframeDebuggerConfig }, '*');
-  } else if (type === PostMessageType.Reload_Page) {
-    iframe.contentWindow.postMessage({ type, data }, '*');
-  } else if (type.startsWith(PostMessageType.Init_Page)) {
+  } else {
     iframe.contentWindow.postMessage({ type, data }, '*');
   }
 
@@ -107,7 +107,8 @@ function notifyIframe(type: PostMessageType, data?: any) {
 
 // todo
 function refreshComponent(component: Component) {
-  const metadata = metadataFactory(propHandleModel.rootGroupList, component);
+  const metadataId = workbenchModel.prototypeMode ? workbenchModel.component.id : workbenchModel.componentInstance.id;
+  const metadata = metadataFactory(propHandleModel.rootGroupList, component, metadataId);
   console.log('<=================== prop object build out =================>\n', metadata.propsObj);
   notifyIframe(PostMessageType.Update_Component, metadata);
 }

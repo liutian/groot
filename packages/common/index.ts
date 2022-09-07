@@ -41,7 +41,6 @@ export type Metadata = {
   parentId?: number,
 
   advancedProps?: PropMetadata[],
-
   propsObj: {
     [key: string]: any
   }
@@ -69,7 +68,13 @@ export enum PostMessageType {
   Fetch_Page = 'fetch::page',
   Init_Page = 'init::page',
   Update_Component = 'update::component',
-  Reload_Page = 'reload::page'
+  Reload_Page = 'reload::page',
+  Drag_Component_Over = 'drag::component::over',
+  Drag_Component_Enter = 'drag::component::enter',
+  Drag_Component_Leave = 'drag::component::leave',
+  Drag_Component_Drop = 'drag::component::drop',
+
+  Drag_Hit_Slot = 'drag::hit::slot'
 }
 
 export const iframeNamePrefix = 'groot::';
@@ -164,7 +169,7 @@ export interface IPropValue {
 export interface IComponent {
   id: number,
   packageName: string,
-  componentName: string
+  componentName: string,
 }
 
 export enum DeployStatusType {
