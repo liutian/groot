@@ -78,7 +78,7 @@ export class AssetService {
         valueList.map(v => wrap(v).toObject()) as IPropValue[]
       );
 
-      const metadata = metadataFactory(rootGroupList, instance.component as IComponent);
+      const metadata = metadataFactory(rootGroupList, instance.component as IComponent, instance.id);
       instanceMetadataMap.set(instance, metadata);
     })
 
