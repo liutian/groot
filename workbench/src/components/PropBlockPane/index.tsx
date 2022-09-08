@@ -12,6 +12,7 @@ import TextEditor from "@components/TextEditor";
 import { calcPropValueIdChain, stringify } from "@util/utils";
 import { useState } from "react";
 import { processPropItemValue } from "@grootio/core";
+import ComponentSelect from "@components/ComponentSelect";
 
 type PropType = {
   block: PropBlock,
@@ -159,6 +160,8 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
       return <TextEditor type="json" />
     } else if (item.type === PropItemType.Function) {
       return <TextEditor type="function" />
+    } else if (item.type === PropItemType.Component) {
+      return <ComponentSelect disabled={workbenchModel.prototypeMode} />
     }
 
     return <>not found item</>

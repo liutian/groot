@@ -95,6 +95,7 @@ export enum PropItemType {
   Flat = 'flat',
   Json = 'json',
   Function = 'function',
+  Component = 'component',
 }
 
 export enum PropBlockLayout {

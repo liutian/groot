@@ -21,6 +21,7 @@ const typeList = [
   { label: '层级', value: PropItemType.Hierarchy },
   { label: 'json', value: PropItemType.Json },
   { label: '函数', value: PropItemType.Function },
+  { label: '组件', value: PropItemType.Component },
 ];
 
 const PropItemSetting: React.FC = () => {
