@@ -3,26 +3,8 @@ import { Form, Input, Modal, Radio, Select, Space, Switch, Typography } from "an
 import React, { useEffect } from "react";
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import PropPersistModel from "@model/PropPersistModel";
-import { PropItemType } from "@grootio/common";
+import { PropItemType, PropItemTypeNameMap } from "@grootio/common";
 
-const typeList = [
-  { label: '文本', value: PropItemType.Text },
-  { label: '多行文本', value: PropItemType.Textarea },
-  { label: '数字', value: PropItemType.Number },
-  { label: '滑块', value: PropItemType.Slider },
-  { label: '按钮组', value: PropItemType.Button_Group },
-  { label: '开关', value: PropItemType.Switch },
-  { label: '下拉框', value: PropItemType.Select },
-  { label: '多选', value: PropItemType.Checkbox },
-  { label: '单选', value: PropItemType.Radio },
-  { label: '日期', value: PropItemType.Date_Picker },
-  { label: '时间', value: PropItemType.Time_Picker },
-  { label: '配置项平铺', value: PropItemType.Flat },
-  { label: '层级', value: PropItemType.Hierarchy },
-  { label: 'json', value: PropItemType.Json },
-  { label: '函数', value: PropItemType.Function },
-  { label: '组件', value: PropItemType.Component },
-];
 
 const PropItemSetting: React.FC = () => {
   const [propPersistModel, propPersistAction] = useModel<PropPersistModel>(PropPersistModel.modelName);
@@ -105,8 +87,8 @@ const PropItemSetting: React.FC = () => {
           <Form.Item name="label" label="名称" rules={[{ required: true }]}>
             <Input />
           </Form.Item>
-          <Form.Item label="类型" name="type" rules={[{ required: true }]}>
-            <Select options={typeList} />
+          <Form.Item label="类型" name="type" rules={[{ required: true }]} >
+            <Select options={PropItemTypeNameMap} fieldNames={{ label: 'name', value: 'key' }} />
           </Form.Item>
           <Form.Item label="属性名" rules={[{ required: true }]} name="propKey">
             <Input />
