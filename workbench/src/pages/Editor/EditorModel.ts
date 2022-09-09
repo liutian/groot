@@ -17,6 +17,8 @@ export default class EditorModel {
   public showAssetDeployModal = false;
   public assetDeployFetchLoading = false;
 
+  public breadcrumbList: { id: number, name: string }[] = [];
+
 
   private workbench: WorkbenchModel;
 
@@ -25,11 +27,18 @@ export default class EditorModel {
     this.workbench = workbench;
   }
 
-  public switchComponentInstance = (instanceId: number, changeHistory = false) => {
+  public switchComponentInstance = (instanceId: number, changeHistory: boolean, breadcrumbAppend: boolean) => {
     const url = `${serverPath}/component/instance/detail/${instanceId}`;
     this.loadComponent = 'doing';
     return fetch(url).then(res => res.json()).then(({ data }: { data: Component }) => {
       this.loadComponent = 'over';
+      if (breadcrumbAppend) {
+        this.breadcrumbList.push({ id: instanceId, name: data.instance.name })
+      } else {
+        const length = this.breadcrumbList.findIndex(item => item.id === instanceId);
+        this.breadcrumbList.length = length === -1 ? 0 : length;
+        this.breadcrumbList.push({ id: instanceId, name: data.instance.name });
+      }
       data.version.valueList = data.instance.valueList;
       this.workbench.startApplication(data, this.application);
 
@@ -66,7 +75,7 @@ export default class EditorModel {
       this.showPageAddModal = false;
       this.application.release.instanceList.push(newComponentInstance);
 
-      return this.switchComponentInstance(newComponentInstance.id, true);
+      return this.switchComponentInstance(newComponentInstance.id, true, false);
     });
   }
 
@@ -111,10 +120,10 @@ export default class EditorModel {
       },
     }).then(res => res.json()).then(({ data: instanceId }: { data: number }) => {
       if (instanceId) {
-        return this.switchComponentInstance(instanceId, true);
+        return this.switchComponentInstance(instanceId, true, false);
       } else if (this.application.release.instanceList.length) {
         const instance = this.application.release.instanceList[0];
-        return this.switchComponentInstance(instance.id, true);
+        return this.switchComponentInstance(instance.id, true, false);
       } else {
         return Promise.resolve();
       }

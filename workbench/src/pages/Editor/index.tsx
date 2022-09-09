@@ -85,7 +85,7 @@ const Editor: React.FC = () => {
         </div>)
       });
 
-      Object.getPrototypeOf(workbenchModel).renderToolBarAction = () => {
+      (Object.getPrototypeOf(workbenchModel) as WorkbenchModel).renderToolBarAction = () => {
         return (<>
           <Button type="link" title="部署" icon={<SendOutlined />} onClick={() => {
             editorUpdateAction(() => {
@@ -95,15 +95,26 @@ const Editor: React.FC = () => {
         </>)
       }
 
-      Object.getPrototypeOf(workbenchModel).renderToolBarBreadcrumb = () => {
+      (Object.getPrototypeOf(workbenchModel) as WorkbenchModel).renderToolBarBreadcrumb = () => {
         return (<>
           <Breadcrumb separator=">">
-            <Breadcrumb.Item>
+            <Breadcrumb.Item >
               <HomeOutlined />
             </Breadcrumb.Item>
-            <Breadcrumb.Item href="">{workbenchModel.componentInstance?.name}</Breadcrumb.Item>
+            {
+              editorModel.breadcrumbList.map((item) => {
+                return (<Breadcrumb.Item key={item.id}
+                  onClick={() => editorModel.switchComponentInstance(item.id, false, false)}>
+                  {item.name}
+                </Breadcrumb.Item>)
+              })
+            }
           </Breadcrumb>
         </>)
+      }
+
+      (Object.getPrototypeOf(workbenchModel) as WorkbenchModel).switchComponentInstance = (instanceId) => {
+        editorModel.switchComponentInstance(instanceId, false, true);
       }
     }, false)
 
@@ -112,10 +123,10 @@ const Editor: React.FC = () => {
     const instanceId = +searchParams.get('instanceId');
     editorModel.fetchApplication(applicationId, releaseId).then(() => {
       if (instanceId) {
-        editorModel.switchComponentInstance(instanceId);
+        editorModel.switchComponentInstance(instanceId, false, false);
       } else if (editorModel.application.release.instanceList.length) {
         const instance = editorModel.application.release.instanceList[0];
-        editorModel.switchComponentInstance(instance.id);
+        editorModel.switchComponentInstance(instance.id, false, false);
       }
     })
   }, []);
@@ -131,7 +142,7 @@ const Editor: React.FC = () => {
             return;
           }
 
-          editorModel.switchComponentInstance(componentInstance.id, true);
+          editorModel.switchComponentInstance(componentInstance.id, true, false);
         }
       };
     });

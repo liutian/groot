@@ -1,4 +1,6 @@
 import { AimOutlined } from '@ant-design/icons';
+import WorkbenchModel from '@model/WorkbenchModel';
+import { useModel } from '@util/robot';
 import { Button, Select, SelectProps } from 'antd';
 import { serverPath } from 'config';
 import { useEffect, useState } from 'react';
@@ -11,6 +13,7 @@ type PropType = {
 } & SelectProps<number, any>;
 
 const ComponentSelect: React.FC<PropType> = ({ value: _valueObj, onChange: _onChange, parentInstanceId, ...resetProps }) => {
+  const [workbenchModel] = useModel<WorkbenchModel>(WorkbenchModel.modelName);
   const [componentList, setComponentList] = useState<{ id: number, name: string, componentId: number }[]>([]);
   const [valueNum, setValueNum] = useState<number>();
 
@@ -74,7 +77,9 @@ const ComponentSelect: React.FC<PropType> = ({ value: _valueObj, onChange: _onCh
       })}
     </Select>
 
-    <Button className={styles.suffix} disabled={resetProps.disabled}>
+    <Button className={styles.suffix} disabled={resetProps.disabled} onClick={() => {
+      workbenchModel.switchComponentInstance(_valueObj.id)
+    }}>
       <AimOutlined />
     </Button>
   </div>
