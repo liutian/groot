@@ -161,7 +161,7 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
     } else if (item.type === PropItemType.Function) {
       return <TextEditor type="function" />
     } else if (item.type === PropItemType.Component) {
-      return <ComponentSelect disabled={workbenchModel.prototypeMode} />
+      return <ComponentSelect parentInstanceId={workbenchModel.componentInstance?.id} disabled={workbenchModel.prototypeMode} />
     }
 
     return <>not found item</>

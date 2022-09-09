@@ -186,4 +186,9 @@ export class WorkbenchController {
   async assetDeploy(@Body('bundleId') bundleId: number, @Body('env') env: EnvType, @Body('remark') remark: string) {
     return this.assetService.deploy(bundleId, env, remark);
   }
+
+  @Post('/component-instance/add-child')
+  async componentInstanceAddChild(@Body() rawInstance: ComponentInstance) {
+    return await this.componentInstanceService.addChild(rawInstance);
+  }
 }

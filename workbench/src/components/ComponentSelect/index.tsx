@@ -5,34 +5,59 @@ import { useEffect, useState } from 'react';
 import styles from './index.module.less';
 
 type PropType = {
-  value?: Component,
-  onChange?: (newValue: Component) => void;
-} & SelectProps<number, Component[]>;
+  value?: ComponentInstance,
+  onChange?: (newValue: ComponentInstance) => void;
+  parentInstanceId?: number,
+} & SelectProps<number, any>;
 
-const ComponentSelect: React.FC<PropType> = ({ value: _valueObj, onChange: _onChange, ...resetProps }) => {
-  const [list, setList] = useState<Component[]>([]);
+const ComponentSelect: React.FC<PropType> = ({ value: _valueObj, onChange: _onChange, parentInstanceId, ...resetProps }) => {
+  const [componentList, setComponentList] = useState<{ id: number, name: string, componentId: number }[]>([]);
   const [valueNum, setValueNum] = useState<number>();
 
   useEffect(() => {
-    if (_valueObj) {
-      setList([_valueObj]);
-      setValueNum(_valueObj.id);
-    } else {
-      setList([]);
-      setValueNum(null);
+    if (!_valueObj) {
+      return;
+    }
+
+    setComponentList([_valueObj as any]);
+    setValueNum(_valueObj.id);
+
+    if (componentList.length) {
+      setTimeout(() => {
+        setComponentList(componentList);
+      }, 100);
     }
   }, [_valueObj]);
 
   const onChange = (valueId) => {
-    const hitValue = list.find(v => v.id === valueId);
     setValueNum(valueId);
-    _onChange(hitValue);
+
+    const rawInstance = {
+      id: parentInstanceId,
+      componentId: valueId,
+      oldChildId: _valueObj?.id
+    }
+
+    fetch(`${serverPath}/component-instance/add-child`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(rawInstance)
+    }).then(res => res.json()).then(({ data: newChildInstance }: { data: ComponentInstance }) => {
+      _onChange({
+        id: newChildInstance.id,
+        name: newChildInstance.name,
+        componentId: newChildInstance.componentId,
+        componentVersionId: newChildInstance.componentVersionId
+      } as any);
+    })
   }
 
   const onFocus = () => {
-    if (!list.length || (list.length === 1 && list[0] === _valueObj)) {
-      fetch(`${serverPath}/component/list?container=false`).then(res => res.json()).then(({ data: list }: { data: Component[] }) => {
-        setList(list);
+    if (!componentList.length || (componentList.length === 1 && componentList[0].id === _valueObj.id)) {
+      fetch(`${serverPath}/component/list?container=false`).then(res => res.json()).then(({ data }: { data: any[] }) => {
+        setComponentList(data);
       })
     }
   }
@@ -44,8 +69,8 @@ const ComponentSelect: React.FC<PropType> = ({ value: _valueObj, onChange: _onCh
   return <div className={styles.container} >
     <Select className={styles.select} filterOption={filterOption}
       showSearch value={valueNum} onChange={onChange} onFocus={onFocus} {...resetProps}>
-      {list.map((item) => {
-        return (<Select.Option key={item.id} value={item.id}>{item.name}</Select.Option>)
+      {componentList.map((item) => {
+        return (<Select.Option key={item.id} value={item.id} disabled={item.id === _valueObj?.componentId}>{item.name}</Select.Option>)
       })}
     </Select>
 
