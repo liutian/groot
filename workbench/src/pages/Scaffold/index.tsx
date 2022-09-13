@@ -1,4 +1,4 @@
-import { useEffect, } from "react";
+import { useEffect, useState, } from "react";
 import { useSearchParams } from "react-router-dom";
 
 import { useRegisterModel } from "@util/robot";
@@ -15,79 +15,76 @@ import { BranchesOutlined, HomeOutlined, PlusOutlined, SendOutlined } from "@ant
 
 const Scaffold: React.FC = () => {
   const [scaffoldModel, scaffoldUpdateAction] = useRegisterModel<ScaffoldModel>(ScaffoldModel.modelName, new ScaffoldModel());
-  const [workbenchModel, workbenchUpdateAction] = useRegisterModel<WorkbenchModel>(WorkbenchModel.modelName, new WorkbenchModel());
+  const [workbenchModel] = useRegisterModel<WorkbenchModel>(WorkbenchModel.modelName, new WorkbenchModel());
   const [propHandleModel] = useRegisterModel<PropHandleModel>(PropHandleModel.modelName, new PropHandleModel());
   const [propPersistModel] = useRegisterModel<PropPersistModel>(PropPersistModel.modelName, new PropPersistModel());
+
+  useState(() => {
+    propPersistModel.inject(workbenchModel, propHandleModel);
+    scaffoldModel.inject(workbenchModel);
+    workbenchModel.inject(propHandleModel);
+
+    workbenchModel.renderExtraTabPanes.push(() => {
+      return (<Tabs.TabPane key="scaffold" tab="脚手架">
+        {<ComponentList />}
+      </Tabs.TabPane>)
+    });
+
+    workbenchModel.renderFooterLeftActionItems.push(() => {
+      const versionListMenu = workbenchModel.component?.versionList.map((version) => {
+        return {
+          key: version.id,
+          label: (<a
+            onClick={() => {
+              scaffoldModel.switchComponent(workbenchModel.component.id, version.id, true);
+            }}>
+            {version.name}
+            {workbenchModel.component.recentVersionId === version.id ? <strong>Active</strong> : null}
+          </a>)
+        }
+      })
+
+      return (<Dropdown placement="topLeft" overlay={<Menu items={versionListMenu} />}>
+        <span>
+          <BranchesOutlined title="版本" />
+          <span>{workbenchModel.component?.version.name}</span>
+        </span>
+      </Dropdown>)
+    });
+
+    workbenchModel.renderFooterLeftActionItems.push(() => {
+      return (<div onClick={() => scaffoldUpdateAction(() => scaffoldModel.showComponentVersionAddModal = true)}>
+        <PlusOutlined />
+      </div>)
+    });
+
+    Object.getPrototypeOf(workbenchModel).renderToolBarAction = () => {
+      return (<Button type="link" title="发布" icon={<SendOutlined />}
+        onClick={() => {
+          Modal.confirm({
+            title: '确定发布版本',
+            content: '发布之后版本无法更新',
+            onOk: () => {
+              scaffoldModel.publish(workbenchModel.component.id, workbenchModel.component.version.id)
+            }
+          })
+        }}
+      />)
+    }
+
+    Object.getPrototypeOf(workbenchModel).renderToolBarBreadcrumb = () => {
+      return (<Breadcrumb separator=">">
+        <Breadcrumb.Item>
+          <HomeOutlined />
+        </Breadcrumb.Item>
+        <Breadcrumb.Item href="">{workbenchModel.component?.name}</Breadcrumb.Item>
+      </Breadcrumb>)
+    }
+  })
 
   let [searchParams] = useSearchParams();
 
   useEffect(() => {
-    propPersistModel.inject(workbenchModel, propHandleModel);
-    scaffoldModel.inject(workbenchModel);
-    workbenchModel.inject(propHandleModel);
-    workbenchUpdateAction(() => {
-      workbenchModel.renderExtraTabPanes.push(() => {
-        return (<Tabs.TabPane key="scaffold" tab="脚手架">
-          {<ComponentList />}
-        </Tabs.TabPane>)
-      });
-
-      workbenchModel.renderFooterLeftActionItems.push(() => {
-        const versionListMenu = workbenchModel.component?.versionList.map((version) => {
-          return {
-            key: version.id,
-            label: (<a
-              onClick={() => {
-                scaffoldModel.switchComponent(workbenchModel.component.id, version.id, true);
-              }}>
-              {version.name}
-              {workbenchModel.component.recentVersionId === version.id ? <strong>Active</strong> : null}
-            </a>)
-          }
-        })
-
-        return (<Dropdown placement="topLeft" overlay={<Menu items={versionListMenu} />}>
-          <span>
-            <BranchesOutlined title="版本" />
-            <span>{workbenchModel.component?.version.name}</span>
-          </span>
-        </Dropdown>)
-      });
-
-      workbenchModel.renderFooterLeftActionItems.push(() => {
-        return (<div onClick={() => scaffoldUpdateAction(() => scaffoldModel.showComponentVersionAddModal = true)}>
-          <PlusOutlined />
-        </div>)
-      });
-
-      Object.getPrototypeOf(workbenchModel).renderToolBarAction = () => {
-        return (<>
-          <Button type="link" title="发布" icon={<SendOutlined />}
-            onClick={() => {
-              Modal.confirm({
-                title: '确定发布版本',
-                content: '发布之后版本无法更新',
-                onOk: () => {
-                  scaffoldModel.publish(workbenchModel.component.id, workbenchModel.component.version.id)
-                }
-              })
-            }}
-          />
-        </>)
-      }
-
-      Object.getPrototypeOf(workbenchModel).renderToolBarBreadcrumb = () => {
-        return (<>
-          <Breadcrumb separator=">">
-            <Breadcrumb.Item>
-              <HomeOutlined />
-            </Breadcrumb.Item>
-            <Breadcrumb.Item href="">{workbenchModel.component?.name}</Breadcrumb.Item>
-          </Breadcrumb>
-        </>)
-      }
-    }, false)
-
     const componentId = +searchParams.get('componentId');
     const versionId = +searchParams.get('versionId') || 1;
     const scaffoldId = +searchParams.get('scaffoldId');
