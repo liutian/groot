@@ -89,7 +89,7 @@ const Scaffold: React.FC = () => {
     }, false)
 
     const componentId = +searchParams.get('componentId');
-    const versionId = +searchParams.get('versionId');
+    const versionId = +searchParams.get('versionId') || 1;
     const scaffoldId = +searchParams.get('scaffoldId');
     scaffoldModel.fetchScaffold(scaffoldId).then(() => {
       if (componentId) {
