@@ -7,11 +7,17 @@ import { Release } from "./Release";
 @Entity()
 export class Bundle extends BaseEntity {
 
-  @ManyToOne()
-  release: Release;
+  @Property()
+  appName: string;
+
+  @Property()
+  appKey: string;
 
   @ManyToOne()
   application: Application;
+
+  @ManyToOne()
+  release: Release;
 
   @OneToMany(() => InstanceAsset, asset => asset.bundle)
   newAssetList = new Collection<InstanceAsset>(this);
@@ -19,9 +25,6 @@ export class Bundle extends BaseEntity {
   @OneToMany(() => InstanceAsset, asset => asset.bundle)
   oldAssetList = new Collection<InstanceAsset>(this);
 
-  @Property()
-  appName: string;
-
-  @Property()
-  appKey: string;
+  @Property({ length: 2000 })
+  remark?: string;
 }

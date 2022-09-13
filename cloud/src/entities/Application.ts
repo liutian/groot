@@ -6,11 +6,20 @@ import { Release } from "./Release";
 @Entity()
 export class Application extends BaseEntity {
 
-  @Property({ length: 100 })
+  @Property({ length: 50 })
   name: string;
 
-  @Property({ length: 100 })
+  @Property({ length: 50 })
   key: string;
+
+  @ManyToOne({ serializer: value => value?.id, serializedName: 'projectId' })
+  project: Project;
+
+  @Property({ length: 100 })
+  playgroundPath: string;
+
+  @Property()
+  pathPrefix?: string;
 
   // 此处必须为可选，否则创建application会引发devRelease非空校验
   @ManyToOne({ serializer: value => value?.id, serializedName: 'devReleaseId' })
@@ -28,21 +37,13 @@ export class Application extends BaseEntity {
   @ManyToOne({ serializer: value => value?.id, serializedName: 'onlineReleaseId' })
   onlineRelease?: Release;
 
-  @Property({ length: 100 })
-  remoteFrontEndUrl: string;
-
-  @Property({ length: 100 })
-  playgroundPath: string;
+  //************************已下是接口入参或者查询返回需要定义的属性************************
 
   @Property({ persist: false })
   release: Release;
 
   @Property({ persist: false })
   releaseList: Release[];
-
-  @ManyToOne({ serializer: value => value?.id, serializedName: 'projectId' })
-  project: Project;
-
 
   @Property({ persist: false })
   devReleaseId: number;
@@ -56,6 +57,4 @@ export class Application extends BaseEntity {
   @Property({ persist: false })
   onlineReleaseId: number;
 
-  @Property()
-  pathPrefix?: string;
 }

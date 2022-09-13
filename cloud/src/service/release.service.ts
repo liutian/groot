@@ -59,8 +59,8 @@ export class ReleaseService {
 
       originInstanceList.forEach((originInstance) => {
         const instance = instanceMap.get(originInstance.id);
-        if (originInstance.parentInstance) {
-          instance.parentInstance = instanceMap.get(originInstance.parentInstance.id);
+        if (originInstance.parent) {
+          instance.parent = instanceMap.get(originInstance.parent.id);
         }
 
         const originPropValueList = originInstance.valueList.getItems();
@@ -69,10 +69,9 @@ export class ReleaseService {
           const newPropValue = em.create(PropValue, {
             ...pick(originPropValue, [
               'propItem', 'value', 'abstractValueIdChain',
-              'component', 'componentVersion', 'application', 'project', 'scaffold', 'type',
+              'component', 'componentVersion', 'type',
               'order'
             ]),
-            release,
             componentInstance: instance
           });
           valueMap.set(originPropValue.id, newPropValue);

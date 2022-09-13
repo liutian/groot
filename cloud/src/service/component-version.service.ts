@@ -112,7 +112,7 @@ export class ComponentVersionService {
         const originValue = originValueList[valueIndex];
         const value = em.create(PropValue, {
           ...pick(originValue,
-            ['value', 'abstractValueIdChain', 'component', 'application', 'project', 'scaffold', 'type', 'order']
+            ['value', 'abstractValueIdChain', 'component', 'type', 'order']
           ),
           componentVersion,
           propItem: tempIdData.itemId

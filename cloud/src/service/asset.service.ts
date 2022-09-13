@@ -123,7 +123,7 @@ export class AssetService {
     return bundle.id;
   }
 
-  async deploy(bundleId: number, env: EnvType, remark: string) {
+  async deploy(bundleId: number, env: EnvType) {
     const em = RequestContext.getEntityManager();
 
     const bundle = await em.findOne(Bundle, bundleId, {
@@ -176,7 +176,6 @@ export class AssetService {
       application: bundle.application,
       asset,
       env,
-      remark,
       status: DeployStatusType.Online
     });
 

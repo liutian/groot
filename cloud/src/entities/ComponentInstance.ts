@@ -8,7 +8,7 @@ import { Release } from "./Release";
 @Entity()
 export class ComponentInstance extends BaseEntity {
 
-  @Property({ length: 100 })
+  @Property({ length: 50 })
   name: string;
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'componentId' })
@@ -17,24 +17,31 @@ export class ComponentInstance extends BaseEntity {
   @ManyToOne({ serializer: value => value?.id, serializedName: 'componentVersionId' })
   componentVersion: ComponentVersion;
 
+  @ManyToOne({ serializer: value => value?.id, serializedName: 'releaseId' })
+  release: Release;
+
   /**
-   * 页面类型组件对应页面地址
+   * 一般为组件实例第一次创建时的ID，多个版本迭代实例重新创建，但是trackI永远复制上一个版本的，保证多版本迭代之间还可以追溯组件实例的历史记录
+   */
+  @Property()
+  trackId: number;
+
+  @ManyToOne({ serializer: value => value?.id, serializedName: 'parentId' })
+  parent?: ComponentInstance;
+
+  /**
+   * 页面地址，可选
    */
   @Property({ length: 100 })
   path?: string;
 
-
+  /**
+   * 组件属性值
+   */
   @OneToMany(() => PropValue, propValue => propValue.componentInstance)
   valueList = new Collection<PropValue>(this);
 
-  /**
- * 一个实例可以被多个迭代引用，只有组件版本升级会导致实例变化
- */
-  @ManyToOne({ serializer: value => value?.id, serializedName: 'releaseId' })
-  release: Release;
-
-  @ManyToOne({ serializer: value => value?.id, serializedName: 'parentInstanceId' })
-  parentInstance?: ComponentInstance;
+  //************************已下是接口入参或者查询返回需要定义的属性************************
 
   @Property({ persist: false })
   componentId?: number;
@@ -44,13 +51,6 @@ export class ComponentInstance extends BaseEntity {
 
   @Property({ persist: false })
   componentVersionId?: number;
-
-  // 迭代版本之间确定组件实例唯一的标志
-  @Property()
-  trackId: number;
-
-  @ManyToOne({ serializer: value => value?.id, serializedName: 'parentId' })
-  parent?: ComponentInstance;
 
   @Property({ persist: false })
   oldChildId?: number;

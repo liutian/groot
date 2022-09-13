@@ -31,10 +31,6 @@ const DeployModal: React.FC = () => {
           <Radio.Button value={EnvType.Ol}>{EnvType.Ol}</Radio.Button>
         </Radio.Group>
       </Form.Item>
-
-      <Form.Item label="备注说明" name="remark">
-        <Input.TextArea />
-      </Form.Item>
     </Form>
   </Modal>
 }

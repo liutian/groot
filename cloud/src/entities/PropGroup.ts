@@ -18,14 +18,27 @@ export class PropGroup extends BaseEntity {
   @Property()
   root = true;
 
+  @ManyToOne({ serializer: value => value?.id, serializedName: 'componentId' })
+  component: Component;
+
+  @ManyToOne({ serializer: value => value?.id, serializedName: 'componentVersionId' })
+  componentVersion: ComponentVersion;
+
   /**
-   * 组件属性，其下配置块默认继承该属性
+   * Item 其下没有配置块这一层，直接展示配置项
+   * Default 直接下级为配置块，配置块直接下级为配置项
+   */
+  @Property()
+  struct: PropGroupStructType = PropGroupStructType.Default;
+
+  @Property({ columnType: 'double' })
+  order: number;
+
+  /**
+   * 其下配置块默认继承该属性
    */
   @Property({ length: 50 })
   propKey?: string;
-
-  @OneToMany(() => PropBlock, block => block.group)
-  propBlockList = new Collection<PropBlock>(this);
 
   /**
    * 关联配置项，层级结构时需要通过该值查找上级配置项
@@ -33,28 +46,17 @@ export class PropGroup extends BaseEntity {
   @ManyToOne({ serializer: value => value?.id, serializedName: 'parentItemId' })
   parentItem?: PropItem;
 
+  @OneToMany(() => PropBlock, block => block.group)
+  propBlockList = new Collection<PropBlock>(this);
+
+  //************************已下是接口入参或者查询返回需要定义的属性************************
+
   @Property({ persist: false })
   parentItemId?: number;
-
-  @ManyToOne({ serializer: value => value?.id, serializedName: 'componentVersionId' })
-  componentVersion: ComponentVersion;
 
   @Property({ persist: false })
   componentVersionId?: number;
 
-  @Property({ columnType: 'double' })
-  order: number;
-
-  @ManyToOne({ serializer: value => value?.id, serializedName: 'componentId' })
-  component: Component;
-
   @Property({ persist: false })
   componentId?: number;
-
-  /**
-   * Item 其下没有配置块这一层，直接展示配置项
-   * Default 直接下级为配置块，配置块直接下级为配置项
-   */
-  @Property()
-  struct: PropGroupStructType = PropGroupStructType.Default
 }

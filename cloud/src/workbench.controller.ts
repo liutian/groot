@@ -183,8 +183,8 @@ export class WorkbenchController {
   }
 
   @Post('/asset/deploy')
-  async assetDeploy(@Body('bundleId') bundleId: number, @Body('env') env: EnvType, @Body('remark') remark: string) {
-    return this.assetService.deploy(bundleId, env, remark);
+  async assetDeploy(@Body('bundleId') bundleId: number, @Body('env') env: EnvType) {
+    return this.assetService.deploy(bundleId, env);
   }
 
   @Post('/component-instance/add-child')

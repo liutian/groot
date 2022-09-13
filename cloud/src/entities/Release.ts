@@ -6,7 +6,7 @@ import { Application } from "./Application";
 @Entity()
 export class Release extends BaseEntity {
 
-  @Property({ length: 100 })
+  @Property({ length: 50 })
   name: string;
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'applicationId' })
@@ -18,10 +18,11 @@ export class Release extends BaseEntity {
   @Property()
   archive = false;
 
-  @Property({ persist: false })
-  imageReleaseId: number;
-
   @OneToMany(() => ComponentInstance, componentInstance => componentInstance.release)
   instanceList = new Collection<ComponentInstance>(this);
 
+  //************************已下是接口入参或者查询返回需要定义的属性************************
+
+  @Property({ persist: false })
+  imageReleaseId: number;
 }

@@ -23,6 +23,4 @@ export class Deploy extends BaseEntity {
   @Property()
   status: DeployStatusType;
 
-  @Property({ length: 2000 })
-  remark?: string;
 }

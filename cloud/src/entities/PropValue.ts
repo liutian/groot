@@ -2,70 +2,54 @@ import { Entity, ManyToOne, Property } from "@mikro-orm/core";
 import { BaseEntity } from "./BaseEntity";
 import { ComponentInstance } from "./ComponentInstance";
 import { Component } from "./Component";
-import { Scaffold } from "./Scaffold";
-import { Application } from "./Application";
-import { Project } from "./Project";
 import { PropValueType } from "@grootio/common";
 import { ComponentVersion } from "./ComponentVersion";
 import { PropItem } from "./PropItem";
-import { Release } from "./Release";
 
 @Entity()
 export class PropValue extends BaseEntity {
 
+  @Property()
+  type: PropValueType;
+
   @ManyToOne({ serializer: value => value?.id, serializedName: 'propItemId' })
   propItem: PropItem;
 
-  @Property({ persist: false })
-  propItemId?: number;
+  @ManyToOne({ serializer: value => value?.id, serializedName: 'componentId' })
+  component: Component;
 
-  @Property({ length: 1000 })
-  value?: string;
+  @ManyToOne({ serializer: value => value?.id, serializedName: 'componentVersionId' })
+  componentVersion: ComponentVersion;
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'instanceId' })
   componentInstance?: ComponentInstance;
 
   @Property({ length: 1000 })
+  value?: string;
+
+  @Property({ length: 1000 })
   abstractValueIdChain?: string;
-
-  @ManyToOne({ serializer: value => value?.id, serializedName: 'componentId' })
-  component: Component;
-
-  @Property({ persist: false })
-  componentId?: number;
-
-  @ManyToOne({ serializer: value => value?.id, serializedName: 'componentVersionId' })
-  componentVersion: ComponentVersion;
-
-  @Property({ persist: false })
-  componentVersionId?: number;
-
-  @ManyToOne({ serializer: value => value?.id, serializedName: 'applicationId' })
-  application?: Application;
-
-  @ManyToOne({ serializer: value => value?.id, serializedName: 'projectId' })
-  project?: Project;
-
-  @ManyToOne({ serializer: value => value?.id, serializedName: 'scaffoldId' })
-  scaffold: Scaffold;
-
-  @Property({ persist: false })
-  scaffoldId?: number;
-
-  @Property()
-  type: PropValueType;
 
   @Property()
   order?: number;
 
-  @ManyToOne({ serializer: value => value?.id, serializedName: 'releaseId' })
-  release?: Release;
+  //************************已下是接口入参或者查询返回需要定义的属性************************
+
+  @Property({ persist: false })
+  propItemId?: number;
+
+  @Property({ persist: false })
+  componentId?: number;
+
+  @Property({ persist: false })
+  componentVersionId?: number;
+
+  @Property({ persist: false })
+  scaffoldId?: number;
 
   @Property({ persist: false })
   releaseId?: number;
 
-
   @Property({ persist: false })
   componentInstanceId?: number;
-
 }

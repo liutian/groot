@@ -27,7 +27,6 @@ export class DatabaseSeeder extends Seeder {
     const application = em.create(Application, {
       key: 'demo',
       name: '管理端应用',
-      remoteFrontEndUrl: 'https://backend.com',
       playgroundPath: '/admin/groot/playground',
       project,
       pathPrefix: '/admin/groot'
@@ -171,7 +170,6 @@ export class DatabaseSeeder extends Seeder {
       propItem: searchInnerItem,
       component: searchComponent,
       componentVersion: searchComponentVersion,
-      scaffold,
       type: PropValueType.Prototype,
     });
 
@@ -179,7 +177,6 @@ export class DatabaseSeeder extends Seeder {
       propItem: searchInnerItem,
       component: searchComponent,
       componentVersion: searchComponentVersion,
-      scaffold,
       type: PropValueType.Prototype,
     });
 
@@ -187,7 +184,6 @@ export class DatabaseSeeder extends Seeder {
       propItem: searchInnerItem,
       component: searchComponent,
       componentVersion: searchComponentVersion,
-      scaffold,
       type: PropValueType.Prototype,
     });
     await em.persistAndFlush([searchValue1, searchValue2, searchValue3]);
@@ -197,7 +193,6 @@ export class DatabaseSeeder extends Seeder {
       component: searchComponent,
       componentVersion: searchComponentVersion,
       abstractValueIdChain: `${searchValue1.id}`,
-      scaffold,
       type: PropValueType.Prototype,
       value: '"id"'
     });
@@ -207,7 +202,6 @@ export class DatabaseSeeder extends Seeder {
       component: searchComponent,
       componentVersion: searchComponentVersion,
       abstractValueIdChain: `${searchValue1.id}`,
-      scaffold,
       type: PropValueType.Prototype,
       value: '"ID"'
     });
@@ -217,7 +211,6 @@ export class DatabaseSeeder extends Seeder {
       component: searchComponent,
       componentVersion: searchComponentVersion,
       abstractValueIdChain: `${searchValue1.id}`,
-      scaffold,
       type: PropValueType.Prototype,
       value: '"text"'
     });
@@ -227,7 +220,6 @@ export class DatabaseSeeder extends Seeder {
       component: searchComponent,
       componentVersion: searchComponentVersion,
       abstractValueIdChain: `${searchValue2.id}`,
-      scaffold,
       type: PropValueType.Prototype,
       value: '"name"'
     });
@@ -237,7 +229,6 @@ export class DatabaseSeeder extends Seeder {
       component: searchComponent,
       componentVersion: searchComponentVersion,
       abstractValueIdChain: `${searchValue2.id}`,
-      scaffold,
       type: PropValueType.Prototype,
       value: '"姓名"'
     });
@@ -247,7 +238,6 @@ export class DatabaseSeeder extends Seeder {
       component: searchComponent,
       componentVersion: searchComponentVersion,
       abstractValueIdChain: `${searchValue2.id}`,
-      scaffold,
       type: PropValueType.Prototype,
       value: '"text"'
     });
@@ -257,7 +247,6 @@ export class DatabaseSeeder extends Seeder {
       component: searchComponent,
       componentVersion: searchComponentVersion,
       abstractValueIdChain: `${searchValue3.id}`,
-      scaffold,
       type: PropValueType.Prototype,
       value: '"age"'
     });
@@ -267,7 +256,6 @@ export class DatabaseSeeder extends Seeder {
       component: searchComponent,
       componentVersion: searchComponentVersion,
       abstractValueIdChain: `${searchValue3.id}`,
-      scaffold,
       type: PropValueType.Prototype,
       value: '"年龄"'
     });
@@ -277,7 +265,6 @@ export class DatabaseSeeder extends Seeder {
       component: searchComponent,
       componentVersion: searchComponentVersion,
       abstractValueIdChain: `${searchValue3.id}`,
-      scaffold,
       type: PropValueType.Prototype,
       value: '"text"'
     });

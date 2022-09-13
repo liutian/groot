@@ -4,7 +4,7 @@ import { BaseEntity } from "./BaseEntity";
 @Entity()
 export class Project extends BaseEntity {
 
-  @Property({ length: 100 })
+  @Property({ length: 50 })
   name: string;
 
 }

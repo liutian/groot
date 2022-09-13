@@ -48,7 +48,6 @@ export class PropValueService {
       abstractValueIdChain: { $like: `${propValue.id}` },
       component: propValue.componentId,
       componentVersion: propValue.componentVersionId,
-      scaffold: propValue.scaffoldId,
     });
 
     em.remove(propValue);
@@ -72,10 +71,8 @@ export class PropValueService {
         propItem: rawPropValue.propItemId,
         component: rawPropValue.componentId,
         componentVersion: rawPropValue.componentVersionId,
-        scaffold: rawPropValue.scaffoldId,
         value: rawPropValue.value,
         abstractValueIdChain: rawPropValue.abstractValueIdChain,
-        release: rawPropValue.releaseId,
         componentInstance: rawPropValue.componentInstanceId,
         type: PropValueType.Instance
       });
@@ -87,7 +84,6 @@ export class PropValueService {
           propItem: rawPropValue.propItemId,
           component: rawPropValue.componentId,
           componentVersion: rawPropValue.componentVersionId,
-          scaffold: rawPropValue.scaffoldId,
           value: rawPropValue.value,
           type: PropValueType.Prototype,
           abstractValueIdChain: rawPropValue.abstractValueIdChain

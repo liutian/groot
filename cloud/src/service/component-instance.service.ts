@@ -80,9 +80,8 @@ export class ComponentInstanceService {
         const newPropValue = em.create(PropValue, {
           ...pick(propValue, [
             'propItem', 'value', 'componentInstance', 'abstractValueIdChain',
-            'component', 'componentVersion', 'application', 'project', 'scaffold', 'order'
+            'component', 'componentVersion', 'order'
           ]),
-          release,
           componentInstance: newInstance,
           type: PropValueType.Instance
         });
