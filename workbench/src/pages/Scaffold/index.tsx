@@ -15,10 +15,10 @@ import { BranchesOutlined, HomeOutlined, PlusOutlined, SendOutlined } from "@ant
 import { ModalStatus } from "@util/common";
 
 const Scaffold: React.FC = () => {
-  const [scaffoldModel, scaffoldUpdateAction] = useRegisterModel<ScaffoldModel>(ScaffoldModel.modelName, new ScaffoldModel());
-  const [workbenchModel] = useRegisterModel<WorkbenchModel>(WorkbenchModel.modelName, new WorkbenchModel());
-  const [propHandleModel] = useRegisterModel<PropHandleModel>(PropHandleModel.modelName, new PropHandleModel());
-  const [propPersistModel] = useRegisterModel<PropPersistModel>(PropPersistModel.modelName, new PropPersistModel());
+  const [scaffoldModel, scaffoldUpdateAction] = useRegisterModel(ScaffoldModel);
+  const [workbenchModel] = useRegisterModel(WorkbenchModel);
+  const [propHandleModel] = useRegisterModel(PropHandleModel);
+  const [propPersistModel] = useRegisterModel(PropPersistModel);
 
   useState(() => {
     propPersistModel.inject(workbenchModel, propHandleModel);

@@ -4,7 +4,7 @@ import { Dropdown, Menu } from "antd";
 import EditorModel from "pages/Editor/EditorModel";
 
 const Release: React.FC = () => {
-  const [editorModel] = useModel<EditorModel>(EditorModel.modelName);
+  const [editorModel] = useModel(EditorModel);
 
   const releaseListMenu = editorModel.application.releaseList.map((release) => {
     return {

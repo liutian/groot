@@ -6,7 +6,7 @@ import { useState } from "react";
 import styles from './index.module.less';
 
 export const DragComponent: React.FC<{ component: Component }> = ({ component }) => {
-  const [workbenchModel] = useModel<WorkbenchModel>(WorkbenchModel.modelName);
+  const [workbenchModel] = useModel(WorkbenchModel);
   const [iframeDragMaskEle] = useState<HTMLElement>(() => {
     return document.getElementById(workbenchModel.iframeDragMaskId);
   });

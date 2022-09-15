@@ -6,7 +6,7 @@ import { propKeyRule } from "@util/utils";
 import PropPersistModel from "@model/PropPersistModel";
 
 const PropGroupSetting: React.FC = () => {
-  const [propPersistModel, propPersistAction] = useModel<PropPersistModel>(PropPersistModel.modelName);
+  const [propPersistModel, propPersistAction] = useModel(PropPersistModel);
   const [form] = Form.useForm();
   const inputRef = useRef<any>(null);
 

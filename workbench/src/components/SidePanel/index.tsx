@@ -18,8 +18,8 @@ type PropsType = {
 } & HTMLAttributes<HTMLDivElement>;
 
 const SidePanel: React.FC<PropsType> = ({ ...props }) => {
-  const [propHandleModel] = useModel<PropHandleModel>(PropHandleModel.modelName);
-  const [workbenchModel, workbenchUpdateAction] = useModel<WorkbenchModel>(WorkbenchModel.modelName);
+  const [propHandleModel] = useModel(PropHandleModel);
+  const [workbenchModel, workbenchUpdateAction] = useModel(WorkbenchModel);
 
   const containerRef = useRef<HTMLDivElement>({} as any);
 

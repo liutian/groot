@@ -4,7 +4,7 @@ import { Button, Modal } from "antd"
 import EditorModel from "pages/Editor/EditorModel";
 
 const BuildModal: React.FC = () => {
-  const [editorModel, updateEditorModel] = useModel<EditorModel>(EditorModel.modelName);
+  const [editorModel, updateEditorModel] = useModel(EditorModel);
 
   let actions = [
     <Button key="primary" onClick={() => editorModel.assetBuild()} type="primary" loading={editorModel.assetBuildStatus === 'building'}>构建</Button>,

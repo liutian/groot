@@ -7,7 +7,7 @@ import { PropItemType, PropItemTypeNameMap } from "@grootio/common";
 
 
 const PropItemSetting: React.FC = () => {
-  const [propPersistModel, propPersistAction] = useModel<PropPersistModel>(PropPersistModel.modelName);
+  const [propPersistModel, propPersistAction] = useModel(PropPersistModel);
 
   const [form] = Form.useForm<PropItem>();
 

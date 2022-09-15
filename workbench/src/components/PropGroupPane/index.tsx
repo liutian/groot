@@ -16,8 +16,8 @@ type PropsType = {
 }
 
 const PropGroupPane: React.FC<PropsType> = ({ group }) => {
-  const [propPersistModel, propPersistAction] = useModel<PropPersistModel>(PropPersistModel.modelName);
-  const [workbenchModel] = useModel<WorkbenchModel>(WorkbenchModel.modelName);
+  const [propPersistModel, propPersistAction] = useModel(PropPersistModel);
+  const [workbenchModel] = useModel(WorkbenchModel);
   const [, refresh] = useState(0);
   const noSetting = !workbenchModel.prototypeMode || group.parentItem?.noSetting;
 

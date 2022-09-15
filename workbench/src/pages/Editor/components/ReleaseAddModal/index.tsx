@@ -4,7 +4,7 @@ import { Form, Input, Modal, Select } from "antd";
 import EditorModel from "pages/Editor/EditorModel";
 
 const ReleaseAddModal: React.FC = () => {
-  const [editorModel, updateAction] = useModel<EditorModel>(EditorModel.modelName);
+  const [editorModel, updateAction] = useModel(EditorModel);
   const [form] = Form.useForm();
 
   const handleOk = async () => {

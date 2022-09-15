@@ -21,9 +21,9 @@ const PropBlockListStructPane: React.FC<PropsType> = ({ block: propBlock }) => {
   const dataSourceEditable = !!childPropItem.block.group.root || childPropItem.block.group.parentItem?.tempAbstractValueId;
   const dataSource = [];
 
-  const [propHandleModel] = useModel<PropHandleModel>(PropHandleModel.modelName);
-  const [workbenchModel] = useModel<WorkbenchModel>(WorkbenchModel.modelName);
-  const [propPersistModel] = useModel<PropPersistModel>(PropPersistModel.modelName);
+  const [propHandleModel] = useModel(PropHandleModel);
+  const [workbenchModel] = useModel(WorkbenchModel);
+  const [propPersistModel] = useModel(PropPersistModel);
   const [form] = Form.useForm();
 
   const [getInitValue] = useState(() => {

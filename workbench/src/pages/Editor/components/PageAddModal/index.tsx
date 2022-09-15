@@ -6,7 +6,7 @@ import EditorModel from "pages/Editor/EditorModel";
 import { useEffect, useState } from "react";
 
 const PageAddModal: React.FC = () => {
-  const [editorModel, updateAction] = useModel<EditorModel>(EditorModel.modelName);
+  const [editorModel, updateAction] = useModel(EditorModel);
   const [form] = Form.useForm();
   const [componentList, setComponentList] = useState<Component[]>([]);
 

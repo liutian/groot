@@ -21,9 +21,9 @@ type PropType = {
 }
 
 function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
-  const [propPersistModel, propPersistAction] = useModel<PropPersistModel>(PropPersistModel.modelName);
-  const [propHandleModel, propHandleUpdateAction] = useModel<PropHandleModel>(PropHandleModel.modelName);
-  const [workbenchModel] = useModel<WorkbenchModel>(WorkbenchModel.modelName);
+  const [propPersistModel, propPersistAction] = useModel(PropPersistModel);
+  const [propHandleModel] = useModel(PropHandleModel);
+  const [workbenchModel] = useModel(WorkbenchModel);
   const [form] = Form.useForm();
   const noSetting = !workbenchModel.prototypeMode || freezeSetting || block.group.parentItem?.noSetting;
 

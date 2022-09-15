@@ -19,10 +19,10 @@ import Release from "./components/Release";
 import { ModalStatus } from "@util/common";
 
 const Editor: React.FC = () => {
-  const [editorModel, editorUpdateAction] = useRegisterModel<EditorModel>(EditorModel.modelName, new EditorModel());
-  const [workbenchModel] = useRegisterModel<WorkbenchModel>(WorkbenchModel.modelName, new WorkbenchModel());
-  const [propHandleModel] = useRegisterModel<PropHandleModel>(PropHandleModel.modelName, new PropHandleModel());
-  const [propPersistModel] = useRegisterModel<PropPersistModel>(PropPersistModel.modelName, new PropPersistModel());
+  const [editorModel, editorUpdateAction] = useRegisterModel(EditorModel);
+  const [workbenchModel] = useRegisterModel(WorkbenchModel);
+  const [propHandleModel] = useRegisterModel(PropHandleModel);
+  const [propPersistModel] = useRegisterModel(PropPersistModel);
 
   useState(() => {
     propPersistModel.inject(workbenchModel, propHandleModel);

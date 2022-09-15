@@ -12,9 +12,9 @@ import PropPersistModel from "@model/PropPersistModel";
 import { PropGroupStructType } from "@grootio/common";
 
 function PropPane() {
-  const [propHandleModel] = useModel<PropHandleModel>(PropHandleModel.modelName);
-  const [propPersistModel, propPersistAction] = useModel<PropPersistModel>(PropPersistModel.modelName);
-  const [workbenchModel] = useModel<WorkbenchModel>(WorkbenchModel.modelName);
+  const [propHandleModel] = useModel(PropHandleModel);
+  const [propPersistModel, propPersistAction] = useModel(PropPersistModel);
+  const [workbenchModel] = useModel(WorkbenchModel);
 
   const renderTabBarItem = (group: PropGroup) => {
     return <div>{group.name}<i className="highlight" hidden={!group.highlight} /></div>;

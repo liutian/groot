@@ -8,8 +8,8 @@ import EditorModel from "pages/Editor/EditorModel";
 import styles from './index.module.less';
 
 const PageList: React.FC = () => {
-  const [editorModel, editorUpdateAction] = useModel<EditorModel>(EditorModel.modelName);
-  const [workbenchModel] = useModel<WorkbenchModel>(WorkbenchModel.modelName);
+  const [editorModel, editorUpdateAction] = useModel(EditorModel);
+  const [workbenchModel] = useModel(WorkbenchModel);
 
   const pageComponentInstanceList = editorModel.application.release.instanceList;
   const componentList = pageComponentInstanceList.map((componentInstance) => {

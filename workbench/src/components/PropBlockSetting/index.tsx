@@ -5,7 +5,7 @@ import { Form, Input, Modal, Radio, Switch } from "antd";
 import React, { useEffect, useRef } from "react";
 
 const PropBlockSetting: React.FC = () => {
-  const [propPersistModel, updateAction] = useModel<PropPersistModel>(PropPersistModel.modelName);
+  const [propPersistModel, updateAction] = useModel(PropPersistModel);
   const [form] = Form.useForm();
   const inputRef = useRef<any>(null);
 

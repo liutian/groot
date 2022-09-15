@@ -13,7 +13,7 @@ const tabBarStyles = {
 }
 
 const WidgetWindow: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
-  const [workbenchModel, updateAction] = useModel<WorkbenchModel>(WorkbenchModel.modelName);
+  const [workbenchModel, updateAction] = useModel(WorkbenchModel);
   const containerRef = useRef<HTMLDivElement>({} as any);
 
   let middleBtn: ReactNode;

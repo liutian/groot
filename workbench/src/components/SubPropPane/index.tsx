@@ -16,7 +16,7 @@ type PropsType = {
 }
 
 const SubPropPane: React.FC<PropsType> = ({ item: propItem }) => {
-  const [propHandleModel] = useModel<PropHandleModel>(PropHandleModel.modelName);
+  const [propHandleModel] = useModel(PropHandleModel);
   const propGroup = propItem.childGroup;
   const containerRef = useRef<HTMLDivElement>({} as any);
 

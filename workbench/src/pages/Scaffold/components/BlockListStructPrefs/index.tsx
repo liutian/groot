@@ -10,7 +10,7 @@ type PropsType = {
 }
 const BlockListStructPrefs: React.FC<PropsType> = ({ block: propBlock }) => {
   const [, refresh] = useState(0);
-  const [propPersistModel] = useModel<PropPersistModel>(PropPersistModel.modelName);
+  const [propPersistModel] = useModel(PropPersistModel);
 
   const [prefsBlock] = useState(() => {
     return propBlock.propItemList[0].childGroup.propBlockList;

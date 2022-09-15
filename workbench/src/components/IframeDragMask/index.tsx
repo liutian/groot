@@ -8,7 +8,7 @@ type PropType = {
 } & HTMLAttributes<HTMLDivElement>;
 
 const IframeDragMask: React.FC<PropType> = (prop) => {
-  const [workbenchModel] = useModel<WorkbenchModel>(WorkbenchModel.modelName);
+  const [workbenchModel] = useModel(WorkbenchModel);
 
   // 必须有监听dragover事件否则drop事件无法触发
   const dragover = (event) => {

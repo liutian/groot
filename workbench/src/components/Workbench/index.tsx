@@ -11,7 +11,7 @@ type PropsType = {
 }
 
 const Workbench: React.FC<PropsType> = () => {
-  const [workbenchModel] = useModel<WorkbenchModel>(WorkbenchModel.modelName);
+  const [workbenchModel] = useModel(WorkbenchModel);
   const iframeRef = useRef<HTMLIFrameElement>({} as any);
 
   useEffect(() => {

@@ -13,7 +13,7 @@ type PropType = {
 } & SelectProps<number, any>;
 
 const ComponentSelect: React.FC<PropType> = ({ value: _valueObj, onChange: _onChange, parentInstanceId, ...resetProps }) => {
-  const [workbenchModel] = useModel<WorkbenchModel>(WorkbenchModel.modelName);
+  const [workbenchModel] = useModel(WorkbenchModel);
   const [componentList, setComponentList] = useState<{ id: number, name: string, componentId: number }[]>([]);
   const [valueNum, setValueNum] = useState<number>();
 

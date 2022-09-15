@@ -7,7 +7,7 @@ import styles from './index.module.less';
 import WorkbenchModel from '@model/WorkbenchModel';
 
 const SideFooter: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
-  const [workbenchModel, workbenchUpdateAction] = useModel<WorkbenchModel>(WorkbenchModel.modelName);
+  const [workbenchModel, workbenchUpdateAction] = useModel(WorkbenchModel);
   const propPathChainRef = useRef<HTMLElement>();
 
   useEffect(() => {

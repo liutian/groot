@@ -7,67 +7,72 @@ const store = new Map<string, ModelContainer>();
 let fastUpdate = false;
 
 /**
+ * 该状态管理的缺点：
+ * 1. 引入zoonjs，篡改浏览器原生方法
+ * 2. 包裹异步方法，导致调用链过长
+*/
+
+/**
  * 注册模型实例
- * @param key 模型名称
- * @param model 模型实例
- * @returns [模型的代理对象, 主动更新的函数]
+ * @param model 模型类
+ * @returns [模型的代理对象, 主动更新的函数] 主动更新的函数可以不执行model方法的情况下更新model数据
  */
-export const useRegisterModel = <T>(key: string, model: T) => {
+export const useRegisterModel = <T>(model: ModelClass<T>): ModelTuple<T> => {
   const [unregister] = useState(() => {
-    return registerModel(key, model);
+    return registerModel(model);
   });
 
   useEffect(() => {
     return unregister;
   }, []);
 
-  return useModel<T>(key, true);
+  return useModel(model, true);
 }
 
 /**
  * 注册模型实例
- * @param key 模型名称
- * @param model 模型实例
+ * @param model 模型类
+ * @returns 注销模型
  */
-export const registerModel = (key: string, model: any) => {
-  if (store.has(key)) {
-    throw new Error(`model ${key} have existed!`);
+export const registerModel = <T>(model: ModelClass<T>): () => void => {
+  if (store.has(model.modelName)) {
+    throw new Error(`model ${model.modelName} have existed!`);
   }
 
-  store.set(key, {
+  store.set(model.modelName, {
     origin: model,
-    proxy: wrapper(key, model),
+    proxy: wrapper(model.modelName, new model()),
   });
 
   return () => {
-    store.delete(key);
+    store.delete(model.modelName);
   }
 }
 
 /**
- * 使用模型实例，注意实例类型定义中方法必须为实例方法不能是原型方法
- * @param key 实例名称
+ * 使用模型实例，注意实例类型中方法必须为实例方法不能是原型方法
+ * @param model 模型类
  * @returns [模型的代理对象, 主动更新的函数] 主动更新的函数可以不执行model方法的情况下更新model数据
  */
-export const useModel = <T>(key: string, isRoot = false): [T, (fun: Function, execTrigger?: boolean) => void] => {
-  if (!store.has(key)) {
-    throw new Error(`model ${key} not find`);
+export const useModel = <T>(model: ModelClass<T>, isRoot = false): ModelTuple<T> => {
+  if (!store.has(model.modelName)) {
+    throw new Error(`model ${model.modelName} not find`);
   }
 
   const [, trigger] = useState(0);
 
-  const modelContainer = store.get(key);
+  const modelContainer = store.get(model.modelName);
   if (isRoot) {
     modelContainer.rootTrigger = trigger;
   }
 
   const updateAction = (fun: Function, execTrigger = true) => {
-    execInZone(key, 'updateAction', () => {
+    execInZone(model.modelName, 'updateAction', () => {
       fun();
     }, (asyncTaskName) => {
       // 少数情况之下updateAction只是想更新model，不刷新试图
       if (execTrigger) {
-        autoTrigger(key, asyncTaskName);
+        autoTrigger(model.modelName, asyncTaskName);
       }
     })
   }
@@ -179,3 +184,7 @@ type ModelContainer = {
   origin: any,
   rootTrigger?: Function,
 };
+
+type ModelClass<T> = (new () => T) & { modelName: string };
+
+type ModelTuple<T> = [T, (fun: Function, execTrigger?: boolean) => void];

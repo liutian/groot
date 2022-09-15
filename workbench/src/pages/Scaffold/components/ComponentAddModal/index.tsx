@@ -4,7 +4,7 @@ import { Form, Input, Modal, Switch } from "antd";
 import ScaffoldModel from "pages/Scaffold/ScaffoldModel";
 
 const ComponentAddModal: React.FC = () => {
-  const [scaffoldModel, updateAction] = useModel<ScaffoldModel>(ScaffoldModel.modelName);
+  const [scaffoldModel, updateAction] = useModel(ScaffoldModel);
   const [form] = Form.useForm();
 
   const handleOk = async () => {

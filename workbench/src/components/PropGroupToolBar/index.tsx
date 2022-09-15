@@ -11,9 +11,9 @@ import styles from './index.module.less';
 import { stringify } from "@util/utils";
 
 const PropGroupToolBar: React.FC = () => {
-  const [propPersistModel, propPersistAction] = useModel<PropPersistModel>(PropPersistModel.modelName);
-  const [propHandleModel] = useModel<PropHandleModel>(PropHandleModel.modelName);
-  const [workbenchModel] = useModel<WorkbenchModel>(WorkbenchModel.modelName);
+  const [propPersistModel, propPersistAction] = useModel<PropPersistModel>(PropPersistModel);
+  const [propHandleModel] = useModel(PropHandleModel);
+  const [workbenchModel] = useModel(WorkbenchModel);
 
   const [group, setGroup] = useState<PropGroup>();
 

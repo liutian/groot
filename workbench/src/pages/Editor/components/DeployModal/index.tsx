@@ -7,7 +7,7 @@ import EditorModel from "pages/Editor/EditorModel";
 import { useEffect } from "react";
 
 const DeployModal: React.FC = () => {
-  const [editorModel] = useModel<EditorModel>(EditorModel.modelName);
+  const [editorModel] = useModel(EditorModel);
   const [form] = useForm();
 
   useEffect(() => {

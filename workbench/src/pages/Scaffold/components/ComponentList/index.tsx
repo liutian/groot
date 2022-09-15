@@ -7,8 +7,8 @@ import ScaffoldModel from "pages/Scaffold/ScaffoldModel";
 import styles from './index.module.less';
 
 const ComponentList: React.FC = () => {
-  const [scaffoldModel, scaffoldUpdateAction] = useModel<ScaffoldModel>(ScaffoldModel.modelName);
-  const [workbenchModel, workbenchUpdateAction] = useModel<WorkbenchModel>(WorkbenchModel.modelName);
+  const [scaffoldModel, scaffoldUpdateAction] = useModel(ScaffoldModel);
+  const [workbenchModel] = useModel(WorkbenchModel);
 
   const componentList = scaffoldModel.scaffold.componentList.map((component) => {
     return {

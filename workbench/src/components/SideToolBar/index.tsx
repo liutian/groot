@@ -5,7 +5,7 @@ import { HTMLAttributes } from "react";
 import styles from './index.module.less';
 
 const SideToolBar: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
-  const [workbenchModel] = useModel<WorkbenchModel>(WorkbenchModel.modelName);
+  const [workbenchModel] = useModel(WorkbenchModel);
 
   return <div {...props}>
     <div className={styles.breadcrumb}>
