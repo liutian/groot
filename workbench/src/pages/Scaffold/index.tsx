@@ -12,6 +12,7 @@ import ComponentAddModal from "./components/ComponentAddModal";
 import ComponentVersionAddModal from "./components/ComponentVersionAddModal";
 import { Breadcrumb, Button, Dropdown, Menu, Modal, Tabs } from "antd";
 import { BranchesOutlined, HomeOutlined, PlusOutlined, SendOutlined } from "@ant-design/icons";
+import { ModalStatus } from "@util/common";
 
 const Scaffold: React.FC = () => {
   const [scaffoldModel, scaffoldUpdateAction] = useRegisterModel<ScaffoldModel>(ScaffoldModel.modelName, new ScaffoldModel());
@@ -53,7 +54,7 @@ const Scaffold: React.FC = () => {
     });
 
     workbenchModel.renderFooterLeftActionItems.push(() => {
-      return (<div onClick={() => scaffoldUpdateAction(() => scaffoldModel.showComponentVersionAddModal = true)}>
+      return (<div onClick={() => scaffoldUpdateAction(() => scaffoldModel.componentVersionAddModalStatus = ModalStatus.Init)}>
         <PlusOutlined />
       </div>)
     });

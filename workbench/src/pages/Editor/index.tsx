@@ -16,6 +16,7 @@ import DeployModal from "./components/DeployModal";
 import { DragComponentList } from "./components/DragComponentList";
 import PageList from "./components/PageList";
 import Release from "./components/Release";
+import { ModalStatus } from "@util/common";
 
 const Editor: React.FC = () => {
   const [editorModel, editorUpdateAction] = useRegisterModel<EditorModel>(EditorModel.modelName, new EditorModel());
@@ -43,7 +44,7 @@ const Editor: React.FC = () => {
     workbenchModel.renderFooterLeftActionItems.push(() => {
       return (<div onClick={() => {
         editorUpdateAction(() => {
-          editorModel.showReleaseAddModal = true;
+          editorModel.releaseAddModalStatus = ModalStatus.Init;
         })
       }}>
         <PlusOutlined />
@@ -54,7 +55,7 @@ const Editor: React.FC = () => {
       return (<>
         <Button type="link" title="部署" icon={<SendOutlined />} onClick={() => {
           editorUpdateAction(() => {
-            editorModel.showAssetBuildModal = true;
+            editorModel.assetBuildModalStatus = ModalStatus.Init;
           })
         }} />
       </>)

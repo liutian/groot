@@ -1,3 +1,4 @@
+import { ModalStatus } from "@util/common";
 import { useModel } from "@util/robot";
 import { Form, Input, Modal, Select } from "antd";
 import { serverPath } from "config";
@@ -10,12 +11,12 @@ const PageAddModal: React.FC = () => {
   const [componentList, setComponentList] = useState<Component[]>([]);
 
   useEffect(() => {
-    if (editorModel.showPageAddModal) {
+    if (editorModel.pageAddModalStatus === ModalStatus.Init) {
       fetch(`${serverPath}/component/list?container=false`).then(res => res.json()).then(({ data: list }: { data: Component[] }) => {
         setComponentList(list);
       })
     }
-  }, [editorModel.showPageAddModal]);
+  }, [editorModel.pageAddModalStatus]);
 
   const handleOk = async () => {
     const formData = await form.validateFields();
@@ -26,12 +27,12 @@ const PageAddModal: React.FC = () => {
 
   const handleCancel = () => {
     updateAction(() => {
-      editorModel.showPageAddModal = false;
+      editorModel.pageAddModalStatus = ModalStatus.None;
     })
   }
 
-  return <Modal visible={editorModel.showPageAddModal} mask={false} title="新增页面"
-    confirmLoading={editorModel.pageAddFetchLoading} onOk={handleOk} onCancel={handleCancel}>
+  return <Modal visible={editorModel.pageAddModalStatus !== ModalStatus.None} mask={false} title="新增页面"
+    confirmLoading={editorModel.pageAddModalStatus === ModalStatus.Submit} onOk={handleOk} onCancel={handleCancel}>
     <Form form={form} colon={false} labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
       <Form.Item label="名称" name="name" rules={[{ required: true }]}>
         <Input />

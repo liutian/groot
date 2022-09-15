@@ -1,4 +1,5 @@
 import WorkbenchModel from "@model/WorkbenchModel";
+import { ModalStatus } from "@util/common";
 import { useModel } from "@util/robot";
 import { Form, Input, Modal, Select } from "antd";
 import ScaffoldModel from "pages/Scaffold/ScaffoldModel";
@@ -17,12 +18,12 @@ const ComponentVersionAddModal: React.FC = () => {
 
   const handleCancel = () => {
     updateAction(() => {
-      scaffoldModel.showComponentVersionAddModal = false;
+      scaffoldModel.componentVersionAddModalStatus = ModalStatus.None;
     })
   }
 
-  return <Modal visible={scaffoldModel.showComponentVersionAddModal} mask={false} title="新增版本"
-    confirmLoading={scaffoldModel.componentVersionAddFetchLoading} onOk={handleOk} onCancel={handleCancel}>
+  return <Modal visible={scaffoldModel.componentVersionAddModalStatus !== ModalStatus.None} mask={false} title="新增版本"
+    confirmLoading={scaffoldModel.componentVersionAddModalStatus === ModalStatus.Submit} onOk={handleOk} onCancel={handleCancel}>
     <Form form={form} colon={false} labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
       <Form.Item label="名称" name="name" rules={[{ required: true }]}>
         <Input />

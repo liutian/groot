@@ -1,3 +1,4 @@
+import { ModalStatus } from "@util/common";
 import { serverPath } from "config";
 import WorkbenchModel from "../../model/WorkbenchModel";
 
@@ -6,10 +7,8 @@ export default class ScaffoldModel {
 
   public scaffold: Scaffold;
   public loadComponent: 'doing' | 'notfound' | 'over' = 'doing';
-  public componentAddFetchLoading = false;
-  public componentVersionAddFetchLoading = false;
-  public showComponentAddModal = false;
-  public showComponentVersionAddModal = false;
+  public componentAddModalStatus: ModalStatus = ModalStatus.None;
+  public componentVersionAddModalStatus: ModalStatus = ModalStatus.None;
   private workbench: WorkbenchModel;
 
   public inject(workbench: WorkbenchModel) {
@@ -17,7 +16,7 @@ export default class ScaffoldModel {
   }
 
   public switchComponent = (componentId: number, versionId: number, changeHistory = false) => {
-    const url = `${serverPath}/component/prototype/detail/${componentId}?versionId=${versionId}`;
+    const url = `${serverPath}/component-prototype/detail/${componentId}?versionId=${versionId}`;
     this.loadComponent = 'doing';
     return fetch(url).then(res => res.json()).then(({ data }: { data: Component }) => {
       this.loadComponent = 'over';
@@ -41,7 +40,7 @@ export default class ScaffoldModel {
   }
 
   public addComponent = (rawComponent: Component) => {
-    this.componentAddFetchLoading = true;
+    this.componentAddModalStatus = ModalStatus.Submit;
     return fetch(`${serverPath}/component/add`, {
       method: 'POST',
       headers: {
@@ -52,8 +51,7 @@ export default class ScaffoldModel {
         scaffoldId: this.scaffold.id
       })
     }).then(res => res.json()).then(({ data: newComponent }: { data: Component }) => {
-      this.componentAddFetchLoading = false;
-      this.showComponentAddModal = false;
+      this.componentAddModalStatus = ModalStatus.None;
       this.scaffold.componentList.push(newComponent);
 
       this.switchComponent(newComponent.id, newComponent.recentVersionId, true);
@@ -61,7 +59,7 @@ export default class ScaffoldModel {
   }
 
   public addComponentVersion = (rawComponentVersion: ComponentVersion) => {
-    this.componentVersionAddFetchLoading = true;
+    this.componentVersionAddModalStatus = ModalStatus.Submit;
     return fetch(`${serverPath}/component-version/add`, {
       method: 'POST',
       headers: {
@@ -71,8 +69,7 @@ export default class ScaffoldModel {
         ...rawComponentVersion,
       })
     }).then(res => res.json()).then(({ data: newComponentVersion }: { data: ComponentVersion }) => {
-      this.componentVersionAddFetchLoading = false;
-      this.showComponentVersionAddModal = false;
+      this.componentVersionAddModalStatus = ModalStatus.None;
       this.workbench.component.versionList.push(newComponentVersion);
       this.switchComponent(this.workbench.component.id, newComponentVersion.id, true);
     });

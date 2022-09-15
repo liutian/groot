@@ -1,5 +1,6 @@
 import { PlusOutlined } from "@ant-design/icons";
 import WorkbenchModel from "@model/WorkbenchModel";
+import { ModalStatus } from "@util/common";
 import { useModel, } from "@util/robot";
 import { Button, Menu, } from "antd";
 import ScaffoldModel from "pages/Scaffold/ScaffoldModel";
@@ -24,7 +25,7 @@ const ComponentList: React.FC = () => {
   });
 
   const showComponentAdd = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
-    scaffoldUpdateAction(() => scaffoldModel.showComponentAddModal = true);
+    scaffoldUpdateAction(() => scaffoldModel.componentAddModalStatus = ModalStatus.Init);
     e.stopPropagation();
   }
 

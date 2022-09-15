@@ -1,6 +1,7 @@
 import { EnvType } from "@grootio/common";
+import { ModalStatus } from "@util/common";
 import { useModel } from "@util/robot";
-import { Button, Form, Input, Modal, Radio } from "antd"
+import { Form, Modal, Radio } from "antd"
 import { useForm } from "antd/lib/form/Form";
 import EditorModel from "pages/Editor/EditorModel";
 import { useEffect } from "react";
@@ -10,18 +11,18 @@ const DeployModal: React.FC = () => {
   const [form] = useForm();
 
   useEffect(() => {
-    if (editorModel.showAssetDeployModal) {
+    if (editorModel.assetDeployModalStatus === ModalStatus.Init) {
       form.resetFields();
     }
-  }, [editorModel.showAssetDeployModal])
+  }, [editorModel.assetDeployModalStatus])
 
   const onOk = async () => {
     const formData = await form.validateFields();
     editorModel.assetDeploy(formData);
   }
 
-  return <Modal visible={editorModel.showAssetDeployModal} title="部署"
-    confirmLoading={editorModel.assetDeployFetchLoading} onOk={onOk}>
+  return <Modal visible={editorModel.assetDeployModalStatus !== ModalStatus.None} title="部署"
+    confirmLoading={editorModel.assetDeployModalStatus === ModalStatus.Submit} onOk={onOk}>
     <Form form={form} layout="horizontal" labelCol={{ span: 4 }} wrapperCol={{ span: 20 }}>
       <Form.Item label="环境" name="env" initialValue={EnvType.Dev}>
         <Radio.Group>

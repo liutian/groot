@@ -1,5 +1,6 @@
 import { PlusOutlined } from "@ant-design/icons";
 import WorkbenchModel from "@model/WorkbenchModel";
+import { ModalStatus } from "@util/common";
 import { useModel } from "@util/robot";
 import { Button, Menu } from "antd";
 import EditorModel from "pages/Editor/EditorModel";
@@ -20,13 +21,13 @@ const PageList: React.FC = () => {
           return;
         }
 
-        editorModel.switchComponentInstance(componentInstance.id, true, false);
+        editorModel.fetchPage(componentInstance.id);
       }
     };
   });
 
   const showPageAdd = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
-    editorUpdateAction(() => editorModel.showPageAddModal = true);
+    editorUpdateAction(() => editorModel.pageAddModalStatus = ModalStatus.Init);
     e.stopPropagation();
   }
 

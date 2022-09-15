@@ -1,3 +1,4 @@
+import { ModalStatus } from "@util/common";
 import { useModel } from "@util/robot";
 import { Form, Input, Modal, Switch } from "antd";
 import ScaffoldModel from "pages/Scaffold/ScaffoldModel";
@@ -15,12 +16,12 @@ const ComponentAddModal: React.FC = () => {
 
   const handleCancel = () => {
     updateAction(() => {
-      scaffoldModel.showComponentAddModal = false;
+      scaffoldModel.componentAddModalStatus = ModalStatus.None;
     })
   }
 
-  return <Modal visible={scaffoldModel.showComponentAddModal} mask={false} title="新增组件"
-    confirmLoading={scaffoldModel.componentAddFetchLoading} onOk={handleOk} onCancel={handleCancel}>
+  return <Modal visible={scaffoldModel.componentAddModalStatus !== ModalStatus.None} mask={false} title="新增组件"
+    confirmLoading={scaffoldModel.componentAddModalStatus === ModalStatus.Submit} onOk={handleOk} onCancel={handleCancel}>
     <Form form={form} colon={false} labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
       <Form.Item label="名称" name="name" rules={[{ required: true }]}>
         <Input />

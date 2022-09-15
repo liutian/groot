@@ -1,3 +1,4 @@
+import { ModalStatus } from "@util/common";
 import { useModel } from "@util/robot";
 import { Button, Modal } from "antd"
 import EditorModel from "pages/Editor/EditorModel";
@@ -19,8 +20,8 @@ const BuildModal: React.FC = () => {
     actions = [
       <Button key="primary" onClick={() => {
         updateEditorModel(() => {
-          editorModel.showAssetBuildModal = false;
-          editorModel.showAssetDeployModal = true;
+          editorModel.assetBuildModalStatus = ModalStatus.None;
+          editorModel.assetDeployModalStatus = ModalStatus.Init;
           editorModel.assetBuildStatus = 'init';
         })
       }} type="primary">前往部署</Button>,
@@ -28,7 +29,7 @@ const BuildModal: React.FC = () => {
     ]
   }
 
-  return <Modal visible={editorModel.showAssetBuildModal} title="构建" footer={[actions]}>
+  return <Modal visible={editorModel.assetBuildModalStatus !== ModalStatus.None} title="构建" footer={[actions]}>
     {
       editorModel.assetBuildStatus === 'init' && (
         <div>
