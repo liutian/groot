@@ -20,15 +20,35 @@ import { ModalStatus } from "@util/common";
 
 const Editor: React.FC = () => {
   const [editorModel, editorUpdateAction] = useRegisterModel(EditorModel);
-  const [workbenchModel] = useRegisterModel(WorkbenchModel);
+  const [workbenchModel, workbenchUpdateAction] = useRegisterModel(WorkbenchModel);
   const [propHandleModel] = useRegisterModel(PropHandleModel);
   const [propPersistModel] = useRegisterModel(PropPersistModel);
+
+  let [searchParams] = useSearchParams();
 
   useState(() => {
     propPersistModel.inject(workbenchModel, propHandleModel);
     editorModel.inject(workbenchModel);
     workbenchModel.inject(propHandleModel);
 
+    init();
+  });
+
+  useEffect(() => {
+    const applicationId = +searchParams.get('app');
+    const releaseId = +searchParams.get('release');
+    const instanceId = +searchParams.get('page');
+    editorModel.fetchApplication(applicationId, releaseId).then(() => {
+      if (instanceId) {
+        editorModel.fetchPage(instanceId, false);
+      } else if (workbenchModel.application.release.instanceList.length) {
+        const instance = workbenchModel.application.release.instanceList[0];
+        editorModel.fetchPage(instance.id, false);
+      }
+    })
+  }, []);
+
+  function init() {
     workbenchModel.renderExtraTabPanes.push(() => {
       return (<Tabs.TabPane key="application" tab="应用页面"><PageList /></Tabs.TabPane>)
     });
@@ -51,57 +71,45 @@ const Editor: React.FC = () => {
       </div>)
     });
 
-    (Object.getPrototypeOf(workbenchModel) as WorkbenchModel).renderToolBarAction = () => {
-      return (<>
-        <Button type="link" title="部署" icon={<SendOutlined />} onClick={() => {
-          editorUpdateAction(() => {
-            editorModel.assetBuildModalStatus = ModalStatus.Init;
-          })
-        }} />
-      </>)
-    }
-
-    (Object.getPrototypeOf(workbenchModel) as WorkbenchModel).renderToolBarBreadcrumb = () => {
-      return (<Breadcrumb separator=">">
-        <Breadcrumb.Item >
-          <HomeOutlined />
-        </Breadcrumb.Item>
-        {
-          editorModel.breadcrumbList.map((item) => {
-            return (<Breadcrumb.Item key={item.id}
-              onClick={() => editorModel.switchComponentInstance(item.id, false, false)}>
-              {item.name}
-            </Breadcrumb.Item>)
-          })
-        }
-      </Breadcrumb>)
-    }
-
-    (Object.getPrototypeOf(workbenchModel) as WorkbenchModel).switchComponentInstance = (instanceId) => {
-      editorModel.switchComponentInstance(instanceId, false, true);
-    }
-  });
-
-  let [searchParams] = useSearchParams();
-
-  useEffect(() => {
-    const applicationId = +searchParams.get('applicationId');
-    const releaseId = +searchParams.get('releaseId');
-    const instanceId = +searchParams.get('instanceId');
-    editorModel.fetchApplication(applicationId, releaseId).then(() => {
-      if (instanceId) {
-        editorModel.switchComponentInstance(instanceId, false, false);
-      } else if (editorModel.application.release.instanceList.length) {
-        const instance = editorModel.application.release.instanceList[0];
-        editorModel.switchComponentInstance(instance.id, false, false);
+    workbenchUpdateAction(() => {
+      (Object.getPrototypeOf(workbenchModel) as WorkbenchModel).renderToolBarAction = () => {
+        return (<>
+          <Button type="link" title="部署" icon={<SendOutlined />} onClick={() => {
+            editorUpdateAction(() => {
+              editorModel.assetBuildModalStatus = ModalStatus.Init;
+            })
+          }} />
+        </>)
       }
-    })
-  }, []);
 
-  if (editorModel.application === undefined) {
+      (Object.getPrototypeOf(workbenchModel) as WorkbenchModel).renderToolBarBreadcrumb = () => {
+        return (<Breadcrumb separator=">">
+          <Breadcrumb.Item >
+            <HomeOutlined />
+          </Breadcrumb.Item>
+          {
+            editorModel.breadcrumbList.map((item) => {
+              return (<Breadcrumb.Item key={item.id}
+                onClick={() => editorModel.switchComponentInstance(item.id, false, false)}>
+                {item.name}
+              </Breadcrumb.Item>)
+            })
+          }
+        </Breadcrumb>)
+      }
+
+      (Object.getPrototypeOf(workbenchModel) as WorkbenchModel).switchComponentInstance = (instanceId) => {
+        editorModel.switchComponentInstance(instanceId, false, true);
+      }
+    }, false)
+  }
+
+  if (editorModel.loadStatus === 'doing') {
     return <>loading</>
-  } else if (editorModel.application === null) {
-    return <>notfound component</>
+  } else if (editorModel.loadStatus === 'no-application') {
+    return <>not found application</>
+  } else if (editorModel.loadStatus === 'no-component') {
+    return <>not found component</>
   } else {
     return (<>
       <Workbench />

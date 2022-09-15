@@ -106,6 +106,8 @@ export default class PropHandleModel {
 
     this.activeGroupId = this.rootGroupList[0].id;
     console.log('<=================== prop tree built out =================>\n', this.rootGroupList);
+
+    return this.rootGroupList;
   }
 
 

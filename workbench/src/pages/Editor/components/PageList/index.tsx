@@ -11,7 +11,7 @@ const PageList: React.FC = () => {
   const [editorModel, editorUpdateAction] = useModel(EditorModel);
   const [workbenchModel] = useModel(WorkbenchModel);
 
-  const pageComponentInstanceList = editorModel.application.release.instanceList;
+  const pageComponentInstanceList = workbenchModel.application.release.instanceList;
   const componentList = pageComponentInstanceList.map((componentInstance) => {
     return {
       label: componentInstance.name,

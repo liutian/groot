@@ -20,11 +20,31 @@ const Scaffold: React.FC = () => {
   const [propHandleModel] = useRegisterModel(PropHandleModel);
   const [propPersistModel] = useRegisterModel(PropPersistModel);
 
+  let [searchParams] = useSearchParams();
+
   useState(() => {
     propPersistModel.inject(workbenchModel, propHandleModel);
     scaffoldModel.inject(workbenchModel);
     workbenchModel.inject(propHandleModel);
 
+    init();
+  })
+
+  useEffect(() => {
+    const componentId = +searchParams.get('componentId');
+    const versionId = +searchParams.get('versionId') || 1;
+    const scaffoldId = +searchParams.get('scaffoldId');
+    scaffoldModel.fetchScaffold(scaffoldId).then(() => {
+      if (componentId) {
+        scaffoldModel.switchComponent(componentId, versionId);
+      } else if (scaffoldModel.scaffold.componentList.length) {
+        const component = scaffoldModel.scaffold.componentList[0];
+        scaffoldModel.switchComponent(component.id, versionId);
+      }
+    })
+  }, []);
+
+  function init() {
     workbenchModel.renderExtraTabPanes.push(() => {
       return (<Tabs.TabPane key="scaffold" tab="脚手架">
         {<ComponentList />}
@@ -59,7 +79,7 @@ const Scaffold: React.FC = () => {
       </div>)
     });
 
-    Object.getPrototypeOf(workbenchModel).renderToolBarAction = () => {
+    (Object.getPrototypeOf(workbenchModel) as WorkbenchModel).renderToolBarAction = () => {
       return (<Button type="link" title="发布" icon={<SendOutlined />}
         onClick={() => {
           Modal.confirm({
@@ -73,7 +93,7 @@ const Scaffold: React.FC = () => {
       />)
     }
 
-    Object.getPrototypeOf(workbenchModel).renderToolBarBreadcrumb = () => {
+    (Object.getPrototypeOf(workbenchModel) as WorkbenchModel).renderToolBarBreadcrumb = () => {
       return (<Breadcrumb separator=">">
         <Breadcrumb.Item>
           <HomeOutlined />
@@ -81,23 +101,7 @@ const Scaffold: React.FC = () => {
         <Breadcrumb.Item href="">{workbenchModel.component?.name}</Breadcrumb.Item>
       </Breadcrumb>)
     }
-  })
-
-  let [searchParams] = useSearchParams();
-
-  useEffect(() => {
-    const componentId = +searchParams.get('componentId');
-    const versionId = +searchParams.get('versionId') || 1;
-    const scaffoldId = +searchParams.get('scaffoldId');
-    scaffoldModel.fetchScaffold(scaffoldId).then(() => {
-      if (componentId) {
-        scaffoldModel.switchComponent(componentId, versionId);
-      } else if (scaffoldModel.scaffold.componentList.length) {
-        const component = scaffoldModel.scaffold.componentList[0];
-        scaffoldModel.switchComponent(component.id, versionId);
-      }
-    })
-  }, []);
+  }
 
   if (scaffoldModel.scaffold === undefined) {
     return <>loading</>
