@@ -23,7 +23,7 @@ export class ReleaseService {
     LogicException.assertParamEmpty(rawRelease.imageReleaseId, 'imageReleaseId');
     LogicException.assertParamEmpty(rawRelease.name, 'name');
 
-    const imageRelease = await em.findOne(Release, rawRelease.imageReleaseId, { populate: ['instanceList.valueList'] });
+    const imageRelease = await em.findOne(Release, rawRelease.imageReleaseId);
     LogicException.assertNotFound(imageRelease, 'Release', rawRelease.imageReleaseId);
 
     const count = await em.count(Release, { application: imageRelease.application, name: rawRelease.name });
@@ -32,7 +32,11 @@ export class ReleaseService {
       throw new LogicException(`release name conflict name:${rawRelease.name}`, LogicExceptionCode.NotUnique);
     }
 
-    const originInstanceList = imageRelease.instanceList.getItems();
+    const originInstanceList = await em.find(ComponentInstance, { release: imageRelease });
+    for (let index = 0; index < originInstanceList.length; index++) {
+      const originInstance = originInstanceList[index];
+      originInstance.valueList = await em.find(PropValue, { componentInstance: originInstance.id });
+    }
 
     const instanceMap = new Map<number, ComponentInstance>();
     const valueMap = new Map<number, PropValue>();
@@ -46,6 +50,7 @@ export class ReleaseService {
     await em.begin();
     try {
       await em.flush();
+
 
       originInstanceList.forEach((originInstance) => {
         const instance = em.create(ComponentInstance, {
@@ -63,9 +68,7 @@ export class ReleaseService {
           instance.parent = instanceMap.get(originInstance.parent.id);
         }
 
-        const originPropValueList = originInstance.valueList.getItems();
-
-        originPropValueList.forEach((originPropValue) => {
+        originInstance.valueList.forEach((originPropValue) => {
           const newPropValue = em.create(PropValue, {
             ...pick(originPropValue, [
               'propItem', 'value', 'abstractValueIdChain',

@@ -1,4 +1,4 @@
-import { ApplicationData, DeployStatusType, EnvType, IComponent, IPropBlock, IPropGroup, IPropItem, IPropValue, Metadata } from '@grootio/common';
+import { ApplicationData, DeployStatusType, EnvType, IComponent, IPropBlock, IPropGroup, IPropItem, IPropValue, Metadata, PropValueType } from '@grootio/common';
 import { RequestContext, wrap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { propTreeFactory, metadataFactory } from '@grootio/core';
@@ -11,6 +11,10 @@ import { Bundle } from 'entities/Bundle';
 import { InstanceAsset } from 'entities/InstanceAsset';
 import { ReleaseAsset } from 'entities/ReleaseAsset';
 import { Deploy } from 'entities/Deploy';
+import { PropValue } from 'entities/PropValue';
+import { PropGroup } from 'entities/PropGroup';
+import { PropBlock } from 'entities/PropBlock';
+import { PropItem } from 'entities/PropItem';
 
 @Injectable()
 export class AssetService {
@@ -50,13 +54,6 @@ export class AssetService {
     const em = RequestContext.getEntityManager();
 
     const release = await em.findOne(Release, releaseId, {
-      populate: [
-        'instanceList.valueList',
-        'instanceList.component',
-        'instanceList.componentVersion.groupList',
-        'instanceList.componentVersion.blockList',
-        'instanceList.componentVersion.itemList'
-      ],
       populateWhere: {
         instanceList: { path: { $ne: null } }
       }
@@ -64,23 +61,35 @@ export class AssetService {
 
     LogicException.assertNotFound(release, 'Release', releaseId);
 
-    const instanceList = release.instanceList.getItems();
+    const instanceList = await em.find(ComponentInstance, { release },
+      { populate: ['component'] }
+    );
+
     const instanceMetadataMap = new Map<ComponentInstance, Metadata>();
-    instanceList.forEach((instance) => {
-      const groupList = instance.componentVersion.groupList.getItems() as any;
-      const blockList = instance.componentVersion.blockList.getItems() as any;
-      const itemList = instance.componentVersion.itemList.getItems() as any;
-      const valueList = instance.valueList.getItems() as any;
+
+    for (let index = 0; index < instanceList.length; index++) {
+      const instance = instanceList[index];
+
+      const groupList = await em.find(PropGroup, { component: instance.component, componentVersion: instance.componentVersion });
+      const blockList = await em.find(PropBlock, { component: instance.component, componentVersion: instance.componentVersion });
+      const itemList = await em.find(PropItem, { component: instance.component, componentVersion: instance.componentVersion });
+      const valueList = await em.find(PropValue, {
+        $or: [
+          { component: instance.component, componentVersion: instance.componentVersion, type: PropValueType.Prototype },
+          { componentInstance: instance }
+        ]
+      });
+
       const rootGroupList = propTreeFactory(
-        groupList.map(g => wrap(g).toObject()) as IPropGroup[],
-        blockList.map(b => wrap(b).toObject()) as IPropBlock[],
-        itemList.map(i => wrap(i).toObject()) as IPropItem[],
-        valueList.map(v => wrap(v).toObject()) as IPropValue[]
+        groupList.map(g => wrap(g).toObject()) as any as IPropGroup[],
+        blockList.map(b => wrap(b).toObject()) as any as IPropBlock[],
+        itemList.map(i => wrap(i).toObject()) as any as IPropItem[],
+        valueList.map(v => wrap(v).toObject()) as any as IPropValue[]
       );
 
       const metadata = metadataFactory(rootGroupList, instance.component as IComponent, instance.id);
       instanceMetadataMap.set(instance, metadata);
-    })
+    }
 
     const application = await em.findOne(Application, release.application.id, { populate: ['onlineRelease'] });
 

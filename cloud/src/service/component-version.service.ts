@@ -36,12 +36,8 @@ export class ComponentVersionService {
     LogicException.assertParamEmpty(rawComponentVersion.name, 'name');
     LogicException.assertParamEmpty(rawComponentVersion.imageVersionId, 'imageVersionId');
 
-    const imageComponentVersion = await em.findOne(ComponentVersion, rawComponentVersion.imageVersionId,
-      {
-        populate: ['groupList', 'blockList', 'itemList', 'valueList'],
-        populateWhere: { valueList: { type: PropValueType.Prototype } }
-      }
-    );
+    const imageComponentVersion = await em.findOne(ComponentVersion, rawComponentVersion.imageVersionId);
+
     LogicException.assertNotFound(imageComponentVersion, 'ComponentVersion', rawComponentVersion.imageVersionId);
 
     const count = await em.count(ComponentVersion, { component: imageComponentVersion.component, name: rawComponentVersion.name });
@@ -50,10 +46,10 @@ export class ComponentVersionService {
       throw new LogicException(`componentVersion name conflict name:${rawComponentVersion.name}`, LogicExceptionCode.NotUnique);
     }
 
-    const originGroupList = imageComponentVersion.groupList.getItems();
-    const originBlockList = imageComponentVersion.blockList.getItems();
-    const originItemList = imageComponentVersion.itemList.getItems();
-    const originValueList = imageComponentVersion.valueList.getItems();
+    const originGroupList = await em.find(PropGroup, { component: imageComponentVersion.component, componentVersion: imageComponentVersion });
+    const originBlockList = await em.find(PropBlock, { component: imageComponentVersion.component, componentVersion: imageComponentVersion });
+    const originItemList = await em.find(PropItem, { component: imageComponentVersion.component, componentVersion: imageComponentVersion });
+    const originValueList = await em.find(PropValue, { component: imageComponentVersion.component, componentVersion: imageComponentVersion, type: PropValueType.Prototype });
 
     const groupMap = new Map<number, PropGroup>();
     const blockMap = new Map<number, PropBlock>();

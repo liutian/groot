@@ -18,10 +18,10 @@ export class Release extends BaseEntity {
   @Property()
   archive = false;
 
-  @OneToMany(() => ComponentInstance, componentInstance => componentInstance.release)
-  instanceList = new Collection<ComponentInstance>(this);
-
   //************************已下是接口入参或者查询返回需要定义的属性************************
+
+  @Property({ persist: false })
+  instanceList: ComponentInstance[];
 
   @Property({ persist: false })
   imageReleaseId: number;

@@ -107,7 +107,7 @@ export class PropBlockService {
   async remove(blockId: number, parentEm?: EntityManager) {
     let em = parentEm || RequestContext.getEntityManager();
 
-    const block = await em.findOne(PropBlock, blockId, { populate: ['propItemList'] });
+    const block = await em.findOne(PropBlock, blockId);
 
     LogicException.assertNotFound(block, 'PropBlock', blockId);
 
@@ -116,9 +116,9 @@ export class PropBlockService {
       parentCtx = await forkTransaction(em);
     }
 
+    const itemList = await em.find(PropItem, { block });
     await em.begin();
     try {
-      const itemList = block.propItemList.getItems();
       for (let itemIndex = 0; itemIndex < itemList.length; itemIndex++) {
         const item = itemList[itemIndex];
         await this.propItemService.remove(item.id, em);

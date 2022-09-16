@@ -2,6 +2,9 @@ import { Collection, Entity, ManyToOne, OneToMany, Property } from "@mikro-orm/c
 import { BaseEntity } from "./BaseEntity";
 import { Component } from "./Component";
 import { ComponentVersion } from "./ComponentVersion";
+import { PropBlock } from "./PropBlock";
+import { PropGroup } from "./PropGroup";
+import { PropItem } from "./PropItem";
 import { PropValue } from "./PropValue";
 import { Release } from "./Release";
 
@@ -26,6 +29,9 @@ export class ComponentInstance extends BaseEntity {
   @Property()
   trackId: number;
 
+  @ManyToOne({ serializer: value => value?.id, serializedName: 'rootId' })
+  root?: ComponentInstance;
+
   @ManyToOne({ serializer: value => value?.id, serializedName: 'parentId' })
   parent?: ComponentInstance;
 
@@ -35,13 +41,19 @@ export class ComponentInstance extends BaseEntity {
   @Property({ length: 100 })
   path?: string;
 
-  /**
-   * 组件属性值
-   */
-  @OneToMany(() => PropValue, propValue => propValue.componentInstance)
-  valueList = new Collection<PropValue>(this);
-
   //************************已下是接口入参或者查询返回需要定义的属性************************
+
+  @Property({ persist: false })
+  groupList?: PropGroup[];
+
+  @Property({ persist: false })
+  blockList?: PropBlock[];
+
+  @Property({ persist: false })
+  itemList?: PropItem[];
+
+  @Property({ persist: false })
+  valueList?: PropValue[];
 
   @Property({ persist: false })
   componentId?: number;
@@ -54,5 +66,11 @@ export class ComponentInstance extends BaseEntity {
 
   @Property({ persist: false })
   oldChildId?: number;
+
+  @Property({ persist: false })
+  parentId?: number;
+
+  @Property({ persist: false })
+  rootId?: number;
 
 }

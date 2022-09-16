@@ -71,11 +71,7 @@ export class PropGroupService {
   async remove(groupId: number, parentEm?: EntityManager) {
     let em = parentEm || RequestContext.getEntityManager();
 
-    const group = await em.findOne(PropGroup, groupId, {
-      populate: [
-        'propBlockList.propItemList'
-      ]
-    });
+    const group = await em.findOne(PropGroup, groupId);
 
     LogicException.assertNotFound(group, 'PropGroup', groupId);
 
@@ -83,9 +79,9 @@ export class PropGroupService {
     if (!parentEm) {
       parentCtx = await forkTransaction(em);
     }
+    const blockList = await em.find(PropBlock, { group });
     await em.begin();
     try {
-      const blockList = group.propBlockList.getItems();
       for (let blockIndex = 0; blockIndex < blockList.length; blockIndex++) {
         const block = blockList[blockIndex];
         await this.propBlockService.remove(block.id, em);

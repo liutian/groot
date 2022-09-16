@@ -1,7 +1,11 @@
-import { Collection, Entity, ManyToOne, OneToMany, OneToOne, Property } from "@mikro-orm/core";
+import { Entity, ManyToOne, OneToOne, Property } from "@mikro-orm/core";
 import { BaseEntity } from "./BaseEntity";
 import { ComponentInstance } from "./ComponentInstance";
 import { ComponentVersion } from "./ComponentVersion";
+import { PropBlock } from "./PropBlock";
+import { PropGroup } from "./PropGroup";
+import { PropItem } from "./PropItem";
+import { PropValue } from "./PropValue";
 import { Release } from "./Release";
 import { Scaffold } from "./Scaffold";
 
@@ -38,13 +42,13 @@ export class Component extends BaseEntity {
   @ManyToOne({ serializer: value => value?.id, serializedName: 'scaffoldId' })
   scaffold: Scaffold;
 
+  //************************已下是接口入参或者查询返回需要定义的属性************************
+
   /**
    * 组件版本列表
    */
-  @OneToMany(() => ComponentVersion, version => version.component)
-  versionList = new Collection<ComponentVersion>(this);
-
-  //************************已下是接口入参或者查询返回需要定义的属性************************
+  @Property({ persist: false })
+  versionList: ComponentVersion[];
 
   @Property({ persist: false })
   version: ComponentVersion;
@@ -60,4 +64,16 @@ export class Component extends BaseEntity {
 
   @Property({ persist: false })
   scaffoldId?: number;
+
+  @Property({ persist: false })
+  groupList?: PropGroup[];
+
+  @Property({ persist: false })
+  blockList?: PropBlock[];
+
+  @Property({ persist: false })
+  itemList?: PropItem[];
+
+  @Property({ persist: false })
+  valueList?: PropValue[];
 }

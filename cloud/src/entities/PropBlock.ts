@@ -45,9 +45,6 @@ export class PropBlock extends BaseEntity {
   @Property({ length: 50 })
   propKey?: string;
 
-  @OneToMany(() => PropItem, item => item.block)
-  propItemList = new Collection<PropItem>(this);
-
   //************************已下是接口入参或者查询返回需要定义的属性************************
 
   @Property({ persist: false })

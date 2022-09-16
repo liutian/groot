@@ -46,9 +46,6 @@ export class PropGroup extends BaseEntity {
   @ManyToOne({ serializer: value => value?.id, serializedName: 'parentItemId' })
   parentItem?: PropItem;
 
-  @OneToMany(() => PropBlock, block => block.group)
-  propBlockList = new Collection<PropBlock>(this);
-
   //************************已下是接口入参或者查询返回需要定义的属性************************
 
   @Property({ persist: false })

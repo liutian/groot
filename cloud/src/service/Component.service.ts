@@ -4,7 +4,10 @@ import { Injectable } from '@nestjs/common';
 import { LogicException, LogicExceptionCode } from 'config/logic.exception';
 import { Component } from 'entities/Component';
 import { ComponentVersion } from 'entities/ComponentVersion';
+import { PropBlock } from 'entities/PropBlock';
 import { PropGroup } from 'entities/PropGroup';
+import { PropItem } from 'entities/PropItem';
+import { PropValue } from 'entities/PropValue';
 import { Scaffold } from 'entities/Scaffold';
 import { pick } from 'util/common';
 
@@ -20,19 +23,22 @@ export class ComponentService {
    */
   async getComponentPrototype(id: number, versionId: number) {
     const em = RequestContext.getEntityManager();
-    const component = await em.findOne(Component, id, { populate: ['versionList'] });
+    const component = await em.findOne(Component, id);
 
     LogicException.assertNotFound(component, 'Component', id);
 
     LogicException.assertParamEmpty(versionId, 'versionId');
 
-    const version = await em.findOne(ComponentVersion, versionId,
-      { populate: ['groupList', 'blockList', 'itemList', 'valueList'], populateWhere: { valueList: { type: PropValueType.Prototype } } }
-    );
+    component.versionList = await em.find(ComponentVersion, { component });
 
+    const version = await em.findOne(ComponentVersion, versionId);
     LogicException.assertNotFound(version, 'ComponentVersion', versionId);
-
     component.version = wrap(version).toObject() as any;
+
+    component.groupList = await em.find(PropGroup, { component: id, componentVersion: versionId });
+    component.blockList = await em.find(PropBlock, { component: id, componentVersion: versionId });
+    component.itemList = await em.find(PropItem, { component: id, componentVersion: versionId });
+    component.valueList = await em.find(PropValue, { component: id, componentVersion: versionId, type: PropValueType.Prototype });
 
     return component;
   }
