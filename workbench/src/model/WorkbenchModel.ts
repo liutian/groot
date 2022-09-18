@@ -1,12 +1,38 @@
-import { ApplicationData, PostMessageType } from "@grootio/common";
-import { metadataFactory } from "@grootio/core";
+import { ApplicationData, Metadata } from "@grootio/common";
 import { IframeManagerInstance, launchIframeManager } from "@model/iframeManager";
+import { needRewrite } from "@util/common";
 import { ReactNode } from "react";
 import PropHandleModel from "./PropHandleModel";
 
-
+/**
+ * 管理编辑器整体UI状态
+ */
 export default class WorkbenchModel {
   static modelName = 'workbench';
+
+  /**
+   * 是否是组件原型设计模式
+   */
+  public prototypeMode = false;
+  public scaffold: Scaffold;
+  public component: Component;
+  public application: Application;
+  public componentInstance: ComponentInstance;
+
+  /**
+   * iframe之上的遮罩层用于组件拖拽定位和侧边栏宽度缩放
+   */
+  public iframeDragMaskId = 'iframe-drag-mask';
+  /**
+   * 真正和iframe进行通信的对象
+   */
+  public iframeManager: IframeManagerInstance;
+  public iframeBasePath = 'http://localhost:8888';
+  private iframeReadyPromise: Promise<any>;
+  private iframeReadyResolve: Function;
+
+
+  public currActiveTab: 'props' | 'scaffold' = 'props';
   /**
    * 窗口部件缩放大小
    */
@@ -16,108 +42,75 @@ export default class WorkbenchModel {
    */
   public minSideWidth = 480;
   /**
-   * 组件信息
+   * 用于快速显示鼠标所在配置项对应的属性链
    */
-  public component: Component;
-
-  public componentInstance: ComponentInstance;
-
-  /**
-   * 组件设计模式
-   */
-  public prototypeMode = false;
-
-  public localFrontEndUrl = 'http://localhost:8888';
-  public iframeManager: IframeManagerInstance;
-
-  public currActiveTab: 'props' | 'scaffold' = 'props';
-
-  public scaffold: Scaffold;
-  public application: Application;
-
-  public applicationData: ApplicationData;
-
   public propPathChainEle: HTMLElement;
-
+  /**
+   * 自定义属性编辑器底部区域
+   */
   public renderFooterLeftActionItems: (() => ReactNode)[] = [];
+  /**
+   * 自定义属性编辑器tab面板
+   */
   public renderExtraTabPanes: (() => ReactNode)[] = [];
+  /**
+   * 管理属性编辑器内属性面板UI状态
+   */
+  public propHandle: PropHandleModel;
 
-  public renderToolBarBreadcrumb: () => ReactNode;
-  public renderToolBarAction: () => ReactNode;
-
-  public switchComponentInstance: (instanceId: number) => void;
-
-  public iframeDragMaskId = 'iframe-drag-mask';
-
-  private destroy = false;
-  private propHandle: PropHandleModel;
+  public constructor() {
+    this.iframeReadyPromise = new Promise((resolve) => {
+      this.iframeReadyResolve = resolve;
+    });
+  }
 
   public inject(propHandle: PropHandleModel) {
     this.propHandle = propHandle;
-    this.destroy = false;
   }
 
-  public initIframe(iframe: HTMLIFrameElement, basePath = this.localFrontEndUrl) {
-    if (this.destroy) {
-      return;
-    }
-
-    this.iframeManager = launchIframeManager(iframe, this.propHandle, this);
-    this.iframeManager.setBasePath(basePath);
+  public initIframe(iframe: HTMLIFrameElement) {
+    this.iframeManager = launchIframeManager(iframe, this);
+    this.iframeReadyResolve();
   }
 
   public startScaffold(component: Component, scaffold: Scaffold) {
+    this.prototypeMode = true;
     this.component = component;
     this.scaffold = scaffold;
-    this.prototypeMode = true;
+    this.currActiveTab = 'props';
 
-    const { groupList, blockList, itemList, valueList } = component.version;
+    const { groupList, blockList, itemList, valueList } = component;
     this.propHandle.buildPropTree(groupList, blockList, itemList, valueList);
 
-    this.applicationData = this.buildApplicationData(scaffold.name, scaffold.playgroundPath);
-
-    this.iframeManager.navigation(this.scaffold.playgroundPath, () => {
-      const metadata = metadataFactory(this.propHandle.rootGroupList, this.component, this.component.id);
-      this.iframeManager.notifyIframe(PostMessageType.Init_Page, { path: this.scaffold.playgroundPath, metadataList: [metadata] });
+    this.iframeReadyPromise.then(() => {
+      this.iframeManager.navigation(this.scaffold.playgroundPath, () => {
+        this.iframeManager.fullRefreshComponents(this.propHandle.rootGroupList, this.component, this.component.id);
+      });
     });
   }
 
-  public startApplication(component: Component, application: Application) {
-    this.component = component;
-    this.componentInstance = component.instance;
-    this.application = application;
+  public startApplication(app: Application) {
     this.prototypeMode = false;
-
-    const { groupList, blockList, itemList, valueList } = component.version;
-    this.propHandle.buildPropTree(groupList, blockList, itemList, valueList);
-
-    this.applicationData = this.buildApplicationData(application.name, this.application.playgroundPath);
-
-    this.iframeManager.navigation(this.application.playgroundPath, () => {
-      const metadata = metadataFactory(this.propHandle.rootGroupList, this.component, this.componentInstance.id);
-      this.iframeManager.notifyIframe(PostMessageType.Init_Page, { path: this.application.playgroundPath, metadataList: [metadata] });
-    });
+    this.application = app;
   }
 
-  public destroyModel() {
-    this.destroy = true;
-    this.iframeManager?.destroyIframe();
-  }
+  public startPage(rootInstance: ComponentInstance, childrenMetadata: Metadata[], changeHistory = true) {
+    this.componentInstance = rootInstance;
+    this.component = rootInstance.component;
+    this.currActiveTab = 'props';
 
-  private buildApplicationData(name: string, playgroundPath: string) {
-    const pageData = {
-      path: playgroundPath,
-      metadataList: []
-    };
+    const { groupList, blockList, itemList, valueList } = rootInstance;
+    const rootGroupList = this.propHandle.buildPropTree(groupList, blockList, itemList, valueList);
 
-    const applicationData = {
-      name,
-      key: 'scaffold-demo',
-      pages: [pageData],
-      envData: {}
-    };
+    if (changeHistory) {
+      window.history.pushState(null, '', `?applicationId=${this.application.id}&releaseId=${this.application.release.id}&instanceId=${rootInstance.id}`);
+    }
 
-    return applicationData;
+    this.iframeReadyPromise.then(() => {
+      this.iframeManager.navigation(this.application.playgroundPath, () => {
+        this.iframeManager.fullRefreshComponents(rootGroupList, this.component, this.componentInstance.id, childrenMetadata);
+      });
+    })
   }
 
   public setPropPathChain(itemId?: number) {
@@ -162,6 +155,16 @@ export default class WorkbenchModel {
 
     this.propPathChainEle.innerText = propKeyList.join('.');
     this.propPathChainEle.dataset['activeId'] = `${itemId}`;
+  }
+
+  public renderToolBarBreadcrumb(): ReactNode {
+    return needRewrite();
+  }
+  public renderToolBarAction(): ReactNode {
+    return needRewrite();
+  }
+  public switchComponentInstance(instanceId: number) {
+    needRewrite();
   }
 
 }

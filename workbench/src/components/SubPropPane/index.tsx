@@ -39,7 +39,7 @@ const SubPropPane: React.FC<PropsType> = ({ item: propItem }) => {
   return <div className={styles.container} ref={containerRef}>
     <div className={`${styles.header} ${propGroup.templateDesignMode ? styles.templateDesignMode : ''} clearfix`}>
       <div className="pull-left">
-        <Button type="link" icon={<CloseOutlined />} onClick={() => propHandleModel.popPropItemStack(propItem)}></Button>
+        <Button type="link" icon={<CloseOutlined />} onClick={() => propHandleModel.popPropItemFromStack(propItem)}></Button>
       </div>
       <div className={styles.headerContent}>
         {propItem.label}

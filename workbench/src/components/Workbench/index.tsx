@@ -18,10 +18,6 @@ const Workbench: React.FC<PropsType> = () => {
     setTimeout(() => {
       workbenchModel.initIframe(iframeRef.current);
     }, 0);
-
-    return () => {
-      workbenchModel.destroyModel();
-    }
   }, [])
 
   return (<div className={`${styles.container} ${workbenchModel.prototypeMode ? styles.prototypeMode : ''}`} >

@@ -1,26 +1,23 @@
+import { metadataFactory, propTreeFactory } from "@grootio/core";
+import { ModalStatus } from "@util/common";
 import { serverPath } from "config";
 import WorkbenchModel from "../../model/WorkbenchModel";
 
 export default class EditorModel {
   static modelName = 'editor';
 
-  public loadComponent: 'doing' | 'notfound' | 'over' = 'doing';
-  public application: Application;
-  public showPageAddModal = false;
-  public pageAddFetchLoading = false;
-  public showReleaseAddModal = false;
-  public releaseAddFetchLoading = false;
-  public showAssetBuildModal = false;
+  public loadStatus: 'doing' | 'no-component' | 'no-application' | 'ok' = 'doing';
+  public pageAddModalStatus: ModalStatus = ModalStatus.None;
+  public releaseAddModalStatus: ModalStatus = ModalStatus.None;
+  public assetBuildModalStatus: ModalStatus = ModalStatus.None;
+  public assetDeployModalStatus: ModalStatus = ModalStatus.None;
   public assetBuildStatus: 'init' | 'analyseOver' | 'building' | 'buildOver' | 'approve' = 'init';
   public deployBundleId: number;
-
-  public showAssetDeployModal = false;
-  public assetDeployFetchLoading = false;
-
+  public currPageInstance: ComponentInstance;
   public breadcrumbList: { id: number, name: string }[] = [];
 
-
   private workbench: WorkbenchModel;
+  private instanceList: ComponentInstance[] = [];
 
 
   public inject(workbench: WorkbenchModel) {
@@ -28,39 +25,58 @@ export default class EditorModel {
   }
 
   public switchComponentInstance = (instanceId: number, changeHistory: boolean, breadcrumbAppend: boolean) => {
-    const url = `${serverPath}/component/instance/detail/${instanceId}`;
-    this.loadComponent = 'doing';
-    return fetch(url).then(res => res.json()).then(({ data }: { data: Component }) => {
-      this.loadComponent = 'over';
-      if (breadcrumbAppend) {
-        this.breadcrumbList.push({ id: instanceId, name: data.instance.name })
-      } else {
-        const length = this.breadcrumbList.findIndex(item => item.id === instanceId);
-        this.breadcrumbList.length = length === -1 ? 0 : length;
-        this.breadcrumbList.push({ id: instanceId, name: data.instance.name });
-      }
-      data.version.valueList = data.instance.valueList;
-      this.workbench.startApplication(data, this.application);
+    const instance = this.instanceList.find(i => i.id === instanceId);
+    this.workbench.componentInstance = instance;
+    this.workbench.component = instance.component;
 
-      if (changeHistory) {
-        this.workbench.currActiveTab = 'props';
-        window.history.pushState(null, '', `?applicationId=${this.application.id}&releaseId=${this.application.release.id}&instanceId=${instanceId}`);
-      }
-    })
+    if (breadcrumbAppend) {
+      this.breadcrumbList.push({ id: instanceId, name: instance.name })
+    } else {
+      const length = this.breadcrumbList.findIndex(item => item.id === instanceId);
+      this.breadcrumbList.length = length === -1 ? 0 : length;
+      this.breadcrumbList.push({ id: instanceId, name: instance.name });
+    }
+
+    if (changeHistory) {
+      this.workbench.currActiveTab = 'props';
+      window.history.pushState(null, '', `?applicationId=${this.workbench.application.id}&releaseId=${this.workbench.application.release.id}&instanceId=${instanceId}`);
+    }
+  }
+
+  public fetchPage = (instanceId: number, changeHistory = true) => {
+    const url = `${serverPath}/component-instance/page-detail/${instanceId}`;
+    this.loadStatus = 'doing';
+    return fetch(url).then(res => res.json()).then(({ data: { children, root } }: { data: { children: ComponentInstance[], root: ComponentInstance } }) => {
+      this.loadStatus = 'ok';
+
+      this.breadcrumbList.length = 0;
+      this.breadcrumbList.push({ id: instanceId, name: root.name });
+
+      this.instanceList = [root, ...children];
+      const metadataList = children.map((instance) => {
+        const { groupList, blockList, itemList } = instance.componentVersion;
+        const valueList = instance.valueList;
+        const rootGroupList = propTreeFactory(groupList, blockList, itemList, valueList);
+        const metadata = metadataFactory(rootGroupList, instance.component, instance.id);
+        return metadata;
+      })
+
+      this.workbench.startPage(root, metadataList, changeHistory);
+    });
   }
 
   public fetchApplication = (applicationId: number, releaseId: number) => {
     const url = `${serverPath}/application/detail/${applicationId}?releaseId=${releaseId}`;
     return fetch(url).then(res => res.json()).then(({ data }: { data: Application }) => {
-      this.application = data;
+      this.workbench.startApplication(data);
     }).catch((e) => {
-      this.application = null;
+      this.loadStatus = 'no-application';
       return Promise.reject(e);
     })
   }
 
   public addPage = (rawComponentInstance: ComponentInstance) => {
-    this.pageAddFetchLoading = true;
+    this.pageAddModalStatus = ModalStatus.Submit;
     return fetch(`${serverPath}/component-instance/add`, {
       method: 'POST',
       headers: {
@@ -68,19 +84,18 @@ export default class EditorModel {
       },
       body: JSON.stringify({
         ...rawComponentInstance,
-        releaseId: this.application.release.id
+        releaseId: this.workbench.application.release.id
       })
     }).then(res => res.json()).then(({ data: newComponentInstance }: { data: ComponentInstance }) => {
-      this.pageAddFetchLoading = false;
-      this.showPageAddModal = false;
-      this.application.release.instanceList.push(newComponentInstance);
+      this.pageAddModalStatus = ModalStatus.None;
+      this.workbench.application.release.instanceList.push(newComponentInstance);
 
-      return this.switchComponentInstance(newComponentInstance.id, true, false);
+      return this.fetchPage(newComponentInstance.id);
     });
   }
 
   public addRelease = (rawRelease: Release) => {
-    this.releaseAddFetchLoading = true;
+    this.releaseAddModalStatus = ModalStatus.Submit;
     return fetch(`${serverPath}/release/add`, {
       method: 'POST',
       headers: {
@@ -90,10 +105,9 @@ export default class EditorModel {
         ...rawRelease,
       })
     }).then(res => res.json()).then(({ data: newRelease }: { data: Release }) => {
-      this.releaseAddFetchLoading = false;
-      this.showReleaseAddModal = false;
-      this.application.release = newRelease;
-      this.application.releaseList.push(newRelease);
+      this.releaseAddModalStatus = ModalStatus.None
+      this.workbench.application.release = newRelease;
+      this.workbench.application.releaseList.push(newRelease);
 
       const currInstance = this.workbench.componentInstance;
       return this.switchReleaseByTrackId(newRelease.id, currInstance.trackId);
@@ -106,7 +120,7 @@ export default class EditorModel {
         'Content-Type': 'application/json'
       },
     }).then(res => res.json()).then(({ data: release }: { data: Release }) => {
-      this.application.release = release;
+      this.workbench.application.release = release;
 
       const currInstance = this.workbench.componentInstance;
       return this.switchReleaseByTrackId(release.id, currInstance.trackId);
@@ -121,8 +135,8 @@ export default class EditorModel {
     }).then(res => res.json()).then(({ data: instanceId }: { data: number }) => {
       if (instanceId) {
         return this.switchComponentInstance(instanceId, true, false);
-      } else if (this.application.release.instanceList.length) {
-        const instance = this.application.release.instanceList[0];
+      } else if (this.workbench.application.release.instanceList.length) {
+        const instance = this.workbench.application.release.instanceList[0];
         return this.switchComponentInstance(instance.id, true, false);
       } else {
         return Promise.resolve();
@@ -138,7 +152,7 @@ export default class EditorModel {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        releaseId: this.application.release.id
+        releaseId: this.workbench.application.release.id
       })
     }).then(res => res.json()).then(({ data: bundleId }) => {
       this.assetBuildStatus = 'buildOver';
@@ -147,7 +161,7 @@ export default class EditorModel {
   }
 
   public assetDeploy = (formData: any) => {
-    this.assetDeployFetchLoading = true;
+    this.assetDeployModalStatus = ModalStatus.Submit;
     return fetch(`${serverPath}/asset/deploy`, {
       method: 'POST',
       headers: {
@@ -158,8 +172,7 @@ export default class EditorModel {
         bundleId: this.deployBundleId
       })
     }).then(res => res.json()).then((assetId: number) => {
-      this.assetDeployFetchLoading = false;
-      this.showAssetDeployModal = false;
+      this.assetDeployModalStatus = ModalStatus.None;
     })
   }
 }

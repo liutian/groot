@@ -5,8 +5,12 @@ import { serverPath } from "config";
 import PropHandleModel from "./PropHandleModel";
 import WorkbenchModel from "./WorkbenchModel";
 
+/**
+ * 负责属性编辑器涉及到的接口调用，以及相关UI状态
+ */
 export default class PropPersistModel {
   static modelName = 'propPersist';
+
   /**
    * 正在配置的分组
    */
@@ -19,8 +23,10 @@ export default class PropPersistModel {
    * 正在配置的项
    */
   public currSettingPropItem?: PropItem;
-
-  public settingModalLoading = false;
+  /**
+   * 模态层请求提交中
+   */
+  public settingModalSubmitting = false;
 
   private workbench: WorkbenchModel;
   private propHandle: PropHandleModel
@@ -132,7 +138,7 @@ export default class PropPersistModel {
     newGroup.componentId = this.workbench.component.id;
     newGroup.componentVersionId = this.workbench.component.version.id;
 
-    this.settingModalLoading = true;
+    this.settingModalSubmitting = true;
     if (newGroup.id) {
       fetch(`${serverPath}/group/update`, {
         method: 'POST',
@@ -145,7 +151,7 @@ export default class PropPersistModel {
         // this.propHandle.rootGroupList.splice(groupIndex, 1, newGroup);
         assignBaseType(this.propHandle.rootGroupList[groupIndex], newGroup);
 
-        this.settingModalLoading = false;
+        this.settingModalSubmitting = false;
         this.currSettingPropGroup = undefined;
         this.workbench.iframeManager.refreshComponent(this.workbench.component);
       })
@@ -163,7 +169,7 @@ export default class PropPersistModel {
         this.propHandle.rootGroupList.push(groupDB);
         this.propHandle.activeGroupId = groupDB.id;
 
-        this.settingModalLoading = false;
+        this.settingModalSubmitting = false;
         this.currSettingPropGroup = undefined;
         this.workbench.iframeManager.refreshComponent(this.workbench.component);
       })
@@ -174,7 +180,7 @@ export default class PropPersistModel {
     const newBlock = Object.assign(this.currSettingPropBlock, block);
     const group = this.propHandle.getPropGroup(newBlock.groupId);
 
-    this.settingModalLoading = true;
+    this.settingModalSubmitting = true;
     if (newBlock.id) {
       fetch(`${serverPath}/block/update`, {
         method: 'POST',
@@ -186,7 +192,7 @@ export default class PropPersistModel {
         let blockIndex = group.propBlockList.findIndex(b => b.id === newBlock.id);
         // group.propBlockList.splice(blockIndex, 1, newBlock);
         assignBaseType(group.propBlockList[blockIndex], newBlock);
-        this.settingModalLoading = false;
+        this.settingModalSubmitting = false;
         this.currSettingPropBlock = undefined;
         this.workbench.iframeManager.refreshComponent(this.workbench.component);
       });
@@ -214,7 +220,7 @@ export default class PropPersistModel {
           extra.childGroup.parentItem = extra.newItem;
         }
 
-        this.settingModalLoading = false;
+        this.settingModalSubmitting = false;
         this.currSettingPropBlock = undefined;
         this.workbench.iframeManager.refreshComponent(this.workbench.component);
       })
@@ -232,7 +238,7 @@ export default class PropPersistModel {
       stringifyOptions(newItem);
     }
 
-    this.settingModalLoading = true;
+    this.settingModalSubmitting = true;
     if (newItem.id) {
       fetch(`${serverPath}/item/update`, {
         method: 'POST',
@@ -247,7 +253,7 @@ export default class PropPersistModel {
         // block.propItemList.splice(itemIndex, 1, propItem);
         assignBaseType(block.propItemList[itemIndex], propItem);
 
-        this.settingModalLoading = false;
+        this.settingModalSubmitting = false;
         this.currSettingPropItem = undefined;
         this.workbench.iframeManager.refreshComponent(this.workbench.component);
       });
@@ -274,7 +280,7 @@ export default class PropPersistModel {
           childGroup.parentItem = newItem;
         }
 
-        this.settingModalLoading = false;
+        this.settingModalSubmitting = false;
         this.currSettingPropItem = undefined;
         this.workbench.iframeManager.refreshComponent(this.workbench.component);
       })
@@ -345,7 +351,7 @@ export default class PropPersistModel {
       })
     }).then(r => r.json()).then(() => {
       propBlock.listStructData = data;
-      this.propHandle.popPropItemStack(propBlock.propItemList[0]);
+      this.propHandle.popPropItemFromStack(propBlock.propItemList[0]);
     })
   }
 

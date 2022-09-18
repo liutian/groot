@@ -32,7 +32,7 @@ const PropBlockSetting: React.FC = () => {
     }
   }, [propPersistModel.currSettingPropBlock]);
 
-  return (<Modal mask={false} width={400} title="配置块" confirmLoading={propPersistModel.settingModalLoading}
+  return (<Modal mask={false} width={400} title="配置块" confirmLoading={propPersistModel.settingModalSubmitting}
     visible={!!propPersistModel.currSettingPropBlock} onOk={handleOk} onCancel={handleCancel}>
     {
       !!propPersistModel.currSettingPropBlock && (

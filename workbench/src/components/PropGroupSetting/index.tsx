@@ -33,7 +33,7 @@ const PropGroupSetting: React.FC = () => {
     }
   }, [propPersistModel.currSettingPropGroup]);
 
-  return (<Modal mask={false} width={400} title="配置组" confirmLoading={propPersistModel.settingModalLoading}
+  return (<Modal mask={false} width={400} title="配置组" confirmLoading={propPersistModel.settingModalSubmitting}
     visible={!!propPersistModel.currSettingPropGroup} onOk={handleOk} onCancel={handleCancel}>
     {
       !!propPersistModel.currSettingPropGroup && (

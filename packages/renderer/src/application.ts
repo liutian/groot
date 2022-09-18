@@ -37,7 +37,7 @@ export function bootstrap(customConfig: UIManagerConfig): ApplicationInstance {
   setConfig(customConfig);
 
   if (controlMode) {
-    window.parent.postMessage(PostMessageType.OK, '*');
+    window.parent.postMessage(PostMessageType.Inner_Ready, '*');
     window.addEventListener('message', onMessage);
   }
 
@@ -51,18 +51,18 @@ export function bootstrap(customConfig: UIManagerConfig): ApplicationInstance {
 
 function onMessage(event: any) {
   const messageType = event.data.type;
-  if (messageType === PostMessageType.Init_Config) {
+  if (messageType === PostMessageType.Outer_Set_Config) {
     iframeDebuggerConfig = event.data.data;
     if (iframeDebuggerConfig.runtimeConfig) {
       setConfig(iframeDebuggerConfig.runtimeConfig);
     }
-  } else if (messageType === PostMessageType.Init_Application) {
+  } else if (messageType === PostMessageType.Outer_Set_Application) {
     iframeApplicationLoadResolve(event.data.data);
-  } else if (messageType === PostMessageType.Update_Component) {
+  } else if (messageType === PostMessageType.Outer_Update_Component) {
     activePage.incrementUpdate(event.data.data);
-  } else if (messageType === PostMessageType.Reload_Page) {
+  } else if (messageType === PostMessageType.Outer_Refresh_Page) {
     window.location.reload();
-  } else if (messageType === PostMessageType.Init_Page) {
+  } else if (messageType === PostMessageType.Outer_Full_Update_Components) {
     if (activePage.path === event.data.data.path) {
       activePage.fetchMetadataResolve(event.data.data.metadataList);
     }
@@ -104,7 +104,7 @@ function fetchApplicationData(): Promise<ApplicationData> {
   if (controlMode) {
     return new Promise((resolve, reject) => {
       iframeApplicationLoadResolve = resolve;
-      window.parent.postMessage(PostMessageType.Fetch_Application, '*');
+      window.parent.postMessage(PostMessageType.Inner_Fetch_Application, '*');
       setTimeout(() => {
         reject(new Error('load application timeout'))
       }, 3000);
@@ -130,7 +130,7 @@ function initApplication(data: ApplicationData) {
     allPageMap.set(page.path, page);
   });
   if (controlMode) {
-    window.parent.postMessage(PostMessageType.Ready_Applicationn, '*');
+    window.parent.postMessage(PostMessageType.Inner_Applicationn_Ready, '*');
   }
 }
 

@@ -78,7 +78,7 @@ const PropItemSetting: React.FC = () => {
     )
   }
 
-  return (<Modal mask={false} destroyOnClose width={600} title="配置项" confirmLoading={propPersistModel.settingModalLoading}
+  return (<Modal mask={false} destroyOnClose width={600} title="配置项" confirmLoading={propPersistModel.settingModalSubmitting}
     visible={!!propPersistModel.currSettingPropItem} onOk={handleOk} onCancel={handleCancel}>
     {
       !!propPersistModel.currSettingPropItem && (

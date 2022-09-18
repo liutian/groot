@@ -153,9 +153,9 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
     } else if (item.type === PropItemType.Time_Picker) {
       return <TimePicker style={{ width: '100%' }} />;
     } else if (item.type === PropItemType.Flat) {
-      return <Button block onClick={() => { propHandleModel.pushPropItemStack(item) }}>平铺</Button>
+      return <Button block onClick={() => { propHandleModel.pushPropItemToStack(item) }}>平铺</Button>
     } else if (item.type === PropItemType.Hierarchy) {
-      return <Button block onClick={() => { propHandleModel.pushPropItemStack(item) }}>层级</Button>
+      return <Button block onClick={() => { propHandleModel.pushPropItemToStack(item) }}>层级</Button>
     } else if (item.type === PropItemType.Json) {
       return <TextEditor type="json" />
     } else if (item.type === PropItemType.Function) {

@@ -118,7 +118,7 @@ const PropBlockListStructPane: React.FC<PropsType> = ({ block: propBlock }) => {
   }
 
   const showPrimaryItem = () => {
-    propHandleModel.pushPropItemStack(childPropItem);
+    propHandleModel.pushPropItemToStack(childPropItem);
     childPropItem.extraUIData = {
       type: 'BlockListPrefs',
       data: propBlock
@@ -146,7 +146,7 @@ const PropBlockListStructPane: React.FC<PropsType> = ({ block: propBlock }) => {
   const showPropItemSetting = (abstractValueId: number) => {
     childPropItem.tempAbstractValueId = abstractValueId;
     childPropItem.noSetting = true;
-    propHandleModel.pushPropItemStack(childPropItem);
+    propHandleModel.pushPropItemToStack(childPropItem);
   }
 
   const updateValue = (changedValues: any) => {
@@ -194,7 +194,7 @@ const PropBlockListStructPane: React.FC<PropsType> = ({ block: propBlock }) => {
                 首要显示项
               </Typography.Link>
               <Typography.Link hidden={!workbenchModel.prototypeMode}
-                onClick={() => propHandleModel.pushPropItemStack(childPropItem)}>
+                onClick={() => propHandleModel.pushPropItemToStack(childPropItem)}>
                 子项模版配置
               </Typography.Link>
             </>

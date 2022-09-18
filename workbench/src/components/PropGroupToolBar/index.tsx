@@ -20,7 +20,7 @@ const PropGroupToolBar: React.FC = () => {
   useEffect(() => {
     const group = propHandleModel.getPropGroup(propHandleModel.activeGroupId);
     setGroup(group);
-  }, [propHandleModel.activeGroupId, propPersistModel.settingModalLoading]);
+  }, [propHandleModel.activeGroupId, propPersistModel.settingModalSubmitting]);
 
   if (!group || !workbenchModel.prototypeMode) {
     return null;

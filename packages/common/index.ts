@@ -60,19 +60,21 @@ export enum PropMetadataType {
 }
 
 export enum PostMessageType {
-  OK = 'ok',
-  Init_Config = 'init::config',
-  Fetch_Application = 'fetch::application',
-  Init_Application = 'init::application',
-  Ready_Applicationn = 'ready::applicationn',
-  Fetch_Page = 'fetch::page',
-  Init_Page = 'init::page',
-  Update_Component = 'update::component',
-  Reload_Page = 'reload::page',
-  Drag_Component_Over = 'drag::component::over',
-  Drag_Component_Enter = 'drag::component::enter',
-  Drag_Component_Leave = 'drag::component::leave',
-  Drag_Component_Drop = 'drag::component::drop',
+  Inner_Ready = 'inner_ready',
+  Outer_Set_Config = 'outer_set_config',
+  Inner_Fetch_Application = 'inner_fetch_application',
+  Outer_Set_Application = 'outer_set_application',
+  Inner_Applicationn_Ready = 'inner_applicationn_ready',
+  Inner_Fetch_Page_Components = 'inner_fetch_page_components',
+  Outer_Full_Update_Components = 'outer_full_update_components',
+  Outer_Update_Component = 'outer_update_component',
+  Outer_Refresh_Page = 'outer_refresh_page',
+
+
+  Drag_Component_Over = 'drag_component_over',
+  Drag_Component_Enter = 'drag_component_enter',
+  Drag_Component_Leave = 'drag_component_leave',
+  Drag_Component_Drop = 'drag_component_drop',
 
   Drag_Hit_Slot = 'drag::hit::slot'
 }

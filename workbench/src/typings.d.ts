@@ -83,9 +83,13 @@ type ComponentVersion = {
 } & Omit<import("../../cloud/src/entities/ComponentVersion").ComponentVersion, 'groupList' | 'blockList' | 'itemList' | 'valueList'>;
 
 type ComponentInstance = {
-  valueList: PropValue[],
   component: Component,
-  componentVersion: ComponentVersion
+  componentVersion: ComponentVersion,
+
+  groupList: PropGroup[],
+  blockList: PropBlock[],
+  itemList: PropItem[],
+  valueList: PropValue[]
 } & Omit<import("../../cloud/src/entities/ComponentInstance").ComponentInstance, 'valueList'>;
 
 type Release = {
@@ -101,7 +105,11 @@ type Component = {
   instance: ComponentInstance,
   recentVersionId: number,
 
-  versionList: ComponentVersion[]
+  versionList: ComponentVersion[],
+  groupList: PropGroup[],
+  blockList: PropBlock[],
+  itemList: PropItem[],
+  valueList: PropValue[]
 } & Omit<import("../../cloud/src/entities/Component").Component, 'version'>;
 
 type Application = {
