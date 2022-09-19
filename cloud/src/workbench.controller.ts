@@ -38,12 +38,12 @@ export class WorkbenchController {
     private readonly assetService: AssetService
   ) { }
 
-  @Get('/component/instance/detail/:instanceId')
+  @Get('/component-instance/page-detail/:instanceId')
   async componentInstanceDetail(@Param('instanceId') instanceId: number) {
-    return this.componentInstanceService.getComponent(instanceId);
+    return this.componentInstanceService.getPageDetail(instanceId);
   }
 
-  @Get('/component/prototype/detail/:componentId')
+  @Get('/component-prototype/detail/:componentId')
   async componentPrototypeDetail(@Param('componentId') componentId: number, @Query('versionId') versionId: number) {
     return this.componentService.getComponentPrototype(componentId, versionId);
   }

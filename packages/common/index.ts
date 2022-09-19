@@ -181,8 +181,6 @@ export enum DeployStatusType {
   Archive = 'archive'
 }
 
-
-
 export const PropItemTypeNameMap = [
   { name: '文本', key: PropItemType.Text },
   { name: '多行文本', key: PropItemType.Textarea },

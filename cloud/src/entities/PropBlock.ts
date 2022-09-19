@@ -1,10 +1,9 @@
 import { PropBlockLayout, PropBlockStructType } from "@grootio/common";
-import { Collection, Entity, Enum, ManyToOne, OneToMany, Property } from "@mikro-orm/core";
+import { Entity, Enum, ManyToOne, Property } from "@mikro-orm/core";
 import { BaseEntity } from "./BaseEntity";
 import { Component } from "./Component";
 import { ComponentVersion } from "./ComponentVersion";
 import { PropGroup } from "./PropGroup";
-import { PropItem } from "./PropItem";
 
 @Entity()
 export class PropBlock extends BaseEntity {

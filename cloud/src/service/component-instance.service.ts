@@ -4,7 +4,9 @@ import { Injectable } from '@nestjs/common';
 import { LogicException, LogicExceptionCode } from 'config/logic.exception';
 import { Component } from 'entities/Component';
 import { ComponentInstance } from 'entities/ComponentInstance';
-import { ComponentVersion } from 'entities/ComponentVersion';
+import { PropBlock } from 'entities/PropBlock';
+import { PropGroup } from 'entities/PropGroup';
+import { PropItem } from 'entities/PropItem';
 import { PropValue } from 'entities/PropValue';
 import { Release } from 'entities/Release';
 
@@ -27,6 +29,14 @@ export class ComponentInstanceService {
     LogicException.assertNotFound(release, 'Release', rawInstance.releaseId);
 
     if (rawInstance.path) {
+      if (rawInstance.rootId) {
+        throw new LogicException(`rootId must be empty ,if path exists`, LogicExceptionCode.UnExpect);
+      }
+
+      if (rawInstance.parentId) {
+        throw new LogicException(`parentId must be empty ,if path exists`, LogicExceptionCode.UnExpect);
+      }
+
       const count = await em.count(ComponentInstance, {
         path: rawInstance.path,
         release
@@ -36,6 +46,14 @@ export class ComponentInstanceService {
         throw new LogicException(`path not unique path: ${rawInstance.path}`, LogicExceptionCode.NotUnique);
       }
     } else {
+      if (!rawInstance.parentId) {
+        throw new LogicException(`parentId can not be empty ,if path not exists`, LogicExceptionCode.UnExpect);
+      }
+
+      if (!rawInstance.rootId) {
+        throw new LogicException(`rootId can not be empty ,if path not exists`, LogicExceptionCode.UnExpect);
+      }
+
       const count = await em.count(ComponentInstance, {
         name: rawInstance.name,
         release
@@ -47,8 +65,7 @@ export class ComponentInstanceService {
     }
 
     const newInstance = em.create(ComponentInstance, {
-      name: rawInstance.name,
-      path: rawInstance.path,
+      ...pick(rawInstance, ['name', 'path', 'parentId', 'rootId']),
       component,
       componentVersion: component.recentVersion,
       release,
@@ -113,27 +130,49 @@ export class ComponentInstanceService {
   }
 
   // todo **id为componentInstanceId**
-  async getComponent(instancceId: number) {
+  async getPageDetail(instanceId: number) {
     const em = RequestContext.getEntityManager();
 
-    const instance = await em.findOne(ComponentInstance, instancceId, {
-      populate: ['valueList'],
-      populateWhere: { valueList: { type: PropValueType.Instance } }
+    const pageInstance = await em.findOne(ComponentInstance, instanceId, {
+      populate: ['componentVersion', 'component']
     });
 
-    LogicException.assertNotFound(instance, 'ComponentInstance', instancceId);
+    pageInstance.groupList = await em.find(PropGroup, { component: pageInstance.component, componentVersion: pageInstance.componentVersion });
+    pageInstance.blockList = await em.find(PropBlock, { component: pageInstance.component, componentVersion: pageInstance.componentVersion });
+    pageInstance.itemList = await em.find(PropItem, { component: pageInstance.component, componentVersion: pageInstance.componentVersion });
+    pageInstance.valueList = await em.find(PropValue, {
+      $or: [
+        { component: pageInstance.component, componentVersion: pageInstance.componentVersion, type: PropValueType.Prototype },
+        { componentInstance: pageInstance }
+      ]
+    });
 
-    const component = await em.findOne(Component, instance.component.id);
-    component.instance = wrap(instance).toObject() as any;
+    LogicException.assertNotFound(pageInstance, 'ComponentInstance', instanceId);
 
-    const version = await em.findOne(ComponentVersion, instance.componentVersion,
-      {
-        populate: ['groupList', 'blockList', 'itemList'],
-      }
-    );
-    component.version = wrap(version).toObject() as any;
+    if (!pageInstance.path) {
+      throw new LogicException(`instance path is null`, LogicExceptionCode.UnExpect);
+    }
 
-    return component;
+    const instanceList = await em.find(ComponentInstance, { root: instanceId }, {
+      populate: ['component', 'componentVersion'],
+    });
+
+    for (let index = 0; index < instanceList.length; index++) {
+      const instance = instanceList[index];
+
+      instance.groupList = await em.find(PropGroup, { component: instance.component, componentVersion: instance.componentVersion });
+      instance.blockList = await em.find(PropBlock, { component: instance.component, componentVersion: instance.componentVersion });
+      instance.itemList = await em.find(PropItem, { component: instance.component, componentVersion: instance.componentVersion });
+      instance.valueList = await em.find(PropValue, {
+        $or: [
+          { component: instance.component, componentVersion: instance.componentVersion, type: PropValueType.Prototype },
+          { componentInstance: instance }
+        ]
+      });
+
+    }
+
+    return { root: pageInstance, children: instanceList };
   }
 
   async detailIdByTrackId(trackId: number, releaseId: number) {
@@ -181,17 +220,26 @@ export class ComponentInstanceService {
   }
 
   async remove(id: number, em = RequestContext.getEntityManager()) {
-    let parentIds = [id];
     let removeIds = [id];
 
-    do {
-      const instance = await em.findOne(ComponentInstance, parentIds.shift());
-      const childList = await em.find(ComponentInstance, { parent: instance.id });
-      childList.forEach((child) => {
-        removeIds.push(child.id);
-        parentIds.push(child.id);
-      })
-    } while (parentIds.length);
+    const instance = await em.findOne(ComponentInstance, id);
+
+    LogicException.assertNotFound(instance, 'ComponentInstance', id);
+
+    if (instance.path) {
+      const list = await em.find(ComponentInstance, { root: id });
+      removeIds.push(...list.map(item => item.id));
+    } else {
+      let parentIds = [id];
+      do {
+        const instance = await em.findOne(ComponentInstance, parentIds.shift());
+        const childList = await em.find(ComponentInstance, { parent: instance.id });
+        childList.forEach((child) => {
+          removeIds.push(child.id);
+          parentIds.push(child.id);
+        })
+      } while (parentIds.length);
+    }
 
     await em.nativeDelete(ComponentInstance, { id: { $in: removeIds } });
   }

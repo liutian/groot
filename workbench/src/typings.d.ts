@@ -24,7 +24,7 @@ type PropGroup = {
   propBlockList: PropBlock[],
   parentItem?: PropItem,
 
-  // 分割线下面时界面属性
+  // ************************** 分割线已下是界面属性 **************************
   highlight?: boolean,
   expandBlockIdList: number[],
   templateDesignMode?: boolean
@@ -36,11 +36,11 @@ type PropGroup = {
 type PropBlock = {
   propItemList: PropItem[],
   group: PropGroup,
-
-  // 分割线下面时界面属性
-  highlight?: boolean,
   // 保存首要显示的PropItem ID
   listStructData: number[],
+
+  // ************************** 分割线已下是界面属性 **************************
+  highlight?: boolean,
   // 首要显示的PropItem
   primaryShowPropItemList: PropItem[]
 } & Omit<import("../../cloud/src/entities/PropBlock").PropBlock, 'propItemList' | 'listStructData' | 'group'>;
@@ -51,22 +51,22 @@ type PropBlock = {
 type PropItem = {
   childGroup?: PropGroup,
   block: PropBlock,
+  defaultValue: any,
+
   groupId: number,
   childGroupId?: number,
-
-  // 分割线下面时界面属性
+  // ************************** 分割线已下是界面属性 **************************
   highlight?: boolean,
   optionList: PropValueOption[],
   extraUIData?: {
     type: 'BlockListPrefs',
     data?: any
   },
-  defaultValue: any,
   // 上级block struct为List时，所有分组valueId
   valueList: PropValue[],
   tempAbstractValueId: number,
   noSetting: boolean
-} & Omit<import("../../cloud/src/entities/PropItem").PropItem, 'childGroup' | 'block'>;
+} & Omit<import("../../cloud/src/entities/PropItem").PropItem, 'childGroup' | 'block' | 'defaultValue'>;
 
 type PropValueOption = {
   label: string,
@@ -76,21 +76,17 @@ type PropValueOption = {
 };
 
 type ComponentVersion = {
-  groupList: PropGroup[],
-  blockList: PropBlock[],
-  itemList: PropItem[],
-  valueList: PropValue[]
-} & Omit<import("../../cloud/src/entities/ComponentVersion").ComponentVersion, 'groupList' | 'blockList' | 'itemList' | 'valueList'>;
+
+} & Omit<import("../../cloud/src/entities/ComponentVersion").ComponentVersion>;
 
 type ComponentInstance = {
   component: Component,
   componentVersion: ComponentVersion,
-
   groupList: PropGroup[],
   blockList: PropBlock[],
   itemList: PropItem[],
   valueList: PropValue[]
-} & Omit<import("../../cloud/src/entities/ComponentInstance").ComponentInstance, 'valueList'>;
+} & Omit<import("../../cloud/src/entities/ComponentInstance").ComponentInstance, 'component' | 'componentVersion' | 'groupList' | 'blockList' | 'itemList' | 'valueList'>;
 
 type Release = {
   instanceList: ComponentInstance[]
@@ -103,22 +99,20 @@ type PropValue = {
 type Component = {
   version: ComponentVersion,
   instance: ComponentInstance,
-  recentVersionId: number,
-
   versionList: ComponentVersion[],
   groupList: PropGroup[],
   blockList: PropBlock[],
   itemList: PropItem[],
-  valueList: PropValue[]
-} & Omit<import("../../cloud/src/entities/Component").Component, 'version'>;
+  valueList: PropValue[],
+
+  recentVersionId: number,
+} & Omit<import("../../cloud/src/entities/Component").Component, 'instance' | 'version' | 'groupList' | 'blockList' | 'itemList' | 'valueList' | 'versionList'>;
 
 type Application = {
-
   release: Release
 } & Omit<import("../../cloud/src/entities/Application").Application, ''>;
 
 type Scaffold = {
-
   componentList: Component[]
 } & Omit<import("../../cloud/src/entities/Scaffold").Scaffold, ''>;
 
