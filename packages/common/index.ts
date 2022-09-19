@@ -199,3 +199,10 @@ export const PropItemTypeNameMap = [
   { name: '函数', key: PropItemType.Function },
   { name: '组件', key: PropItemType.Component },
 ];
+
+export type requestFnType<Store extends Record<string, any[]>> =
+  <T extends keyof Store, P extends Store[T][0], R extends Promise<Store[T][1]>>(
+    path: T,
+    params?: P,
+    config?: any,
+  ) => R; 

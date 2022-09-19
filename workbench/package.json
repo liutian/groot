@@ -34,6 +34,7 @@
   "dependencies": {
     "@ant-design/icons": "4.7.0",
     "antd": "4.21.3",
+    "axios": "0.27.2",
     "monaco-editor-webpack-plugin": "7.0.1",
     "react-dom": "18.2.0",
     "react-router-dom": "6.3.0",
