@@ -1,7 +1,8 @@
 import { PropItemType, PropValueType, } from "@grootio/common";
 
 import { assignBaseType, autoIncrementForName, calcPropValueIdChain, stringifyOptions } from "@util/utils";
-import { serverPath } from "config";
+import { APIPath } from "api/API.path";
+import request from "@util/request";
 import PropHandleModel from "./PropHandleModel";
 import WorkbenchModel from "./WorkbenchModel";
 
@@ -40,17 +41,11 @@ export default class PropPersistModel {
     const originBlock = group.propBlockList[originIndex];
     const targetId = up ? group.propBlockList[originIndex - 1].id : group.propBlockList[originIndex + 1].id;
 
-    fetch(`${serverPath}/move/position`, {
-      body: JSON.stringify({
-        originId: originBlock.id,
-        targetId,
-        type: 'block'
-      }),
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-    }).then(r => r.json()).then(() => {
+    request(APIPath.move_position, {
+      originId: originBlock.id,
+      targetId,
+      type: 'block'
+    }).then(() => {
       if (up) {
         const targetBlock = group.propBlockList[originIndex - 1];
         group.propBlockList[originIndex - 1] = originBlock;
@@ -68,17 +63,11 @@ export default class PropPersistModel {
       return;
     }
 
-    fetch(`${serverPath}/move/position`, {
-      body: JSON.stringify({
-        originId: dragId,
-        targetId: hoverId === '__add' ? null : hoverId,
-        type: 'group'
-      }),
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-    }).then(r => r.json()).then(() => {
+    request(APIPath.move_position, {
+      originId: +dragId,
+      targetId: hoverId === '__add' ? null : +hoverId,
+      type: 'group'
+    }).then(() => {
       const groups = this.propHandle.rootGroupList;
 
       const drag = groups.find(g => g.id === +dragId)!;
@@ -110,17 +99,11 @@ export default class PropPersistModel {
     const originItem = block.propItemList[originIndex];
     const targetId = up ? block.propItemList[originIndex - 1].id : block.propItemList[originIndex + 1].id;
 
-    fetch(`${serverPath}/move/position`, {
-      body: JSON.stringify({
-        originId: originItem.id,
-        targetId,
-        type: 'item'
-      }),
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-    }).then(r => r.json()).then(() => {
+    request(APIPath.move_position, {
+      originId: originItem.id,
+      targetId,
+      type: 'item'
+    }).then(() => {
       if (up) {
         const targetItem = block.propItemList[originIndex - 1];
         block.propItemList[originIndex - 1] = originItem;
@@ -140,13 +123,7 @@ export default class PropPersistModel {
 
     this.settingModalSubmitting = true;
     if (newGroup.id) {
-      fetch(`${serverPath}/group/update`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(newGroup)
-      }).then(r => r.json()).then(() => {
+      request(APIPath.group_update, newGroup).then(() => {
         let groupIndex = this.propHandle.rootGroupList.findIndex(g => g.id === newGroup.id);
         // this.propHandle.rootGroupList.splice(groupIndex, 1, newGroup);
         assignBaseType(this.propHandle.rootGroupList[groupIndex], newGroup);
@@ -156,18 +133,11 @@ export default class PropPersistModel {
         this.workbench.iframeManager.refreshComponent(this.workbench.component);
       })
     } else {
-      fetch(`${serverPath}/group/add`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(newGroup)
-      }).then(r => r.json()).then((result: { data: PropGroup }) => {
-        const groupDB = result.data;
+      request(APIPath.group_add, newGroup).then(({ data }) => {
         // todo
-        groupDB.expandBlockIdList = [];
-        this.propHandle.rootGroupList.push(groupDB);
-        this.propHandle.activeGroupId = groupDB.id;
+        data.expandBlockIdList = [];
+        this.propHandle.rootGroupList.push(data);
+        this.propHandle.activeGroupId = data.id;
 
         this.settingModalSubmitting = false;
         this.currSettingPropGroup = undefined;
@@ -182,13 +152,7 @@ export default class PropPersistModel {
 
     this.settingModalSubmitting = true;
     if (newBlock.id) {
-      fetch(`${serverPath}/block/update`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(newBlock)
-      }).then(r => r.json()).then(() => {
+      request(APIPath.block_update, newBlock).then(() => {
         let blockIndex = group.propBlockList.findIndex(b => b.id === newBlock.id);
         // group.propBlockList.splice(blockIndex, 1, newBlock);
         assignBaseType(group.propBlockList[blockIndex], newBlock);
@@ -197,15 +161,7 @@ export default class PropPersistModel {
         this.workbench.iframeManager.refreshComponent(this.workbench.component);
       });
     } else {
-      fetch(`${serverPath}/block/add`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(newBlock)
-      }).then(r => r.json()).then((result: { data: { newBlock: PropBlock, extra?: { newItem: PropItem, childGroup?: PropGroup, propValue?: PropValue } } }) => {
-        const { newBlock, extra } = result.data;
-
+      request(APIPath.block_add, newBlock).then(({ data: { newBlock, extra } }) => {
         group.propBlockList.push(newBlock);
         newBlock.group = group;
         group.expandBlockIdList.push(newBlock.id);
@@ -240,33 +196,18 @@ export default class PropPersistModel {
 
     this.settingModalSubmitting = true;
     if (newItem.id) {
-      fetch(`${serverPath}/item/update`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(newItem)
-      }).then(r => r.json()).then((result: { data: PropItem }) => {
-        const propItem = result.data;
-        const block = this.propHandle.getPropBlock(propItem.blockId);
-        let itemIndex = block.propItemList.findIndex(item => item.id === propItem.id);
+      request(APIPath.item_update, newItem).then(({ data }) => {
+        const block = this.propHandle.getPropBlock(data.blockId);
+        let itemIndex = block.propItemList.findIndex(item => item.id === data.id);
         // block.propItemList.splice(itemIndex, 1, propItem);
-        assignBaseType(block.propItemList[itemIndex], propItem);
+        assignBaseType(block.propItemList[itemIndex], data);
 
         this.settingModalSubmitting = false;
         this.currSettingPropItem = undefined;
         this.workbench.iframeManager.refreshComponent(this.workbench.component);
       });
     } else {
-      fetch(`${serverPath}/item/add`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(newItem)
-      }).then(r => r.json()).then((result: { data: { newItem: PropItem, childGroup?: PropGroup } }) => {
-        const { newItem, childGroup } = result.data;
-
+      request(APIPath.item_add, newItem).then(({ data: { newItem, childGroup } }) => {
         newItem.valueList = [];
         const block = this.propHandle.getPropBlock(newItem.blockId);
         block.propItemList.push(newItem);
@@ -288,7 +229,7 @@ export default class PropPersistModel {
   }
 
   public delGroup = (groupId: number) => {
-    fetch(`${serverPath}/group/remove/${groupId}`).then(() => {
+    request(APIPath.group_remove, { groupId }).then(() => {
       const index = this.propHandle.rootGroupList.findIndex(g => g.id === groupId);
 
       this.propHandle.rootGroupList.splice(index, 1);
@@ -301,7 +242,7 @@ export default class PropPersistModel {
   }
 
   public delBlock = (blockId: number, group: PropGroup) => {
-    fetch(`${serverPath}/block/remove/${blockId}`).then(() => {
+    request(APIPath.block_remove, { blockId }).then(() => {
       let blockIndex = group.propBlockList.findIndex(b => b.id === blockId);
       group.propBlockList.splice(blockIndex, 1);
       this.workbench.iframeManager.refreshComponent(this.workbench.component);
@@ -309,7 +250,7 @@ export default class PropPersistModel {
   }
 
   public delItem = (itemId: number, block: PropBlock) => {
-    fetch(`${serverPath}/item/remove/${itemId}`).then(r => r.json()).then(() => {
+    request(APIPath.item_remove, { itemId }).then(() => {
       let itemIndex = block.propItemList.findIndex(item => item.id === itemId);
       block.propItemList.splice(itemIndex, 1);
       this.workbench.iframeManager.refreshComponent(this.workbench.component);
@@ -340,16 +281,10 @@ export default class PropPersistModel {
   }
 
   public saveBlockListPrimaryItem(propBlock: PropBlock, data: number[]) {
-    fetch(`${serverPath}/block/list-struct-primary-item/save`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        blockId: propBlock.id,
-        data: JSON.stringify(data)
-      })
-    }).then(r => r.json()).then(() => {
+    request(APIPath.block_listStructPrimaryItem_save, {
+      blockId: propBlock.id,
+      data: JSON.stringify(data)
+    }).then(() => {
       propBlock.listStructData = data;
       this.propHandle.popPropItemFromStack(propBlock.propItemList[0]);
     })
@@ -374,20 +309,14 @@ export default class PropPersistModel {
       paramsData.componentInstanceId = this.workbench.componentInstance.id;
     }
 
-    fetch(`${serverPath}/value/abstract-type/add`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(paramsData)
-    }).then(r => r.json()).then((result: { data: PropValue }) => {
-      propItem.valueList.push(result.data);
+    request(APIPath.value_abstractType_add, paramsData).then(({ data }) => {
+      propItem.valueList.push(data);
       this.workbench.iframeManager.refreshComponent(this.workbench.component);
     })
   }
 
   public removeBlockListStructChildItem = (propValueId: number, propItem: PropItem) => {
-    fetch(`${serverPath}/value/abstract-type/remove/${propValueId}`).then(r => r.json()).then(() => {
+    request(APIPath.value_abstractType_remove, { propValueId }).then(() => {
       propItem.valueList = propItem.valueList.filter(v => v.id !== propValueId);
       this.workbench.iframeManager.refreshComponent(this.workbench.component);
     })
@@ -422,20 +351,13 @@ export default class PropPersistModel {
       }
     }
 
-
-    fetch(`${serverPath}/value/update`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(paramData)
-    }).then(r => r.json()).then((result: { data: PropValue }) => {
+    request(APIPath.value_update, paramData).then(({ data }) => {
       if (propValue) {
         propValue.value = valueStr;
       } else if ((paramData as any).type === 'instance') {
-        propItem.valueList.push(result.data);
+        propItem.valueList.push(data);
       } else if (abstractValueIdChain) {
-        propItem.valueList.push(result.data);
+        propItem.valueList.push(data);
       } else {
         propItem.defaultValue = valueStr;
       }

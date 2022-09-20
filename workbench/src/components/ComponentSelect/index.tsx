@@ -2,7 +2,8 @@ import { AimOutlined } from '@ant-design/icons';
 import WorkbenchModel from '@model/WorkbenchModel';
 import { useModel } from '@util/robot';
 import { Button, Select, SelectProps } from 'antd';
-import { serverPath } from 'config';
+import { APIPath } from 'api/API.path';
+import request from '@util/request';
 import { useEffect, useState } from 'react';
 import styles from './index.module.less';
 
@@ -39,27 +40,21 @@ const ComponentSelect: React.FC<PropType> = ({ value: _valueObj, onChange: _onCh
       id: parentInstanceId,
       componentId: valueId,
       oldChildId: _valueObj?.id
-    }
+    } as ComponentInstance;
 
-    fetch(`${serverPath}/component-instance/add-child`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(rawInstance)
-    }).then(res => res.json()).then(({ data: newChildInstance }: { data: ComponentInstance }) => {
+    request(APIPath.componentInstance_addChild, rawInstance).then(({ data }) => {
       _onChange({
-        id: newChildInstance.id,
-        name: newChildInstance.name,
-        componentId: newChildInstance.componentId,
-        componentVersionId: newChildInstance.componentVersionId
+        id: data.id,
+        name: data.name,
+        componentId: data.componentId,
+        componentVersionId: data.componentVersionId
       } as any);
     })
   }
 
   const onFocus = () => {
     if (!componentList.length || (componentList.length === 1 && componentList[0].id === _valueObj.id)) {
-      fetch(`${serverPath}/component/list?container=false`).then(res => res.json()).then(({ data }: { data: any[] }) => {
+      request(APIPath.component_list, { container: false }).then(({ data }) => {
         setComponentList(data);
       })
     }

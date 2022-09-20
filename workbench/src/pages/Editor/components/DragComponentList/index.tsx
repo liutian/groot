@@ -1,4 +1,5 @@
-import { serverPath } from "config";
+import { APIPath } from "api/API.path";
+import request from "@util/request";
 import { useEffect, useState } from "react";
 import { DragComponent } from "../DragComponent";
 import styles from './index.module.less';
@@ -7,8 +8,8 @@ export const DragComponentList: React.FC = () => {
   const [componentList, setComponentList] = useState<Component[]>([]);
 
   useEffect(() => {
-    fetch(`${serverPath}/component/list?container=false`).then(res => res.json()).then(({ data: list }: { data: Component[] }) => {
-      setComponentList(list);
+    request(APIPath.component_list, { container: false }).then(({ data }) => {
+      setComponentList(data);
     })
   }, []);
 

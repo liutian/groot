@@ -104,8 +104,9 @@ type Component = {
   blockList: PropBlock[],
   itemList: PropItem[],
   valueList: PropValue[],
-
   recentVersionId: number,
+
+  componentId: number
 } & Omit<import("../../cloud/src/entities/Component").Component, 'instance' | 'version' | 'groupList' | 'blockList' | 'itemList' | 'valueList' | 'versionList'>;
 
 type Application = {

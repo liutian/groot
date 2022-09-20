@@ -1,7 +1,8 @@
 import { ModalStatus } from "@util/common";
 import { useModel } from "@util/robot";
 import { Form, Input, Modal, Select } from "antd";
-import { serverPath } from "config";
+import { APIPath } from "api/API.path";
+import request from "@util/request";
 import EditorModel from "pages/Editor/EditorModel";
 import { useEffect, useState } from "react";
 
@@ -12,8 +13,8 @@ const PageAddModal: React.FC = () => {
 
   useEffect(() => {
     if (editorModel.pageAddModalStatus === ModalStatus.Init) {
-      fetch(`${serverPath}/component/list?container=false`).then(res => res.json()).then(({ data: list }: { data: Component[] }) => {
-        setComponentList(list);
+      request(APIPath.component_list, { container: false }).then(({ data }) => {
+        setComponentList(data);
       })
     }
   }, [editorModel.pageAddModalStatus]);

@@ -20,7 +20,7 @@ export class StandardResultInterceptor implements NestInterceptor {
         }
 
         return {
-          code: '200',
+          code: 200,
           message: 'ok',
           data: value
         }

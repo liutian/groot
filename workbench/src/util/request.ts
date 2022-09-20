@@ -1,5 +1,5 @@
 import axios from './base-request';
-import type { APIStore } from './API.store';
+import type { APIStore } from '../api/API.store';
 import { requestFnType } from '@grootio/common';
 
 
@@ -26,7 +26,7 @@ const request: requestFnType<APIStore> = (path, data?, config?) => {
   // 转换
   // path: /api/user/list/axy  data: {name: 'aaa'}
   // ** 尽量不要使用url参数占位符
-  const newUrl = url.replace(/:[^/?]+/, (matchStr) => {
+  const newUrl = url.replace(/:[^/?]+/img, (matchStr) => {
     const key = matchStr.substr(1);
     if (newData.hasOwnProperty(key)) {
       const newKey = newData[key];

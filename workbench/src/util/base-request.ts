@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { message } from 'antd';
-import { authTokenKey, serverPath } from 'config';
+import { authTokenKey, serverPath, successCode } from 'config';
 
 // 状态信息
 const codeMessage = {
@@ -60,7 +60,7 @@ service.interceptors.response.use(
     const resCode = res.code;
 
     // 因为大部分情况业务开发不关心接口header config，所以业务处理成功时，直接返回 data，
-    if (resCode === '200') {
+    if (resCode === successCode) {
       return response.data;
     }
 
@@ -87,7 +87,7 @@ service.interceptors.response.use(
     /* eslint-disable no-underscore-dangle */
     if ((response.config as any)._noMessage !== true) {
       // 其它业务code的逻辑
-      message.error(res.msg);
+      message.error(res.message);
     }
 
     return Promise.reject(response);

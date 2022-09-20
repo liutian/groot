@@ -1,6 +1,7 @@
 import { metadataFactory, propTreeFactory } from "@grootio/core";
 import { ModalStatus } from "@util/common";
-import { serverPath } from "config";
+import { APIPath } from "api/API.path";
+import request from "@util/request";
 import WorkbenchModel from "../../model/WorkbenchModel";
 
 export default class EditorModel {
@@ -44,9 +45,8 @@ export default class EditorModel {
   }
 
   public fetchPage = (instanceId: number, changeHistory = true) => {
-    const url = `${serverPath}/component-instance/page-detail/${instanceId}`;
     this.loadStatus = 'doing';
-    return fetch(url).then(res => res.json()).then(({ data: { children, root } }: { data: { children: ComponentInstance[], root: ComponentInstance } }) => {
+    return request(APIPath.componentInstance_pageDetail, { instanceId }).then(({ data: { children, root } }) => {
       this.loadStatus = 'ok';
 
       this.breadcrumbList.length = 0;
@@ -66,8 +66,7 @@ export default class EditorModel {
   }
 
   public fetchApplication = (applicationId: number, releaseId: number) => {
-    const url = `${serverPath}/application/detail/${applicationId}?releaseId=${releaseId}`;
-    return fetch(url).then(res => res.json()).then(({ data }: { data: Application }) => {
+    return request(APIPath.application_detail, { applicationId, releaseId }).then(({ data }) => {
       this.workbench.startApplication(data);
     }).catch((e) => {
       this.loadStatus = 'no-application';
@@ -77,64 +76,42 @@ export default class EditorModel {
 
   public addPage = (rawComponentInstance: ComponentInstance) => {
     this.pageAddModalStatus = ModalStatus.Submit;
-    return fetch(`${serverPath}/component-instance/add`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        ...rawComponentInstance,
-        releaseId: this.workbench.application.release.id
-      })
-    }).then(res => res.json()).then(({ data: newComponentInstance }: { data: ComponentInstance }) => {
+    return request(APIPath.componentInstance_add, {
+      ...rawComponentInstance,
+      releaseId: this.workbench.application.release.id
+    }).then(({ data }) => {
       this.pageAddModalStatus = ModalStatus.None;
-      this.workbench.application.release.instanceList.push(newComponentInstance);
+      this.workbench.application.release.instanceList.push(data);
 
-      return this.fetchPage(newComponentInstance.id);
+      return this.fetchPage(data.id);
     });
   }
 
   public addRelease = (rawRelease: Release) => {
     this.releaseAddModalStatus = ModalStatus.Submit;
-    return fetch(`${serverPath}/release/add`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        ...rawRelease,
-      })
-    }).then(res => res.json()).then(({ data: newRelease }: { data: Release }) => {
+    return request(APIPath.release_add, rawRelease).then(({ data }) => {
       this.releaseAddModalStatus = ModalStatus.None
-      this.workbench.application.release = newRelease;
-      this.workbench.application.releaseList.push(newRelease);
+      this.workbench.application.release = data;
+      this.workbench.application.releaseList.push(data);
 
       const currInstance = this.workbench.componentInstance;
-      return this.switchReleaseByTrackId(newRelease.id, currInstance.trackId);
+      return this.switchReleaseByTrackId(data.id, currInstance.trackId);
     });
   }
 
   public switchRelease = (releaseId: number) => {
-    fetch(`${serverPath}/release/detail/${releaseId}`, {
-      headers: {
-        'Content-Type': 'application/json'
-      },
-    }).then(res => res.json()).then(({ data: release }: { data: Release }) => {
-      this.workbench.application.release = release;
+    request(APIPath.release_detail, { releaseId }).then(({ data }) => {
+      this.workbench.application.release = data;
 
       const currInstance = this.workbench.componentInstance;
-      return this.switchReleaseByTrackId(release.id, currInstance.trackId);
+      return this.switchReleaseByTrackId(data.id, currInstance.trackId);
     });
   }
 
   private switchReleaseByTrackId = (releaseId: number, trackId: number) => {
-    return fetch(`${serverPath}/component-instance/detail-id?releaseId=${releaseId}&trackId=${trackId}`, {
-      headers: {
-        'Content-Type': 'application/json'
-      },
-    }).then(res => res.json()).then(({ data: instanceId }: { data: number }) => {
-      if (instanceId) {
-        return this.switchComponentInstance(instanceId, true, false);
+    return request(APIPath.componentInstance_detailId, { releaseId, trackId }).then(({ data }) => {
+      if (data) {
+        return this.switchComponentInstance(data, true, false);
       } else if (this.workbench.application.release.instanceList.length) {
         const instance = this.workbench.application.release.instanceList[0];
         return this.switchComponentInstance(instance.id, true, false);
@@ -146,32 +123,15 @@ export default class EditorModel {
 
   public assetBuild = () => {
     this.assetBuildStatus = 'building';
-    return fetch(`${serverPath}/asset/build`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        releaseId: this.workbench.application.release.id
-      })
-    }).then(res => res.json()).then(({ data: bundleId }) => {
+    return request(APIPath.asset_build, { releaseId: this.workbench.application.release.id }).then(({ data }) => {
       this.assetBuildStatus = 'buildOver';
-      this.deployBundleId = bundleId;
+      this.deployBundleId = data;
     })
   }
 
   public assetDeploy = (formData: any) => {
     this.assetDeployModalStatus = ModalStatus.Submit;
-    return fetch(`${serverPath}/asset/deploy`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        ...formData,
-        bundleId: this.deployBundleId
-      })
-    }).then(res => res.json()).then((assetId: number) => {
+    return request(APIPath.asset_deploy, { bundleId: this.deployBundleId, ...formData }).then(() => {
       this.assetDeployModalStatus = ModalStatus.None;
     })
   }

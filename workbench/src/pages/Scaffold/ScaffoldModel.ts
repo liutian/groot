@@ -1,5 +1,6 @@
 import { ModalStatus } from "@util/common";
-import { serverPath } from "config";
+import { APIPath } from "api/API.path";
+import request from "@util/request";
 import WorkbenchModel from "../../model/WorkbenchModel";
 
 export default class ScaffoldModel {
@@ -16,9 +17,8 @@ export default class ScaffoldModel {
   }
 
   public switchComponent = (componentId: number, versionId: number, changeHistory = false) => {
-    const url = `${serverPath}/component-prototype/detail/${componentId}?versionId=${versionId}`;
     this.loadComponent = 'doing';
-    return fetch(url).then(res => res.json()).then(({ data }: { data: Component }) => {
+    return request(APIPath.componentPrototype_detail, { componentId, versionId }).then(({ data }) => {
       this.loadComponent = 'over';
       this.workbench.startScaffold(data, this.scaffold);
 
@@ -30,8 +30,7 @@ export default class ScaffoldModel {
   }
 
   public fetchScaffold = (scaffoldId: number) => {
-    const url = `${serverPath}/scaffold/detail/${scaffoldId}`;
-    return fetch(url).then(res => res.json()).then(({ data }: { data: Scaffold }) => {
+    return request(APIPath.scaffold_detail, { scaffoldId }).then(({ data }) => {
       this.scaffold = data;
     }).catch((e) => {
       this.scaffold = null;
@@ -41,51 +40,28 @@ export default class ScaffoldModel {
 
   public addComponent = (rawComponent: Component) => {
     this.componentAddModalStatus = ModalStatus.Submit;
-    return fetch(`${serverPath}/component/add`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        ...rawComponent,
-        scaffoldId: this.scaffold.id
-      })
-    }).then(res => res.json()).then(({ data: newComponent }: { data: Component }) => {
+    return request(APIPath.component_add, {
+      ...rawComponent,
+      scaffoldId: this.scaffold.id
+    }).then(({ data }) => {
       this.componentAddModalStatus = ModalStatus.None;
-      this.scaffold.componentList.push(newComponent);
+      this.scaffold.componentList.push(data);
 
-      this.switchComponent(newComponent.id, newComponent.recentVersionId, true);
+      this.switchComponent(data.id, data.recentVersionId, true);
     });
   }
 
   public addComponentVersion = (rawComponentVersion: ComponentVersion) => {
     this.componentVersionAddModalStatus = ModalStatus.Submit;
-    return fetch(`${serverPath}/component-version/add`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        ...rawComponentVersion,
-      })
-    }).then(res => res.json()).then(({ data: newComponentVersion }: { data: ComponentVersion }) => {
+    return request(APIPath.componentVersion_add, rawComponentVersion).then(({ data }) => {
       this.componentVersionAddModalStatus = ModalStatus.None;
-      this.workbench.component.versionList.push(newComponentVersion);
-      this.switchComponent(this.workbench.component.id, newComponentVersion.id, true);
+      this.workbench.component.versionList.push(data);
+      this.switchComponent(this.workbench.component.id, data.id, true);
     });
   }
 
   public publish = (componentId: number, versioinId: number) => {
-    fetch(`${serverPath}/component-version/publish`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        componentId,
-        versioinId
-      })
-    }).then(res => res.json()).then(() => {
+    request(APIPath.componentVersion_publish, { componentId, versioinId }).then(() => {
       this.workbench.component.recentVersionId = versioinId;
     });
   }
