@@ -36,6 +36,20 @@ service.interceptors.request.use(
       newConfig.url = `${serverPath}/${url}`;
     }
 
+    if (newConfig.params) {
+      Object.keys(newConfig.params).forEach(key => {
+        if (newConfig.params[key] === null || newConfig.params[key] === undefined) {
+          delete newConfig.params[key];
+        }
+      })
+    } else if (newConfig.data) {
+      Object.keys(newConfig.data).forEach(key => {
+        if (newConfig.data[key] === null || newConfig.data[key] === undefined) {
+          delete newConfig.data[key];
+        }
+      })
+    }
+
     return newConfig;
   },
   (error) => {
