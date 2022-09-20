@@ -6,7 +6,6 @@ import { PropBlock } from 'entities/PropBlock';
 import { PropGroup } from 'entities/PropGroup';
 import { PropItem } from 'entities/PropItem';
 import { pick } from 'util/common';
-import { forkTransaction } from 'util/ormUtil';
 import { CommonService } from './common.service';
 import { PropBlockService } from './prop-block.service';
 
@@ -75,11 +74,8 @@ export class PropGroupService {
 
     LogicException.assertNotFound(group, 'PropGroup', groupId);
 
-    let parentCtx = em.getTransactionContext();;
-    if (!parentEm) {
-      parentCtx = await forkTransaction(em);
-    }
     const blockList = await em.find(PropBlock, { group });
+    const parentCtx = parentEm ? em.getTransactionContext() : undefined;
     await em.begin();
     try {
       for (let blockIndex = 0; blockIndex < blockList.length; blockIndex++) {
@@ -93,7 +89,9 @@ export class PropGroupService {
       await em.rollback();
       throw e;
     } finally {
-      em.setTransactionContext(parentCtx);
+      if (parentCtx) {
+        em.setTransactionContext(parentCtx);
+      }
     }
   }
 
@@ -104,7 +102,6 @@ export class PropGroupService {
 
     LogicException.assertNotFound(group, 'PropGroup', rawGroup.id);
 
-    const parentCtx = await forkTransaction(em);
     await em.begin();
     try {
       pick(rawGroup, ['name', 'propKey'], group);
@@ -123,8 +120,6 @@ export class PropGroupService {
     } catch (e) {
       await em.rollback();
       throw e;
-    } finally {
-      em.setTransactionContext(parentCtx);
     }
   }
 

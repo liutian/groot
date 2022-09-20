@@ -11,7 +11,6 @@ import { PropValue } from 'entities/PropValue';
 import { Release } from 'entities/Release';
 
 import { pick } from 'util/common';
-import { forkTransaction } from 'util/ormUtil';
 
 @Injectable()
 export class ComponentInstanceService {
@@ -75,11 +74,7 @@ export class ComponentInstanceService {
     const valueMap = new Map<number, PropValue>();
     const newValueList = [];
 
-    let parentCtx = em.getTransactionContext();;
-    if (!parentEm) {
-      parentCtx = await forkTransaction(em);
-    }
-
+    let parentCtx = parentEm ? em.getTransactionContext() : undefined;
     await em.begin();
     try {
 
@@ -123,7 +118,9 @@ export class ComponentInstanceService {
       await em.rollback();
       throw e;
     } finally {
-      em.setTransactionContext(parentCtx);
+      if (parentCtx) {
+        em.setTransactionContext(parentCtx);
+      }
     }
 
     return newInstance;

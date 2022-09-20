@@ -10,6 +10,7 @@ import { PropItem } from 'entities/PropItem';
 export class CommonService {
 
   public async checkPropKeyUnique(componentId: number, componentVersionId: number, em: EntityManager, extraChain?: string) {
+    // todo 无法计算没有子节点的 propBlock propGroup 的 propKey重复性
     const chainList = await this.calcAllPropKeyChain(componentId, componentVersionId, em);
     const chainSet = new Set<string>();
     const repeatChainMap = new Map<string, number>();

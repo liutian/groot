@@ -7,7 +7,6 @@ import { PropGroup } from 'entities/PropGroup';
 import { PropItem } from 'entities/PropItem';
 import { PropValue } from 'entities/PropValue';
 import { pick } from 'util/common';
-import { forkTransaction } from 'util/ormUtil';
 import { CommonService } from './common.service';
 import { PropGroupService } from './prop-group.service';
 
@@ -19,7 +18,8 @@ export class PropItemService {
     private commonService: CommonService,
   ) { }
 
-  async add(rawItem: PropItem, em = RequestContext.getEntityManager()) {
+  async add(rawItem: PropItem, parentEm?: EntityManager) {
+    let em = parentEm || RequestContext.getEntityManager();
 
     const block = await em.findOne(PropBlock, rawItem.blockId);
     LogicException.assertNotFound(block, 'PropBlock', rawItem.blockId);
@@ -34,7 +34,7 @@ export class PropItemService {
         repeatChainMap = await this.commonService.checkPropKeyUnique(block.component.id, block.componentVersion.id, em, rawItem.propKey);
       } else {
         const blockPropKeyChain = await this.commonService.calcPropKeyChain('block', block.id, em);
-        const extraChain = blockPropKeyChain ? `${blockPropKeyChain}.${rawItem.propKey}` : rawItem.propKey;
+        const extraChain = `${blockPropKeyChain}.${rawItem.propKey}`.replace(/^\.|\.$/gi, '');
         repeatChainMap = await this.commonService.checkPropKeyUnique(block.component.id, block.componentVersion.id, em, extraChain);
       }
 
@@ -56,8 +56,8 @@ export class PropItemService {
       order: firstItem ? firstItem.order + 1000 : 1000,
     });
 
-    const parentCtx = await forkTransaction(em);
-
+    let parentCtx = parentEm ? em.getTransactionContext() : undefined;
+    await em.begin();
     try {
 
       await em.flush();
@@ -90,7 +90,9 @@ export class PropItemService {
       await em.rollback();
       throw e;
     } finally {
-      em.setTransactionContext(parentCtx);
+      if (parentCtx) {
+        em.setTransactionContext(parentCtx);
+      }
     }
 
     return result;
@@ -125,10 +127,7 @@ export class PropItemService {
 
     LogicException.assertNotFound(propItem, 'PropItem', itemId);
 
-    let parentCtx = em.getTransactionContext();;
-    if (!parentEm) {
-      parentCtx = await forkTransaction(em);
-    }
+    const parentCtx = parentEm ? em.getTransactionContext() : undefined;
     await em.begin();
     try {
       await em.removeAndFlush(propItem);
@@ -147,7 +146,9 @@ export class PropItemService {
       await em.rollback();
       throw e;
     } finally {
-      em.setTransactionContext(parentCtx);
+      if (parentCtx) {
+        em.setTransactionContext(parentCtx);
+      }
     }
   }
 
@@ -162,9 +163,7 @@ export class PropItemService {
       throw new LogicException(`type can not update item id: ${rawItem.id}`, LogicExceptionCode.ParamError);
     }
 
-    const parentCtx = await forkTransaction(em);
     await em.begin();
-
     try {
       if (rawItem.type !== propItem.type) {
         propItem.versionTraceId = propItem.id;
@@ -191,8 +190,6 @@ export class PropItemService {
     } catch (e) {
       await em.rollback();
       throw e;
-    } finally {
-      em.setTransactionContext(parentCtx);
     }
 
     return propItem;

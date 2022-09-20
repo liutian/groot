@@ -7,26 +7,21 @@ import { PropGroup } from 'entities/PropGroup';
 import { PropItem } from 'entities/PropItem';
 import { PropValue } from 'entities/PropValue';
 import { pick } from 'util/common';
-import { forkTransaction } from 'util/ormUtil';
 import { CommonService } from './common.service';
-import { PropGroupService } from './prop-group.service';
 import { PropItemService } from './prop-item.service';
-import { PropValueService } from './prop-value.service';
 
 
 @Injectable()
 export class PropBlockService {
 
   constructor(
-    @Inject(forwardRef(() => PropGroupService))
-    private propGroupService: PropGroupService,
     @Inject(forwardRef(() => PropItemService))
     private propItemService: PropItemService,
     private commonService: CommonService,
-    private propValueService: PropValueService,
   ) { }
 
-  async add(rawBlock: PropBlock, em = RequestContext.getEntityManager()) {
+  async add(rawBlock: PropBlock, parentEm?: EntityManager) {
+    let em = parentEm || RequestContext.getEntityManager();
 
     const group = await em.findOne(PropGroup, rawBlock.groupId);
     LogicException.assertNotFound(group, 'PropGroup', rawBlock.groupId);
@@ -37,7 +32,7 @@ export class PropBlockService {
         repeatChainMap = await this.commonService.checkPropKeyUnique(group.component.id, group.componentVersion.id, em, rawBlock.propKey);
       } else {
         const blockPropKeyChain = await this.commonService.calcPropKeyChain('group', group.id, em);
-        const extraChain = `${blockPropKeyChain}.${rawBlock.propKey}`;
+        const extraChain = `${blockPropKeyChain}.${rawBlock.propKey}`.replace(/^\.|\.$/gi, '');
         repeatChainMap = await this.commonService.checkPropKeyUnique(group.component.id, group.componentVersion.id, em, extraChain);
       }
 
@@ -58,10 +53,10 @@ export class PropBlockService {
     });
 
 
-    const parentCtx = await forkTransaction(em);
-
     let result: { newBlock: PropBlock, extra?: { newItem?: PropItem, propValue?: PropValue, childGroup?: PropGroup } } = { newBlock };
 
+    const parentCtx = parentEm ? em.getTransactionContext() : undefined;
+    await em.begin();
     try {
       await em.flush();
       if (rawBlock.struct === PropBlockStructType.List) {
@@ -78,7 +73,9 @@ export class PropBlockService {
       await em.rollback();
       throw e;
     } finally {
-      em.setTransactionContext(parentCtx);
+      if (parentCtx) {
+        em.setTransactionContext(parentCtx);
+      }
     }
 
     return result;
@@ -111,12 +108,9 @@ export class PropBlockService {
 
     LogicException.assertNotFound(block, 'PropBlock', blockId);
 
-    let parentCtx = em.getTransactionContext();;
-    if (!parentEm) {
-      parentCtx = await forkTransaction(em);
-    }
-
     const itemList = await em.find(PropItem, { block });
+
+    let parentCtx = parentEm ? em.getTransactionContext() : undefined;
     await em.begin();
     try {
       for (let itemIndex = 0; itemIndex < itemList.length; itemIndex++) {
@@ -130,7 +124,9 @@ export class PropBlockService {
       await em.rollback();
       throw e;
     } finally {
-      em.setTransactionContext(parentCtx);
+      if (parentCtx) {
+        em.setTransactionContext(parentCtx);
+      }
     }
   }
 
@@ -141,19 +137,18 @@ export class PropBlockService {
 
     LogicException.assertNotFound(block, 'PropBlock', rawBlock.id);
 
-    const parentCtx = await forkTransaction(em);
-    await em.begin();
+    const checkUnique = (rawBlock.propKey !== block.propKey) || (rawBlock.rootPropKey !== block.rootPropKey);
 
+    await em.begin();
     try {
       pick(rawBlock, ['name', 'propKey', 'rootPropKey', 'layout'], block);
 
       await em.flush();
 
       // warning!!! flush之后可以查到最新的数据吗？
-      if ((rawBlock.propKey !== block.propKey) || (rawBlock.rootPropKey !== block.rootPropKey)) {
+      if (checkUnique) {
         const repeatChainMap = await this.commonService.checkPropKeyUnique(block.component.id, block.componentVersion.id, em);
         if (repeatChainMap.size > 0) {
-          await em.rollback();
           throw new LogicException(`not unique propKey:${rawBlock.propKey}`, LogicExceptionCode.NotUnique);
         }
       }
@@ -162,8 +157,6 @@ export class PropBlockService {
     } catch (e) {
       await em.rollback();
       throw e;
-    } finally {
-      em.setTransactionContext(parentCtx);
     }
   }
 

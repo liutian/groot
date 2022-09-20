@@ -18,12 +18,10 @@ export class PropValueService {
       abstractValueIdChain: rawPropValue.abstractValueIdChain,
       component: rawPropValue.componentId,
       componentVersion: rawPropValue.componentVersionId,
-      scaffold: rawPropValue.scaffoldId,
       type: rawPropValue.type,
     } as any;
 
     if (rawPropValue.type === PropValueType.Instance) {
-      query.release = rawPropValue.releaseId;
       query.componentInstance = rawPropValue.componentInstanceId
     }
 
