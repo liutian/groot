@@ -143,8 +143,10 @@ export default class PropHandleModel {
 
   // 使用范型会导致sourceMap信息丢失
   getProp(id: number, type: 'block' | 'group' | 'item', group: PropGroup, pathChain?: [PropItem | PropBlock | PropGroup]) {
+    const pathChainEndIndex = pathChain.length;
+    pathChain.push(group);
+
     if (type === 'group' && group.id === id) {
-      pathChain.push(group);
       return group;
     }
 
@@ -152,10 +154,9 @@ export default class PropHandleModel {
 
     for (let blockIndex = 0; blockIndex < blockList.length; blockIndex++) {
       const block = blockList[blockIndex];
-
       const pathChainEndIndex = pathChain.length;
-      pathChain.push(group);
       pathChain.push(block);
+
       if (type === 'block' && block.id === id) {
         return block;
       }
@@ -163,11 +164,9 @@ export default class PropHandleModel {
       const itemList = block.propItemList;
       for (let itemIndex = 0; itemIndex < itemList.length; itemIndex++) {
         const item = itemList[itemIndex];
-
         const pathChainEndIndex = pathChain.length;
-        pathChain.push(group);
-        pathChain.push(block);
         pathChain.push(item);
+
         if (type === 'item' && item.id === id) {
           return item;
         }
@@ -190,6 +189,7 @@ export default class PropHandleModel {
       pathChain.splice(pathChainEndIndex);
     }
 
+    pathChain.splice(pathChainEndIndex);
     return null;
   }
 
