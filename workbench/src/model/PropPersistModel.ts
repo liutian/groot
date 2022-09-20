@@ -136,6 +136,7 @@ export default class PropPersistModel {
       request(APIPath.group_add, newGroup).then(({ data }) => {
         // todo
         data.expandBlockIdList = [];
+        data.propBlockList = [];
         this.propHandle.rootGroupList.push(data);
         this.propHandle.activeGroupId = data.id;
 
@@ -164,10 +165,12 @@ export default class PropPersistModel {
       request(APIPath.block_add, newBlock).then(({ data: { newBlock, extra } }) => {
         group.propBlockList.push(newBlock);
         newBlock.group = group;
+        newBlock.propItemList = [];
         group.expandBlockIdList.push(newBlock.id);
 
         if (extra?.childGroup) {
           extra.childGroup.expandBlockIdList = [];
+          extra.childGroup.propBlockList = [];
           extra.newItem.childGroup = extra.childGroup;
           extra.newItem.valueList = [];
 
@@ -217,6 +220,7 @@ export default class PropPersistModel {
 
         if (childGroup) {
           childGroup.expandBlockIdList = [];
+          childGroup.propBlockList = [];
           newItem.childGroup = childGroup;
           childGroup.parentItem = newItem;
         }

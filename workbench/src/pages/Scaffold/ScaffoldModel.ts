@@ -7,7 +7,7 @@ export default class ScaffoldModel {
   static modelName = 'scaffold';
 
   public scaffold: Scaffold;
-  public loadComponent: 'doing' | 'notfound' | 'over' = 'doing';
+  public loadStatus: 'doing' | 'notfound' | 'ok' = 'doing';
   public componentAddModalStatus: ModalStatus = ModalStatus.None;
   public componentVersionAddModalStatus: ModalStatus = ModalStatus.None;
   private workbench: WorkbenchModel;
@@ -17,14 +17,13 @@ export default class ScaffoldModel {
   }
 
   public switchComponent = (componentId: number, versionId: number, changeHistory = false) => {
-    this.loadComponent = 'doing';
     return request(APIPath.componentPrototype_detail, { componentId, versionId }).then(({ data }) => {
-      this.loadComponent = 'over';
+      this.loadStatus = 'ok';
       this.workbench.startScaffold(data, this.scaffold);
 
       if (changeHistory) {
         this.workbench.currActiveTab = 'props';
-        window.history.pushState(null, '', `?scaffoldId=${this.scaffold.id}&versionId=${versionId}&componentId=${componentId}`);
+        window.history.pushState(null, '', `?scaffold=${this.scaffold.id}&version=${versionId}&component=${componentId}`);
       }
     })
   }

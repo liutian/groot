@@ -45,7 +45,6 @@ export default class EditorModel {
   }
 
   public fetchPage = (instanceId: number, changeHistory = true) => {
-    this.loadStatus = 'doing';
     return request(APIPath.componentInstance_pageDetail, { instanceId }).then(({ data: { children, root } }) => {
       this.loadStatus = 'ok';
 

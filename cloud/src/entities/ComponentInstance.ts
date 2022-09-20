@@ -14,10 +14,10 @@ export class ComponentInstance extends BaseEntity {
   @Property({ length: 50 })
   name: string;
 
-  @ManyToOne({ serializer: value => value?.id, serializedName: 'componentId' })
+  @ManyToOne()
   component: Component;
 
-  @ManyToOne({ serializer: value => value?.id, serializedName: 'componentVersionId' })
+  @ManyToOne()
   componentVersion: ComponentVersion;
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'releaseId' })

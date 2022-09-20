@@ -15,10 +15,12 @@ const Workbench: React.FC<PropsType> = () => {
   const iframeRef = useRef<HTMLIFrameElement>({} as any);
 
   useEffect(() => {
-    setTimeout(() => {
+    if (workbenchModel.prototypeMode && workbenchModel.scaffold) {
       workbenchModel.initIframe(iframeRef.current);
-    }, 0);
-  }, [])
+    } else if (!workbenchModel.prototypeMode && workbenchModel.application) {
+      workbenchModel.initIframe(iframeRef.current);
+    }
+  }, [workbenchModel.application, workbenchModel.scaffold])
 
   return (<div className={`${styles.container} ${workbenchModel.prototypeMode ? styles.prototypeMode : ''}`} >
 

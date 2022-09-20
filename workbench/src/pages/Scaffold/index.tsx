@@ -31,9 +31,9 @@ const Scaffold: React.FC = () => {
   })
 
   useEffect(() => {
-    const componentId = +searchParams.get('componentId');
-    const versionId = +searchParams.get('versionId') || 1;
-    const scaffoldId = +searchParams.get('scaffoldId');
+    const componentId = +searchParams.get('component');
+    const versionId = +searchParams.get('version') || 1;
+    const scaffoldId = +searchParams.get('scaffold');
     scaffoldModel.fetchScaffold(scaffoldId).then(() => {
       if (componentId) {
         scaffoldModel.switchComponent(componentId, versionId);
@@ -103,9 +103,9 @@ const Scaffold: React.FC = () => {
     }
   }
 
-  if (scaffoldModel.scaffold === undefined) {
+  if (scaffoldModel.loadStatus === 'doing') {
     return <>loading</>
-  } else if (scaffoldModel.scaffold === null) {
+  } else if (scaffoldModel.loadStatus === 'notfound') {
     return <>notfound component</>
   } else {
     return (<>

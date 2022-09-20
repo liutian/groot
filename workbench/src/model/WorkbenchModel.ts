@@ -69,6 +69,10 @@ export default class WorkbenchModel {
   }
 
   public initIframe(iframe: HTMLIFrameElement) {
+    if (this.iframeManager) {
+      return;
+    }
+
     this.iframeManager = launchIframeManager(iframe, this);
     this.iframeReadyResolve();
   }
@@ -103,7 +107,7 @@ export default class WorkbenchModel {
     const rootGroupList = this.propHandle.buildPropTree(groupList, blockList, itemList, valueList);
 
     if (changeHistory) {
-      window.history.pushState(null, '', `?applicationId=${this.application.id}&releaseId=${this.application.release.id}&instanceId=${rootInstance.id}`);
+      window.history.pushState(null, '', `?app=${this.application.id}&release=${this.application.release.id}&page=${rootInstance.id}`);
     }
 
     this.iframeReadyPromise.then(() => {
