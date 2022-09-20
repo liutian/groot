@@ -47,7 +47,7 @@ const request: requestFnType<APIStore> = (path, data?, config?) => {
     dataObj.data = data;
   }
 
-  return axios(newUrl, { method: method as any, dataObj, ...(config || {}) }) as any;
+  return axios(newUrl, { method: method as any, ...dataObj, ...(config || {}) }) as any;
 };
 
 export default request;
