@@ -35,9 +35,9 @@ const Editor: React.FC = () => {
   });
 
   useEffect(() => {
-    const applicationId = +searchParams.get('app');
-    const releaseId = +searchParams.get('release');
-    const instanceId = +searchParams.get('page');
+    const applicationId = +searchParams.get('app') || undefined;
+    const releaseId = +searchParams.get('release') || undefined;
+    const instanceId = +searchParams.get('page') || undefined;
     editorModel.fetchApplication(applicationId, releaseId).then(() => {
       if (instanceId) {
         editorModel.fetchPage(instanceId, false);

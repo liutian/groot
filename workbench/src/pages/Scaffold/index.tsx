@@ -31,9 +31,9 @@ const Scaffold: React.FC = () => {
   })
 
   useEffect(() => {
-    const componentId = +searchParams.get('component');
-    const versionId = +searchParams.get('version') || 1;
-    const scaffoldId = +searchParams.get('scaffold');
+    const componentId = +searchParams.get('component') || undefined;
+    const versionId = +searchParams.get('version') || undefined;
+    const scaffoldId = +searchParams.get('scaffold') || undefined;
     scaffoldModel.fetchScaffold(scaffoldId).then(() => {
       if (componentId) {
         scaffoldModel.switchComponent(componentId, versionId);
