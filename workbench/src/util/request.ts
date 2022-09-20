@@ -31,7 +31,7 @@ const request: requestFnType<APIStore> = (path, data?, config?) => {
     if (newData.hasOwnProperty(key)) {
       const newKey = newData[key];
       delete newData[key];
-      return newKey;
+      return newKey || '';
     }
 
     throw new Error(`not match url placeholder : ${url}`);
