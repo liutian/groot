@@ -6,7 +6,6 @@ import WorkbenchModel from "../../model/WorkbenchModel";
 export default class ScaffoldModel {
   static modelName = 'scaffold';
 
-  public scaffold: Scaffold;
   public loadStatus: 'doing' | 'notfound' | 'ok' = 'doing';
   public componentAddModalStatus: ModalStatus = ModalStatus.None;
   public componentVersionAddModalStatus: ModalStatus = ModalStatus.None;
@@ -16,23 +15,17 @@ export default class ScaffoldModel {
     this.workbench = workbench;
   }
 
-  public switchComponent = (componentId: number, versionId: number, changeHistory = false) => {
+  public switchComponent = (componentId: number, versionId: number) => {
     return request(APIPath.componentPrototype_detail, { componentId, versionId }).then(({ data }) => {
       this.loadStatus = 'ok';
-      this.workbench.startScaffold(data, this.scaffold);
-
-      if (changeHistory) {
-        this.workbench.currActiveTab = 'props';
-        window.history.pushState(null, '', `?scaffold=${this.scaffold.id}&version=${versionId}&component=${componentId}`);
-      }
+      this.workbench.startComponent(data);
     })
   }
 
   public fetchScaffold = (scaffoldId: number) => {
     return request(APIPath.scaffold_detail, { scaffoldId }).then(({ data }) => {
-      this.scaffold = data;
+      this.workbench.startScaffold(data);
     }).catch((e) => {
-      this.scaffold = null;
       return Promise.reject(e);
     })
   }
@@ -41,12 +34,12 @@ export default class ScaffoldModel {
     this.componentAddModalStatus = ModalStatus.Submit;
     return request(APIPath.component_add, {
       ...rawComponent,
-      scaffoldId: this.scaffold.id
+      scaffoldId: this.workbench.scaffold.id
     }).then(({ data }) => {
       this.componentAddModalStatus = ModalStatus.None;
-      this.scaffold.componentList.push(data);
+      this.workbench.scaffold.componentList.push(data);
 
-      this.switchComponent(data.id, data.recentVersionId, true);
+      this.switchComponent(data.id, data.recentVersionId);
     });
   }
 
@@ -55,7 +48,8 @@ export default class ScaffoldModel {
     return request(APIPath.componentVersion_add, rawComponentVersion).then(({ data }) => {
       this.componentVersionAddModalStatus = ModalStatus.None;
       this.workbench.component.versionList.push(data);
-      this.switchComponent(this.workbench.component.id, data.id, true);
+
+      this.switchComponent(this.workbench.component.id, data.id);
     });
   }
 

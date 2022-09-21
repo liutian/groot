@@ -71,37 +71,35 @@ const Editor: React.FC = () => {
       </div>)
     });
 
-    workbenchUpdateAction(() => {
-      (Object.getPrototypeOf(workbenchModel) as WorkbenchModel).renderToolBarAction = () => {
-        return (<>
-          <Button type="link" title="部署" icon={<SendOutlined />} onClick={() => {
-            editorUpdateAction(() => {
-              editorModel.assetBuildModalStatus = ModalStatus.Init;
-            })
-          }} />
-        </>)
-      }
+    (Object.getPrototypeOf(workbenchModel) as WorkbenchModel).renderToolBarAction = () => {
+      return (<>
+        <Button type="link" title="部署" icon={<SendOutlined />} onClick={() => {
+          editorUpdateAction(() => {
+            editorModel.assetBuildModalStatus = ModalStatus.Init;
+          })
+        }} />
+      </>)
+    }
 
-      (Object.getPrototypeOf(workbenchModel) as WorkbenchModel).renderToolBarBreadcrumb = () => {
-        return (<Breadcrumb separator=">">
-          <Breadcrumb.Item >
-            <HomeOutlined />
-          </Breadcrumb.Item>
-          {
-            editorModel.breadcrumbList.map((item) => {
-              return (<Breadcrumb.Item key={item.id}
-                onClick={() => editorModel.switchComponentInstance(item.id, false)}>
-                {item.name}
-              </Breadcrumb.Item>)
-            })
-          }
-        </Breadcrumb>)
-      }
+    (Object.getPrototypeOf(workbenchModel) as WorkbenchModel).renderToolBarBreadcrumb = () => {
+      return (<Breadcrumb separator=">">
+        <Breadcrumb.Item >
+          <HomeOutlined />
+        </Breadcrumb.Item>
+        {
+          editorModel.breadcrumbList.map((item) => {
+            return (<Breadcrumb.Item key={item.id}
+              onClick={() => editorModel.switchComponentInstance(item.id, false)}>
+              {item.name}
+            </Breadcrumb.Item>)
+          })
+        }
+      </Breadcrumb>)
+    }
 
-      (Object.getPrototypeOf(workbenchModel) as WorkbenchModel).switchComponentInstance = (instanceId) => {
-        editorModel.switchComponentInstance(instanceId, true);
-      }
-    }, false)
+    (Object.getPrototypeOf(workbenchModel) as WorkbenchModel).switchComponentInstance = (instanceId) => {
+      editorModel.switchComponentInstance(instanceId, true);
+    }
   }
 
   if (editorModel.loadStatus === 'doing') {

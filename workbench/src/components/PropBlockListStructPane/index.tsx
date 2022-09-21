@@ -166,7 +166,7 @@ const PropBlockListStructPane: React.FC<PropsType> = ({ block: propBlock }) => {
 
   // 避免切换组件实例时表单控件无法刷新的问题
   const formKey = workbenchModel.prototypeMode ?
-    `componentId:${workbenchModel.component?.id}|versionId:${workbenchModel.component?.version.id}`
+    `componentId:${workbenchModel.component?.id}|versionId:${workbenchModel.componentVersion.id}`
     : `releaseId:${workbenchModel.application?.release.id}|instanceId:${workbenchModel.componentInstance?.id}`;
 
   return <div className={styles.container}>

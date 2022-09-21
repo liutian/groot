@@ -77,11 +77,14 @@ export default class WorkbenchModel {
     this.iframeReadyResolve();
   }
 
-  public startScaffold(component: Component, scaffold: Scaffold) {
+  public startScaffold(scaffold: Scaffold) {
     this.prototypeMode = true;
+    this.scaffold = scaffold;
+  }
+
+  public startComponent(component: Component,) {
     this.component = component;
     this.componentVersion = component.componentVersion;
-    this.scaffold = scaffold;
     this.currActiveTab = 'props';
 
     const { groupList, blockList, itemList, valueList } = component;
@@ -92,6 +95,8 @@ export default class WorkbenchModel {
         this.iframeManager.refreshComponent();
       });
     });
+
+    window.history.pushState(null, '', `?scaffold=${this.scaffold.id}&version=${this.componentVersion.id}&component=${component.id}`);
   }
 
   public startApplication(app: Application) {

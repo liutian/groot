@@ -38,8 +38,8 @@ const Scaffold: React.FC = () => {
     scaffoldModel.fetchScaffold(scaffoldId).then(() => {
       if (componentId) {
         scaffoldModel.switchComponent(componentId, versionId);
-      } else if (scaffoldModel.scaffold.componentList.length) {
-        const component = scaffoldModel.scaffold.componentList[0];
+      } else if (workbenchModel.scaffold.componentList.length) {
+        const component = workbenchModel.scaffold.componentList[0];
         scaffoldModel.switchComponent(component.id, versionId);
       }
     })
@@ -58,7 +58,7 @@ const Scaffold: React.FC = () => {
           key: version.id,
           label: (<a
             onClick={() => {
-              scaffoldModel.switchComponent(workbenchModel.component.id, version.id, true);
+              scaffoldModel.switchComponent(workbenchModel.component.id, version.id);
             }}>
             {version.name}
             {workbenchModel.component.recentVersionId === version.id ? <strong>Active</strong> : null}

@@ -10,7 +10,7 @@ const ComponentList: React.FC = () => {
   const [scaffoldModel, scaffoldUpdateAction] = useModel(ScaffoldModel);
   const [workbenchModel] = useModel(WorkbenchModel);
 
-  const componentList = scaffoldModel.scaffold.componentList.map((component) => {
+  const componentList = workbenchModel.scaffold.componentList.map((component) => {
     return {
       label: component.name,
       key: component.id,
@@ -19,7 +19,7 @@ const ComponentList: React.FC = () => {
           return;
         }
 
-        scaffoldModel.switchComponent(component.id, component.recentVersionId, true);
+        scaffoldModel.switchComponent(component.id, component.recentVersionId);
       }
     };
   });
