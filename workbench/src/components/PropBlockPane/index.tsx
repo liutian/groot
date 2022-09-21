@@ -11,7 +11,7 @@ import NumberSlider from "@components/NumberSlider";
 import TextEditor from "@components/TextEditor";
 import { calcPropValueIdChain, stringify } from "@util/utils";
 import { useState } from "react";
-import { processPropItemValue } from "@grootio/core";
+import { findMatchPropValue, processPropItemValue } from "@grootio/core";
 import ComponentSelect from "@components/ComponentSelect";
 
 type PropType = {
@@ -37,7 +37,8 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
       }
 
       const valueIdChain = calcPropValueIdChain(propItem);
-      const propValue = propItem.valueList.find(value => value.abstractValueIdChain === valueIdChain);
+      const propValue = findMatchPropValue(propItem.valueList, valueIdChain, workbenchModel.prototypeMode, true);
+
       const value = processPropItemValue(propItem, propValue?.value);
       cacheMap.set(propItem, value);
 

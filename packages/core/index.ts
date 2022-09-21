@@ -1,5 +1,5 @@
-export { metadataFactory } from './metadataFactory';
+export * from './metadataFactory';
 
-export { propTreeFactory } from './propTreeFactory';
+export * from './propTreeFactory';
 
-export { processPropItemValue } from './utils';
+export * from './utils';

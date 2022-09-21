@@ -5,6 +5,7 @@ import { APIPath } from "api/API.path";
 import request from "@util/request";
 import PropHandleModel from "./PropHandleModel";
 import WorkbenchModel from "./WorkbenchModel";
+import { findMatchPropValue } from "@grootio/core";
 
 /**
  * 负责属性编辑器涉及到的接口调用，以及相关UI状态
@@ -334,7 +335,7 @@ export default class PropPersistModel {
 
   public updateValue = (propItem: PropItem, value: any, abstractValueId?: number) => {
     const abstractValueIdChain = calcPropValueIdChain(propItem, abstractValueId);
-    const propValue = propItem.valueList.find(value => value.abstractValueIdChain === abstractValueIdChain);
+    const propValue = findMatchPropValue(propItem.valueList, abstractValueIdChain, this.workbench.prototypeMode, false);
 
     let paramData = {} as PropValue;
 

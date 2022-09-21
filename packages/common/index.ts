@@ -166,7 +166,8 @@ export interface IPropValue {
   id: number,
   abstractValueIdChain?: string,
   value?: string,
-  propItemId?: number
+  propItemId?: number,
+  type: PropValueType
 }
 
 export interface IComponent {

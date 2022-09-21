@@ -1,6 +1,6 @@
 import { DeleteOutlined, DragOutlined, SettingOutlined } from "@ant-design/icons";
 import { PropBlockStructType, PropItemType } from "@grootio/common";
-import { processPropItemValue } from "@grootio/core";
+import { findMatchPropValue, processPropItemValue } from "@grootio/core";
 import PropHandleModel from "@model/PropHandleModel";
 import PropPersistModel from "@model/PropPersistModel";
 import WorkbenchModel from "@model/WorkbenchModel";
@@ -35,9 +35,7 @@ const PropBlockListStructPane: React.FC<PropsType> = ({ block: propBlock }) => {
         return hitValue;
       }
 
-      const propValue = propItem.valueList.find(value => {
-        return value.abstractValueIdChain.endsWith(`${abstractValueId}`)
-      });
+      const propValue = findMatchPropValue(propItem.valueList, `${abstractValueId}`, workbenchModel.prototypeMode, true);
       const value = processPropItemValue(propItem, propValue?.value);
       let valuesMap = cacheMap.get(propItem);
       if (!valuesMap) {
