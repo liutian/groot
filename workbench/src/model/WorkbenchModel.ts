@@ -92,7 +92,7 @@ export default class WorkbenchModel {
 
     this.iframeReadyPromise.then(() => {
       this.iframeManager.navigation(this.scaffold.playgroundPath, () => {
-        this.iframeManager.refreshComponent();
+        this.iframeManager.fullRefreshComponent();
       });
     });
 

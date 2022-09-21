@@ -342,7 +342,7 @@ export class DatabaseSeeder extends Seeder {
       propKey: 'type',
       type: PropItemType.Button_Group,
       defaultValue: '"primary"',
-      valueOptions: '[{"label": "主要","value": "primary"},{"label": "默认","value": "default"},{"label": "幽灵","value": "dash"},{"label": "链接","value": "link"}]',
+      valueOptions: '[{"label": "主要","value": "primary"},{"label": "默认","value": "default"},{"label": "幽灵","value": "dashed"},{"label": "链接","value": "link"}]',
       block: btnBlock,
       group: btnGroup,
       componentVersion: btnComponentVersion,

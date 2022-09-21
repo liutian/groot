@@ -81,7 +81,7 @@ const Scaffold: React.FC = () => {
     });
 
     (Object.getPrototypeOf(workbenchModel) as WorkbenchModel).renderToolBarAction = () => {
-      return (<Button type="link" disabled={workbenchModel.componentVersion.id === workbenchModel.component.recentVersionId} title="发布" icon={<SendOutlined />}
+      return (<Button type="link" title="发布" icon={<SendOutlined />}
         onClick={() => {
           Modal.confirm({
             title: '确定发布版本',

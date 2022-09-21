@@ -109,8 +109,8 @@ function refreshComponent() {
   notifyIframe(PostMessageType.Outer_Update_Component, metadata);
 }
 
-function fullRefreshComponent(instanceChildren: ComponentInstance[]) {
-  const rootMetadataId = workbenchModel.componentInstance.id;
+function fullRefreshComponent(instanceChildren: ComponentInstance[] = []) {
+  const rootMetadataId = workbenchModel.prototypeMode ? workbenchModel.component.id : workbenchModel.componentInstance.id;
   const rootMetadata = metadataFactory(workbenchModel.propHandle.rootGroupList, workbenchModel.component, rootMetadataId);
 
   const childrenMetadata = instanceChildren.map((instance) => {
