@@ -185,7 +185,8 @@ export class AssetService {
       application: bundle.application,
       asset,
       env,
-      status: DeployStatusType.Online
+      status: DeployStatusType.Online,
+      bundle
     });
 
     await em.flush();

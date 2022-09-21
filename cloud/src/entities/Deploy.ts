@@ -2,6 +2,7 @@ import { DeployStatusType, EnvType } from "@grootio/common";
 import { Entity, Enum, ManyToOne, Property } from "@mikro-orm/core";
 import { Application } from "./Application";
 import { BaseEntity } from "./BaseEntity";
+import { Bundle } from "./Bundle";
 import { Release } from "./Release";
 import { ReleaseAsset } from "./ReleaseAsset";
 
@@ -23,4 +24,11 @@ export class Deploy extends BaseEntity {
   @Property()
   status: DeployStatusType;
 
+  @ManyToOne()
+  bundle: Bundle;
+
+  //************************已下是接口入参或者查询返回需要定义的属性************************
+
+  @Property({ persist: false })
+  bundleId?: number
 }

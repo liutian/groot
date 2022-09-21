@@ -2,6 +2,7 @@ import { ModalStatus } from "@util/common";
 import { APIPath } from "api/API.path";
 import request from "@util/request";
 import WorkbenchModel from "../../model/WorkbenchModel";
+import { EnvType } from "@grootio/common";
 
 export default class EditorModel {
   static modelName = 'editor';
@@ -112,10 +113,21 @@ export default class EditorModel {
     })
   }
 
-  public assetDeploy = (formData: any) => {
+  public assetDeploy = (formData: Deploy) => {
     this.assetDeployModalStatus = ModalStatus.Submit;
     return request(APIPath.asset_deploy, { bundleId: this.deployBundleId, ...formData }).then(() => {
       this.assetDeployModalStatus = ModalStatus.None;
+
+      if (formData.env === EnvType.Dev) {
+        this.workbench.application.devReleaseId = this.workbench.application.release.id;
+      } else if (formData.env === EnvType.Qa) {
+        this.workbench.application.qaReleaseId = this.workbench.application.release.id;
+      } else if (formData.env === EnvType.Pl) {
+        this.workbench.application.plReleaseId = this.workbench.application.release.id;
+      } else if (formData.env === EnvType.Ol) {
+        this.workbench.application.onlineReleaseId = this.workbench.application.release.id;
+      }
+      this.workbench.application
     })
   }
 }

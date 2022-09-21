@@ -116,5 +116,8 @@ type Scaffold = {
   componentList: Component[]
 } & Omit<import("../../cloud/src/entities/Scaffold").Scaffold, ''>;
 
+type Deploy = {
+} & Omit<import("../../cloud/src/entities/Deploy").Deploy, ''>;
+
 
 

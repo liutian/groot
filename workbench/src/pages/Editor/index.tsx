@@ -20,7 +20,7 @@ import { ModalStatus } from "@util/common";
 
 const Editor: React.FC = () => {
   const [editorModel, editorUpdateAction] = useRegisterModel(EditorModel);
-  const [workbenchModel, workbenchUpdateAction] = useRegisterModel(WorkbenchModel);
+  const [workbenchModel] = useRegisterModel(WorkbenchModel);
   const [propHandleModel] = useRegisterModel(PropHandleModel);
   const [propPersistModel] = useRegisterModel(PropPersistModel);
 

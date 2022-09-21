@@ -22,7 +22,7 @@ export type APIStore = {
   [APIPath.release_detail]: [{ releaseId: number }, API.Response<Release>],
   [APIPath.componentInstance_detailId]: [Partial<ComponentInstance>, API.Response<number>],
   [APIPath.asset_build]: [{ releaseId: number }, API.Response<number>],
-  [APIPath.asset_deploy]: [{ bundleId: number, Dev: EnvType }, API.Response<number>],
+  [APIPath.asset_deploy]: [Deploy, API.Response<number>],
   [APIPath.group_update]: [PropGroup],
   [APIPath.group_add]: [PropGroup, API.Response<PropGroup>],
   [APIPath.block_update]: [PropBlock],
