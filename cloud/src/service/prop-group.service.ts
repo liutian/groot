@@ -19,7 +19,8 @@ export class PropGroupService {
     private commonService: CommonService,
   ) { }
 
-  async add(rawGroup: PropGroup, em = RequestContext.getEntityManager()) {
+  async add(rawGroup: PropGroup, parentEm?: EntityManager) {
+    let em = parentEm || RequestContext.getEntityManager();
 
     if (rawGroup.propKey && rawGroup.root) {
       const chainList = await this.commonService.calcAllPropKeyChain(rawGroup.componentId, rawGroup.componentVersionId, em);
@@ -51,20 +52,36 @@ export class PropGroupService {
       delete newGroup.propKey;
     }
 
-    await em.flush();
+    let result: { newGroup: PropGroup, extra?: { newBlock?: PropBlock } } = { newGroup };
 
-    if (newGroup.struct === PropGroupStructType.Flat) {
-      const rawBlock = {
-        name: '内嵌配置块',
-        groupId: newGroup.id,
-        component: newGroup.component,
-        componentVersion: newGroup.componentVersion,
-      } as PropBlock;
+    const parentCtx = parentEm ? em.getTransactionContext() : undefined;
+    await em.begin();
+    try {
+      await em.flush();
 
-      await this.propBlockService.add(rawBlock);
+      if (newGroup.struct === PropGroupStructType.Flat) {
+        const rawBlock = {
+          name: '内嵌配置块',
+          groupId: newGroup.id,
+          component: newGroup.component,
+          componentVersion: newGroup.componentVersion,
+        } as PropBlock;
+
+        const childResult = await this.propBlockService.add(rawBlock, em);
+        result.extra = childResult;
+      }
+
+      await em.commit();
+    } catch (e) {
+      await em.rollback();
+      throw e;
+    } finally {
+      if (parentCtx) {
+        em.setTransactionContext(parentCtx);
+      }
     }
 
-    return newGroup;
+    return result;
   }
 
   async remove(groupId: number, parentEm?: EntityManager) {

@@ -66,6 +66,8 @@ export class PropItemService {
         result.newItem.versionTraceId = result.newItem.id;
       }
 
+      await em.flush();
+
       if (result.newItem.type === PropItemType.Hierarchy || result.newItem.type === PropItemType.Flat) {
         let groupStruct = PropGroupStructType.Default;
         if (result.newItem.type === PropItemType.Flat) {
@@ -78,11 +80,11 @@ export class PropItemService {
           root: false,
           struct: groupStruct
         } as PropGroup;
-        result.childGroup = await this.propGroupService.add(rawGroup);
+        const { newGroup } = await this.propGroupService.add(rawGroup, em);
+        result.childGroup = newGroup;
         result.childGroup.parentItem = result.newItem;
         result.newItem.childGroup = result.childGroup;
         await em.flush();
-
       }
 
       await em.commit();

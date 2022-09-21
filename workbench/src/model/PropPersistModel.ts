@@ -133,12 +133,18 @@ export default class PropPersistModel {
         this.workbench.iframeManager.refreshComponent();
       })
     } else {
-      request(APIPath.group_add, newGroup).then(({ data }) => {
+      request(APIPath.group_add, newGroup).then(({ data: { newGroup, extra } }) => {
         // todo
-        data.expandBlockIdList = [];
-        data.propBlockList = [];
-        this.propHandle.rootGroupList.push(data);
-        this.propHandle.activeGroupId = data.id;
+        newGroup.expandBlockIdList = [];
+        newGroup.propBlockList = [];
+        this.propHandle.rootGroupList.push(newGroup);
+        this.propHandle.activeGroupId = newGroup.id;
+
+        if (extra?.newBlock) {
+          extra.newBlock.group = newGroup;
+          extra.newBlock.propItemList = [];
+          newGroup.propBlockList.push(extra.newBlock);
+        }
 
         this.settingModalSubmitting = false;
         this.currSettingPropGroup = undefined;

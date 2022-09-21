@@ -24,7 +24,17 @@ export type APIStore = {
   [APIPath.asset_build]: [{ releaseId: number }, API.Response<number>],
   [APIPath.asset_deploy]: [Deploy, API.Response<number>],
   [APIPath.group_update]: [PropGroup],
-  [APIPath.group_add]: [PropGroup, API.Response<PropGroup>],
+  [APIPath.group_add]: [PropGroup, API.Response<{
+    newGroup: PropGroup,
+    extra?: {
+      newBlock: PropBlock,
+      extra?: {
+        newItem: PropItem,
+        childGroup?: PropGroup,
+        propValue?: PropValue
+      }
+    }
+  }>],
   [APIPath.block_update]: [PropBlock],
   [APIPath.block_add]: [PropBlock, API.Response<{
     newBlock: PropBlock,
