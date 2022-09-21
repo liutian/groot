@@ -1,5 +1,5 @@
-import { IframeDebuggerConfig, iframeNamePrefix, Metadata, PostMessageType } from "@grootio/common";
-import { metadataFactory } from '@grootio/core';
+import { IframeDebuggerConfig, iframeNamePrefix, PostMessageType } from "@grootio/common";
+import { metadataFactory, propTreeFactory } from '@grootio/core';
 
 import WorkbenchModel from "./WorkbenchModel";
 
@@ -20,7 +20,7 @@ const instancePrototype = {
   refreshComponent,
   navigation,
   notifyIframe,
-  fullRefreshComponents
+  fullRefreshComponent
 }
 
 export type IframeManagerInstance = typeof instancePrototype;
@@ -102,16 +102,26 @@ function notifyIframe(type: PostMessageType, data?: any) {
 
 }
 
-function refreshComponent(component: Component) {
+function refreshComponent() {
   const metadataId = workbenchModel.prototypeMode ? workbenchModel.component.id : workbenchModel.componentInstance.id;
-  const metadata = metadataFactory(workbenchModel.propHandle.rootGroupList, component, metadataId);
+  const metadata = metadataFactory(workbenchModel.propHandle.rootGroupList, workbenchModel.component, metadataId);
   console.log('<=================== prop object build out =================>\n', metadata.propsObj);
   notifyIframe(PostMessageType.Outer_Update_Component, metadata);
 }
 
-function fullRefreshComponents(rootGroupList: PropGroup[], component: Component, metadataId: number, childrenMetadata: Metadata[] = []) {
-  const metadata = metadataFactory(rootGroupList, component, metadataId);
-  notifyIframe(PostMessageType.Outer_Full_Update_Components, { path: activePagePath, metadataList: [metadata, ...childrenMetadata] });
+function fullRefreshComponent(instanceChildren: ComponentInstance[]) {
+  const rootMetadataId = workbenchModel.componentInstance.id;
+  const rootMetadata = metadataFactory(workbenchModel.propHandle.rootGroupList, workbenchModel.component, rootMetadataId);
+
+  const childrenMetadata = instanceChildren.map((instance) => {
+    const { groupList, blockList, itemList } = instance.componentVersion;
+    const valueList = instance.valueList;
+    const propTree = propTreeFactory(groupList, blockList, itemList, valueList) as PropGroup[];
+    const metadata = metadataFactory(propTree, instance.component, instance.id);
+    return metadata;
+  })
+
+  notifyIframe(PostMessageType.Outer_Full_Update_Components, { path: activePagePath, metadataList: [rootMetadata, ...childrenMetadata] });
 }
 
 function buildApplicationData(name: string, playgroundPath: string) {

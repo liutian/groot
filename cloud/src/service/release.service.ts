@@ -100,20 +100,16 @@ export class ReleaseService {
       throw e;
     }
 
-    const newRelease = await em.findOne(Release, release.id, {
-      populate: ['instanceList'],
-      populateWhere: { instanceList: { path: { $ne: null } } }
-    });
+    const newRelease = await em.findOne(Release, release.id);
+    newRelease.instanceList = await em.find(ComponentInstance, { release: newRelease, path: { $ne: null } });
 
     return newRelease;
   }
 
   async detail(releaseId: number) {
     const em = RequestContext.getEntityManager();
-    const release = await em.findOne(Release, releaseId, {
-      populate: ['instanceList'],
-      populateWhere: { instanceList: { path: { $ne: null } } }
-    });
+    const release = await em.findOne(Release, releaseId);
+    release.instanceList = await em.find(ComponentInstance, { release, path: { $ne: null } });
 
     return release;
   }

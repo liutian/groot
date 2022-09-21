@@ -40,10 +40,10 @@ const Editor: React.FC = () => {
     const instanceId = +searchParams.get('page');
     editorModel.fetchApplication(applicationId, releaseId).then(() => {
       if (instanceId) {
-        editorModel.fetchPage(instanceId, false);
+        editorModel.fetchPage(instanceId);
       } else if (workbenchModel.application.release.instanceList.length) {
         const instance = workbenchModel.application.release.instanceList[0];
-        editorModel.fetchPage(instance.id, false);
+        editorModel.fetchPage(instance.id);
       }
     })
   }, []);
@@ -90,7 +90,7 @@ const Editor: React.FC = () => {
           {
             editorModel.breadcrumbList.map((item) => {
               return (<Breadcrumb.Item key={item.id}
-                onClick={() => editorModel.switchComponentInstance(item.id, false, false)}>
+                onClick={() => editorModel.switchComponentInstance(item.id, false)}>
                 {item.name}
               </Breadcrumb.Item>)
             })
@@ -99,7 +99,7 @@ const Editor: React.FC = () => {
       }
 
       (Object.getPrototypeOf(workbenchModel) as WorkbenchModel).switchComponentInstance = (instanceId) => {
-        editorModel.switchComponentInstance(instanceId, false, true);
+        editorModel.switchComponentInstance(instanceId, true);
       }
     }, false)
   }

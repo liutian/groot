@@ -1,4 +1,3 @@
-import { ApplicationData, Metadata } from "@grootio/common";
 import { IframeManagerInstance, launchIframeManager } from "@model/iframeManager";
 import { needRewrite } from "@util/common";
 import { ReactNode } from "react";
@@ -90,7 +89,7 @@ export default class WorkbenchModel {
 
     this.iframeReadyPromise.then(() => {
       this.iframeManager.navigation(this.scaffold.playgroundPath, () => {
-        this.iframeManager.fullRefreshComponents(this.propHandle.rootGroupList, this.component, this.component.id);
+        this.iframeManager.refreshComponent();
       });
     });
   }
@@ -100,24 +99,30 @@ export default class WorkbenchModel {
     this.application = app;
   }
 
-  public startPage(rootInstance: ComponentInstance, childrenMetadata: Metadata[], changeHistory = true) {
+  public startPage(rootInstance: ComponentInstance, instanceChildren: ComponentInstance[]) {
     this.componentInstance = rootInstance;
     this.component = rootInstance.component;
     this.componentVersion = rootInstance.componentVersion;
     this.currActiveTab = 'props';
 
     const { groupList, blockList, itemList, valueList } = rootInstance;
-    const rootGroupList = this.propHandle.buildPropTree(groupList, blockList, itemList, valueList);
-
-    if (changeHistory) {
-      window.history.pushState(null, '', `?app=${this.application.id}&release=${this.application.release.id}&page=${rootInstance.id}`);
-    }
+    this.propHandle.buildPropTree(groupList, blockList, itemList, valueList);
 
     this.iframeReadyPromise.then(() => {
       this.iframeManager.navigation(this.application.playgroundPath, () => {
-        this.iframeManager.fullRefreshComponents(rootGroupList, this.component, this.componentInstance.id, childrenMetadata);
+        this.iframeManager.fullRefreshComponent(instanceChildren);
       });
     })
+
+    window.history.pushState(null, '', `?app=${this.application.id}&release=${this.application.release.id}&page=${rootInstance.id}`);
+
+  }
+
+  public startInstance(instance: ComponentInstance) {
+    this.componentInstance = instance;
+    this.component = instance.component;
+    this.componentVersion = instance.componentVersion;
+    this.currActiveTab = 'props';
   }
 
   public setPropPathChain(itemId?: number) {

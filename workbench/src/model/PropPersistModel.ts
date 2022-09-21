@@ -119,7 +119,7 @@ export default class PropPersistModel {
   public updateOrAddPropGroup = (group: PropGroup) => {
     const newGroup = Object.assign(this.currSettingPropGroup, group);
     newGroup.componentId = this.workbench.component.id;
-    newGroup.componentVersionId = this.workbench.component.version.id;
+    newGroup.componentVersionId = this.workbench.componentVersion.id;
 
     this.settingModalSubmitting = true;
     if (newGroup.id) {
@@ -130,7 +130,7 @@ export default class PropPersistModel {
 
         this.settingModalSubmitting = false;
         this.currSettingPropGroup = undefined;
-        this.workbench.iframeManager.refreshComponent(this.workbench.component);
+        this.workbench.iframeManager.refreshComponent();
       })
     } else {
       request(APIPath.group_add, newGroup).then(({ data }) => {
@@ -142,7 +142,7 @@ export default class PropPersistModel {
 
         this.settingModalSubmitting = false;
         this.currSettingPropGroup = undefined;
-        this.workbench.iframeManager.refreshComponent(this.workbench.component);
+        this.workbench.iframeManager.refreshComponent();
       })
     }
   }
@@ -159,7 +159,7 @@ export default class PropPersistModel {
         assignBaseType(group.propBlockList[blockIndex], newBlock);
         this.settingModalSubmitting = false;
         this.currSettingPropBlock = undefined;
-        this.workbench.iframeManager.refreshComponent(this.workbench.component);
+        this.workbench.iframeManager.refreshComponent();
       });
     } else {
       request(APIPath.block_add, newBlock).then(({ data: { newBlock, extra } }) => {
@@ -181,7 +181,7 @@ export default class PropPersistModel {
 
         this.settingModalSubmitting = false;
         this.currSettingPropBlock = undefined;
-        this.workbench.iframeManager.refreshComponent(this.workbench.component);
+        this.workbench.iframeManager.refreshComponent();
       })
 
     }
@@ -207,7 +207,7 @@ export default class PropPersistModel {
 
         this.settingModalSubmitting = false;
         this.currSettingPropItem = undefined;
-        this.workbench.iframeManager.refreshComponent(this.workbench.component);
+        this.workbench.iframeManager.refreshComponent();
       });
     } else {
       request(APIPath.item_add, newItem).then(({ data: { newItem, childGroup } }) => {
@@ -227,7 +227,7 @@ export default class PropPersistModel {
 
         this.settingModalSubmitting = false;
         this.currSettingPropItem = undefined;
-        this.workbench.iframeManager.refreshComponent(this.workbench.component);
+        this.workbench.iframeManager.refreshComponent();
       })
     }
   }
@@ -241,7 +241,7 @@ export default class PropPersistModel {
       if (this.propHandle.activeGroupId === groupId) {
         this.propHandle.activeGroupId = this.propHandle.rootGroupList[0]?.id;
       }
-      this.workbench.iframeManager.refreshComponent(this.workbench.component);
+      this.workbench.iframeManager.refreshComponent();
     })
   }
 
@@ -249,7 +249,7 @@ export default class PropPersistModel {
     request(APIPath.block_remove, { blockId }).then(() => {
       let blockIndex = group.propBlockList.findIndex(b => b.id === blockId);
       group.propBlockList.splice(blockIndex, 1);
-      this.workbench.iframeManager.refreshComponent(this.workbench.component);
+      this.workbench.iframeManager.refreshComponent();
     })
   }
 
@@ -257,7 +257,7 @@ export default class PropPersistModel {
     request(APIPath.item_remove, { itemId }).then(() => {
       let itemIndex = block.propItemList.findIndex(item => item.id === itemId);
       block.propItemList.splice(itemIndex, 1);
-      this.workbench.iframeManager.refreshComponent(this.workbench.component);
+      this.workbench.iframeManager.refreshComponent();
     })
   }
 
@@ -300,7 +300,7 @@ export default class PropPersistModel {
     const paramsData = {
       propItemId: propItem.id,
       abstractValueIdChain,
-      componentVersionId: this.workbench.component.version.id,
+      componentVersionId: this.workbench.componentVersion.id,
       componentId: this.workbench.component.id,
       scaffoldId: this.workbench.component.scaffoldId
     } as PropValue;
@@ -315,14 +315,14 @@ export default class PropPersistModel {
 
     request(APIPath.value_abstractType_add, paramsData).then(({ data }) => {
       propItem.valueList.push(data);
-      this.workbench.iframeManager.refreshComponent(this.workbench.component);
+      this.workbench.iframeManager.refreshComponent();
     })
   }
 
   public removeBlockListStructChildItem = (propValueId: number, propItem: PropItem) => {
     request(APIPath.value_abstractType_remove, { propValueId }).then(() => {
       propItem.valueList = propItem.valueList.filter(v => v.id !== propValueId);
-      this.workbench.iframeManager.refreshComponent(this.workbench.component);
+      this.workbench.iframeManager.refreshComponent();
     })
   }
 
@@ -366,7 +366,7 @@ export default class PropPersistModel {
         propItem.defaultValue = valueStr;
       }
 
-      this.workbench.iframeManager.refreshComponent(this.workbench.component);
+      this.workbench.iframeManager.refreshComponent();
     });
   }
 }
