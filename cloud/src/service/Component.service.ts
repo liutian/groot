@@ -21,7 +21,7 @@ export class ComponentService {
    * @param versionId 组件版本
    * @returns 组件信息
    */
-  async getComponentPrototype(id: number, versionId: number) {
+  async getComponentPrototype(id: number, versionId?: number) {
     const em = RequestContext.getEntityManager();
     const component = await em.findOne(Component, id);
 
@@ -31,14 +31,14 @@ export class ComponentService {
 
     component.versionList = await em.find(ComponentVersion, { component });
 
-    const version = await em.findOne(ComponentVersion, versionId);
+    const version = await em.findOne(ComponentVersion, versionId || component.recentVersion.id);
     LogicException.assertNotFound(version, 'ComponentVersion', versionId);
-    component.version = wrap(version).toObject() as any;
+    component.componentVersion = wrap(version).toObject() as any;
 
-    component.groupList = await em.find(PropGroup, { component: id, componentVersion: versionId });
-    component.blockList = await em.find(PropBlock, { component: id, componentVersion: versionId });
-    component.itemList = await em.find(PropItem, { component: id, componentVersion: versionId });
-    component.valueList = await em.find(PropValue, { component: id, componentVersion: versionId, type: PropValueType.Prototype });
+    component.groupList = await em.find(PropGroup, { component: id, componentVersion: version });
+    component.blockList = await em.find(PropBlock, { component: id, componentVersion: version });
+    component.itemList = await em.find(PropItem, { component: id, componentVersion: version });
+    component.valueList = await em.find(PropValue, { component: id, componentVersion: version, type: PropValueType.Prototype });
 
     return component;
   }

@@ -51,10 +51,7 @@ export class Component extends BaseEntity {
   versionList: ComponentVersion[];
 
   @Property({ persist: false })
-  version: ComponentVersion;
-
-  @Property({ persist: false })
-  instance: ComponentInstance;
+  componentVersion: ComponentVersion;
 
   @Property({ persist: false })
   release: Release;

@@ -64,7 +64,7 @@ export default class EditorModel {
     });
   }
 
-  public fetchApplication = (applicationId: number, releaseId: number) => {
+  public fetchApplication = (applicationId: number, releaseId?: number) => {
     return request(APIPath.application_detail, { applicationId, releaseId }).then(({ data }) => {
       this.workbench.startApplication(data);
     }).catch((e) => {

@@ -31,9 +31,10 @@ const Scaffold: React.FC = () => {
   })
 
   useEffect(() => {
-    const componentId = +searchParams.get('component') || undefined;
-    const versionId = +searchParams.get('version') || undefined;
-    const scaffoldId = +searchParams.get('scaffold') || undefined;
+    const componentId = +searchParams.get('component');
+    const versionId = +searchParams.get('version');
+    const scaffoldId = +searchParams.get('scaffold');
+
     scaffoldModel.fetchScaffold(scaffoldId).then(() => {
       if (componentId) {
         scaffoldModel.switchComponent(componentId, versionId);
@@ -68,7 +69,7 @@ const Scaffold: React.FC = () => {
       return (<Dropdown placement="topLeft" overlay={<Menu items={versionListMenu} />}>
         <span>
           <BranchesOutlined title="版本" />
-          <span>{workbenchModel.component?.version.name}</span>
+          <span>{workbenchModel.componentVersion.name}</span>
         </span>
       </Dropdown>)
     });
@@ -80,13 +81,13 @@ const Scaffold: React.FC = () => {
     });
 
     (Object.getPrototypeOf(workbenchModel) as WorkbenchModel).renderToolBarAction = () => {
-      return (<Button type="link" title="发布" icon={<SendOutlined />}
+      return (<Button type="link" disabled={workbenchModel.componentVersion.id === workbenchModel.component.recentVersionId} title="发布" icon={<SendOutlined />}
         onClick={() => {
           Modal.confirm({
             title: '确定发布版本',
             content: '发布之后版本无法更新',
             onOk: () => {
-              scaffoldModel.publish(workbenchModel.component.id, workbenchModel.component.version.id)
+              scaffoldModel.publish(workbenchModel.component.id, workbenchModel.componentVersion.id)
             }
           })
         }}

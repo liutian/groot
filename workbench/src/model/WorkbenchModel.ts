@@ -16,6 +16,7 @@ export default class WorkbenchModel {
   public prototypeMode = false;
   public scaffold: Scaffold;
   public component: Component;
+  public componentVersion: ComponentVersion;
   public application: Application;
   public componentInstance: ComponentInstance;
 
@@ -80,6 +81,7 @@ export default class WorkbenchModel {
   public startScaffold(component: Component, scaffold: Scaffold) {
     this.prototypeMode = true;
     this.component = component;
+    this.componentVersion = component.componentVersion;
     this.scaffold = scaffold;
     this.currActiveTab = 'props';
 
@@ -101,6 +103,7 @@ export default class WorkbenchModel {
   public startPage(rootInstance: ComponentInstance, childrenMetadata: Metadata[], changeHistory = true) {
     this.componentInstance = rootInstance;
     this.component = rootInstance.component;
+    this.componentVersion = rootInstance.componentVersion;
     this.currActiveTab = 'props';
 
     const { groupList, blockList, itemList, valueList } = rootInstance;

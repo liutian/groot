@@ -342,7 +342,7 @@ export default class PropPersistModel {
       paramData.abstractValueIdChain = abstractValueIdChain;
       paramData.propItemId = propItem.id;
       paramData.componentId = this.workbench.component.id;
-      paramData.componentVersionId = this.workbench.component.version.id;
+      paramData.componentVersionId = this.workbench.componentVersion.id;
       paramData.scaffoldId = this.workbench.component.scaffoldId;
       paramData.value = valueStr;
 

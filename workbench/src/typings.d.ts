@@ -97,8 +97,7 @@ type PropValue = {
 } & Omit<import("../../cloud/src/entities/PropValue").PropValue, ''>;
 
 type Component = {
-  version: ComponentVersion,
-  instance: ComponentInstance,
+  componentVersion: ComponentVersion,
   versionList: ComponentVersion[],
   groupList: PropGroup[],
   blockList: PropBlock[],
@@ -107,7 +106,7 @@ type Component = {
   recentVersionId: number,
 
   componentId: number
-} & Omit<import("../../cloud/src/entities/Component").Component, 'instance' | 'version' | 'groupList' | 'blockList' | 'itemList' | 'valueList' | 'versionList'>;
+} & Omit<import("../../cloud/src/entities/Component").Component, 'componentVersion' | 'groupList' | 'blockList' | 'itemList' | 'valueList' | 'versionList'>;
 
 type Application = {
   release: Release
