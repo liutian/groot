@@ -33,7 +33,8 @@ const PageAddModal: React.FC = () => {
   }
 
   return <Modal visible={editorModel.pageAddModalStatus !== ModalStatus.None} mask={false} title="新增页面"
-    confirmLoading={editorModel.pageAddModalStatus === ModalStatus.Submit} onOk={handleOk} onCancel={handleCancel}>
+    confirmLoading={editorModel.pageAddModalStatus === ModalStatus.Submit}
+    onOk={handleOk} onCancel={handleCancel} okText="新增">
     <Form form={form} colon={false} labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
       <Form.Item label="名称" name="name" rules={[{ required: true }]}>
         <Input />

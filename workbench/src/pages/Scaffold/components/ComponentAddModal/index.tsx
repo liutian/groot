@@ -20,9 +20,10 @@ const ComponentAddModal: React.FC = () => {
     })
   }
 
-  return <Modal visible={scaffoldModel.componentAddModalStatus !== ModalStatus.None} mask={false} title="新增组件"
-    confirmLoading={scaffoldModel.componentAddModalStatus === ModalStatus.Submit} onOk={handleOk} onCancel={handleCancel}>
-    <Form form={form} colon={false} labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
+  return <Modal visible={scaffoldModel.componentAddModalStatus !== ModalStatus.None} mask={false} title="创建组件"
+    confirmLoading={scaffoldModel.componentAddModalStatus === ModalStatus.Submit}
+    onOk={handleOk} onCancel={handleCancel} okText="创建">
+    <Form form={form} colon={false} labelCol={{ span: 6 }} wrapperCol={{ span: 18 }} >
       <Form.Item label="名称" name="name" rules={[{ required: true }]}>
         <Input />
       </Form.Item>

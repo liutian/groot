@@ -11,7 +11,6 @@ const PropBlockSetting: React.FC = () => {
 
   const handleOk = async () => {
     const blockFormData = await form.validateFields();
-    form.resetFields();
     propPersistModel.updateOrAddPropBlock(blockFormData);
   }
 
@@ -32,8 +31,9 @@ const PropBlockSetting: React.FC = () => {
     }
   }, [propPersistModel.currSettingPropBlock]);
 
-  return (<Modal mask={false} width={400} title="配置块" confirmLoading={propPersistModel.settingModalSubmitting}
-    visible={!!propPersistModel.currSettingPropBlock} onOk={handleOk} onCancel={handleCancel}>
+  return (<Modal mask={false} width={400} title={propPersistModel.currSettingPropBlock?.id ? '更新配置块' : '创建配置块'}
+    confirmLoading={propPersistModel.settingModalSubmitting} visible={!!propPersistModel.currSettingPropBlock}
+    okText={propPersistModel.currSettingPropBlock?.id ? '更新' : '创建'} onOk={handleOk} onCancel={handleCancel}>
     {
       !!propPersistModel.currSettingPropBlock && (
 

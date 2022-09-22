@@ -23,7 +23,8 @@ const ReleaseAddModal: React.FC = () => {
   }
 
   return <Modal visible={editorModel.releaseAddModalStatus !== ModalStatus.None} mask={false} title="新增迭代"
-    confirmLoading={editorModel.releaseAddModalStatus === ModalStatus.Submit} onOk={handleOk} onCancel={handleCancel}>
+    confirmLoading={editorModel.releaseAddModalStatus === ModalStatus.Submit}
+    onOk={handleOk} onCancel={handleCancel} okText="新增">
     <Form form={form} colon={false} labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
       <Form.Item label="名称" name="name" rules={[{ required: true }]}>
         <Input />

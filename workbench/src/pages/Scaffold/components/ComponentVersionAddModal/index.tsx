@@ -22,8 +22,9 @@ const ComponentVersionAddModal: React.FC = () => {
     })
   }
 
-  return <Modal visible={scaffoldModel.componentVersionAddModalStatus !== ModalStatus.None} mask={false} title="新增版本"
-    confirmLoading={scaffoldModel.componentVersionAddModalStatus === ModalStatus.Submit} onOk={handleOk} onCancel={handleCancel}>
+  return <Modal visible={scaffoldModel.componentVersionAddModalStatus !== ModalStatus.None} mask={false} title="创建版本"
+    confirmLoading={scaffoldModel.componentVersionAddModalStatus === ModalStatus.Submit}
+    onOk={handleOk} onCancel={handleCancel} okText="创建">
     <Form form={form} colon={false} labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
       <Form.Item label="名称" name="name" rules={[{ required: true }]}>
         <Input />

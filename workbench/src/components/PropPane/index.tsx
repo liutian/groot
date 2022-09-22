@@ -32,7 +32,7 @@ function PropPane() {
       const nameSuffix = autoIncrementForName(propHandleModel.rootGroupList.map(g => g.name));
       // 显示分组弹框
       propPersistModel.currSettingPropGroup = {
-        name: `分组${nameSuffix}`,
+        name: `配置组${nameSuffix}`,
       } as PropGroup;
     })
   }

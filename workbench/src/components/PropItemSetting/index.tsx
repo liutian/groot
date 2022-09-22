@@ -13,7 +13,6 @@ const PropItemSetting: React.FC = () => {
 
   const handleOk = async () => {
     const itemFormData = await form.validateFields();
-    form.resetFields();
     propPersistModel.updateOrAddPropItem(itemFormData);
   }
 
@@ -78,8 +77,9 @@ const PropItemSetting: React.FC = () => {
     )
   }
 
-  return (<Modal mask={false} destroyOnClose width={600} title="配置项" confirmLoading={propPersistModel.settingModalSubmitting}
-    visible={!!propPersistModel.currSettingPropItem} onOk={handleOk} onCancel={handleCancel}>
+  return (<Modal mask={false} destroyOnClose width={600} title={propPersistModel.currSettingPropItem?.id ? '更新配置项' : '创建配置项'}
+    confirmLoading={propPersistModel.settingModalSubmitting} visible={!!propPersistModel.currSettingPropItem}
+    onOk={handleOk} onCancel={handleCancel} okText={propPersistModel.currSettingPropItem?.id ? '更新' : '创建'}>
     {
       !!propPersistModel.currSettingPropItem && (
 

@@ -6,15 +6,21 @@ import EditorModel from "pages/Editor/EditorModel";
 const BuildModal: React.FC = () => {
   const [editorModel, updateEditorModel] = useModel(EditorModel);
 
+  const onCancel = () => {
+    updateEditorModel(() => {
+      editorModel.assetBuildModalStatus = ModalStatus.None
+    })
+  }
+
   let actions = [
     <Button key="primary" onClick={() => editorModel.assetBuild()} type="primary" loading={editorModel.assetBuildStatus === 'building'}>构建</Button>,
-    <Button key="cancel">取消</Button>,
+    <Button key="cancel" onClick={onCancel}>取消</Button>,
   ]
 
   if (editorModel.assetBuildStatus === 'approve') {
     actions = [
       <Button key="primary" type="primary">查看审批</Button>,
-      <Button key="cancel">取消</Button>,
+      <Button key="cancel" onClick={onCancel}>取消</Button>,
     ]
   } else if (editorModel.assetBuildStatus === 'buildOver') {
     actions = [
@@ -25,11 +31,11 @@ const BuildModal: React.FC = () => {
           editorModel.assetBuildStatus = 'init';
         })
       }} type="primary">前往部署</Button>,
-      <Button key="cancel">取消</Button>,
+      <Button key="cancel" onClick={onCancel}>取消</Button>,
     ]
   }
 
-  return <Modal visible={editorModel.assetBuildModalStatus !== ModalStatus.None} title="构建" footer={[actions]}>
+  return <Modal visible={editorModel.assetBuildModalStatus !== ModalStatus.None} onCancel={onCancel} title="构建" footer={[actions]}>
     {
       editorModel.assetBuildStatus === 'init' && (
         <div>

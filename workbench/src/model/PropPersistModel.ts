@@ -125,7 +125,6 @@ export default class PropPersistModel {
     if (newGroup.id) {
       request(APIPath.group_update, newGroup).then(() => {
         let groupIndex = this.propHandle.rootGroupList.findIndex(g => g.id === newGroup.id);
-        // this.propHandle.rootGroupList.splice(groupIndex, 1, newGroup);
         assignBaseType(this.propHandle.rootGroupList[groupIndex], newGroup);
 
         this.settingModalSubmitting = false;
@@ -140,6 +139,7 @@ export default class PropPersistModel {
         this.propHandle.rootGroupList.push(newGroup);
         this.propHandle.activeGroupId = newGroup.id;
 
+        // 补充新创建配置块相关属性
         if (extra?.newBlock) {
           extra.newBlock.group = newGroup;
           extra.newBlock.propItemList = [];
@@ -161,7 +161,6 @@ export default class PropPersistModel {
     if (newBlock.id) {
       request(APIPath.block_update, newBlock).then(() => {
         let blockIndex = group.propBlockList.findIndex(b => b.id === newBlock.id);
-        // group.propBlockList.splice(blockIndex, 1, newBlock);
         assignBaseType(group.propBlockList[blockIndex], newBlock);
         this.settingModalSubmitting = false;
         this.currSettingPropBlock = undefined;
@@ -175,14 +174,14 @@ export default class PropPersistModel {
         group.expandBlockIdList.push(newBlock.id);
 
         if (extra?.childGroup) {
-          extra.childGroup.expandBlockIdList = [];
-          extra.childGroup.propBlockList = [];
+          newBlock.propItemList = [extra.newItem];
           extra.newItem.childGroup = extra.childGroup;
           extra.newItem.valueList = [];
-
-          newBlock.propItemList = [extra.newItem];
           extra.newItem.block = newBlock;
+
           extra.childGroup.parentItem = extra.newItem;
+          extra.childGroup.expandBlockIdList = [];
+          extra.childGroup.propBlockList = [];
         }
 
         this.settingModalSubmitting = false;
@@ -241,7 +240,6 @@ export default class PropPersistModel {
   public delGroup = (groupId: number) => {
     request(APIPath.group_remove, { groupId }).then(() => {
       const index = this.propHandle.rootGroupList.findIndex(g => g.id === groupId);
-
       this.propHandle.rootGroupList.splice(index, 1);
 
       if (this.propHandle.activeGroupId === groupId) {
