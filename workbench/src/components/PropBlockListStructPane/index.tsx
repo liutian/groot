@@ -1,6 +1,6 @@
 import { DeleteOutlined, DragOutlined, SettingOutlined } from "@ant-design/icons";
-import { PropBlockStructType, PropItemType } from "@grootio/common";
-import { findMatchPropValue, processPropItemValue } from "@grootio/core";
+import { PropBlockStructType, PropItemType, PropValueType } from "@grootio/common";
+import { processPropItemValue } from "@grootio/core";
 import PropHandleModel from "@model/PropHandleModel";
 import PropPersistModel from "@model/PropPersistModel";
 import WorkbenchModel from "@model/WorkbenchModel";
@@ -35,7 +35,11 @@ const PropBlockListStructPane: React.FC<PropsType> = ({ block: propBlock }) => {
         return hitValue;
       }
 
-      const propValue = findMatchPropValue(propItem.valueList, `${abstractValueId}`, workbenchModel.prototypeMode, true);
+      const propValue = propItem.valueList.filter(value => {
+        return value.type === (workbenchModel.prototypeMode ? PropValueType.Prototype : PropValueType.Instance)
+      }).find(value => {
+        return value.abstractValueIdChain.endsWith(`${abstractValueId}`);
+      })
       const value = processPropItemValue(propItem, propValue?.value);
       let valuesMap = cacheMap.get(propItem);
       if (!valuesMap) {
@@ -100,12 +104,21 @@ const PropBlockListStructPane: React.FC<PropsType> = ({ block: propBlock }) => {
 
   if (dataSourceEditable) {
     let valueList = childPropItem.valueList;
-    if (childPropItem.block.group.parentItem?.tempAbstractValueId) {
-      const tempAbstractValueId = childPropItem.block.group.parentItem?.tempAbstractValueId;
+    const tempAbstractValueId = childPropItem.block.group.parentItem?.tempAbstractValueId;
+    if (tempAbstractValueId) {
       const regex = new RegExp(`^${tempAbstractValueId}$|,${tempAbstractValueId}$`);
       valueList = childPropItem.valueList.filter(value => {
         return regex.test(value.abstractValueIdChain);
       });
+    }
+
+    const prototypeValueList = valueList.filter(value => value.type === PropValueType.Prototype);
+    const instanceValueList = valueList.filter(value => value.type === PropValueType.Instance);
+
+    if (!workbenchModel.prototypeMode && instanceValueList.length) {
+      valueList = instanceValueList;
+    } else {
+      valueList = prototypeValueList;
     }
 
     valueList.forEach((abstractValue: PropValue) => {

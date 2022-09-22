@@ -6,12 +6,12 @@ import styles from './index.module.less';
 import WorkbenchModel from "@model/WorkbenchModel";
 import PropPersistModel from "@model/PropPersistModel";
 import PropHandleModel from "@model/PropHandleModel";
-import { PropItemType } from "@grootio/common";
+import { PropItemType, PropValueType } from "@grootio/common";
 import NumberSlider from "@components/NumberSlider";
 import TextEditor from "@components/TextEditor";
 import { calcPropValueIdChain, stringify } from "@util/utils";
 import { useState } from "react";
-import { findMatchPropValue, processPropItemValue } from "@grootio/core";
+import { processPropItemValue } from "@grootio/core";
 import ComponentSelect from "@components/ComponentSelect";
 
 type PropType = {
@@ -37,7 +37,11 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
       }
 
       const valueIdChain = calcPropValueIdChain(propItem);
-      const propValue = findMatchPropValue(propItem.valueList, valueIdChain, workbenchModel.prototypeMode, true);
+      const propValue = propItem.valueList.filter(value => {
+        return value.type === (workbenchModel.prototypeMode ? PropValueType.Prototype : PropValueType.Instance)
+      }).find(value => {
+        return value.abstractValueIdChain === valueIdChain
+      })
 
       const value = processPropItemValue(propItem, propValue?.value);
       cacheMap.set(propItem, value);
