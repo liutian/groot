@@ -38,14 +38,10 @@ export class WorkbenchController {
     private readonly assetService: AssetService
   ) { }
 
-  @Get('/component-instance/page-detail/:instanceId')
-  async componentInstanceDetail(@Param('instanceId') instanceId: number) {
-    return this.componentInstanceService.getPageDetail(instanceId);
-  }
-
-  @Get('/component-prototype/detail/:componentId')
-  async componentPrototypeDetail(@Param('componentId') componentId: number, @Query('versionId') versionId: number) {
-    return this.componentService.getComponentPrototype(componentId, versionId);
+  // checked
+  @Post('/component/add')
+  async componentAdd(@Body() component: Component) {
+    return await this.componentService.add(component);
   }
 
   @Post('/group/add')
@@ -53,14 +49,44 @@ export class WorkbenchController {
     return this.groupService.add(group);
   }
 
+  @Post('/group/update')
+  async groupUpdate(@Body() group: PropGroup) {
+    await this.groupService.update(group);
+  }
+
   @Get('/group/remove/:groupId')
   async groupRemove(@Param('groupId') groupId: number) {
     await this.groupService.remove(groupId);
   }
 
-  @Post('/group/update')
-  async groupUpdate(@Body() group: PropGroup) {
-    await this.groupService.update(group);
+  @Post('/block/add')
+  async blockAdd(@Body() block: PropBlock) {
+    return this.blockService.add(block);
+  }
+
+  @Post('/block/update')
+  async blockUpdate(@Body() block: PropBlock) {
+    await this.blockService.update(block);
+  }
+
+  @Get('/block/remove/:blockId')
+  async blockRemove(@Param('blockId') blockId: number) {
+    await this.blockService.remove(blockId);
+  }
+
+  @Post('/item/add')
+  async itemAdd(@Body() item: PropItem) {
+    return this.propItemService.add(item);
+  }
+
+  @Post('/item/update')
+  async itemUpdate(@Body() item: PropItem) {
+    return await this.propItemService.update(item);
+  }
+
+  @Get('/item/remove/:itemId')
+  async itemRemove(@Param('itemId') itemId: number) {
+    return await this.propItemService.remove(itemId);
   }
 
   @Post('/move/position')
@@ -73,46 +99,6 @@ export class WorkbenchController {
     } else if (data.type === 'item') {
       return await this.propItemService.movePosition(data.originId, data.targetId);
     }
-  }
-
-  @Post('/block/add')
-  async blockAdd(@Body() block: PropBlock) {
-    return this.blockService.add(block);
-  }
-
-  @Get('/block/remove/:blockId')
-  async blockRemove(@Param('blockId') blockId: number) {
-    await this.blockService.remove(blockId);
-  }
-
-  @Post('/block/update')
-  async blockUpdate(@Body() block: PropBlock) {
-    await this.blockService.update(block);
-  }
-
-  @Post('/item/add')
-  async itemAdd(@Body() item: PropItem) {
-    return this.propItemService.add(item);
-  }
-
-  @Get('/item/remove/:itemId')
-  async itemRemove(@Param('itemId') itemId: number) {
-    return await this.propItemService.remove(itemId);
-  }
-
-  @Post('/item/update')
-  async itemUpdate(@Body() item: PropItem) {
-    return await this.propItemService.update(item);
-  }
-
-  @Get('/application/detail/:applicationId')
-  async applicationDetail(@Param('applicationId') applicationId: number, @Query('releaseId') releaseId: number) {
-    return this.applicationService.getDetail(applicationId, releaseId);
-  }
-
-  @Get('/scaffold/detail/:scaffoldId')
-  async scaffoldDetail(@Param('scaffoldId') scaffoldId: number) {
-    return this.scaffoldService.getDetail(scaffoldId);
   }
 
   @Post('/block/list-struct-primary-item/save')
@@ -135,32 +121,54 @@ export class WorkbenchController {
     return await this.propValueService.update(rawPropValue);
   }
 
-  @Post('/component/add')
-  async componentAdd(@Body() component: Component) {
-    return await this.componentService.add(component);
-  }
-
-  @Post('/component-version/add')
-  async componentVersionAdd(@Body() componentVersion: ComponentVersion) {
-    return await this.componentVersionService.add(componentVersion);
-  }
-
+  // checked
   @Post('/component-instance/add')
   async componentInstanceAdd(@Body() componentInstance: ComponentInstance) {
     return await this.componentInstanceService.add(componentInstance);
   }
 
+  // checked
   @Get('/component/list')
   async componentList(@Query('container') container: string) {
     return await this.componentService.list(container);
   }
 
+  // checked
+  @Get('/scaffold/detail/:scaffoldId')
+  async scaffoldDetail(@Param('scaffoldId') scaffoldId: number) {
+    return this.scaffoldService.getDetail(scaffoldId);
+  }
+
+  // checked
+  @Get('/component-prototype/detail/:componentId')
+  async componentPrototypeDetail(@Param('componentId') componentId: number, @Query('versionId') versionId: number) {
+    return this.componentService.getComponentPrototype(componentId, versionId);
+  }
+
+  // checked
+  @Get('/application/detail/:applicationId')
+  async applicationDetail(@Param('applicationId') applicationId: number, @Query('releaseId') releaseId: number) {
+    return this.applicationService.getDetail(applicationId, releaseId);
+  }
+
+  // checked
+  @Get('/component-instance/page-detail/:instanceId')
+  async componentInstanceDetail(@Param('instanceId') instanceId: number) {
+    return this.componentInstanceService.getPageDetail(instanceId);
+  }
+
+  // checked
+  @Post('/component-version/add')
+  async componentVersionAdd(@Body() componentVersion: ComponentVersion) {
+    return await this.componentVersionService.add(componentVersion);
+  }
+
+  // checked
   // 基于特定迭代创建新迭代
   @Post('/release/add')
   async releaseAdd(@Body() release: Release) {
     return await this.releaseService.add(release);
   }
-
 
   @Get('/release/detail/:releaseId')
   async releaseDetail(@Param('releaseId') releaseId: number) {

@@ -29,11 +29,11 @@ export class ComponentInstanceService {
 
     if (rawInstance.path) {
       if (rawInstance.rootId) {
-        throw new LogicException(`rootId must be empty ,if path exists`, LogicExceptionCode.UnExpect);
+        throw new LogicException(`如果传递参数path，则不能传递参数rootId`, LogicExceptionCode.UnExpect);
       }
 
       if (rawInstance.parentId) {
-        throw new LogicException(`parentId must be empty ,if path exists`, LogicExceptionCode.UnExpect);
+        throw new LogicException(`如果传递参数path，则不能传递参数parentId`, LogicExceptionCode.UnExpect);
       }
 
       const count = await em.count(ComponentInstance, {
@@ -42,26 +42,26 @@ export class ComponentInstanceService {
       });
 
       if (count > 0) {
-        throw new LogicException(`path not unique path: ${rawInstance.path}`, LogicExceptionCode.NotUnique);
+        throw new LogicException(`参数path冲突，改值必须在迭代版本中唯一`, LogicExceptionCode.NotUnique);
       }
     } else {
       if (!rawInstance.parentId) {
-        throw new LogicException(`parentId can not be empty ,if path not exists`, LogicExceptionCode.UnExpect);
+        throw new LogicException(`如果不传递参数path，则必须传递参数parentId`, LogicExceptionCode.UnExpect);
       }
 
       if (!rawInstance.rootId) {
-        throw new LogicException(`rootId can not be empty ,if path not exists`, LogicExceptionCode.UnExpect);
-      }
-
-      const count = await em.count(ComponentInstance, {
-        name: rawInstance.name,
-        release
-      });
-
-      if (count > 0) {
-        throw new LogicException(`name not unique name: ${rawInstance.name}`, LogicExceptionCode.NotUnique);
+        throw new LogicException(`如果不传递参数path，则必须传递参数rootId`, LogicExceptionCode.UnExpect);
       }
     }
+
+    const valueMap = new Map<number, PropValue>();
+    const newValueList = [];
+
+    const prototypeValueList = await em.find(PropValue, {
+      component,
+      componentVersion: component.recentVersion,
+      type: PropValueType.Prototype
+    });
 
     const newInstance = em.create(ComponentInstance, {
       ...pick(rawInstance, ['name', 'path', 'parentId', 'rootId']),
@@ -71,27 +71,19 @@ export class ComponentInstanceService {
       trackId: 0
     });
 
-    const valueMap = new Map<number, PropValue>();
-    const newValueList = [];
-
     let parentCtx = parentEm ? em.getTransactionContext() : undefined;
     await em.begin();
     try {
-
+      // 创建组件实例
       await em.flush();
-
+      // 更新trackId，方便多版本迭代之间跟踪组件实例
       newInstance.trackId = newInstance.id;
 
-      const valueList = await em.find(PropValue, {
-        component,
-        componentVersion: component.recentVersion,
-        type: PropValueType.Prototype
-      });
-
-      valueList.forEach(propValue => {
+      // 创建组件值列表
+      prototypeValueList.forEach(propValue => {
         const newPropValue = em.create(PropValue, {
           ...pick(propValue, [
-            'propItem', 'value', 'componentInstance', 'abstractValueIdChain',
+            'propItem', 'value', 'abstractValueIdChain',
             'component', 'componentVersion', 'order'
           ]),
           componentInstance: newInstance,
@@ -100,17 +92,20 @@ export class ComponentInstanceService {
         newValueList.push(newPropValue);
         valueMap.set(propValue.id, newPropValue);
       });
-
       await em.flush();
 
+      // 更新组件值的abstractValueIdChain
       newValueList.forEach(newPropValue => {
-        const abstractValueIdChain = (newPropValue.abstractValueIdChain?.split(',') || []).filter(id => !!id).map(valueId => {
-          return valueMap.get(+valueId).id;
+        const abstractValueIdChain = (newPropValue.abstractValueIdChain || '').split(',').filter(id => !!id).map(valueId => {
+          const oldPropValue = valueMap.get(+valueId);
+          if (!oldPropValue) {
+            throw new LogicException(`找不到对应的propValue，id: ${valueId}`, LogicExceptionCode.UnExpect);
+          }
+          return oldPropValue.id;
         }).join(',');
 
         newPropValue.abstractValueIdChain = abstractValueIdChain;
       });
-
       await em.flush();
 
       await em.commit();
@@ -130,25 +125,19 @@ export class ComponentInstanceService {
   async getPageDetail(instanceId: number) {
     const em = RequestContext.getEntityManager();
 
+    LogicException.assertParamEmpty(instanceId, 'instanceId');
     const pageInstance = await em.findOne(ComponentInstance, instanceId, {
       populate: ['componentVersion', 'component']
     });
+    LogicException.assertNotFound(pageInstance, 'pageInstance', instanceId);
+    if (!pageInstance.path) {
+      throw new LogicException(`组件实例path为空`, LogicExceptionCode.UnExpect);
+    }
 
     pageInstance.groupList = await em.find(PropGroup, { component: pageInstance.component, componentVersion: pageInstance.componentVersion });
     pageInstance.blockList = await em.find(PropBlock, { component: pageInstance.component, componentVersion: pageInstance.componentVersion });
     pageInstance.itemList = await em.find(PropItem, { component: pageInstance.component, componentVersion: pageInstance.componentVersion });
-    pageInstance.valueList = await em.find(PropValue, {
-      $or: [
-        { component: pageInstance.component, componentVersion: pageInstance.componentVersion, type: PropValueType.Prototype },
-        { componentInstance: pageInstance }
-      ]
-    });
-
-    LogicException.assertNotFound(pageInstance, 'ComponentInstance', instanceId);
-
-    if (!pageInstance.path) {
-      throw new LogicException(`instance path is null`, LogicExceptionCode.UnExpect);
-    }
+    pageInstance.valueList = await em.find(PropValue, { componentInstance: pageInstance });
 
     const instanceList = await em.find(ComponentInstance, { root: instanceId }, {
       populate: ['component', 'componentVersion'],
@@ -160,13 +149,7 @@ export class ComponentInstanceService {
       instance.groupList = await em.find(PropGroup, { component: instance.component, componentVersion: instance.componentVersion });
       instance.blockList = await em.find(PropBlock, { component: instance.component, componentVersion: instance.componentVersion });
       instance.itemList = await em.find(PropItem, { component: instance.component, componentVersion: instance.componentVersion });
-      instance.valueList = await em.find(PropValue, {
-        $or: [
-          { component: instance.component, componentVersion: instance.componentVersion, type: PropValueType.Prototype },
-          { componentInstance: instance }
-        ]
-      });
-
+      instance.valueList = await em.find(PropValue, { componentInstance: instance });
     }
 
     return { root: pageInstance, children: instanceList };

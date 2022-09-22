@@ -13,19 +13,16 @@ export class ApplicationService {
   async getDetail(applicationId: number, releaseId?: number) {
     const em = RequestContext.getEntityManager();
 
+    LogicException.assertParamEmpty(applicationId, 'applicationId');
     const application = await em.findOne(Application, applicationId);
     LogicException.assertNotFound(application, 'application', applicationId);
 
+    // 默认返回dev环境
     const release = await em.findOne(Release, releaseId || application.devRelease.id);
     LogicException.assertNotFound(release, 'release');
 
-    release.instanceList = await em.find(ComponentInstance, {
-      release,
-      path: { $ne: null }
-    });
-    application.releaseList = await em.find(Release, {
-      application: applicationId
-    });
+    release.instanceList = await em.find(ComponentInstance, { release, path: { $ne: null } });
+    application.releaseList = await em.find(Release, { application: applicationId });
     application.release = wrap(release).toObject() as any;
 
     return application;

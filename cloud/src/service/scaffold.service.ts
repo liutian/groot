@@ -10,6 +10,8 @@ export class ScaffoldService {
 
   async getDetail(scaffoldId: number) {
     const em = RequestContext.getEntityManager();
+
+    LogicException.assertParamEmpty(scaffoldId, 'scaffoldId');
     const scaffold = await em.findOne(Scaffold, scaffoldId);
     LogicException.assertNotFound(scaffold, 'scaffold', scaffoldId);
 

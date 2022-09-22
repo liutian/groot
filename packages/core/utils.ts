@@ -75,18 +75,3 @@ export const processPropItemValue = (propItem: IPropItem, value?: any) => {
   return value;
 }
 
-export const findMatchPropValue = (valueList: IPropValue[], valueIdChain: string, prototypeMode: boolean, getMode: boolean, valueIdChainEndsWith = false) => {
-  const matchPropValueList = valueList.filter(value => {
-    if (valueIdChainEndsWith) {
-      return value.abstractValueIdChain.endsWith(`${valueIdChain}`)
-    } else {
-      return value.abstractValueIdChain === valueIdChain
-    }
-  });
-  let propValue = matchPropValueList[0];
-  if (matchPropValueList.length > (getMode ? 1 : 0) && !prototypeMode) {
-    propValue = matchPropValueList.find(value => value.type === PropValueType.Instance);
-  }
-
-  return propValue;
-}

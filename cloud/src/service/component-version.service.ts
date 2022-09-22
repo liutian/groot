@@ -33,17 +33,18 @@ export class ComponentVersionService {
 
   async add(rawComponentVersion: ComponentVersion) {
     const em = RequestContext.getEntityManager();
+
     LogicException.assertParamEmpty(rawComponentVersion.name, 'name');
     LogicException.assertParamEmpty(rawComponentVersion.imageVersionId, 'imageVersionId');
 
     const imageComponentVersion = await em.findOne(ComponentVersion, rawComponentVersion.imageVersionId);
-
     LogicException.assertNotFound(imageComponentVersion, 'ComponentVersion', rawComponentVersion.imageVersionId);
 
+    // 保证版本名唯一性
+    // todo ... 可能存在并发问题
     const count = await em.count(ComponentVersion, { component: imageComponentVersion.component, name: rawComponentVersion.name });
-
     if (count > 0) {
-      throw new LogicException(`componentVersion name conflict name:${rawComponentVersion.name}`, LogicExceptionCode.NotUnique);
+      throw new LogicException(`组件版本名称冲突`, LogicExceptionCode.NotUnique);
     }
 
     const originGroupList = await em.find(PropGroup, { component: imageComponentVersion.component, componentVersion: imageComponentVersion });
@@ -63,7 +64,7 @@ export class ComponentVersionService {
 
     await em.begin();
     try {
-
+      // 创建组件版本
       await em.flush();
 
       for (let groupIndex = 0; groupIndex < originGroupList.length; groupIndex++) {
@@ -117,6 +118,7 @@ export class ComponentVersionService {
       }
 
       await em.flush();
+      // 还原关联关系
       /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
       for (let valueIndex = 0; valueIndex < originValueList.length; valueIndex++) {
@@ -163,7 +165,6 @@ export class ComponentVersionService {
           group.parentItem = itemMap.get(originGroup.parentItem.id);
         }
       }
-
       await em.flush();
 
       await em.commit();

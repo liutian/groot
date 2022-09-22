@@ -23,18 +23,16 @@ export class ComponentService {
    */
   async getComponentPrototype(id: number, versionId?: number) {
     const em = RequestContext.getEntityManager();
+
+    LogicException.assertParamEmpty(id, 'id');
     const component = await em.findOne(Component, id);
-
     LogicException.assertNotFound(component, 'Component', id);
-
-    LogicException.assertParamEmpty(versionId, 'versionId');
-
-    component.versionList = await em.find(ComponentVersion, { component });
 
     const version = await em.findOne(ComponentVersion, versionId || component.recentVersion.id);
     LogicException.assertNotFound(version, 'ComponentVersion', versionId);
     component.componentVersion = wrap(version).toObject() as any;
 
+    component.versionList = await em.find(ComponentVersion, { component });
     component.groupList = await em.find(PropGroup, { component: id, componentVersion: version });
     component.blockList = await em.find(PropBlock, { component: id, componentVersion: version });
     component.itemList = await em.find(PropItem, { component: id, componentVersion: version });
@@ -45,41 +43,41 @@ export class ComponentService {
 
   async add(rawComponent: Component) {
     const em = RequestContext.getEntityManager();
+
     if (!rawComponent.packageName || !rawComponent.componentName) {
-      throw new LogicException('packageName and componentName can not both empty', LogicExceptionCode.ParamEmpty);
+      throw new LogicException('参数packageName和componentName不能同时为空', LogicExceptionCode.ParamEmpty);
     }
     LogicException.assertParamEmpty(rawComponent.scaffoldId, 'scaffoldId');
 
     const scaffold = await em.findOne(Scaffold, rawComponent.scaffoldId);
-
     LogicException.assertNotFound(scaffold, 'Scaffold', rawComponent.scaffoldId);
 
     const newComponent = em.create(Component, pick(rawComponent, ['name', 'componentName', 'packageName', 'container']));
     newComponent.scaffold = scaffold;
 
     await em.begin();
-
     try {
+      // 创建组件
       await em.flush();
 
+      // 创建组件版本
       const newVersion = em.create(ComponentVersion, {
-        name: '0.0.1',
+        name: 'v0.0.1',
         component: newComponent
       });
-
       await em.flush();
 
+      // 更新组件版本
       newComponent.recentVersion = newVersion;
-
       await em.flush();
 
+      // 创建默认配置组
       em.create(PropGroup, {
         name: '常用配置',
         order: 1000,
         componentVersion: newVersion,
         component: newComponent
       });
-
       await em.flush();
 
       await em.commit();
@@ -87,7 +85,6 @@ export class ComponentService {
       await em.rollback();
       throw e;
     }
-
 
     return newComponent;
   }

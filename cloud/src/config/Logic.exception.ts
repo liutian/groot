@@ -28,13 +28,13 @@ export class LogicException extends HttpException {
       } else {
         condition += id;
       }
-      throw new LogicException(`not found ${name} where ${condition}`, LogicExceptionCode.NotFound);
+      throw new LogicException(`数据 ${name} 未找到，条件 ${condition}`, LogicExceptionCode.NotFound);
     }
   }
 
   static assertParamEmpty(entity: any, name: string) {
     if (entity === undefined) {
-      throw new LogicException(`param ${name} can not empty `, LogicExceptionCode.ParamEmpty);
+      throw new LogicException(`参数 ${name} 不能为空`, LogicExceptionCode.ParamEmpty);
     }
   }
 }
