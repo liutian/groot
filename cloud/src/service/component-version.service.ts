@@ -178,15 +178,18 @@ export class ComponentVersionService {
 
   async publish(componentId: number, versionId: number) {
     const em = RequestContext.getEntityManager();
-    const component = await em.findOne(Component, componentId);
 
+    LogicException.assertParamEmpty(componentId, 'componentId');
+    LogicException.assertParamEmpty(versionId, 'versionId');
+
+    const component = await em.findOne(Component, componentId);
     LogicException.assertNotFound(component, 'Component', componentId);
 
     const componentVersion = await em.findOne(ComponentVersion, versionId);
     LogicException.assertNotFound(componentVersion, 'ComponentVersion', versionId);
 
     if (componentVersion.component.id !== componentId) {
-      throw new LogicException(`versionId Illegal id: ${versionId}`, LogicExceptionCode.ParamError);
+      throw new LogicException(`无效的组件版本号`, LogicExceptionCode.ParamError);
     }
 
     component.recentVersion = componentVersion;

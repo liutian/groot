@@ -44,51 +44,61 @@ export class WorkbenchController {
     return await this.componentService.add(component);
   }
 
+  // checked
   @Post('/group/add')
   async groupAdd(@Body() group: PropGroup) {
     return this.groupService.add(group);
   }
 
+  // checked
   @Post('/group/update')
   async groupUpdate(@Body() group: PropGroup) {
     await this.groupService.update(group);
   }
 
+  // checked
   @Get('/group/remove/:groupId')
   async groupRemove(@Param('groupId') groupId: number) {
     await this.groupService.remove(groupId);
   }
 
+  // checked
   @Post('/block/add')
   async blockAdd(@Body() block: PropBlock) {
     return this.blockService.add(block);
   }
 
+  // checked
   @Post('/block/update')
   async blockUpdate(@Body() block: PropBlock) {
     await this.blockService.update(block);
   }
 
+  // checked
   @Get('/block/remove/:blockId')
   async blockRemove(@Param('blockId') blockId: number) {
     await this.blockService.remove(blockId);
   }
 
+  // checked
   @Post('/item/add')
   async itemAdd(@Body() item: PropItem) {
     return this.propItemService.add(item);
   }
 
+  // checked
   @Post('/item/update')
   async itemUpdate(@Body() item: PropItem) {
     return await this.propItemService.update(item);
   }
 
+  // checked
   @Get('/item/remove/:itemId')
   async itemRemove(@Param('itemId') itemId: number) {
     return await this.propItemService.remove(itemId);
   }
 
+  // checked
   @Post('/move/position')
   async movePosition(@Body() data: { originId: number, targetId: number, type: 'group' | 'block' | 'item' }) {
     // 将 origin 移动至 target位置，target 向后一一位
@@ -101,21 +111,25 @@ export class WorkbenchController {
     }
   }
 
+  // checked
   @Post('/block/list-struct-primary-item/save')
   async blockListStructPrimaryItemSave(@Body('blockId') blockId: number, @Body('data') data: string) {
     await this.blockService.listStructPrimaryItemSave(blockId, data);
   }
 
+  // checked
   @Post('/value/abstract-type/add')
   async valueAbstractTypeAdd(@Body() rawPropValue: PropValue) {
     return await this.propValueService.abstractTypeAdd(rawPropValue);
   }
 
+  // checked
   @Get('/value/abstract-type/remove/:propValueId')
   async valueAbstractTypeRemove(@Param('propValueId') propValueId: number) {
     return await this.propValueService.abstractTypeRemove(propValueId);
   }
 
+  // checked
   @Post('/value/update')
   async valueUpdate(@Body() rawPropValue: PropValue) {
     return await this.propValueService.update(rawPropValue);
@@ -170,25 +184,30 @@ export class WorkbenchController {
     return await this.releaseService.add(release);
   }
 
+  // checked
   @Get('/release/detail/:releaseId')
   async releaseDetail(@Param('releaseId') releaseId: number) {
     return await this.releaseService.detail(releaseId);
   }
 
+  // checked
   @Get('/component-instance/detail-id')
   async componentInstanceDetailIdByTrackId(@Query('releaseId') releaseId: number, @Query('trackId') trackId: number) {
     return await this.componentInstanceService.detailIdByTrackId(trackId, releaseId);
   }
 
+  // checked
   @Post('/component-version/publish')
   async componentVersionPublish(@Body('componentId') componentId: number, @Body('versioinId') versionId: number) {
     await this.componentVersionService.publish(componentId, versionId);
   }
 
+
   @Post('/asset/build')
   async assetBuild(@Body('releaseId') releaseId: number) {
     return this.assetService.build(releaseId);
   }
+
 
   @Post('/asset/deploy')
   async assetDeploy(@Body('bundleId') bundleId: number, @Body('env') env: EnvType) {

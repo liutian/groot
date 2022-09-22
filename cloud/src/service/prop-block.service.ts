@@ -23,6 +23,7 @@ export class PropBlockService {
   async add(rawBlock: PropBlock, parentEm?: EntityManager) {
     let em = parentEm || RequestContext.getEntityManager();
 
+    LogicException.assertParamEmpty(rawBlock.groupId, 'groupId');
     const group = await em.findOne(PropGroup, rawBlock.groupId);
     LogicException.assertNotFound(group, 'PropGroup', rawBlock.groupId);
 
@@ -37,7 +38,7 @@ export class PropBlockService {
       }
 
       if (repeatChainMap.size > 0) {
-        throw new LogicException(`not unique block propKey:${rawBlock.propKey} rootPropKey:${rawBlock.rootPropKey} `, LogicExceptionCode.NotUnique);
+        throw new LogicException(`配置组propKey冲突，该值必须在组件范围唯一`, LogicExceptionCode.NotUnique);
       }
     }
 
@@ -52,7 +53,6 @@ export class PropBlockService {
       order
     });
 
-
     let result: { newBlock: PropBlock, extra?: { newItem?: PropItem, propValue?: PropValue, childGroup?: PropGroup } } = { newBlock };
 
     const parentCtx = parentEm ? em.getTransactionContext() : undefined;
@@ -61,7 +61,7 @@ export class PropBlockService {
       await em.flush();
       if (rawBlock.struct === PropBlockStructType.List) {
         const rawItem = {
-          label: '子项模版配置',
+          label: '内嵌配置项',
           type: PropItemType.Hierarchy,
           blockId: newBlock.id
         } as PropItem;
@@ -82,16 +82,16 @@ export class PropBlockService {
   }
 
   /**
-   * 单步异动，该方法不能实现跨越异动
+   * 单步移动，该方法不能实现跨越层级移动
    */
   async movePosition(originId: number, targetId: number) {
     const em = RequestContext.getEntityManager();
-    const originBlock = await em.findOne(PropBlock, originId);
 
+    LogicException.assertParamEmpty(originId, 'originId');
+    const originBlock = await em.findOne(PropBlock, originId);
     LogicException.assertNotFound(originBlock, 'PropBlock', originId);
 
     const targetBlock = await em.findOne(PropBlock, targetId);
-
     LogicException.assertNotFound(targetBlock, 'PropBlock', targetId);
 
     const order = targetBlock.order;
@@ -104,8 +104,8 @@ export class PropBlockService {
   async remove(blockId: number, parentEm?: EntityManager) {
     let em = parentEm || RequestContext.getEntityManager();
 
+    LogicException.assertParamEmpty(blockId, 'blockId');
     const block = await em.findOne(PropBlock, blockId);
-
     LogicException.assertNotFound(block, 'PropBlock', blockId);
 
     const itemList = await em.find(PropItem, { block });
@@ -149,7 +149,7 @@ export class PropBlockService {
       if (checkUnique) {
         const repeatChainMap = await this.commonService.checkPropKeyUnique(block.component.id, block.componentVersion.id, em);
         if (repeatChainMap.size > 0) {
-          throw new LogicException(`not unique propKey:${rawBlock.propKey}`, LogicExceptionCode.NotUnique);
+          throw new LogicException(`配置组propKey冲突，该值必须在组件范围唯一`, LogicExceptionCode.NotUnique);
         }
       }
 
@@ -163,8 +163,8 @@ export class PropBlockService {
   async listStructPrimaryItemSave(blockId: number, data: string) {
     const em = RequestContext.getEntityManager();
 
+    LogicException.assertParamEmpty(blockId, 'blockId');
     const block = await em.findOne(PropBlock, blockId);
-
     LogicException.assertNotFound(block, 'PropBlock', blockId);
 
     block.listStructData = data;

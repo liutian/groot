@@ -53,12 +53,12 @@ export class AssetService {
   async build(releaseId: number) {
     const em = RequestContext.getEntityManager();
 
+    LogicException.assertParamEmpty(releaseId, 'releaseId');
     const release = await em.findOne(Release, releaseId, {
       populateWhere: {
         instanceList: { path: { $ne: null } }
       }
     });
-
     LogicException.assertNotFound(release, 'Release', releaseId);
 
     const instanceList = await em.find(ComponentInstance, { release },
@@ -73,12 +73,7 @@ export class AssetService {
       const groupList = await em.find(PropGroup, { component: instance.component, componentVersion: instance.componentVersion });
       const blockList = await em.find(PropBlock, { component: instance.component, componentVersion: instance.componentVersion });
       const itemList = await em.find(PropItem, { component: instance.component, componentVersion: instance.componentVersion });
-      const valueList = await em.find(PropValue, {
-        $or: [
-          { component: instance.component, componentVersion: instance.componentVersion, type: PropValueType.Prototype },
-          { componentInstance: instance }
-        ]
-      });
+      const valueList = await em.find(PropValue, { componentInstance: instance });
 
       const rootGroupList = propTreeFactory(
         groupList.map(g => wrap(g).toObject()) as any as IPropGroup[],
@@ -135,6 +130,7 @@ export class AssetService {
   async deploy(bundleId: number, env: EnvType) {
     const em = RequestContext.getEntityManager();
 
+    LogicException.assertParamEmpty(bundleId, 'bundleId');
     const bundle = await em.findOne(Bundle, bundleId, {
       populate: [
         'application.onlineRelease',
@@ -142,7 +138,6 @@ export class AssetService {
         'newAssetList'
       ]
     });
-
     LogicException.assertNotFound(bundle, 'Bundle', bundleId);
 
     if (env === EnvType.Dev) {

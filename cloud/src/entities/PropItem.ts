@@ -45,7 +45,7 @@ export class PropItem extends BaseEntity {
   /**
    * 版本升级时，确认当前propItem是否被改动的判断条件
    * 上一个版本versionTraceId，如果为空则是上一个版本对应propItem 的 ID
-   * 如果propItem属性变化，则重置versionTraceId为当前ID
+   * 如果propItem类型变化，则重置versionTraceId为当前ID，并删除管理propValue
    */
   @Property()
   versionTraceId?: number;

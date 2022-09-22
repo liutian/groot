@@ -158,6 +158,8 @@ export class ComponentInstanceService {
   async detailIdByTrackId(trackId: number, releaseId: number) {
     const em = RequestContext.getEntityManager();
 
+    LogicException.assertParamEmpty(trackId, 'trackId');
+    LogicException.assertParamEmpty(releaseId, 'releaseId');
     const instance = await em.findOne(ComponentInstance, { trackId, release: releaseId });
 
     return instance?.id;

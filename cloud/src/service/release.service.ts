@@ -113,6 +113,8 @@ export class ReleaseService {
 
   async detail(releaseId: number) {
     const em = RequestContext.getEntityManager();
+
+    LogicException.assertParamEmpty(releaseId, 'releaseId');
     const release = await em.findOne(Release, releaseId);
     release.instanceList = await em.find(ComponentInstance, { release, path: { $ne: null } });
 

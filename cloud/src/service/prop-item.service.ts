@@ -21,11 +21,12 @@ export class PropItemService {
   async add(rawItem: PropItem, parentEm?: EntityManager) {
     let em = parentEm || RequestContext.getEntityManager();
 
+    LogicException.assertParamEmpty(rawItem.blockId, 'blockId');
     const block = await em.findOne(PropBlock, rawItem.blockId);
     LogicException.assertNotFound(block, 'PropBlock', rawItem.blockId);
 
     if (rawItem.type !== PropItemType.Flat && rawItem.type !== PropItemType.Hierarchy && !rawItem.propKey) {
-      throw new LogicException(`propKey cannot empty `, LogicExceptionCode.ParamError);
+      throw new LogicException(`配置项propKey不能为空`, LogicExceptionCode.ParamError);
     }
 
     if (rawItem.propKey) {
@@ -39,7 +40,7 @@ export class PropItemService {
       }
 
       if (repeatChainMap.size > 0) {
-        throw new LogicException(`not unique item propKey:${rawItem.propKey} rootPropKey:${rawItem.rootPropKey} `, LogicExceptionCode.NotUnique);
+        throw new LogicException(`配置项propKey冲突，该值必须在组件范围唯一`, LogicExceptionCode.NotUnique);
       }
     }
 
@@ -47,7 +48,7 @@ export class PropItemService {
 
     const firstItem = await em.findOne(PropItem, { block }, { orderBy: { order: 'DESC' } });
 
-    result.newItem = em.create(PropItem, {
+    const newItem = em.create(PropItem, {
       ...pick(rawItem, ['label', 'propKey', 'rootPropKey', 'type', 'span', 'valueOptions', 'versionTraceId']),
       block,
       group: block.group,
@@ -63,31 +64,32 @@ export class PropItemService {
       await em.flush();
 
       if (!rawItem.versionTraceId) {
-        result.newItem.versionTraceId = result.newItem.id;
+        newItem.versionTraceId = newItem.id;
       }
 
       await em.flush();
 
-      if (result.newItem.type === PropItemType.Hierarchy || result.newItem.type === PropItemType.Flat) {
+      if (newItem.type === PropItemType.Hierarchy || newItem.type === PropItemType.Flat) {
         let groupStruct = PropGroupStructType.Default;
-        if (result.newItem.type === PropItemType.Flat) {
+        if (newItem.type === PropItemType.Flat) {
           groupStruct = PropGroupStructType.Flat
         }
         const rawGroup = {
-          name: '内嵌分组',
+          name: '内嵌配置组',
           componentId: block.component.id,
           componentVersionId: block.componentVersion.id,
           root: false,
           struct: groupStruct
         } as PropGroup;
         const { newGroup } = await this.propGroupService.add(rawGroup, em);
+        newGroup.parentItem = newItem;
+        newItem.childGroup = result.childGroup;
         result.childGroup = newGroup;
-        result.childGroup.parentItem = result.newItem;
-        result.newItem.childGroup = result.childGroup;
         await em.flush();
       }
 
       await em.commit();
+
     } catch (e) {
       await em.rollback();
       throw e;
@@ -97,6 +99,7 @@ export class PropItemService {
       }
     }
 
+    result.newItem = newItem;
     return result;
   }
 
@@ -106,12 +109,11 @@ export class PropItemService {
   async movePosition(originId: number, targetId: number) {
     const em = RequestContext.getEntityManager();
 
+    LogicException.assertParamEmpty(originId, 'originId');
     const originItem = await em.findOne(PropItem, originId);
-
     LogicException.assertNotFound(originItem, 'PropItem', originId);
 
     const targetItem = await em.findOne(PropItem, targetId);
-
     LogicException.assertNotFound(targetItem, 'PropItem', targetId);
 
     const order = targetItem.order;
@@ -119,7 +121,6 @@ export class PropItemService {
     originItem.order = order;
 
     await em.flush();
-
   }
 
   async remove(itemId: number, parentEm?: EntityManager) {
@@ -157,12 +158,12 @@ export class PropItemService {
   async update(rawItem: PropItem) {
     const em = RequestContext.getEntityManager();
 
+    LogicException.assertParamEmpty(rawItem.id, 'id');
     const propItem = await em.findOne(PropItem, rawItem.id);
-
     LogicException.assertNotFound(propItem, 'PropItem', rawItem.id);
 
     if (rawItem.type !== propItem.type && (propItem.type === PropItemType.Flat || propItem.type === PropItemType.Hierarchy)) {
-      throw new LogicException(`type can not update item id: ${rawItem.id}`, LogicExceptionCode.ParamError);
+      throw new LogicException(`部分配置项类型无法变更`, LogicExceptionCode.ParamError);
     }
 
     await em.begin();
@@ -174,17 +175,15 @@ export class PropItemService {
           type: PropValueType.Prototype
         });
       }
-
       pick(rawItem, ['label', 'propKey', 'rootPropKey', 'type', 'span', 'valueOptions'], propItem);
-
+      propItem.defaultValue = null;
       await em.flush();
 
       // warning!!! flush之后可以查到最新的数据吗？
       if ((rawItem.propKey !== propItem.propKey) || (rawItem.rootPropKey !== propItem.rootPropKey)) {
         const repeatChainMap = await this.commonService.checkPropKeyUnique(propItem.component.id, propItem.componentVersion.id, em);
         if (repeatChainMap.size > 0) {
-          await em.rollback();
-          throw new LogicException(`not unique propKey:${rawItem.propKey}`, LogicExceptionCode.NotUnique);
+          throw new LogicException(`配置项propKey冲突，该值必须在组件范围唯一`, LogicExceptionCode.NotUnique);
         }
       }
 
