@@ -44,7 +44,7 @@ export class PropItemService {
       }
     }
 
-    let result: { newItem?: PropItem, childGroup?: PropGroup } = {};
+    let result: { newItem?: PropItem, childGroup?: PropGroup, extra?: { newBlock?: PropBlock } } = {};
 
     const firstItem = await em.findOne(PropItem, { block }, { orderBy: { order: 'DESC' } });
 
@@ -81,10 +81,12 @@ export class PropItemService {
           root: false,
           struct: groupStruct
         } as PropGroup;
-        const { newGroup } = await this.propGroupService.add(rawGroup, em);
+        const { newGroup, extra } = await this.propGroupService.add(rawGroup, em);
         newGroup.parentItem = newItem;
-        newItem.childGroup = result.childGroup;
+        newItem.childGroup = newGroup;
+
         result.childGroup = newGroup;
+        result.extra = extra;
         await em.flush();
       }
 

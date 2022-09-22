@@ -45,7 +45,13 @@ export type APIStore = {
     }
   }>],
   [APIPath.item_update]: [PropItem, API.Response<PropItem>],
-  [APIPath.item_add]: [PropItem, API.Response<{ newItem: PropItem, childGroup?: PropGroup }>],
+  [APIPath.item_add]: [PropItem, API.Response<{
+    newItem: PropItem,
+    childGroup?: PropGroup,
+    extra?: {
+      newBlock?: PropBlock
+    }
+  }>],
   [APIPath.group_remove]: [{ groupId: number }],
   [APIPath.block_remove]: [{ blockId: number }],
   [APIPath.item_remove]: [{ itemId: number }],

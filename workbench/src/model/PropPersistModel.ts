@@ -215,7 +215,7 @@ export default class PropPersistModel {
         this.workbench.iframeManager.refreshComponent();
       });
     } else {
-      request(APIPath.item_add, newItem).then(({ data: { newItem, childGroup } }) => {
+      request(APIPath.item_add, newItem).then(({ data: { newItem, childGroup, extra } }) => {
         newItem.valueList = [];
         const block = this.propHandle.getPropBlock(newItem.blockId);
         block.propItemList.push(newItem);
@@ -228,6 +228,12 @@ export default class PropPersistModel {
           childGroup.propBlockList = [];
           newItem.childGroup = childGroup;
           childGroup.parentItem = newItem;
+
+          if (extra?.newBlock) {
+            extra.newBlock.propItemList = [];
+            extra.newBlock.group = childGroup;
+            childGroup.propBlockList.push(extra.newBlock);
+          }
         }
 
         this.settingModalSubmitting = false;
