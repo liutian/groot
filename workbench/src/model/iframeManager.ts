@@ -114,7 +114,7 @@ function fullRefreshComponent(instanceChildren: ComponentInstance[] = []) {
   const rootMetadata = metadataFactory(workbenchModel.propHandle.rootGroupList, workbenchModel.component, rootMetadataId);
 
   const childrenMetadata = instanceChildren.map((instance) => {
-    const { groupList, blockList, itemList } = instance.componentVersion;
+    const { groupList, blockList, itemList } = instance;
     const valueList = instance.valueList;
     const propTree = propTreeFactory(groupList, blockList, itemList, valueList) as PropGroup[];
     const metadata = metadataFactory(propTree, instance.component, instance.id);

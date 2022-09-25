@@ -64,7 +64,9 @@ export class ComponentInstanceService {
     });
 
     const newInstance = em.create(ComponentInstance, {
-      ...pick(rawInstance, ['name', 'path', 'parentId', 'rootId']),
+      ...pick(rawInstance, ['name', 'path']),
+      parent: rawInstance.parentId,
+      root: rawInstance.rootId,
       component,
       componentVersion: component.recentVersion,
       release,
@@ -169,29 +171,30 @@ export class ComponentInstanceService {
     const em = RequestContext.getEntityManager();
 
     LogicException.assertParamEmpty(rawComponentInstace.id, 'id');
-
     const parentInstance = await em.findOne(ComponentInstance, rawComponentInstace.id, { populate: ['component'] });
     LogicException.assertNotFound(parentInstance, 'componentInstance', rawComponentInstace.id);
 
+    LogicException.assertParamEmpty(rawComponentInstace.componentId, 'componentId');
     const component = await em.findOne(Component, rawComponentInstace.componentId);
+    LogicException.assertNotFound(component, 'component', rawComponentInstace.componentId);
 
     let childInstance: ComponentInstance;
 
     await em.begin();
     try {
       if (rawComponentInstace.oldChildId) {
-        await this.remove(rawComponentInstace.oldChildId);
+        await this.remove(rawComponentInstace.oldChildId, em);
       }
 
       const rawInstance = {
         name: `内部组件实例 -- ${component.name}`,
         componentId: rawComponentInstace.componentId,
-        releaseId: parentInstance.release.id
-      } as any;
-      childInstance = await this.add(rawInstance);
-      childInstance.parent = parentInstance;
+        releaseId: parentInstance.release.id,
+        parentId: parentInstance.id,
+        rootId: parentInstance.id
+      } as ComponentInstance;
+      childInstance = await this.add(rawInstance, em);
 
-      await em.flush();
       await em.commit();
     } catch (e) {
       await em.rollback();

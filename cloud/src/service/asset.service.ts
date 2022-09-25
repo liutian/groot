@@ -1,5 +1,5 @@
 import { ApplicationData, DeployStatusType, EnvType, IComponent, IPropBlock, IPropGroup, IPropItem, IPropValue, Metadata, PropValueType } from '@grootio/common';
-import { RequestContext, wrap } from '@mikro-orm/core';
+import { EntityManager, RequestContext, wrap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { propTreeFactory, metadataFactory } from '@grootio/core';
 
@@ -54,40 +54,32 @@ export class AssetService {
     const em = RequestContext.getEntityManager();
 
     LogicException.assertParamEmpty(releaseId, 'releaseId');
-    const release = await em.findOne(Release, releaseId, {
-      populateWhere: {
-        instanceList: { path: { $ne: null } }
-      }
-    });
+    const release = await em.findOne(Release, releaseId);
     LogicException.assertNotFound(release, 'Release', releaseId);
 
-    const instanceList = await em.find(ComponentInstance, { release },
+    const rootInstanceList = await em.find(ComponentInstance, { release, path: { $ne: null } },
       { populate: ['component'] }
     );
+    const instanceMetadataMap = new Map<ComponentInstance, Metadata[]>();
+    // 生成metadata
+    for (let index = 0; index < rootInstanceList.length; index++) {
+      const rootInstance = rootInstanceList[index];
+      const metadataList = [];
 
-    const instanceMetadataMap = new Map<ComponentInstance, Metadata>();
+      const rootMetadata = await this.createMetadata(rootInstance, em);
+      metadataList.push(rootMetadata);
+      const childInstanceList = await em.find(ComponentInstance, { root: rootInstance });
 
-    for (let index = 0; index < instanceList.length; index++) {
-      const instance = instanceList[index];
+      for (let childIndex = 0; childIndex < childInstanceList.length; childIndex++) {
+        const childInstance = childInstanceList[childIndex];
+        const childMetadata = await this.createMetadata(childInstance, em);
+        metadataList.push(childMetadata);
+      }
 
-      const groupList = await em.find(PropGroup, { component: instance.component, componentVersion: instance.componentVersion });
-      const blockList = await em.find(PropBlock, { component: instance.component, componentVersion: instance.componentVersion });
-      const itemList = await em.find(PropItem, { component: instance.component, componentVersion: instance.componentVersion });
-      const valueList = await em.find(PropValue, { componentInstance: instance });
-
-      const rootGroupList = propTreeFactory(
-        groupList.map(g => wrap(g).toObject()) as any as IPropGroup[],
-        blockList.map(b => wrap(b).toObject()) as any as IPropBlock[],
-        itemList.map(i => wrap(i).toObject()) as any as IPropItem[],
-        valueList.map(v => wrap(v).toObject()) as any as IPropValue[]
-      );
-
-      const metadata = metadataFactory(rootGroupList, instance.component as IComponent, instance.id);
-      instanceMetadataMap.set(instance, metadata);
+      instanceMetadataMap.set(rootInstance, metadataList);
     }
 
-    const application = await em.findOne(Application, release.application.id, { populate: ['onlineRelease'] });
-
+    const application = await em.findOne(Application, release.application.id);
     const bundle = await em.create(Bundle, {
       release,
       application,
@@ -97,25 +89,25 @@ export class AssetService {
 
     await em.begin();
     try {
-
+      // 创建bundle
       await em.flush();
 
+      // 创建InstanceAsset
       const newAssetList = [];
-      instanceList.forEach((instance) => {
-        const metadata = instanceMetadataMap.get(instance);
+      rootInstanceList.forEach((instance) => {
+        const metadataList = instanceMetadataMap.get(instance);
         const asset = em.create(InstanceAsset, {
-          content: JSON.stringify([metadata]),
+          content: JSON.stringify(metadataList),
           componetInstace: instance,
           bundle,
           path: instance.path
         });
         newAssetList.push(asset);
       });
-
       await em.flush();
 
+      // 更新newAssetList
       bundle.newAssetList.add(...newAssetList);
-
       await em.flush();
 
       await em.commit();
@@ -187,6 +179,25 @@ export class AssetService {
     await em.flush();
 
     return asset.id;
+  }
+
+  private async createMetadata(instance: ComponentInstance, em: EntityManager) {
+
+    const groupList = await em.find(PropGroup, { component: instance.component, componentVersion: instance.componentVersion });
+    const blockList = await em.find(PropBlock, { component: instance.component, componentVersion: instance.componentVersion });
+    const itemList = await em.find(PropItem, { component: instance.component, componentVersion: instance.componentVersion });
+    const valueList = await em.find(PropValue, { componentInstance: instance });
+
+    const rootGroupList = propTreeFactory(
+      groupList.map(g => wrap(g).toObject()) as any as IPropGroup[],
+      blockList.map(b => wrap(b).toObject()) as any as IPropBlock[],
+      itemList.map(i => wrap(i).toObject()) as any as IPropItem[],
+      valueList.map(v => wrap(v).toObject()) as any as IPropValue[]
+    );
+
+    const metadata = metadataFactory(rootGroupList, instance.component as IComponent, instance.id);
+
+    return metadata;
   }
 }
 

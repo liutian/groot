@@ -30,6 +30,7 @@
     "webpack-merge": "5.8.0"
   },
   "dependencies": {
+    "@ant-design/icons": "4.7.0",
     "@ant-design/pro-table": "2.76.4",
     "@pmmmwh/react-refresh-webpack-plugin": "0.5.7",
     "antd": "4.21.3",

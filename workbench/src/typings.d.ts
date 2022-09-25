@@ -77,7 +77,7 @@ type PropValueOption = {
 
 type ComponentVersion = {
 
-} & Omit<import("../../cloud/src/entities/ComponentVersion").ComponentVersion>;
+} & Omit<import("../../cloud/src/entities/ComponentVersion").ComponentVersion, ''>;
 
 type ComponentInstance = {
   component: Component,
