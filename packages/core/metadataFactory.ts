@@ -132,5 +132,10 @@ function buildPropObjectForLeafItem(propItem: IPropItem, ctx: Object, ctxKeyChai
       keyChain: ctxKeyChain,
       type: PropMetadataType.Function,
     })
+  } else if (propItem.type === PropItemType.Component) {
+    metadata.advancedProps.push({
+      keyChain: ctxKeyChain,
+      type: PropMetadataType.Component
+    })
   }
 }

@@ -65,7 +65,7 @@ const processAdvancedProp = (metadata: Metadata, store: Metadata[]) => {
     })
 
     if (propMetadata.type === PropMetadataType.Component) {
-      ctx[endPropKey] = createComponentByMetadataId(ctx[endPropKey], store);
+      ctx[endPropKey] = createComponentByValue(ctx[endPropKey], store);
     } else if (propMetadata.type === PropMetadataType.Json) {
       try {
         ctx[endPropKey] = JSON.parse(ctx[endPropKey]);
@@ -83,10 +83,10 @@ const processAdvancedProp = (metadata: Metadata, store: Metadata[]) => {
 
 }
 
-const createComponentByMetadataId = (metadataId: number | number[], store: Metadata[]) => {
-  const metadataIds = Array.isArray(metadataId) ? metadataId : [metadataId];
-  const nodes = metadataIds.map((id) => {
-    const metadata = store.find(m => m.id === id);
+const createComponentByValue = (valueData: { id: number } | { id: number }[], store: Metadata[]) => {
+  const valueDataList = Array.isArray(valueData) ? valueData : [valueData];
+  const nodes = valueDataList.map((value) => {
+    const metadata = store.find(m => m.id === value.id);
 
     return createComponent(metadata, store);
   });
