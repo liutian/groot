@@ -1,6 +1,7 @@
+import { ApplicationData, IframeDebuggerConfig, Metadata, PostMessageType, UIManagerConfig } from '@grootio/common';
+
 import { Page } from './Page';
 import { ApplicationStatus } from './types';
-import { ApplicationData, IframeDebuggerConfig, Metadata, PostMessageType, UIManagerConfig } from '@grootio/common';
 import { controlMode } from './util';
 import { globalConfig, setConfig } from './config';
 import { DragSlot } from './modules/DragSlot';
@@ -13,8 +14,6 @@ export const instance = {
   hasPage,
   pageLoading,
   loadPage,
-  getRefresh,
-  setRefresh
 };
 
 export type ApplicationInstance = typeof instance;
@@ -29,8 +28,6 @@ const allPageMap = new Map<string, Page>();
 const loadedPageMap = new Map<string, Page>();
 // 正在加载中的页面
 const loadingPages = new Set();
-
-const metadataRefreshFnMap = new Map<Metadata, Function>();
 
 
 export function bootstrap(customConfig: UIManagerConfig): ApplicationInstance {
@@ -79,6 +76,7 @@ function onMessage(event: any) {
 
 function loadApplication(success = () => { }, fail = () => { }) {
   if (globalConfig.beforeLoadApplication instanceof Promise) {
+    instance.status = ApplicationStatus.BeforeLoading;
     globalConfig.beforeLoadApplication.then(() => {
       loadApplicationData().then(success, fail);
     });
@@ -90,7 +88,7 @@ function loadApplication(success = () => { }, fail = () => { }) {
 
 function loadApplicationData(): Promise<void> {
   if (instance.status === ApplicationStatus.OK) {
-    throw new Error('application already existed');
+    throw new Error('应用重复加载');
   }
 
   instance.status = ApplicationStatus.Loading;
@@ -147,7 +145,7 @@ function loadPage(path: string): Promise<Page> | Page {
   activePage = page;
 
   if (!page) {
-    return Promise.reject(new Error('not found page'));
+    return Promise.reject(new Error('页面未找到'));
   }
 
   if (loadedPageMap.has(path)) {
@@ -163,10 +161,4 @@ function loadPage(path: string): Promise<Page> | Page {
   });
 }
 
-function setRefresh(metadata: Metadata, fn: Function) {
-  metadataRefreshFnMap.set(metadata, fn)
-}
 
-function getRefresh(metadata: Metadata) {
-  return metadataRefreshFnMap.get(metadata);
-}

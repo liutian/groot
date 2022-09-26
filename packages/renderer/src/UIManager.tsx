@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import React from 'react';
+import { UIManagerConfig } from '@grootio/common';
 
 import { errorInfo } from './util';
 import { ApplicationStatus } from './types';
 import { Page } from './Page';
 import { ApplicationInstance, bootstrap } from './application';
-import { UIManagerConfig } from '@grootio/common';
 
 let app: ApplicationInstance;
 // 保持最新的函数引用
@@ -18,7 +18,7 @@ export const UIManager: IUIManager<{ path: string }> = ({ path }) => {
   // 确保首先执行 UIManager.init
   if (!app) {
     return (
-      <p style={{ color: 'red' }}><b>UIManager.init</b> must execute first!!!</p>
+      <p style={{ color: 'red' }}><b>UIManager.init</b> 必须首先执行!!!</p>
     );
   }
 
@@ -29,24 +29,28 @@ export const UIManager: IUIManager<{ path: string }> = ({ path }) => {
     })
   }
 
+  if (app.status === ApplicationStatus.BeforeLoading) {
+    return <>应用准备加载</>
+  }
+
   if (app.status === ApplicationStatus.Loading) {
     // todo 设计统一加载动画
-    return <>application loading...</>;
+    return <>应用加载中...</>;
   }
 
   if (app.status === ApplicationStatus.Fail) {
     // todo 设计统一加载动画
-    return <>application load fail</>;
+    return <>应用加载失败</>;
   }
 
   if (!app.hasPage(path)) {
     // todo 设计统一404页面
-    return <>page not found</>;
+    return <>页面找不到</>;
   }
 
   if (app.pageLoading(path)) {
     // todo 设计统一加载动画
-    return <>page loading...</>;
+    return <>页面努力加载中...</>;
   }
 
   // 加载页面
@@ -64,12 +68,12 @@ export const UIManager: IUIManager<{ path: string }> = ({ path }) => {
   }
 
   // todo 设计统一加载动画
-  return <>page loading...</>;
+  return <>页面加载中...</>;
 };
 
 UIManager.init = (config: UIManagerConfig) => {
   if (app) {
-    throw new Error('UIManager.init have been executed');
+    throw new Error('UIManager.init不能重复执行');
   }
   app = bootstrap(config);
 

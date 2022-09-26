@@ -1,7 +1,7 @@
 import { Metadata, PageData, PostMessageType } from "@grootio/common";
-import { buildComponent, reBuildProps } from "./compiler";
+
+import { buildComponent, reBuildComponent } from "./compiler";
 import { controlMode, errorInfo } from "./util";
-import { instance } from './application';
 export class Page extends EventTarget {
   path!: string;
   metadataUrl: string;
@@ -18,8 +18,8 @@ export class Page extends EventTarget {
     this.metadataUrl = data.metadataUrl;
     this.metadataList = data.metadataList;
 
-    if (!this.metadataUrl && !this.metadataList) {
-      errorInfo('metadataUrl and metadataList can not both be empty');
+    if (!this.metadataUrl && (!Array.isArray(this.metadataList) || this.metadataList.length === 0)) {
+      errorInfo('metadataUrl 和 metadataList 不能同时为空');
     }
   }
 
@@ -70,9 +70,7 @@ export class Page extends EventTarget {
     if (metadata) {
       metadata.propsObj = newMetadata.propsObj;
       metadata.advancedProps = newMetadata.advancedProps;
-      reBuildProps(metadata, this.metadataList);
-      const refresh = instance.getRefresh(metadata);
-      refresh();
+      reBuildComponent(metadata, this.metadataList);
     }
   }
 }

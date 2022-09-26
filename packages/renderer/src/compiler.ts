@@ -1,39 +1,47 @@
 import { Metadata, PropMetadataType } from "@grootio/common";
-import React, { useState } from "react";
+
+import React, { useEffect, useState } from "react";
 import { globalConfig } from "./config";
 import { debugInfo, controlMode, errorInfo } from "./util";
-import { instance } from './application';
+
+const metadataRefreshFnMap = new Map<Metadata, Function>();
 
 export const buildComponent = (root: Metadata, store: Metadata[]) => {
-  const component = createComponent(root, store);
-  return component;
+  processAdvancedProp(root, store);
+
+  const wrapper = createComponentWrapper(root);
+  return React.createElement(wrapper, { key: root.id });
 }
 
-export const reBuildProps = (metadata: Metadata, store: Metadata[]) => {
-  processAdvancedProp(metadata, store);
-}
-
-const createComponent = (metadata: Metadata, store: Metadata[]) => {
+export const reBuildComponent = (metadata: Metadata, store: Metadata[]) => {
   processAdvancedProp(metadata, store);
 
-  const wrapper = createComponentWrapper(metadata);
-  return React.createElement(wrapper, { key: metadata.id });
+  const refresh = metadataRefreshFnMap.get(metadata);
+  refresh();
 }
+
 
 const createComponentWrapper = (metadata: Metadata) => {
   const module = globalConfig.modules[metadata.packageName][metadata.componentName];
   if (!module) {
-    errorInfo(`not found module : ${metadata.packageName}/${metadata.componentName}`, 'compiler');
+    errorInfo(`模块未找到 ${metadata.packageName}/${metadata.componentName}`, 'compiler');
   }
   const componentName = `${metadata.packageName}_${metadata.componentName}`;
 
   function ComponentFunction() {
     const [, switchBool] = useState(true);
     const metadataRefresh = () => switchBool(b => !b);
-    instance.setRefresh(metadata, metadataRefresh);
+
+    useEffect(() => {
+      metadataRefreshFnMap.set(metadata, metadataRefresh);
+
+      return () => {
+        metadataRefreshFnMap.delete(metadata);
+      }
+    }, []);
 
     if (controlMode) {
-      debugInfo(`component refresh name:${componentName}`);
+      debugInfo(`组件刷新 ${componentName}`);
     }
 
     return React.createElement('div', { 'data-groot-component-id': metadata.id },
@@ -52,11 +60,9 @@ const processAdvancedProp = (metadata: Metadata, store: Metadata[]) => {
     const keys = propMetadata.keyChain.split('.');
     const endPropKey = keys[keys.length - 1];
     let ctx = metadata.propsObj;
-    keys.forEach((key, index) => {
-      if (index === keys.length - 1) {
-        return;
-      }
 
+    // 找到属性对应的值
+    keys.slice(0, -1).forEach((key) => {
       if (key.startsWith('[')) {
         ctx = ctx[+key.replace('[', '').replace(']', '')];
       } else {
@@ -70,12 +76,14 @@ const processAdvancedProp = (metadata: Metadata, store: Metadata[]) => {
       try {
         ctx[endPropKey] = JSON.parse(ctx[endPropKey]);
       } catch (e) {
+        console.error(`高级属性解析失败  ${keys}:${ctx[endPropKey]}`)
         ctx[endPropKey] = undefined;
       }
     } else if (propMetadata.type === PropMetadataType.Function) {
       try {
         ctx[endPropKey] = window.Function(ctx[endPropKey]);
       } catch (e) {
+        console.error(`高级属性解析失败  ${keys}:${ctx[endPropKey]}`)
         ctx[endPropKey] = undefined;
       }
     }
@@ -88,7 +96,7 @@ const createComponentByValue = (valueData: { id: number } | { id: number }[], st
   const nodes = valueDataList.map((value) => {
     const metadata = store.find(m => m.id === value.id);
 
-    return createComponent(metadata, store);
+    return buildComponent(metadata, store);
   });
   return nodes;
 }
