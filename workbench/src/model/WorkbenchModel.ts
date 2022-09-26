@@ -1,3 +1,4 @@
+import { ApplicationData } from "@grootio/common";
 import { IframeManagerInstance, launchIframeManager } from "@model/iframeManager";
 import { needRewrite } from "@util/common";
 import { ReactNode } from "react";
@@ -30,7 +31,6 @@ export default class WorkbenchModel {
   public iframeBasePath = 'http://localhost:8888';
   private iframeReadyPromise: Promise<any>;
   private iframeReadyResolve: Function;
-
 
   public currActiveTab: 'props' | 'scaffold' = 'props';
   /**
@@ -73,7 +73,9 @@ export default class WorkbenchModel {
       return;
     }
 
-    this.iframeManager = launchIframeManager(iframe, this);
+    const playgroundPath = this.prototypeMode ? this.scaffold.playgroundPath : this.application.playgroundPath;
+    const appData = this.buildApplicationData(playgroundPath);
+    this.iframeManager = launchIframeManager(iframe, this.iframeBasePath, playgroundPath, appData);
     this.iframeReadyResolve();
   }
 
@@ -91,8 +93,8 @@ export default class WorkbenchModel {
     this.propHandle.buildPropTree(groupList, blockList, itemList, valueList);
 
     this.iframeReadyPromise.then(() => {
-      this.iframeManager.navigation(this.scaffold.playgroundPath, () => {
-        this.iframeManager.fullRefreshComponent();
+      this.iframeManager.refresh(() => {
+        this.propHandle.fullRefreshComponent();
       });
     });
 
@@ -111,13 +113,14 @@ export default class WorkbenchModel {
     this.currActiveTab = 'props';
 
     const { groupList, blockList, itemList, valueList } = rootInstance;
-    this.propHandle.buildPropTree(groupList, blockList, itemList, valueList);
+    const propTree = this.propHandle.buildPropTree(groupList, blockList, itemList, valueList);
+    rootInstance.propTree = propTree;
 
     this.iframeReadyPromise.then(() => {
-      this.iframeManager.navigation(this.application.playgroundPath, () => {
-        this.iframeManager.fullRefreshComponent(instanceChildren);
+      this.iframeManager.refresh(() => {
+        this.propHandle.fullRefreshComponent(instanceChildren);
       });
-    })
+    });
 
     window.history.pushState(null, '', `?app=${this.application.id}&release=${this.application.release.id}&page=${rootInstance.id}`);
 
@@ -128,6 +131,7 @@ export default class WorkbenchModel {
     this.component = instance.component;
     this.componentVersion = instance.componentVersion;
     this.currActiveTab = 'props';
+    this.propHandle.setPropTree(instance);
   }
 
   public setPropPathChain(itemId?: number) {
@@ -172,6 +176,25 @@ export default class WorkbenchModel {
 
     this.propPathChainEle.innerText = propKeyList.join('.');
     this.propPathChainEle.dataset['activeId'] = `${itemId}`;
+  }
+
+  public buildApplicationData(playgroundPath: string) {
+    const name = this.prototypeMode ? '原型' : '实例';
+    const key = this.prototypeMode ? 'prototype-demo' : 'instance-demo';
+
+    const pageData = {
+      path: playgroundPath,
+      metadataList: []
+    };
+
+    const appData: ApplicationData = {
+      name,
+      key,
+      pages: [pageData],
+      envData: {}
+    };
+
+    return appData;
   }
 
   public renderToolBarBreadcrumb(): ReactNode {

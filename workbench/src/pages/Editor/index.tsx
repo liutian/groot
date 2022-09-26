@@ -28,8 +28,9 @@ const Editor: React.FC = () => {
 
   useState(() => {
     propPersistModel.inject(workbenchModel, propHandleModel);
-    editorModel.inject(workbenchModel);
+    propHandleModel.inject(workbenchModel);
     workbenchModel.inject(propHandleModel);
+    editorModel.inject(workbenchModel);
 
     init();
   });

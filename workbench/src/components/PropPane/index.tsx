@@ -29,7 +29,7 @@ function PropPane() {
     }
 
     propPersistAction(() => {
-      const nameSuffix = autoIncrementForName(propHandleModel.rootGroupList.map(g => g.name));
+      const nameSuffix = autoIncrementForName(propHandleModel.propTree.map(g => g.name));
       // 显示分组弹框
       propPersistModel.currSettingPropGroup = {
         name: `配置组${nameSuffix}`,
@@ -38,7 +38,7 @@ function PropPane() {
   }
 
   const renderTabContent = () => {
-    const list = propHandleModel.rootGroupList.map((group) => {
+    const list = propHandleModel.propTree.map((group) => {
       let content = <PropGroupPane group={group} />;
       if (group.struct === PropGroupStructType.Flat) {
         content = <PropBlockPane noWrapMode block={group.propBlockList[0]} />;

@@ -85,7 +85,10 @@ type ComponentInstance = {
   groupList: PropGroup[],
   blockList: PropBlock[],
   itemList: PropItem[],
-  valueList: PropValue[]
+  valueList: PropValue[],
+
+  // ************************** 分割线已下是界面属性 **************************
+  propTree: PropGroup[],
 } & Omit<import("../../cloud/src/entities/ComponentInstance").ComponentInstance, 'component' | 'componentVersion' | 'groupList' | 'blockList' | 'itemList' | 'valueList'>;
 
 type Release = {

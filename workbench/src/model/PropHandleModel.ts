@@ -1,5 +1,6 @@
-import { PropItemType } from "@grootio/common";
-import { propTreeFactory } from "@grootio/core";
+import { PostMessageType, PropItemType } from "@grootio/common";
+import { metadataFactory, propTreeFactory } from "@grootio/core";
+import WorkbenchModel from "./WorkbenchModel";
 
 /**
  * 控制属性编辑器整体UI状态
@@ -14,13 +15,17 @@ export default class PropHandleModel {
   /**
    * 根属性分组
    */
-  public rootGroupList: PropGroup[] = [];
+  public propTree: PropGroup[] = [];
   /**
    * 级联属性分组
    */
   public propItemStack: PropItem[] = [];
 
+  public workbench: WorkbenchModel;
 
+  public inject(workbench: WorkbenchModel) {
+    this.workbench = workbench;
+  }
   /**
    * 向堆栈中追加item分组
    * @param item 追加的PropItem
@@ -71,12 +76,12 @@ export default class PropHandleModel {
   }
 
   public switchActiveGroup = (id: number) => {
-    const group = this.rootGroupList.find(g => g.id === id);
+    const group = this.propTree.find(g => g.id === id);
     if (!group) {
       return
     }
 
-    const preActiveGroup = this.rootGroupList.find(g => g.id === this.activeGroupId);
+    const preActiveGroup = this.propTree.find(g => g.id === this.activeGroupId);
     preActiveGroup.templateDesignMode = false;
     this.activeGroupId = id;
   }
@@ -85,13 +90,41 @@ export default class PropHandleModel {
    * 构建属性树
    */
   public buildPropTree(groupList: PropGroup[], blockList: PropBlock[], itemList: PropItem[], valueList: PropValue[]) {
-    this.rootGroupList = propTreeFactory(groupList, blockList, itemList, valueList) as any as PropGroup[];
+    this.propTree = propTreeFactory(groupList, blockList, itemList, valueList) as any as PropGroup[];
 
-    this.activeGroupId = this.rootGroupList[0].id;
+    this.activeGroupId = this.propTree[0].id;
     console.log('<=================== prop tree built out =================>');
-    console.log(this.rootGroupList);
+    console.log(this.propTree);
 
-    return this.rootGroupList;
+    return this.propTree;
+  }
+
+  public setPropTree(instance: ComponentInstance) {
+    this.propTree = instance.propTree;
+    this.activeGroupId = this.propTree[0].id;
+  }
+
+  public refreshComponent() {
+    const metadataId = this.workbench.prototypeMode ? this.workbench.component.id : this.workbench.componentInstance.id;
+    const metadata = metadataFactory(this.propTree, this.workbench.component, metadataId);
+    console.log('<=================== prop object build out =================>\n', metadata.propsObj);
+    this.workbench.iframeManager.notifyIframe(PostMessageType.Outer_Update_Component, metadata);
+  }
+
+  public fullRefreshComponent(instanceChildren: ComponentInstance[] = []) {
+    const rootMetadataId = this.workbench.prototypeMode ? this.workbench.component.id : this.workbench.componentInstance.id;
+    const rootMetadata = metadataFactory(this.propTree, this.workbench.component, rootMetadataId);
+
+    const childrenMetadata = instanceChildren.map((instance) => {
+      const { groupList, blockList, itemList } = instance;
+      const valueList = instance.valueList;
+      const propTree = propTreeFactory(groupList, blockList, itemList, valueList) as PropGroup[];
+      instance.propTree = propTree;
+      const metadata = metadataFactory(propTree, instance.component, instance.id);
+      return metadata;
+    })
+
+    this.workbench.iframeManager.notifyIframe(PostMessageType.Outer_Full_Update_Components, [rootMetadata, ...childrenMetadata]);
   }
 
   /**
@@ -126,8 +159,8 @@ export default class PropHandleModel {
       pathChain = [] as any;
     }
 
-    for (let index = 0; index < this.rootGroupList.length; index++) {
-      const rootGroup = this.rootGroupList[index];
+    for (let index = 0; index < this.propTree.length; index++) {
+      const rootGroup = this.propTree[index];
 
       const pathChainEndIndex = pathChain.length;
       const result = this.getProp(id, type, rootGroup, pathChain);
