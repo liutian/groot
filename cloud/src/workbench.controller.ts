@@ -192,4 +192,9 @@ export class WorkbenchController {
   async componentInstanceAddChild(@Body() rawInstance: ComponentInstance) {
     return await this.componentInstanceService.addChild(rawInstance);
   }
+
+  @Get('/component-instance/remove/:instanceId')
+  async componentInstanceRemove(@Param('instanceId') instanceId: number) {
+    return await this.componentInstanceService.remove(instanceId);
+  }
 }

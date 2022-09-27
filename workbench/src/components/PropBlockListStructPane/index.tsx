@@ -182,7 +182,9 @@ const PropBlockListStructPane: React.FC<PropsType> = ({ block: propBlock }) => {
       })
     });
 
-    propPersistModel.updateValue(propItem, changedValues[updateKey], +abstractValueId);
+    propPersistModel.updateValue(propItem, changedValues[updateKey], +abstractValueId).then(() => {
+      propHandleModel.refreshComponent();
+    })
   }
 
   // 避免切换组件实例时表单控件无法刷新的问题

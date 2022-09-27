@@ -178,7 +178,7 @@ export class ComponentInstanceService {
     const component = await em.findOne(Component, rawComponentInstace.componentId);
     LogicException.assertNotFound(component, 'component', rawComponentInstace.componentId);
 
-    let childInstance: ComponentInstance;
+    let newInstanceId: number;
 
     await em.begin();
     try {
@@ -191,9 +191,10 @@ export class ComponentInstanceService {
         componentId: rawComponentInstace.componentId,
         releaseId: parentInstance.release.id,
         parentId: parentInstance.id,
-        rootId: parentInstance.id
+        rootId: parentInstance.root?.id || parentInstance.id
       } as ComponentInstance;
-      childInstance = await this.add(rawInstance, em);
+      const childInstance = await this.add(rawInstance, em);
+      newInstanceId = childInstance.id;
 
       await em.commit();
     } catch (e) {
@@ -201,7 +202,16 @@ export class ComponentInstanceService {
       throw e;
     }
 
-    return childInstance;
+    const newInstance = await em.findOne(ComponentInstance, newInstanceId, {
+      populate: ['componentVersion', 'component']
+    });
+
+    newInstance.groupList = await em.find(PropGroup, { component: newInstance.component, componentVersion: newInstance.componentVersion });
+    newInstance.blockList = await em.find(PropBlock, { component: newInstance.component, componentVersion: newInstance.componentVersion });
+    newInstance.itemList = await em.find(PropItem, { component: newInstance.component, componentVersion: newInstance.componentVersion });
+    newInstance.valueList = await em.find(PropValue, { componentInstance: newInstance });
+
+    return newInstance;
   }
 
   async remove(id: number, em = RequestContext.getEntityManager()) {

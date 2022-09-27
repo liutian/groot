@@ -205,7 +205,7 @@ export const create = async (em: EntityManager, scaffold: Scaffold, release: Rel
     componentVersion: profileComponentVersion,
     componentInstance: profileComponentInstance,
     type: PropValueType.Instance,
-    value: `{"id": ${avatarComponentInstance.id},"componentId": ${avatarComponent.id},"name": "${avatarComponent.name}"}`
+    value: `[{"id": ${avatarComponentInstance.id},"componentId": ${avatarComponent.id},"componentName": "${avatarComponent.name}"}]`
   });
   await em.persistAndFlush(profileItem4Value);
 }

@@ -91,9 +91,8 @@ const processAdvancedProp = (metadata: Metadata, store: Metadata[]) => {
 
 }
 
-const createComponentByValue = (valueData: { id: number } | { id: number }[], store: Metadata[]) => {
-  const valueDataList = Array.isArray(valueData) ? valueData : [valueData];
-  const nodes = valueDataList.map((value) => {
+const createComponentByValue = (valueDataList: { id: number }[], store: Metadata[]) => {
+  const nodes = (valueDataList || []).map((value) => {
     const metadata = store.find(m => m.id === value.id);
 
     return buildComponent(metadata, store);

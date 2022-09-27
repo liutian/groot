@@ -167,7 +167,7 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
     } else if (item.type === PropItemType.Function) {
       return <TextEditor type="function" />
     } else if (item.type === PropItemType.Component) {
-      return <ComponentSelect parentInstanceId={workbenchModel.componentInstance?.id} disabled={workbenchModel.prototypeMode} />
+      return <ComponentSelect parentInstanceId={workbenchModel.componentInstance?.id} prototypeMode={workbenchModel.prototypeMode} />
     }
 
     return <>not found item</>
@@ -176,7 +176,18 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
   const updateValue = (changedValues: any) => {
     const updateKey = Object.keys(changedValues)[0];
     const propItem = block.propItemList.find(item => item.propKey === updateKey);
-    propPersistModel.updateValue(propItem, changedValues[updateKey]);
+    let extraInstanceList;
+    if (propItem.type === PropItemType.Component) {
+      extraInstanceList = (changedValues[updateKey] as ComponentValueType[]).filter(v => !!v.extraInstance).map(value => {
+        const extraInstance = value.extraInstance;
+        delete value.extraInstance;
+        return extraInstance;
+      });
+    }
+
+    propPersistModel.updateValue(propItem, changedValues[updateKey]).then(() => {
+      propHandleModel.refreshComponent(extraInstanceList);
+    })
   }
 
   // 避免切换组件实例时表单控件无法刷新的问题

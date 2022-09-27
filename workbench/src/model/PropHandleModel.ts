@@ -104,18 +104,23 @@ export default class PropHandleModel {
     this.activeGroupId = this.propTree[0].id;
   }
 
-  public refreshComponent() {
+  public refreshComponent(extraInstanceList: ComponentInstance[] = []) {
+    const extraMetadata = this.instanceToMetadata(extraInstanceList);
     const metadataId = this.workbench.prototypeMode ? this.workbench.component.id : this.workbench.componentInstance.id;
     const metadata = metadataFactory(this.propTree, this.workbench.component, metadataId);
     console.log('<=================== prop object build out =================>\n', metadata.propsObj);
-    this.workbench.iframeManager.notifyIframe(PostMessageType.Outer_Update_Component, metadata);
+    this.workbench.iframeManager.notifyIframe(PostMessageType.Outer_Update_Component, [metadata, ...extraMetadata]);
   }
 
   public fullRefreshComponent(instanceChildren: ComponentInstance[] = []) {
     const rootMetadataId = this.workbench.prototypeMode ? this.workbench.component.id : this.workbench.componentInstance.id;
     const rootMetadata = metadataFactory(this.propTree, this.workbench.component, rootMetadataId);
+    const childrenMetadata = this.instanceToMetadata(instanceChildren);
+    this.workbench.iframeManager.notifyIframe(PostMessageType.Outer_Full_Update_Components, [rootMetadata, ...childrenMetadata]);
+  }
 
-    const childrenMetadata = instanceChildren.map((instance) => {
+  instanceToMetadata(instanceList: ComponentInstance[]) {
+    return instanceList.map((instance) => {
       const { groupList, blockList, itemList } = instance;
       const valueList = instance.valueList;
       const propTree = propTreeFactory(groupList, blockList, itemList, valueList) as PropGroup[];
@@ -123,8 +128,6 @@ export default class PropHandleModel {
       const metadata = metadataFactory(propTree, instance.component, instance.id);
       return metadata;
     })
-
-    this.workbench.iframeManager.notifyIframe(PostMessageType.Outer_Full_Update_Components, [rootMetadata, ...childrenMetadata]);
   }
 
   /**

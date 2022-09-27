@@ -206,5 +206,10 @@ export default class WorkbenchModel {
   public switchComponentInstance(instanceId: number) {
     needRewrite();
   }
-
+  public addComponentInstance(instance: ComponentInstance) {
+    needRewrite();
+  }
+  public removeComponentInstance(instanceId: number) {
+    needRewrite();
+  }
 }

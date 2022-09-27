@@ -101,6 +101,14 @@ const Editor: React.FC = () => {
     (Object.getPrototypeOf(workbenchModel) as WorkbenchModel).switchComponentInstance = (instanceId) => {
       editorModel.switchComponentInstance(instanceId, true);
     }
+
+    (Object.getPrototypeOf(workbenchModel) as WorkbenchModel).addComponentInstance = (instance) => {
+      editorModel.addComponentInstance(instance);
+    }
+
+    (Object.getPrototypeOf(workbenchModel) as WorkbenchModel).removeComponentInstance = (instanceId) => {
+      editorModel.removeComponentInstance(instanceId);
+    }
   }
 
   if (editorModel.loadStatus === 'doing') {

@@ -1,8 +1,22 @@
-.container {
+.itemContainer {
   display: flex;
+  margin-bottom: 5px;
+}
+
+.itemContainer:last-of-type {
+  margin-bottom: 0;
+}
+
+.select {
+  width: unset !important;
+  flex-grow: 1;
 }
 
 .suffix {
-  padding-left: 10px;
-  padding-right: 10px;
+  padding-left: 5px;
+  padding-right: 5px;
+
+  :global(.ant-btn) {
+    padding: 5px;
+  }
 }

@@ -58,6 +58,14 @@ export default class EditorModel {
     }
   }
 
+  public addComponentInstance(instance: ComponentInstance) {
+    this.instanceList.push(instance);
+  }
+  public removeComponentInstance(instanceId: number) {
+    const index = this.instanceList.findIndex(i => i.id === instanceId);
+    this.instanceList.splice(index, 1);
+  }
+
   public addPage = (rawComponentInstance: ComponentInstance) => {
     this.pageAddModalStatus = ModalStatus.Submit;
     return request(APIPath.componentInstance_add, {

@@ -156,7 +156,7 @@ function loadPage(path: string): Promise<Page> | Page {
   return page.loadMetadata().then(() => {
     loadingPages.delete(path);
     loadedPageMap.set(path, page);
-    page.compile();
+    page.update();
     return page;
   });
 }

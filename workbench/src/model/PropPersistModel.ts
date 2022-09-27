@@ -341,7 +341,7 @@ export default class PropPersistModel {
     const propValue = propItem.valueList.filter(value => {
       return value.type === (this.workbench.prototypeMode ? PropValueType.Prototype : PropValueType.Instance)
     }).find(value => {
-      return value.abstractValueIdChain === abstractValueIdChain
+      return value.abstractValueIdChain === abstractValueIdChain || (!value.abstractValueIdChain && !abstractValueIdChain)
     });
 
     let paramData = {} as PropValue;
@@ -368,7 +368,7 @@ export default class PropPersistModel {
       }
     }
 
-    request(APIPath.value_update, paramData).then(({ data }) => {
+    return request(APIPath.value_update, paramData).then(({ data }) => {
       if (propValue) {
         propValue.value = valueStr;
       } else if ((paramData as any).type === 'instance') {
@@ -378,8 +378,6 @@ export default class PropPersistModel {
       } else {
         propItem.defaultValue = valueStr;
       }
-
-      this.propHandle.refreshComponent();
     });
   }
 }

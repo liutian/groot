@@ -6,6 +6,7 @@ export enum APIPath {
   application_detail = 'application/detail/:applicationId?releaseId=:releaseId',
   scaffold_detail = 'scaffold/detail/:scaffoldId',
   componentInstance_addChild = 'POST component-instance/add-child',
+  componentInstance_remove = 'component-instance/remove/:instanceId',
   componentPrototype_detail = 'component-prototype/detail/:componentId?versionId=:versionId',
   component_list = 'component/list?container=:container',
   component_add = 'POST component/add',

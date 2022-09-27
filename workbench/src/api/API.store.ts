@@ -58,5 +58,6 @@ export type APIStore = {
   [APIPath.block_listStructPrimaryItem_save]: [{ blockId: number, data: string }],
   [APIPath.value_abstractType_add]: [PropValue, API.Response<PropValue>],
   [APIPath.value_abstractType_remove]: [{ propValueId: number }],
-  [APIPath.value_update]: [PropValue, API.Response<PropValue>]
+  [APIPath.value_update]: [PropValue, API.Response<PropValue>],
+  [APIPath.componentInstance_remove]: [{ instanceId: number }]
 };

@@ -60,12 +60,13 @@ export class Page extends EventTarget {
       });
   }
 
-  compile() {
+  update() {
     const rootMetadata = this.metadataList.find(m => !m.parentId);
     this.rootComponent = buildComponent(rootMetadata, this.metadataList);
   }
 
-  incrementUpdate(newMetadata: Metadata) {
+  incrementUpdate([newMetadata, ...extra]: Metadata[]) {
+    this.metadataList.push(...extra);
     const metadata = this.metadataList.find(m => m.id === newMetadata.id);
     if (metadata) {
       metadata.propsObj = newMetadata.propsObj;
