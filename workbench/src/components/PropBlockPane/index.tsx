@@ -40,7 +40,8 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
       const propValue = propItem.valueList.filter(value => {
         return value.type === (workbenchModel.prototypeMode ? PropValueType.Prototype : PropValueType.Instance)
       }).find(value => {
-        return value.abstractValueIdChain === valueIdChain
+        // 空字符串和null不相等
+        return value.abstractValueIdChain === valueIdChain || (!value.abstractValueIdChain && !valueIdChain)
       })
 
       const value = processPropItemValue(propItem, propValue?.value);

@@ -75,12 +75,7 @@ function notifyIframe(type: PostMessageType, data?: any) {
   }
 
   if (type === PostMessageType.Outer_Update_Component) {
-    iframe.contentWindow.postMessage({
-      type, data: data || {
-        path: iframeDebuggerConfig.controlPage,
-        metadata: data
-      }
-    }, '*');
+    iframe.contentWindow.postMessage({ type, data }, '*');
   } else if (type === PostMessageType.Outer_Set_Application) {
     iframe.contentWindow.postMessage({ type, data: data || applicationData }, '*');
   } else if (type === PostMessageType.Outer_Set_Config) {

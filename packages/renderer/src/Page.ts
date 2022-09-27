@@ -18,7 +18,7 @@ export class Page extends EventTarget {
     this.metadataUrl = data.metadataUrl;
     this.metadataList = data.metadataList;
 
-    if (!this.metadataUrl && (!Array.isArray(this.metadataList) || this.metadataList.length === 0)) {
+    if (!controlMode && !this.metadataUrl && (!Array.isArray(this.metadataList) || this.metadataList.length === 0)) {
       errorInfo('metadataUrl 和 metadataList 不能同时为空');
     }
   }

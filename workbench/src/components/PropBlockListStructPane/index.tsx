@@ -1,11 +1,11 @@
-import { DeleteOutlined, DragOutlined, SettingOutlined } from "@ant-design/icons";
+import { DeleteOutlined, DragOutlined, QuestionCircleOutlined, SettingOutlined } from "@ant-design/icons";
 import { PropBlockStructType, PropItemType, PropValueType } from "@grootio/common";
 import { processPropItemValue } from "@grootio/core";
 import PropHandleModel from "@model/PropHandleModel";
 import PropPersistModel from "@model/PropPersistModel";
 import WorkbenchModel from "@model/WorkbenchModel";
 import { useModel } from "@util/robot";
-import { DatePicker, Form, Input, InputNumber, Select, Space, Switch, Table, TimePicker, Typography } from "antd";
+import { DatePicker, Form, Input, InputNumber, Select, Space, Switch, Table, TimePicker, Tooltip, Typography } from "antd";
 import { useState } from "react";
 
 import styles from './index.module.less';
@@ -137,6 +137,12 @@ const PropBlockListStructPane: React.FC<PropsType> = ({ block: propBlock }) => {
   }
 
   const renderFormItem = (item: PropItem) => {
+    if (PropItemType.Select === item.type) {
+      if (item.valueOptions && !item.optionList) {
+        item.optionList = JSON.parse(item.valueOptions || '[]');
+      }
+    }
+
     if (item.type === PropItemType.Text) {
       return <Input />;
     } else if (item.type === PropItemType.Number) {
@@ -149,9 +155,13 @@ const PropBlockListStructPane: React.FC<PropsType> = ({ block: propBlock }) => {
       return <DatePicker />;
     } else if (item.type === PropItemType.Time_Picker) {
       return <TimePicker style={{ width: '100%' }} />;
+    } else {
+      return <>
+        该类型不支持 <Tooltip title="仅支持文本，数字，开关，下拉框，日期，时间">
+          <QuestionCircleOutlined />
+        </Tooltip>
+      </>
     }
-
-    return <>not found item</>
   }
 
   const showPropItemSetting = (abstractValueId: number) => {

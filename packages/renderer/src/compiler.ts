@@ -70,7 +70,7 @@ const processAdvancedProp = (metadata: Metadata, store: Metadata[]) => {
       }
     })
 
-    if (propMetadata.type === PropMetadataType.Component) {
+    if (propMetadata.type === PropMetadataType.Component && ctx[endPropKey]) {
       ctx[endPropKey] = createComponentByValue(ctx[endPropKey], store);
     } else if (propMetadata.type === PropMetadataType.Json) {
       try {
