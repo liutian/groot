@@ -1,10 +1,11 @@
-import { Button, Input, Select } from 'antd';
+import { Avatar, Button, Input, Select } from 'antd';
 import { ProTable } from '@ant-design/pro-table';
 import { UIManager } from '@grootio/renderer';
 import { useLocation } from 'react-router';
 import react from 'react';
 import * as tslib from 'tslib';
 import * as jsxRuntime from 'react/jsx-runtime';
+import Profile from 'components/Profile';
 
 UIManager.init({
   appKey: 'demo',
@@ -17,9 +18,13 @@ UIManager.init({
       Button,
       Input,
       Select,
+      Avatar
     },
     '@ant-design/pro-table': {
       ProTable
+    },
+    app: {
+      Profile
     },
     tslib,
     ['react/jsx-runtime']: jsxRuntime,
