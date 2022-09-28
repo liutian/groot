@@ -1,4 +1,4 @@
-import { Metadata, PropMetadataType } from "@grootio/common";
+import { ComponentValueType, Metadata, PropMetadataType } from "@grootio/common";
 
 import React, { useEffect, useState } from "react";
 import { globalConfig } from "./config";
@@ -91,8 +91,8 @@ const processAdvancedProp = (metadata: Metadata, store: Metadata[]) => {
 
 }
 
-const createComponentByValue = (valueDataList: { id: number }[], store: Metadata[]) => {
-  const nodes = (valueDataList || []).map((value) => {
+const createComponentByValue = (value: ComponentValueType<{ id: number }>, store: Metadata[]) => {
+  const nodes = (value.list || []).map((value) => {
     const metadata = store.find(m => m.id === value.id);
 
     return buildComponent(metadata, store);

@@ -121,6 +121,3 @@ type Scaffold = {
 
 type Deploy = {
 } & Omit<import("../../cloud/src/entities/Deploy").Deploy, ''>;
-
-
-type ComponentValueType = { id: number, componentId: number, componentName: string, extraInstance?: ComponentInstance };

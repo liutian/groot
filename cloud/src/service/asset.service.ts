@@ -68,7 +68,7 @@ export class AssetService {
 
       const rootMetadata = await this.createMetadata(rootInstance, em);
       metadataList.push(rootMetadata);
-      const childInstanceList = await em.find(ComponentInstance, { root: rootInstance });
+      const childInstanceList = await em.find(ComponentInstance, { root: rootInstance }, { populate: ['component', 'componentVersion'] });
 
       for (let childIndex = 0; childIndex < childInstanceList.length; childIndex++) {
         const childInstance = childInstanceList[childIndex];

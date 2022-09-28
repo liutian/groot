@@ -206,4 +206,14 @@ export type requestFnType<Store extends Record<string, any[]>> =
     path: T,
     params?: P,
     config?: any,
-  ) => R; 
+  ) => R;
+
+export type ComponentValueItemType<T> = { id: number, componentId: number, componentName: string, extra?: T }
+
+
+export type ComponentValueType<T> = {
+  setting: {
+
+  },
+  list: ComponentValueItemType<T>[]
+}

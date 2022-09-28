@@ -7,38 +7,47 @@ import { useModel } from '@util/robot';
 import { APIPath } from 'api/API.path';
 import request from '@util/request';
 import styles from './index.module.less';
+import { ComponentValueItemType, ComponentValueType } from '@grootio/common';
 
 type PropType = {
-  value?: ComponentValueType[],
-  onChange?: (newValue: ComponentValueType[]) => void;
+  value?: ComponentValueType<ComponentInstance>,
+  onChange?: (newValue: ComponentValueType<ComponentInstance>) => void;
   parentInstanceId?: number,
   prototypeMode: boolean
 };
 
 const ComponentSelect: React.FC<PropType> = ({ value: _value, onChange: _onChange, parentInstanceId, prototypeMode }) => {
   const [workbenchModel] = useModel(WorkbenchModel);
-  const [valueList, setValueList] = useState<ComponentValueType[]>([..._value]);
+  const [valueList, setValueList] = useState<ComponentValueItemType<ComponentInstance>[]>(() => {
+    if (_value?.list.length) {
+      return [..._value.list]
+    } else {
+      return [{} as ComponentValueItemType<ComponentInstance>]
+    }
+  });
 
   if (prototypeMode) {
     return <Select disabled></Select>
   }
 
-  const onChange = (newValue: ComponentValueType, index: number) => {
+  const onChange = (newValue: ComponentValueItemType<ComponentInstance>, index: number) => {
     valueList[index] = newValue;
-    _onChange([...valueList]);
+    _value.list = [...valueList];
+    _onChange({ ..._value });
   }
 
   const add = () => {
-    valueList.push({} as ComponentValueType);
+    valueList.push({} as ComponentValueItemType<ComponentInstance>);
     setValueList([...valueList]);
   }
 
-  const remove = (value: ComponentValueType, index: number) => {
+  const remove = (value: ComponentValueItemType<ComponentInstance>, index: number) => {
     if (value.id) {
       request(APIPath.componentInstance_remove, { instanceId: value.id }).then(() => {
         workbenchModel.removeComponentInstance(value.id);
         valueList.splice(index, 1);
-        _onChange([...valueList]);
+        _value.list = [...valueList];
+        _onChange({ ..._value });
       });
     } else {
       valueList.splice(index, 1);
@@ -80,8 +89,8 @@ const ComponentSelect: React.FC<PropType> = ({ value: _value, onChange: _onChang
 }
 
 type ItemPropTypeItem = {
-  value?: ComponentValueType,
-  onChange?: (newValue: ComponentValueType) => void;
+  value?: ComponentValueItemType<ComponentInstance>,
+  onChange?: (newValue: ComponentValueItemType<ComponentInstance>) => void;
   parentInstanceId?: number,
 };
 
@@ -124,7 +133,7 @@ const ComponentSelectItem: React.FC<ItemPropTypeItem> = ({ value, onChange: _onC
         id: data.id,
         componentName: data.component.name,
         componentId: data.component.id,
-        extraInstance: data
+        extra: data
       });
     })
   }
