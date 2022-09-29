@@ -1,4 +1,4 @@
-import { ComponentValueType, Metadata, PropMetadataType } from "@grootio/common";
+import { ComponentValueType, Metadata, PropMetadata, PropMetadataType, RuntimeComponentValueType } from "@grootio/common";
 
 import React, { useEffect, useState } from "react";
 import { globalConfig } from "./config";
@@ -71,7 +71,7 @@ const processAdvancedProp = (metadata: Metadata, store: Metadata[]) => {
     })
 
     if (propMetadata.type === PropMetadataType.Component) {
-      ctx[endPropKey] = createComponentByValue(ctx[endPropKey], store);
+      ctx[endPropKey] = createComponentByValue(ctx[endPropKey], propMetadata, store);
     } else if (propMetadata.type === PropMetadataType.Json) {
       try {
         ctx[endPropKey] = JSON.parse(ctx[endPropKey]);
@@ -91,14 +91,16 @@ const processAdvancedProp = (metadata: Metadata, store: Metadata[]) => {
 
 }
 
-const createComponentByValue = (value: ComponentValueType<{ id: number }>, store: Metadata[]) => {
+const createComponentByValue = (value: ComponentValueType<{ id: number }>, propMetadata: PropMetadata, store: Metadata[]) => {
   const nodes = (value?.list || []).map((value) => {
     const metadata = store.find(m => m.id === value.id);
 
     return buildComponent(metadata, store);
   });
 
-  (nodes as any)._groot = {};
+  (nodes as any)._groot = {
+    keyChain: propMetadata.keyChain
+  } as RuntimeComponentValueType;
 
   return nodes;
 }

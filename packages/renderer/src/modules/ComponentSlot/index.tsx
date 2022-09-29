@@ -1,9 +1,9 @@
-import { PostMessageType } from "@grootio/common";
+import { PostMessageType, RuntimeComponentValueType } from "@grootio/common";
 import { useEffect, useRef } from "react";
 import { controlMode } from "../../util";
 
 type PropType = {
-  children: React.ReactDOM & { _groot?: { keyChain: string } },
+  children: React.ReactDOM & { _groot?: RuntimeComponentValueType },
 }
 
 type FnType = {
@@ -16,7 +16,7 @@ type FnType = {
 export const ComponentSlot: React.FC<PropType> & FnType = ({ children }) => {
 
   if (!children) {
-    return <></>
+    return null;
   } else if (!children._groot) {
     return <div>参数异常！</div>
   }

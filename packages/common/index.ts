@@ -210,10 +210,17 @@ export type requestFnType<Store extends Record<string, any[]>> =
 
 export type ComponentValueItemType<T> = { id: number, componentId: number, componentName: string, extra?: T }
 
+export type ComponentValueSettingType = {
+
+}
 
 export type ComponentValueType<T> = {
-  setting: {
-
-  },
+  setting: ComponentValueSettingType,
   list: ComponentValueItemType<T>[]
+}
+
+
+export type RuntimeComponentValueType = {
+  keyChain: string,
+  setting: ComponentValueSettingType
 }
