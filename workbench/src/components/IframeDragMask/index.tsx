@@ -30,11 +30,11 @@ const IframeDragMask: React.FC<PropType> = (prop) => {
   }
 
   const drop = (event) => {
-    const component = event.dataTransfer.getData('groot');
+    const componentId = event.dataTransfer.getData('componentId');
     workbenchModel.iframeManager.notifyIframe(PostMessageType.Drag_Component_Drop, {
       positionX: event.pageX,
       positionY: event.pageY,
-      component: JSON.parse(component)
+      componentId: componentId
     });
     console.log(`iframeDragMask drog finish`);
   }

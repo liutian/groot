@@ -8,3 +8,7 @@ export enum ModalStatus {
 export function needRewrite(): any {
   throw new Error('this function must be rewrite');
 }
+
+export enum WorkbenchEvent {
+  AddComponent = 'add_component'
+}

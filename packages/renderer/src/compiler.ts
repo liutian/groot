@@ -44,7 +44,7 @@ const createComponentWrapper = (metadata: Metadata) => {
       debugInfo(`组件刷新 ${componentName}`);
     }
 
-    return React.createElement('div', { 'data-groot-component-id': metadata.id },
+    return React.createElement('div', { 'data-groot-component-instance-id': metadata.id },
       React.createElement(module, metadata.propsObj)
     );
   }

@@ -1,4 +1,5 @@
 import { ApplicationData, IframeDebuggerConfig, iframeNamePrefix, PostMessageType } from "@grootio/common";
+import { WorkbenchEvent } from "@util/common";
 
 
 let iframe: HTMLIFrameElement;
@@ -9,6 +10,7 @@ let iframeDebuggerConfig: IframeDebuggerConfig = {
 let applicationData: ApplicationData;
 let playgroundPath: string;
 let basePath: string;
+let eventTrigger: EventTarget;
 
 let pageNavCallback: () => void;
 
@@ -20,12 +22,13 @@ const instancePrototype = {
 
 export type IframeManagerInstance = typeof instancePrototype;
 
-export function launchIframeManager(ele: HTMLIFrameElement, _basePath: string, _playgroundPath: string, _applicationData: ApplicationData): IframeManagerInstance {
+export function launchIframeManager(ele: HTMLIFrameElement, _basePath: string, _playgroundPath: string, _applicationData: ApplicationData, _eventTrigger: EventTarget): IframeManagerInstance {
   iframe = ele;
   iframe.contentWindow.name = iframeNamePrefix;
   playgroundPath = _playgroundPath;
   basePath = _basePath;
   applicationData = _applicationData;
+  eventTrigger = _eventTrigger;
 
   window.self.addEventListener('message', onMessage);
 
@@ -49,7 +52,8 @@ function onMessage(event: MessageEvent) {
     pageNavCallback();// 内部一般执行 Outer_Set_Page
     pageNavCallback = null;
   } else if (event.data.type === PostMessageType.Drag_Hit_Slot) {
-    alert('drag hit ' + event.data.data);
+    const _event = new CustomEvent(WorkbenchEvent.AddComponent, { detail: event.data.data });
+    eventTrigger.dispatchEvent(_event);
   }
 }
 

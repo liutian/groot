@@ -13,7 +13,7 @@ export const DragComponent: React.FC<{ component: Component }> = ({ component })
 
   const dragstart = (e) => {
     iframeDragMaskEle.classList.add('show');
-    e.dataTransfer.setData('groot', JSON.stringify(component));
+    e.dataTransfer.setData('componentId', component.id);
     console.log('drag start');
   }
 

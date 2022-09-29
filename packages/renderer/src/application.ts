@@ -70,7 +70,7 @@ function onMessage(event: any) {
   } else if (messageType === PostMessageType.Drag_Component_Leave) {
     ComponentSlot.respondDragLeave();
   } else if (messageType === PostMessageType.Drag_Component_Drop) {
-    ComponentSlot.respondDragDrop(event.data.data.positionX, event.data.data.positionY, event.data.data.component);
+    ComponentSlot.respondDragDrop(event.data.data.positionX, event.data.data.positionY, event.data.data.componentId);
   }
 }
 

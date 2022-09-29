@@ -7,7 +7,7 @@ import PropHandleModel from "./PropHandleModel";
 /**
  * 管理编辑器整体UI状态
  */
-export default class WorkbenchModel {
+export default class WorkbenchModel extends EventTarget {
   static modelName = 'workbench';
 
   /**
@@ -59,6 +59,7 @@ export default class WorkbenchModel {
   public propHandle: PropHandleModel;
 
   public constructor() {
+    super();
     this.iframeReadyPromise = new Promise((resolve) => {
       this.iframeReadyResolve = resolve;
     });
@@ -75,7 +76,7 @@ export default class WorkbenchModel {
 
     const playgroundPath = this.prototypeMode ? this.scaffold.playgroundPath : this.application.playgroundPath;
     const appData = this.buildApplicationData(playgroundPath);
-    this.iframeManager = launchIframeManager(iframe, this.iframeBasePath, playgroundPath, appData);
+    this.iframeManager = launchIframeManager(iframe, this.iframeBasePath, playgroundPath, appData, this);
     this.iframeReadyResolve();
   }
 

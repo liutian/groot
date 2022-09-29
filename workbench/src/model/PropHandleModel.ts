@@ -1,5 +1,6 @@
 import { PostMessageType, PropItemType } from "@grootio/common";
 import { metadataFactory, propTreeFactory } from "@grootio/core";
+import { WorkbenchEvent } from "@util/common";
 import WorkbenchModel from "./WorkbenchModel";
 
 /**
@@ -25,6 +26,7 @@ export default class PropHandleModel {
 
   public inject(workbench: WorkbenchModel) {
     this.workbench = workbench;
+    this.watchEvent();
   }
   /**
    * 向堆栈中追加item分组
@@ -244,5 +246,13 @@ export default class PropHandleModel {
     const block = group.propBlockList.find(b => b.id === propItem.blockId);
     block.highlight = false;
     propItem.highlight = false;
+  }
+
+  private watchEvent() {
+    this.workbench.addEventListener(WorkbenchEvent.AddComponent, (event) => {
+      const _event = event as CustomEvent;
+      alert('收到');
+      console.dir(_event.detail);
+    })
   }
 }

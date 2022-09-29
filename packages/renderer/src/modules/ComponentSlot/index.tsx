@@ -16,6 +16,7 @@ type FnType = {
 export const ComponentSlot: React.FC<PropType> & FnType = ({ children }) => {
 
   if (!children) {
+    console.warn('插槽未再组件原型中进行配置！');
     return null;
   } else if (!children._groot) {
     return <div>参数异常！</div>
@@ -26,7 +27,7 @@ export const ComponentSlot: React.FC<PropType> & FnType = ({ children }) => {
       <>{children}</>
     </div>
 
-    {controlMode && <DragZone name={children?._groot.keyChain} />}
+    {controlMode && <DragZone propKeyChain={children?._groot.keyChain} />}
   </>
 }
 
@@ -44,13 +45,13 @@ const styles = {
   'justifyContent': 'center'
 }
 const highlightStyles = {
-  backgroundColor: 'red'
+  backgroundColor: 'rgb(255 216 216)'
 }
 
-let activeDragSlot;
+let activeSlotEle;
 let draging;
 
-const DragZone: React.FC<{ name: string }> = ({ name }) => {
+const DragZone: React.FC<{ propKeyChain: string }> = ({ propKeyChain }) => {
   const containerRef = useRef<HTMLDivElement>();
 
   useEffect(() => {
@@ -63,27 +64,26 @@ const DragZone: React.FC<{ name: string }> = ({ name }) => {
     }
   }, []);
 
-  return <div ref={containerRef} data-groot-drag-slot-name={name} style={styles} >
+  return <div ref={containerRef} data-groot-prop-key-chain={propKeyChain} style={styles} >
     拖拽组件到这里
   </div>
 }
 
 
 function respondDragOver(positionX: number, positionY: number) {
-  const hitEles = detectDragSlotAndComponent(positionX, positionY);
+  const hitEles = detectSlotEle(positionX, positionY);
 
   if (hitEles) {
-    console.log('hit elements ');
-    const [dragSlot] = hitEles;
+    const [slotEle] = hitEles;
 
-    if (dragSlot !== activeDragSlot) {
-      activeDragSlot?.dragLeave();
-      dragSlot.dragEnter();
-      activeDragSlot = dragSlot;
+    if (slotEle !== activeSlotEle) {
+      activeSlotEle?.dragLeave();
+      slotEle.dragEnter();
+      activeSlotEle = slotEle;
     }
   } else {
-    activeDragSlot?.dragLeave();
-    activeDragSlot = null;
+    activeSlotEle?.dragLeave();
+    activeSlotEle = null;
   }
 }
 
@@ -93,22 +93,21 @@ function respondDragEnter() {
 }
 
 function respondDragLeave() {
-  activeDragSlot?.dragLeave();
-  activeDragSlot = null;
+  activeSlotEle?.dragLeave();
+  activeSlotEle = null;
   draging = false;
 }
 
-function respondDragDrop(positionX: number, positionY: number, component: any) {
-  const hitEles = detectDragSlotAndComponent(positionX, positionY);
+function respondDragDrop(positionX: number, positionY: number, componentId: number) {
+  const hitEles = detectSlotEle(positionX, positionY);
   if (hitEles) {
-    console.log('hit elements ');
     const [dragSlot, componentEle] = hitEles;
     window.parent.postMessage({
       type: PostMessageType.Drag_Hit_Slot,
       data: {
-        slot: dragSlot.dataset.grootDragSlotName,
-        componentEle: componentEle.dataset.grootComponentId,
-        component
+        propKeyChain: dragSlot.dataset.grootPropKeyChain,
+        placeComponentInstanceId: componentEle.dataset.grootComponentInstanceId,
+        componentId
       }
     }, '*');
 
@@ -116,7 +115,7 @@ function respondDragDrop(positionX: number, positionY: number, component: any) {
   }
 }
 
-function detectDragSlotAndComponent(positionX: number, positionY: number) {
+function detectSlotEle(positionX: number, positionY: number) {
   if (!draging) {
     return null;
   }
@@ -126,32 +125,32 @@ function detectDragSlotAndComponent(positionX: number, positionY: number) {
     return null;
   }
 
-  let dragSlot, componentEle;
+  let hoverSlotEle, componentEle;
   do {
-    if (hitEle.dataset.grootDragSlotName) {
-      dragSlot = hitEle;
-      hitEle = hitEle.parentElement;
+    if (hitEle.dataset.grootPropKeyChain) {
+      hoverSlotEle = hitEle;
+      componentEle = hitEle.parentElement;
       break;
     }
 
     hitEle = hitEle.parentElement;
   } while (hitEle);
 
-  if (!hitEle) {
+  if (!componentEle) {
     return null;
   }
 
   do {
-    if (hitEle.dataset.grootComponentId) {
-      componentEle = hitEle;
+    if (componentEle.dataset.grootComponentInstanceId) {
+      componentEle = componentEle;
       break;
     }
 
-    hitEle = hitEle.parentElement;
-  } while (hitEle);
+    componentEle = componentEle.parentElement;
+  } while (componentEle);
 
-  if (dragSlot && componentEle) {
-    return [dragSlot, componentEle];
+  if (hoverSlotEle && componentEle) {
+    return [hoverSlotEle, componentEle];
   }
 
   return null;
