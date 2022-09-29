@@ -47,6 +47,11 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
       const value = processPropItemValue(propItem, propValue?.value);
       cacheMap.set(propItem, value);
 
+
+      if (propItem.type === PropItemType.Component && !value) {
+        return { list: {} };
+      }
+
       return value;
     }
   })

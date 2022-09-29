@@ -19,7 +19,7 @@ type PropType = {
 const ComponentSelect: React.FC<PropType> = ({ value: _value, onChange: _onChange, parentInstanceId, prototypeMode }) => {
   const [workbenchModel] = useModel(WorkbenchModel);
   const [valueList, setValueList] = useState<ComponentValueItemType<ComponentInstance>[]>(() => {
-    if (_value?.list.length) {
+    if (_value.list.length) {
       return [..._value.list]
     } else {
       return [{} as ComponentValueItemType<ComponentInstance>]

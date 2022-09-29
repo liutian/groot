@@ -1,9 +1,11 @@
 import Container from "./modules/Container";
 import { UIManagerConfig } from "@grootio/common";
+import PageContainer from "./modules/PageContainer";
 
 const internalModules = {
   groot: {
-    Container
+    Container,
+    PageContainer
   }
 }
 

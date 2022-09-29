@@ -1,10 +1,10 @@
-import { ApplicationData, IframeDebuggerConfig, Metadata, PostMessageType, UIManagerConfig } from '@grootio/common';
+import { ApplicationData, IframeDebuggerConfig, PostMessageType, UIManagerConfig } from '@grootio/common';
 
 import { Page } from './Page';
 import { ApplicationStatus } from './types';
 import { controlMode } from './util';
 import { globalConfig, setConfig } from './config';
-import { DragSlot } from './modules/DragSlot';
+import { ComponentSlot } from './modules/ComponentSlot';
 
 
 // 应用实例对象
@@ -64,13 +64,13 @@ function onMessage(event: any) {
       activePage.fetchMetadataResolve(event.data.data.metadataList);
     }
   } else if (messageType === PostMessageType.Drag_Component_Over) {
-    DragSlot.respondDragOver(event.data.data.positionX, event.data.data.positionY);
+    ComponentSlot.respondDragOver(event.data.data.positionX, event.data.data.positionY);
   } else if (messageType === PostMessageType.Drag_Component_Enter) {
-    DragSlot.respondDragEnter();
+    ComponentSlot.respondDragEnter();
   } else if (messageType === PostMessageType.Drag_Component_Leave) {
-    DragSlot.respondDragLeave();
+    ComponentSlot.respondDragLeave();
   } else if (messageType === PostMessageType.Drag_Component_Drop) {
-    DragSlot.respondDragDrop(event.data.data.positionX, event.data.data.positionY, event.data.data.component);
+    ComponentSlot.respondDragDrop(event.data.data.positionX, event.data.data.positionY, event.data.data.component);
   }
 }
 

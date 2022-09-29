@@ -1,3 +1,3 @@
 export * from './src/UIManager';
 
-export * from './src/modules/DragSlot';
+export * from './src/modules/ComponentSlot';

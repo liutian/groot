@@ -3,23 +3,45 @@ import { useEffect, useRef } from "react";
 import { controlMode } from "../../util";
 
 type PropType = {
-  name: string
+  children: React.ReactDOM & { _groot?: { keyChain: string } },
 }
 
-export const DragSlot = (props: PropType) => {
+type FnType = {
+  respondDragOver: typeof respondDragOver,
+  respondDragEnter: typeof respondDragEnter,
+  respondDragLeave: typeof respondDragLeave,
+  respondDragDrop: typeof respondDragDrop
+}
 
-  if (!controlMode) {
-    return null;
+export const ComponentSlot: React.FC<PropType> & FnType = ({ children }) => {
+
+  if (!children) {
+    return <></>
+  } else if (!children._groot) {
+    return <div>参数异常！</div>
   }
 
-  return <DragZone {...props} />;
+  return <>
+    <div style={{ display: 'grid' }}>
+      <>{children}</>
+    </div>
+
+    {controlMode && <DragZone name={children?._groot.keyChain} />}
+  </>
 }
+
+ComponentSlot.respondDragOver = respondDragOver;
+ComponentSlot.respondDragEnter = respondDragEnter;
+ComponentSlot.respondDragLeave = respondDragLeave;
+ComponentSlot.respondDragDrop = respondDragDrop;
 
 
 const styles = {
+  display: 'flex',
   backgroundColor: 'rgb(216 244 255)',
-  flexGrow: 1,
-  flexBasis: '100px'
+  height: '100px',
+  'alignItems': 'center',
+  'justifyContent': 'center'
 }
 const highlightStyles = {
   backgroundColor: 'red'
@@ -28,7 +50,7 @@ const highlightStyles = {
 let activeDragSlot;
 let draging;
 
-const DragZone: React.FC<PropType> = ({ name }) => {
+const DragZone: React.FC<{ name: string }> = ({ name }) => {
   const containerRef = useRef<HTMLDivElement>();
 
   useEffect(() => {
@@ -41,11 +63,13 @@ const DragZone: React.FC<PropType> = ({ name }) => {
     }
   }, []);
 
-  return <div ref={containerRef} data-groot-drag-slot-name={name} style={styles} />
+  return <div ref={containerRef} data-groot-drag-slot-name={name} style={styles} >
+    拖拽组件到这里
+  </div>
 }
 
 
-DragSlot.respondDragOver = (positionX: number, positionY: number) => {
+function respondDragOver(positionX: number, positionY: number) {
   const hitEles = detectDragSlotAndComponent(positionX, positionY);
 
   if (hitEles) {
@@ -64,17 +88,17 @@ DragSlot.respondDragOver = (positionX: number, positionY: number) => {
 }
 
 
-DragSlot.respondDragEnter = () => {
+function respondDragEnter() {
   draging = true;
 }
 
-DragSlot.respondDragLeave = () => {
+function respondDragLeave() {
   activeDragSlot?.dragLeave();
   activeDragSlot = null;
   draging = false;
 }
 
-DragSlot.respondDragDrop = (positionX: number, positionY: number, component: any) => {
+function respondDragDrop(positionX: number, positionY: number, component: any) {
   const hitEles = detectDragSlotAndComponent(positionX, positionY);
   if (hitEles) {
     console.log('hit elements ');
@@ -88,7 +112,7 @@ DragSlot.respondDragDrop = (positionX: number, positionY: number, component: any
       }
     }, '*');
 
-    DragSlot.respondDragLeave();
+    ComponentSlot.respondDragLeave();
   }
 }
 
