@@ -208,19 +208,31 @@ export type requestFnType<Store extends Record<string, any[]>> =
     config?: any,
   ) => R;
 
-export type ComponentValueItemType<T> = { id: number, componentId: number, componentName: string, extra?: T }
+export type ComponentValueItemType = { instanceId: number, componentId: number, componentName: string }
 
 export type ComponentValueSettingType = {
 
 }
 
-export type ComponentValueType<T> = {
+export type ComponentValueType = {
   setting: ComponentValueSettingType,
-  list: ComponentValueItemType<T>[]
+  list: ComponentValueItemType[]
 }
 
 
-export type RuntimeComponentValueType = {
-  keyChain: string,
-  setting: ComponentValueSettingType
+export type RuntimeComponentValueType<T> = {
+  setting: ComponentValueSettingType,
+  list: ComponentValueItemType[],
+
+  propKeyChain: string,
+  propItemId: number,
+  extraInstanceList?: T[]
 }
+
+export type DragAddComponentEventDataType = {
+  propItemId: number,
+  propKeyChain: string,
+  placeComponentInstanceId: number
+  componentId: number
+}
+

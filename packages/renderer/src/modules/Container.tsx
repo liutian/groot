@@ -1,7 +1,7 @@
-import { ReactDOM } from "react";
+import { ReactNode } from "react";
 import { ComponentSlot } from "./ComponentSlot";
 
-const Container: React.FC<{ children: ReactDOM }> = ({ children }) => {
+const Container: React.FC<{ children: ReactNode[] }> = ({ children }) => {
   return <div >
     <ComponentSlot children={children} />
   </div>

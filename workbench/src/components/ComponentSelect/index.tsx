@@ -7,22 +7,22 @@ import { useModel } from '@util/robot';
 import { APIPath } from 'api/API.path';
 import request from '@util/request';
 import styles from './index.module.less';
-import { ComponentValueItemType, ComponentValueType } from '@grootio/common';
+import { ComponentValueItemType, RuntimeComponentValueType } from '@grootio/common';
 
 type PropType = {
-  value?: ComponentValueType<ComponentInstance>,
-  onChange?: (newValue: ComponentValueType<ComponentInstance>) => void;
+  value?: RuntimeComponentValueType<ComponentInstance>,
+  onChange?: (newValue: RuntimeComponentValueType<ComponentInstance>) => void;
   parentInstanceId?: number,
   prototypeMode: boolean
 };
 
 const ComponentSelect: React.FC<PropType> = ({ value: _value, onChange: _onChange, parentInstanceId, prototypeMode }) => {
   const [workbenchModel] = useModel(WorkbenchModel);
-  const [valueList, setValueList] = useState<ComponentValueItemType<ComponentInstance>[]>(() => {
+  const [valueList, setValueList] = useState<ComponentValueItemType[]>(() => {
     if (_value.list.length) {
       return [..._value.list]
     } else {
-      return [{} as ComponentValueItemType<ComponentInstance>]
+      return [{} as ComponentValueItemType]
     }
   });
 
@@ -30,21 +30,22 @@ const ComponentSelect: React.FC<PropType> = ({ value: _value, onChange: _onChang
     return <Select disabled></Select>
   }
 
-  const onChange = (newValue: ComponentValueItemType<ComponentInstance>, index: number) => {
+  const onChange = (newValue: ComponentValueItemType, index: number, extraInstance: ComponentInstance) => {
     valueList[index] = newValue;
     _value.list = [...valueList];
+    _value.extraInstanceList = [extraInstance];
     _onChange({ ..._value });
   }
 
   const add = () => {
-    valueList.push({} as ComponentValueItemType<ComponentInstance>);
+    valueList.push({} as ComponentValueItemType);
     setValueList([...valueList]);
   }
 
-  const remove = (value: ComponentValueItemType<ComponentInstance>, index: number) => {
-    if (value.id) {
-      request(APIPath.componentInstance_remove, { instanceId: value.id }).then(() => {
-        workbenchModel.removeComponentInstance(value.id);
+  const remove = (value: ComponentValueItemType, index: number) => {
+    if (value.instanceId) {
+      request(APIPath.componentInstance_remove, { instanceId: value.instanceId }).then(() => {
+        workbenchModel.removeComponentInstance(value.instanceId);
         valueList.splice(index, 1);
         _value.list = [...valueList];
         _onChange({ ..._value });
@@ -60,11 +61,11 @@ const ComponentSelect: React.FC<PropType> = ({ value: _value, onChange: _onChang
       valueList.map((valueItem, index) => {
         return (<div className={styles.itemContainer} key={index}>
 
-          <ComponentSelectItem value={valueItem} onChange={(newValue) => onChange(newValue, index)} parentInstanceId={parentInstanceId} />
+          <ComponentSelectItem value={valueItem} onChange={(newValue, extraInstance) => onChange(newValue, index, extraInstance)} parentInstanceId={parentInstanceId} />
 
           <div className={styles.suffix}>
             <Button type="link" onClick={() => {
-              workbenchModel.switchComponentInstance(valueItem.id)
+              workbenchModel.switchComponentInstance(valueItem.instanceId)
             }}>
               <EditOutlined />
             </Button>
@@ -89,8 +90,8 @@ const ComponentSelect: React.FC<PropType> = ({ value: _value, onChange: _onChang
 }
 
 type ItemPropTypeItem = {
-  value?: ComponentValueItemType<ComponentInstance>,
-  onChange?: (newValue: ComponentValueItemType<ComponentInstance>) => void;
+  value?: ComponentValueItemType,
+  onChange?: (newValue: ComponentValueItemType, extraInstance?: ComponentInstance) => void;
   parentInstanceId?: number,
 };
 
@@ -100,7 +101,7 @@ const ComponentSelectItem: React.FC<ItemPropTypeItem> = ({ value, onChange: _onC
   const [valueData, setValueData] = useState<number>();
 
   useEffect(() => {
-    if (!value || !value.id) {
+    if (!value || !value.instanceId) {
       return;
     }
 
@@ -121,20 +122,19 @@ const ComponentSelectItem: React.FC<ItemPropTypeItem> = ({ value, onChange: _onC
     const rawInstance = {
       id: parentInstanceId,
       componentId: valueId,
-      oldChildId: value.id
+      oldChildId: value.instanceId
     } as ComponentInstance;
 
     request(APIPath.componentInstance_addChild, rawInstance).then(({ data }) => {
       if (rawInstance.oldChildId) {
-        workbenchModel.removeComponentInstance(value.id);
+        workbenchModel.removeComponentInstance(value.instanceId);
       }
       workbenchModel.addComponentInstance(data);
       _onChange({
-        id: data.id,
+        instanceId: data.id,
         componentName: data.component.name,
         componentId: data.component.id,
-        extra: data
-      });
+      }, data);
     })
   }
 

@@ -1,4 +1,4 @@
-import { IComponent, Metadata, PropBlockStructType, IPropGroup, IPropItem, PropItemType, PropMetadataType, IPropValue } from '@grootio/common';
+import { IComponent, Metadata, PropBlockStructType, IPropGroup, IPropItem, PropItemType, PropMetadataType, IPropValue, RuntimeComponentValueType } from '@grootio/common';
 
 import { fillPropChainGreed, fillPropChain, processPropItemValue } from './utils';
 
@@ -133,9 +133,15 @@ function buildPropObjectForLeafItem(propItem: IPropItem, ctx: Object, ctxKeyChai
       type: PropMetadataType.Function,
     })
   } else if (propItem.type === PropItemType.Component) {
+    const data = (newCTX[propEnd] || { list: [] }) as RuntimeComponentValueType<null>;
+    data.propItemId = propItem.id;
+    data.propKeyChain = ctxKeyChain;
     metadata.advancedProps.push({
       keyChain: ctxKeyChain,
-      type: PropMetadataType.Component
-    })
+      type: PropMetadataType.Component,
+      data
+    });
+    // 最终value为组件实例id数组
+    newCTX[propEnd] = data.list.map(item => item.instanceId);
   }
 }

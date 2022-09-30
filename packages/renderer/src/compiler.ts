@@ -91,16 +91,14 @@ const processAdvancedProp = (metadata: Metadata, store: Metadata[]) => {
 
 }
 
-const createComponentByValue = (value: ComponentValueType<{ id: number }>, propMetadata: PropMetadata, store: Metadata[]) => {
-  const nodes = (value?.list || []).map((value) => {
-    const metadata = store.find(m => m.id === value.id);
+const createComponentByValue = (ids: number[], propMetadata: PropMetadata, store: Metadata[]) => {
+  const nodes = (ids || []).map((instanceId) => {
+    const metadata = store.find(m => m.id === instanceId);
 
     return buildComponent(metadata, store);
   });
 
-  (nodes as any)._groot = {
-    keyChain: propMetadata.keyChain
-  } as RuntimeComponentValueType;
+  (nodes as any)._groot = propMetadata.data as RuntimeComponentValueType<null>;
 
   return nodes;
 }

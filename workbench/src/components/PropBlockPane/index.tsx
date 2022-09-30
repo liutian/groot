@@ -6,7 +6,7 @@ import styles from './index.module.less';
 import WorkbenchModel from "@model/WorkbenchModel";
 import PropPersistModel from "@model/PropPersistModel";
 import PropHandleModel from "@model/PropHandleModel";
-import { ComponentValueType, PropItemType, PropValueType } from "@grootio/common";
+import { PropItemType, PropValueType, RuntimeComponentValueType } from "@grootio/common";
 import NumberSlider from "@components/NumberSlider";
 import TextEditor from "@components/TextEditor";
 import { calcPropValueIdChain, stringify } from "@util/utils";
@@ -183,11 +183,8 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
     const propItem = block.propItemList.find(item => item.propKey === updateKey);
     let extraInstanceList;
     if (propItem.type === PropItemType.Component) {
-      extraInstanceList = (changedValues[updateKey] as ComponentValueType<ComponentInstance>).list.filter(v => !!v.extra).map(value => {
-        const extraInstance = value.extra;
-        delete value.extra;
-        return extraInstance;
-      });
+      extraInstanceList = (changedValues[updateKey] as RuntimeComponentValueType<ComponentInstance>).extraInstanceList;
+      delete changedValues[updateKey].extraInstanceList;
     }
 
     propPersistModel.updateValue(propItem, changedValues[updateKey]).then(() => {

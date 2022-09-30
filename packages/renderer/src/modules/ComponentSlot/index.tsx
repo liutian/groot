@@ -1,9 +1,9 @@
-import { PostMessageType, RuntimeComponentValueType } from "@grootio/common";
+import { DragAddComponentEventDataType, PostMessageType, RuntimeComponentValueType } from "@grootio/common";
 import { useEffect, useRef } from "react";
 import { controlMode } from "../../util";
 
 type PropType = {
-  children: React.ReactDOM & { _groot?: RuntimeComponentValueType },
+  children: React.ReactNode[] & { _groot?: RuntimeComponentValueType<null> },
 }
 
 type FnType = {
@@ -16,19 +16,25 @@ type FnType = {
 export const ComponentSlot: React.FC<PropType> & FnType = ({ children }) => {
 
   if (!children) {
-    console.warn('插槽未再组件原型中进行配置！');
+    console.warn('插槽未在组件原型中进行配置！');
     return null;
   } else if (!children._groot) {
     return <div>参数异常！</div>
   }
 
-  return <>
+  return <div data-groot-prop-key-chain={children._groot.propKeyChain} data-groot-prop-item-id={children._groot.propItemId}>
     <div style={{ display: 'grid' }}>
-      <>{children}</>
+      {
+        children.map(child => {
+          return <div data-groot-slot-item="true" key={(child as any).key}>
+            {child}
+          </div>
+        })
+      }
     </div>
 
-    {controlMode && <DragZone propKeyChain={children?._groot.keyChain} />}
-  </>
+    {controlMode && <DragZone />}
+  </div>
 }
 
 ComponentSlot.respondDragOver = respondDragOver;
@@ -48,10 +54,13 @@ const highlightStyles = {
   backgroundColor: 'rgb(255 216 216)'
 }
 
-let activeSlotEle;
+let activeSlotEle: HTMLElement & {
+  dragEnter?: () => void,
+  dragLeave?: () => void,
+};
 let draging;
 
-const DragZone: React.FC<{ propKeyChain: string }> = ({ propKeyChain }) => {
+const DragZone: React.FC<{}> = () => {
   const containerRef = useRef<HTMLDivElement>();
 
   useEffect(() => {
@@ -64,22 +73,22 @@ const DragZone: React.FC<{ propKeyChain: string }> = ({ propKeyChain }) => {
     }
   }, []);
 
-  return <div ref={containerRef} data-groot-prop-key-chain={propKeyChain} style={styles} >
+  return <div ref={containerRef} data-groot-slot-drag-zone="true" style={styles} >
     拖拽组件到这里
   </div>
 }
 
 
 function respondDragOver(positionX: number, positionY: number) {
-  const hitEles = detectSlotEle(positionX, positionY);
+  const hitResult = detectSlotEle(positionX, positionY);
 
-  if (hitEles) {
-    const [slotEle] = hitEles;
+  if (hitResult) {
+    const { hitEle } = hitResult;
 
-    if (slotEle !== activeSlotEle) {
+    if (hitEle !== activeSlotEle) {
       activeSlotEle?.dragLeave();
-      slotEle.dragEnter();
-      activeSlotEle = slotEle;
+      activeSlotEle = hitEle;
+      activeSlotEle?.dragEnter();
     }
   } else {
     activeSlotEle?.dragLeave();
@@ -99,23 +108,35 @@ function respondDragLeave() {
 }
 
 function respondDragDrop(positionX: number, positionY: number, componentId: number) {
-  const hitEles = detectSlotEle(positionX, positionY);
-  if (hitEles) {
-    const [dragSlot, componentEle] = hitEles;
+  const hitResult = detectSlotEle(positionX, positionY);
+  if (!hitResult) {
+    return;
+  }
+
+  const { instanceEle, slotEle, type } = hitResult;
+  if (type === 'dragZone') {
     window.parent.postMessage({
       type: PostMessageType.Drag_Hit_Slot,
       data: {
-        propKeyChain: dragSlot.dataset.grootPropKeyChain,
-        placeComponentInstanceId: componentEle.dataset.grootComponentInstanceId,
-        componentId
-      }
+        propKeyChain: slotEle.dataset.grootPropKeyChain,
+        placeComponentInstanceId: +instanceEle.dataset.grootComponentInstanceId,
+        componentId,
+        propItemId: +slotEle.dataset.grootPropItemId
+      } as DragAddComponentEventDataType
     }, '*');
-
-    ComponentSlot.respondDragLeave();
   }
+
+  ComponentSlot.respondDragLeave();
 }
 
-function detectSlotEle(positionX: number, positionY: number) {
+type detectResultType = {
+  type: 'dragZone' | 'item',
+  hitEle: HTMLElement,
+  instanceEle: HTMLElement,
+  slotEle: HTMLElement
+}
+
+function detectSlotEle(positionX: number, positionY: number): detectResultType {
   if (!draging) {
     return null;
   }
@@ -125,33 +146,42 @@ function detectSlotEle(positionX: number, positionY: number) {
     return null;
   }
 
-  let hoverSlotEle, componentEle;
+  let dragZoneEle: HTMLElement, itemEle: HTMLElement, slotEle: HTMLElement;
   do {
-    if (hitEle.dataset.grootPropKeyChain) {
-      hoverSlotEle = hitEle;
-      componentEle = hitEle.parentElement;
+    if (hitEle.dataset.grootSlotDragZone) {
+      dragZoneEle = hitEle;
+      slotEle = hitEle.parentElement;
       break;
+    } else if (hitEle.dataset.grootSlotItem) {// todo ...
+      itemEle = hitEle;
+      slotEle = hitEle.parentElement.parentElement;
     }
 
     hitEle = hitEle.parentElement;
   } while (hitEle);
 
-  if (!componentEle) {
+  if (!slotEle) {
     return null;
   }
 
+  let instanceEle = slotEle.parentElement;
   do {
-    if (componentEle.dataset.grootComponentInstanceId) {
-      componentEle = componentEle;
+    if (instanceEle.dataset.grootComponentInstanceId) {
       break;
     }
 
-    componentEle = componentEle.parentElement;
-  } while (componentEle);
+    instanceEle = instanceEle.parentElement;
+  } while (instanceEle);
 
-  if (hoverSlotEle && componentEle) {
-    return [hoverSlotEle, componentEle];
+  if (!instanceEle) {
+    console.warn('ComponentSlot组件未包含在规定组件中')
+    return null;
   }
 
-  return null;
+  return {
+    type: dragZoneEle ? 'dragZone' : 'item',
+    hitEle: dragZoneEle || itemEle,
+    instanceEle,
+    slotEle
+  }
 }
