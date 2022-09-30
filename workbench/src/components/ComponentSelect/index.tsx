@@ -45,7 +45,9 @@ const ComponentSelect: React.FC<PropType> = ({ value: _value, onChange: _onChang
   const remove = (value: ComponentValueItemType, index: number) => {
     if (value.instanceId) {
       request(APIPath.componentInstance_remove, { instanceId: value.instanceId }).then(() => {
-        workbenchModel.removeComponentInstance(value.instanceId);
+        const instanceIndex = workbenchModel.instanceList.findIndex(i => i.id === value.instanceId);
+        workbenchModel.instanceList.splice(instanceIndex, 1);
+
         valueList.splice(index, 1);
         _value.list = [...valueList];
         _onChange({ ..._value });
@@ -127,9 +129,10 @@ const ComponentSelectItem: React.FC<ItemPropTypeItem> = ({ value, onChange: _onC
 
     request(APIPath.componentInstance_addChild, rawInstance).then(({ data }) => {
       if (rawInstance.oldChildId) {
-        workbenchModel.removeComponentInstance(value.instanceId);
+        const index = workbenchModel.instanceList.findIndex(i => i.id === value.instanceId);
+        workbenchModel.instanceList.splice(index, 1);
       }
-      workbenchModel.addComponentInstance(data);
+      workbenchModel.instanceList.push(data);
       _onChange({
         instanceId: data.id,
         componentName: data.component.name,

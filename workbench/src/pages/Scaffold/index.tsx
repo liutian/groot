@@ -24,7 +24,7 @@ const Scaffold: React.FC = () => {
 
   useState(() => {
     propPersistModel.inject(workbenchModel, propHandleModel);
-    propHandleModel.inject(workbenchModel);
+    propHandleModel.inject(workbenchModel, propPersistModel);
     workbenchModel.inject(propHandleModel);
     scaffoldModel.inject(workbenchModel);
 

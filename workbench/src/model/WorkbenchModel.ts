@@ -19,6 +19,7 @@ export default class WorkbenchModel extends EventTarget {
   public componentVersion: ComponentVersion;
   public application: Application;
   public componentInstance: ComponentInstance;
+  public instanceList: ComponentInstance[] = [];
 
   /**
    * iframe之上的遮罩层用于组件拖拽定位和侧边栏宽度缩放
@@ -205,12 +206,6 @@ export default class WorkbenchModel extends EventTarget {
     return needRewrite();
   }
   public switchComponentInstance(instanceId: number) {
-    needRewrite();
-  }
-  public addComponentInstance(instance: ComponentInstance) {
-    needRewrite();
-  }
-  public removeComponentInstance(instanceId: number) {
     needRewrite();
   }
 }

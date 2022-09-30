@@ -18,7 +18,6 @@ export default class EditorModel {
   public breadcrumbList: { id: number, name: string }[] = [];
 
   private workbench: WorkbenchModel;
-  private instanceList: ComponentInstance[] = [];
 
   public inject(workbench: WorkbenchModel) {
     this.workbench = workbench;
@@ -40,13 +39,13 @@ export default class EditorModel {
       this.breadcrumbList.length = 0;
       this.breadcrumbList.push({ id: instanceId, name: root.name });
 
-      this.instanceList = [root, ...children];
+      this.workbench.instanceList = [root, ...children];
       this.workbench.startPage(root, children);
     });
   }
 
   public switchComponentInstance = (instanceId: number, breadcrumbAppend: boolean) => {
-    const instance = this.instanceList.find(i => i.id === instanceId);
+    const instance = this.workbench.instanceList.find(i => i.id === instanceId);
     this.workbench.startInstance(instance);
 
     if (breadcrumbAppend) {
@@ -56,14 +55,6 @@ export default class EditorModel {
       this.breadcrumbList.length = length === -1 ? 0 : length;
       this.breadcrumbList.push({ id: instanceId, name: instance.name });
     }
-  }
-
-  public addComponentInstance(instance: ComponentInstance) {
-    this.instanceList.push(instance);
-  }
-  public removeComponentInstance(instanceId: number) {
-    const index = this.instanceList.findIndex(i => i.id === instanceId);
-    this.instanceList.splice(index, 1);
   }
 
   public addPage = (rawComponentInstance: ComponentInstance) => {

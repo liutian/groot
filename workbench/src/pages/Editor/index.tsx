@@ -28,7 +28,7 @@ const Editor: React.FC = () => {
 
   useState(() => {
     propPersistModel.inject(workbenchModel, propHandleModel);
-    propHandleModel.inject(workbenchModel);
+    propHandleModel.inject(workbenchModel, propPersistModel);
     workbenchModel.inject(propHandleModel);
     editorModel.inject(workbenchModel);
 
@@ -102,13 +102,6 @@ const Editor: React.FC = () => {
       editorModel.switchComponentInstance(instanceId, true);
     }
 
-    (Object.getPrototypeOf(workbenchModel) as WorkbenchModel).addComponentInstance = (instance) => {
-      editorModel.addComponentInstance(instance);
-    }
-
-    (Object.getPrototypeOf(workbenchModel) as WorkbenchModel).removeComponentInstance = (instanceId) => {
-      editorModel.removeComponentInstance(instanceId);
-    }
   }
 
   if (editorModel.loadStatus === 'doing') {
