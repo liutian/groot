@@ -182,7 +182,7 @@ const PropBlockListStructPane: React.FC<PropsType> = ({ block: propBlock }) => {
       })
     });
 
-    propPersistModel.updateValue(propItem, changedValues[updateKey], +abstractValueId).then(() => {
+    propPersistModel.updateValue({ propItem, value: changedValues[updateKey], abstractValueId: +abstractValueId }).then(() => {
       propHandleModel.refreshComponent();
     })
   }

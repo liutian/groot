@@ -336,8 +336,10 @@ export default class PropPersistModel {
     })
   }
 
-  public updateValue = (propItem: PropItem, value: any, abstractValueId?: number) => {
-    const abstractValueIdChain = calcPropValueIdChain(propItem, abstractValueId);
+  public updateValue = ({ propItem, value, abstractValueId, abstractValueIdChain }: { propItem: PropItem, value: any, abstractValueId?: number, abstractValueIdChain?: string }) => {
+    if (!abstractValueIdChain) {
+      abstractValueIdChain = calcPropValueIdChain(propItem, abstractValueId);
+    }
     const propValue = propItem.valueList.filter(value => {
       return value.type === (this.workbench.prototypeMode ? PropValueType.Prototype : PropValueType.Instance)
     }).find(value => {

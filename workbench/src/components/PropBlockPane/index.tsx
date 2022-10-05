@@ -187,7 +187,7 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
       delete changedValues[updateKey].extraInstanceList;
     }
 
-    propPersistModel.updateValue(propItem, changedValues[updateKey]).then(() => {
+    propPersistModel.updateValue({ propItem, value: changedValues[updateKey] }).then(() => {
       propHandleModel.refreshComponent(extraInstanceList);
     })
   }
