@@ -47,12 +47,18 @@ export const stringify = (obj) => {
 
 export const calcPropValueIdChain = (propItem: PropItem, defaultValueId?: number) => {
   let ctxPropItem = propItem;
-  let propValueIdList = defaultValueId ? [defaultValueId] : [];
+  const propValueIdList = [];
+
+  if (defaultValueId) {
+    propValueIdList.push(defaultValueId);
+    ctxPropItem = ctxPropItem.block.group.parentItem;
+  }
+
   do {
-    if (ctxPropItem.tempAbstractValueId) {
+    ctxPropItem = ctxPropItem.block.group.parentItem;
+    if (ctxPropItem?.tempAbstractValueId) {
       propValueIdList.push(ctxPropItem.tempAbstractValueId);
     }
-    ctxPropItem = ctxPropItem.block.group.parentItem;
   } while (ctxPropItem);
 
   return propValueIdList.reverse().join(',');
