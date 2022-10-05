@@ -63,8 +63,9 @@ const processAdvancedProp = (metadata: Metadata, store: Metadata[]) => {
 
     // 找到属性对应的值
     keys.slice(0, -1).forEach((key) => {
-      if (key.startsWith('[')) {
-        ctx = ctx[+key.replace('[', '').replace(']', '')];
+      if (key.endsWith(']')) {
+        const [preKey, index] = key.split(/\[|\]/);
+        ctx = ctx[preKey][index];
       } else {
         ctx = ctx[key];
       }
