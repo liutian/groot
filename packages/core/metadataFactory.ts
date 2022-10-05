@@ -45,7 +45,10 @@ function buildPropObject(group: IPropGroup, ctx: Object, ctxKeyChain: string, me
 
     if (block.struct === PropBlockStructType.List) {
       const childPropItem = block.propItemList[0];
-      const propValueList = childPropItem.valueList;
+      const abstractValueIdChain = parentValueList?.map(v => v.id).join(',');
+      const propValueList = childPropItem.valueList.filter(v => {
+        return v.abstractValueIdChain === abstractValueIdChain || (!v.abstractValueIdChain && !abstractValueIdChain)
+      });
       propValueList.forEach((propValue, propValueIndex) => {
         const preCTX = ctx;
         const preCTXKeyChain = ctxKeyChain;
