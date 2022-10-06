@@ -226,12 +226,14 @@ export type RuntimeComponentValueType<T> = {
 
   propKeyChain: string,
   propItemId: number,
-  extraInstanceList?: T[]
+  extraInstanceList?: T[],
+  abstractValueIdChain?: string
 }
 
 export type DragAddComponentEventDataType = {
   propItemId: number,
   propKeyChain: string,
+  abstractValueIdChain?: string,
   placeComponentInstanceId: number
   componentId: number
 }

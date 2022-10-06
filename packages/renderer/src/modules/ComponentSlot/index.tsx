@@ -22,7 +22,7 @@ export const ComponentSlot: React.FC<PropType> & FnType = ({ children }) => {
     return <div>参数异常！</div>
   }
 
-  return <div data-groot-prop-key-chain={children._groot.propKeyChain} data-groot-prop-item-id={children._groot.propItemId}>
+  return <div data-groot-prop-key-chain={children._groot.propKeyChain} data-groot-prop-item-id={children._groot.propItemId} data-groot-abstract-value-id-chain={children._groot.abstractValueIdChain}>
     <div style={{ display: 'grid' }}>
       {
         children.map(child => {
@@ -121,7 +121,8 @@ function respondDragDrop(positionX: number, positionY: number, componentId: numb
         propKeyChain: slotEle.dataset.grootPropKeyChain,
         placeComponentInstanceId: +instanceEle.dataset.grootComponentInstanceId,
         componentId,
-        propItemId: +slotEle.dataset.grootPropItemId
+        propItemId: +slotEle.dataset.grootPropItemId,
+        abstractValueIdChain: slotEle.dataset.grootAbstractValueIdChain
       } as DragAddComponentEventDataType
     }, '*');
   }

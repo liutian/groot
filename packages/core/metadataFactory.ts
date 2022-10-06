@@ -117,10 +117,10 @@ function buildPropObjectForLeafItem(propItem: IPropItem, ctx: Object, ctxKeyChai
   ctxKeyChain = ctxKeyChain.replace(/^\.|\.$/g, '');
 
   let propValue = propItem.valueList[0];
+  const abstractValueIdChain = parentValueList?.map(v => v.id).join(',');
 
   if (parentValueList?.length) {
-    const propValueRegex = new RegExp(parentValueList.map(v => v.id).join(',.*'));
-    propValue = propItem.valueList.find((value) => propValueRegex.test(value.abstractValueIdChain));
+    propValue = propItem.valueList.find((value) => value.abstractValueIdChain === abstractValueIdChain);
   }
 
   newCTX[propEnd] = processPropItemValue(propItem, propValue?.value);
@@ -139,6 +139,7 @@ function buildPropObjectForLeafItem(propItem: IPropItem, ctx: Object, ctxKeyChai
     const data = (newCTX[propEnd] || { list: [] }) as RuntimeComponentValueType<null>;
     data.propItemId = propItem.id;
     data.propKeyChain = ctxKeyChain;
+    data.abstractValueIdChain = abstractValueIdChain;
     metadata.advancedProps.push({
       keyChain: ctxKeyChain,
       type: PropMetadataType.Component,

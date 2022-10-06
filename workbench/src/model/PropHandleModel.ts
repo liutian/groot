@@ -1,6 +1,9 @@
-import { PostMessageType, PropItemType } from "@grootio/common";
+import { ComponentValueItemType, ComponentValueType, DragAddComponentEventDataType, PostMessageType, PropItemType, PropValueType, RuntimeComponentValueType } from "@grootio/common";
 import { metadataFactory, propTreeFactory } from "@grootio/core";
 import { WorkbenchEvent } from "@util/common";
+import request from "@util/request";
+import { APIPath } from "api/API.path";
+import PropPersistModel from "./PropPersistModel";
 import WorkbenchModel from "./WorkbenchModel";
 
 /**
@@ -23,9 +26,11 @@ export default class PropHandleModel {
   public propItemStack: PropItem[] = [];
 
   public workbench: WorkbenchModel;
+  public propPersist: PropPersistModel;
 
-  public inject(workbench: WorkbenchModel) {
+  public inject(workbench: WorkbenchModel, propPersist: PropPersistModel) {
     this.workbench = workbench;
+    this.propPersist = propPersist;
     this.watchEvent();
   }
   /**
@@ -250,9 +255,48 @@ export default class PropHandleModel {
 
   private watchEvent() {
     this.workbench.addEventListener(WorkbenchEvent.AddComponent, (event) => {
-      const _event = event as CustomEvent;
-      alert('收到');
-      console.dir(_event.detail);
+      const { detail: eventData } = event as CustomEvent<DragAddComponentEventDataType>;
+
+      const rawInstance = {
+        id: eventData.placeComponentInstanceId,
+        componentId: eventData.componentId
+      } as ComponentInstance;
+
+      request(APIPath.componentInstance_addChild, rawInstance).then(({ data: instanceData }) => {
+        this.workbench.instanceList.push(instanceData);
+
+        const propItem = this.getItemById(eventData.propItemId);
+        const propValue = propItem.valueList.filter(v => v.type === PropValueType.Instance).find(value => {
+          return value.abstractValueIdChain === eventData.abstractValueIdChain || (!value.abstractValueIdChain && !eventData.abstractValueIdChain)
+        });
+
+        const newValueItem = {
+          instanceId: instanceData.id,
+          componentName: instanceData.component.name,
+          componentId: instanceData.component.id,
+        } as ComponentValueItemType;
+
+        const value = JSON.parse(propValue?.value || '{"setting": {},"list":[]}') as ComponentValueType;
+        value.list.push(newValueItem);
+
+        this.propPersist.updateValue({ propItem, value, abstractValueIdChain: eventData.abstractValueIdChain }).then(() => {
+          this.refreshComponent([instanceData]);
+        })
+      })
     })
+  }
+
+  private getItemById(propItemId: number) {
+    const instanceList = this.workbench.instanceList;
+    for (let instanceIndex = 0; instanceIndex < instanceList.length; instanceIndex++) {
+      const instance = instanceList[instanceIndex];
+      for (let itemIndex = 0; itemIndex < instance.itemList.length; itemIndex++) {
+        const item = instance.itemList[itemIndex];
+        if (item.id === propItemId) {
+          return item;
+        }
+      }
+    }
+    return null;
   }
 }
