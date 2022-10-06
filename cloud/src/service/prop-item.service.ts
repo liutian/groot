@@ -63,16 +63,16 @@ export class PropItemService {
 
       await em.flush();
 
-      if (rawItem.type === PropItemType.Component) {
-        em.create(PropValue, {
-          type: PropValueType.Prototype,
-          propItem: newItem,
-          component: newItem.component,
-          componentVersion: newItem.componentVersion,
-          value: '{"setting":{},"list":[]}'
-        });
-        await em.flush();
-      }
+      // if (rawItem.type === PropItemType.Component) {
+      //   em.create(PropValue, {
+      //     type: PropValueType.Prototype,
+      //     propItem: newItem,
+      //     component: newItem.component,
+      //     componentVersion: newItem.componentVersion,
+      //     value: '{"setting":{},"list":[]}'
+      //   });
+      //   await em.flush();
+      // }
 
       if (!rawItem.versionTraceId) {
         newItem.versionTraceId = newItem.id;
