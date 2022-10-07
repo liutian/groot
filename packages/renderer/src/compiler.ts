@@ -1,4 +1,4 @@
-import { ComponentValueType, Metadata, PropMetadata, PropMetadataType, RuntimeComponentValueType } from "@grootio/common";
+import { Metadata, PropMetadata, PropMetadataType, RuntimeComponentValueType } from "@grootio/common";
 
 import React, { useEffect, useState } from "react";
 import { globalConfig } from "./config";
@@ -44,9 +44,15 @@ const createComponentWrapper = (metadata: Metadata) => {
       debugInfo(`组件刷新 ${componentName}`);
     }
 
-    return React.createElement('div', { 'data-groot-component-instance-id': metadata.id },
-      React.createElement(module, metadata.propsObj)
-    );
+    if (!controlMode && !globalConfig.useWrapper) {
+      return React.createElement(module, metadata.propsObj)
+    } else {
+
+      return React.createElement('span', { 'data-groot-component-instance-id': metadata.id },
+        React.createElement(module, metadata.propsObj)
+      );
+    }
+
   }
 
   ComponentFunction.displayName = `${componentName}_Wrapper`;

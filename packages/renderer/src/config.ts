@@ -11,6 +11,7 @@ const internalModules = {
 
 // 运行时配置项
 export const globalConfig: UIManagerConfig = {
+  useWrapper: true
   // ...
 } as any;
 

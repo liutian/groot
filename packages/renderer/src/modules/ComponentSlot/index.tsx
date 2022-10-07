@@ -22,7 +22,10 @@ export const ComponentSlot: React.FC<PropType> & FnType = ({ children }) => {
     return <div>参数异常！</div>
   }
 
-  return <div data-groot-prop-key-chain={children._groot.propKeyChain} data-groot-prop-item-id={children._groot.propItemId} data-groot-abstract-value-id-chain={children._groot.abstractValueIdChain}>
+  return <div data-groot-prop-key-chain={children._groot.propKeyChain}
+    data-groot-prop-item-id={children._groot.propItemId}
+    data-groot-abstract-value-id-chain={children._groot.abstractValueIdChain}>
+    {/* 预留自由布局 */}
     <div style={{ display: 'grid' }}>
       {
         children.map(child => {
@@ -35,6 +38,8 @@ export const ComponentSlot: React.FC<PropType> & FnType = ({ children }) => {
 
     {controlMode && <DragZone />}
   </div>
+
+
 }
 
 ComponentSlot.respondDragOver = respondDragOver;

@@ -12,6 +12,7 @@ export type UIManagerConfig = {
   lazyLoadApplication?: boolean;
   beforeLoadApplication?: Promise<void> | Function;
   debug?: boolean;
+  useWrapper?: boolean;
   modules: { [packageName: string]: { [moduleName: string]: any } };
 };
 
