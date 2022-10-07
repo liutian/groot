@@ -1,4 +1,4 @@
-import { PropBlockLayout, PropBlockStructType, PropItemType, PropValueType } from "@grootio/common";
+import { ComponentValueType, PropBlockLayout, PropBlockStructType, PropItemType, PropValueType } from "@grootio/common";
 import { EntityManager } from "@mikro-orm/core";
 
 import { PropValue } from "../../entities/PropValue";
@@ -199,13 +199,22 @@ export const create = async (em: EntityManager, scaffold: Scaffold, release: Rel
 
   await em.persistAndFlush(avatarComponentInstance);
 
+  const avatarValue = {
+    setting: {},
+    list: [{
+      instanceId: avatarComponentInstance.id,
+      componentId: avatarComponent.id,
+      componentName: avatarComponent.name
+    }]
+  } as ComponentValueType;
+
   const profileItem4Value = em.create(PropValue, {
     propItem: profileItem4,
     component: profileComponent,
     componentVersion: profileComponentVersion,
     componentInstance: profileComponentInstance,
     type: PropValueType.Instance,
-    value: `{"setting":{},"list": [{"id": ${avatarComponentInstance.id},"componentId": ${avatarComponent.id},"componentName": "${avatarComponent.name}"}]}`
+    value: JSON.stringify(avatarValue)
   });
   await em.persistAndFlush(profileItem4Value);
 }
