@@ -9,6 +9,7 @@ type PropType = {
 const Profile: React.FC<PropType> = (props) => {
   return <>
     {props.avatar}
+    <hr />
     <UserOutlined /> {props.name} <br />
     <EnvironmentOutlined /> {props.address} <br />
     <MailOutlined /> {props.email}
