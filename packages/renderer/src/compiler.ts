@@ -1,6 +1,6 @@
 import { Metadata, PropMetadata, PropMetadataType, RuntimeComponentValueType } from "@grootio/common";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import { globalConfig } from "./config";
 import { debugInfo, controlMode, errorInfo } from "./util";
 
@@ -29,8 +29,9 @@ const createComponentWrapper = (metadata: Metadata) => {
   const componentName = `${metadata.packageName}_${metadata.componentName}`;
 
   function ComponentFunction() {
-    const [, switchBool] = useState(true);
-    const metadataRefresh = () => switchBool(b => !b);
+    // const [, switchBool] = useState(true);
+    // const metadataRefresh = () => switchBool(b => !b);
+    const [, metadataRefresh] = useReducer((bool) => !bool, true);
 
     useEffect(() => {
       metadataRefreshFnMap.set(metadata, metadataRefresh);

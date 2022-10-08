@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useReducer, useState } from 'react';
 import React from 'react';
 import { UIManagerConfig } from '@grootio/common';
 
@@ -12,8 +12,11 @@ let app: ApplicationInstance;
 let refresh: () => void;
 
 export const UIManager: IUIManager<{ path: string }> = ({ path }) => {
-  const [, switchBool] = useState(true);
-  refresh = () => switchBool(b => !b);
+  // const [, switchBool] = useState(true);
+  // refresh = () => switchBool(b => !b);
+  const [, _refresh] = useReducer((bool) => !bool, true);
+  refresh = _refresh;
+
 
   // 确保首先执行 UIManager.init
   if (!app) {
@@ -64,6 +67,7 @@ export const UIManager: IUIManager<{ path: string }> = ({ path }) => {
       refresh();
     }, (error) => {
       errorInfo(error, 'UIManager');
+      throw error;
     });
   }
 
