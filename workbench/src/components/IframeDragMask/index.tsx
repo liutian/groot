@@ -1,11 +1,10 @@
 import { PostMessageType } from "@grootio/common";
 import WorkbenchModel from "@model/WorkbenchModel";
 import { useModel } from "@util/robot";
-import { HTMLAttributes } from "react";
 
 type PropType = {
 
-} & HTMLAttributes<HTMLDivElement>;
+}
 
 const IframeDragMask: React.FC<PropType> = (prop) => {
   const [workbenchModel] = useModel(WorkbenchModel);
@@ -39,7 +38,7 @@ const IframeDragMask: React.FC<PropType> = (prop) => {
     console.log(`iframeDragMask drog finish`);
   }
 
-  return <div {...prop} onDragOver={dragover} onDrop={drop} onDragEnter={dragenter} onDragLeave={drageleave} />
+  return <div id={workbenchModel.iframeDragMaskId} onDragOver={dragover} onDrop={drop} onDragEnter={dragenter} onDragLeave={drageleave} />
 }
 
 export default IframeDragMask;

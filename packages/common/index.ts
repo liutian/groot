@@ -71,13 +71,14 @@ export enum PostMessageType {
   Outer_Update_Component = 'outer_update_component',
   Outer_Refresh_Page = 'outer_refresh_page',
 
-
   Drag_Component_Over = 'drag_component_over',
   Drag_Component_Enter = 'drag_component_enter',
   Drag_Component_Leave = 'drag_component_leave',
   Drag_Component_Drop = 'drag_component_drop',
+  Drag_Hit_Slot = 'drag_hit_slot',
 
-  Drag_Hit_Slot = 'drag::hit::slot'
+  Wrapper_Hover = 'wrapper_hover',
+  Wrapper_Select = 'wrapper_Select'
 }
 
 export const iframeNamePrefix = 'groot::';

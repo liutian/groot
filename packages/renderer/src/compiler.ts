@@ -49,7 +49,12 @@ const createComponentWrapper = (metadata: Metadata) => {
       return React.createElement(module, metadata.propsObj)
     } else {
 
-      return React.createElement('span', { 'data-groot-component-instance-id': metadata.id },
+      return React.createElement('span', {
+        'data-groot-component-instance-id': metadata.id,
+        'data-groot-wrapper': metadata.id,
+        'data-groot-wrapper-tag-name': componentName,
+        style: { display: 'inline-block' }
+      },
         React.createElement(module, metadata.propsObj)
       );
     }

@@ -10,5 +10,8 @@ export function needRewrite(): any {
 }
 
 export enum WorkbenchEvent {
-  AddComponent = 'add_component'
+  AddComponent = 'add_component',
+  CanvasHover = 'canvas_hover',
+  CanvasSelect = 'canvas_select',
+  CanvasMarkerReset = 'canvas_marker_reset'
 }

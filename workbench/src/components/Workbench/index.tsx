@@ -6,6 +6,7 @@ import WorkbenchModel from '@model/WorkbenchModel';
 import { useModel } from '@util/robot';
 import styles from './index.module.less';
 import IframeDragMask from '@components/IframeDragMask';
+import IframeMarker from '@components/IframeMarker';
 
 type PropsType = {
 }
@@ -26,8 +27,9 @@ const Workbench: React.FC<PropsType> = () => {
 
     <div className={styles.preview}>
       {/* 防止拖拽缩放过程中由于鼠标移入iframe中丢失鼠标移动事件 */}
-      <IframeDragMask id={workbenchModel.iframeDragMaskId} />
       <iframe ref={iframeRef}></iframe>
+      <IframeDragMask />
+      <IframeMarker />
     </div>
 
     <WidgetWindow />

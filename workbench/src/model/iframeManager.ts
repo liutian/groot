@@ -52,8 +52,14 @@ function onMessage(event: MessageEvent) {
     pageNavCallback();// 内部一般执行 Outer_Set_Page
     pageNavCallback = null;
   } else if (event.data.type === PostMessageType.Drag_Hit_Slot) {
-    const _event = new CustomEvent(WorkbenchEvent.AddComponent, { detail: event.data.data });
-    eventTrigger.dispatchEvent(_event);
+    const newEvent = new CustomEvent(WorkbenchEvent.AddComponent, { detail: event.data.data });
+    eventTrigger.dispatchEvent(newEvent);
+  } else if (event.data.type === PostMessageType.Wrapper_Hover) {
+    const newEvent = new CustomEvent(WorkbenchEvent.CanvasHover, { detail: event.data.data });
+    eventTrigger.dispatchEvent(newEvent);
+  } else if (event.data.type === PostMessageType.Wrapper_Select) {
+    const newEvent = new CustomEvent(WorkbenchEvent.CanvasSelect, { detail: event.data.data });
+    eventTrigger.dispatchEvent(newEvent);
   }
 }
 
@@ -91,6 +97,10 @@ function notifyIframe(type: PostMessageType, data?: any) {
         metadataList: data
       }
     }, '*');
+  } else if (type === PostMessageType.Outer_Refresh_Page) {
+    iframe.contentWindow.postMessage({ type, data }, '*');
+    const event = new CustomEvent(WorkbenchEvent.CanvasMarkerReset);
+    eventTrigger.dispatchEvent(event);
   } else {
     iframe.contentWindow.postMessage({ type, data }, '*');
   }

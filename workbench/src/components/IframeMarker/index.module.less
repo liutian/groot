@@ -1,0 +1,36 @@
+.positionBlock {
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: #ffffff;
+  opacity: 0;
+  --var-bg-color: #0000ff;
+}
+
+.block {
+  position: absolute;
+  line-height: 20px;
+  background-color: var(--var-bg-color);
+  padding: 0 4px;
+  font-size: 12px;
+}
+
+.outline {
+  outline: solid 1px var(--var-bg-color);
+  outline-offset: -1px;
+  pointer-events: none;
+}
+
+.tagName {
+  left: 0;
+  top: -20px;
+}
+
+.toolbar {
+  top: 0;
+  left: 0;
+}
+
+.toolItem {
+  cursor: pointer;
+}
