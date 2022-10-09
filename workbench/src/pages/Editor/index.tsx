@@ -98,8 +98,8 @@ const Editor: React.FC = () => {
       </Breadcrumb>)
     }
 
-    (Object.getPrototypeOf(workbenchModel) as WorkbenchModel).switchComponentInstance = (instanceId) => {
-      editorModel.switchComponentInstance(instanceId, true);
+    (Object.getPrototypeOf(workbenchModel) as WorkbenchModel).switchComponentInstance = (instanceId, breadcrumbAppend = true) => {
+      editorModel.switchComponentInstance(instanceId, breadcrumbAppend);
     }
 
   }

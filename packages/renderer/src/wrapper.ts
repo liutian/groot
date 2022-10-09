@@ -48,7 +48,8 @@ function mousedownAction({ pageX, pageY }: MouseEvent) {
       type: PostMessageType.Wrapper_Select,
       data: {
         clientRect,
-        tagName: hitEle.dataset.grootWrapperTagName
+        tagName: hitEle.dataset.grootWrapperTagName,
+        instanceId: +hitEle.dataset.grootWrapper
       }
     }, '*');
   }

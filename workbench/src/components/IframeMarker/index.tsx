@@ -27,7 +27,7 @@ const IframeMarker: React.FC = () => {
     });
 
     workbenchModel.addEventListener(WorkbenchEvent.CanvasSelect, (event) => {
-      const data = (event as CustomEvent).detail as { clientRect: DOMRect, tagName: string };
+      const data = (event as CustomEvent).detail as { clientRect: DOMRect, tagName: string, instanceId: number };
       resetOutline(data.clientRect, data.tagName);
       resetToolbar(data.clientRect);
 
@@ -38,6 +38,8 @@ const IframeMarker: React.FC = () => {
       cloneToolbarRef.current?.remove();
       cloneToolbarRef.current = toolbarRef.current.cloneNode(true) as HTMLDivElement;
       toolbarRef.current.insertAdjacentElement('beforebegin', cloneToolbarRef.current);
+
+      workbenchModel.switchComponentInstance(data.instanceId, false);
     });
 
     workbenchModel.addEventListener(WorkbenchEvent.CanvasMarkerReset, () => {

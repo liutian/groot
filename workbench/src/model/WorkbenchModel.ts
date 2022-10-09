@@ -205,7 +205,7 @@ export default class WorkbenchModel extends EventTarget {
   public renderToolBarAction(): ReactNode {
     return needRewrite();
   }
-  public switchComponentInstance(instanceId: number) {
+  public switchComponentInstance(instanceId: number, breadcrumbAppend?: boolean) {
     needRewrite();
   }
 }

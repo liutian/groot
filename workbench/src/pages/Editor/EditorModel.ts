@@ -45,6 +45,10 @@ export default class EditorModel {
   }
 
   public switchComponentInstance = (instanceId: number, breadcrumbAppend: boolean) => {
+    if (this.workbench.componentInstance.id === instanceId) {
+      return;
+    }
+
     const instance = this.workbench.instanceList.find(i => i.id === instanceId);
     this.workbench.startInstance(instance);
 
