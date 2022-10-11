@@ -63,11 +63,13 @@ export const fillPropChain = (ctx: Object, propStr: string): [Object, string] =>
 
 
 
-export const processPropItemValue = (propItem: IPropItem, value?: any) => {
+export const parsePropItemValue = (propItem: IPropItem, value?: any) => {
   value = value || propItem.defaultValue
   if (propItem.type === PropItemType.Date_Picker || propItem.type === PropItemType.Time_Picker) {
     // todo ... 包含moment类型的值 postMessage会有问题
     value = moment(value);
+  } else if (propItem.type === PropItemType.Function) {
+    // ... 不做任何处理
   } else if (value !== undefined) {
     value = JSON.parse(value);
   }
@@ -75,3 +77,13 @@ export const processPropItemValue = (propItem: IPropItem, value?: any) => {
   return value;
 }
 
+
+export const stringifyPropItemValue = (propItem: IPropItem, value?: any) => {
+  if (propItem.type === PropItemType.Function) {
+    // ... 不做任何处理
+  } else if (value !== undefined) {
+    value = JSON.stringify(value);
+  }
+
+  return value;
+}

@@ -17,7 +17,11 @@ function TextEditor({ onChange, value, type = 'json' }: propsType) {
   })
 
   useEffect(() => {
-    model.setValue(JSON.stringify(value || ''));
+    if (type === 'json') {
+      model.setValue(JSON.stringify(value || ''));
+    } else {
+      model.setValue(value || '');
+    }
 
     // http://json-schema.org/learn/getting-started-step-by-step
     // http://json-schema.org/understanding-json-schema/
@@ -30,6 +34,14 @@ function TextEditor({ onChange, value, type = 'json' }: propsType) {
         }
       ]
     });
+
+    monaco.languages.typescript.typescriptDefaults.addExtraLib(`
+    declare namespace $groot{
+      const version: string;
+      let tick: number;
+    }
+    declare let $exportFn:Function
+    `, '');
 
     editorRef.current = monaco.editor.create(codeEditorContainerRef.current, {
       model,

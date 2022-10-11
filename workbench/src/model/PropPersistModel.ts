@@ -5,6 +5,7 @@ import { APIPath } from "api/API.path";
 import request from "@util/request";
 import PropHandleModel from "./PropHandleModel";
 import WorkbenchModel from "./WorkbenchModel";
+import { stringifyPropItemValue } from "@grootio/core";
 
 /**
  * 负责属性编辑器涉及到的接口调用，以及相关UI状态
@@ -347,7 +348,8 @@ export default class PropPersistModel {
     });
 
     let paramData = {} as PropValue;
-    const valueStr = JSON.stringify(value);
+
+    const valueStr = stringifyPropItemValue(propItem, value);
 
     if (propValue) {
       paramData.id = propValue.id;

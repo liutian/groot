@@ -197,4 +197,14 @@ export class WorkbenchController {
   async componentInstanceRemove(@Param('instanceId') instanceId: number) {
     return await this.componentInstanceService.remove(instanceId);
   }
+
+  @Get('/demo')
+  async demo() {
+    return [
+      { id: 1, name: '张三', age: 22, address: '上海长宁' },
+      { id: 2, name: '李四', age: 45, address: '北京海淀' },
+      { id: 3, name: '王五', age: 18, address: '河南开封' },
+      { id: 4, name: '小六', age: 30, address: '美国纽约' },
+    ]
+  }
 }

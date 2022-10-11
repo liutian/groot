@@ -1,6 +1,6 @@
 import { IComponent, Metadata, PropBlockStructType, IPropGroup, IPropItem, PropItemType, PropMetadataType, IPropValue, RuntimeComponentValueType } from '@grootio/common';
 
-import { fillPropChainGreed, fillPropChain, processPropItemValue } from './utils';
+import { fillPropChainGreed, fillPropChain, parsePropItemValue } from './utils';
 
 export function metadataFactory(rootGroupList: IPropGroup[], component: IComponent, metadataId: number) {
   const metadata = {
@@ -123,7 +123,7 @@ function buildPropObjectForLeafItem(propItem: IPropItem, ctx: Object, ctxKeyChai
     propValue = propItem.valueList.find((value) => value.abstractValueIdChain === abstractValueIdChain);
   }
 
-  newCTX[propEnd] = processPropItemValue(propItem, propValue?.value);
+  newCTX[propEnd] = parsePropItemValue(propItem, propValue?.value);
 
   if (propItem.type === PropItemType.Json) {
     metadata.advancedProps.push({

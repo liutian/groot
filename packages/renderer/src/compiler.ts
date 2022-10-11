@@ -2,6 +2,7 @@ import { Metadata, PropMetadata, PropMetadataType, RuntimeComponentValueType } f
 
 import React, { useEffect, useReducer, useState } from "react";
 import { globalConfig } from "./config";
+import functionCreate from "./function-creator";
 import { debugInfo, controlMode, errorInfo } from "./util";
 
 const metadataRefreshFnMap = new Map<Metadata, Function>();
@@ -94,7 +95,7 @@ const processAdvancedProp = (metadata: Metadata, store: Metadata[]) => {
       }
     } else if (propMetadata.type === PropMetadataType.Function) {
       try {
-        ctx[endPropKey] = window.Function(ctx[endPropKey]);
+        ctx[endPropKey] = functionCreate(ctx[endPropKey]);
       } catch (e) {
         console.error(`高级属性解析失败  ${keys}:${ctx[endPropKey]}`)
         ctx[endPropKey] = undefined;

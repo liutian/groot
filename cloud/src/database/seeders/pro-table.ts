@@ -13,127 +13,167 @@ import { Scaffold } from "../../entities/Scaffold";
 
 export const create = async (em: EntityManager, scaffold: Scaffold, release: Release) => {
   // 创建组件
-  const searchComponent = em.create(Component, {
+  const tableComponent = em.create(Component, {
     name: '列表查询',
     packageName: '@ant-design/pro-table',
     componentName: 'ProTable',
     scaffold
   });
-  await em.persistAndFlush(searchComponent);
+  await em.persistAndFlush(tableComponent);
 
   // 创建组件版本
-  const searchComponentVersion = em.create(ComponentVersion, {
+  const tableComponentVersion = em.create(ComponentVersion, {
     name: 'v0.0.1',
-    component: searchComponent
+    component: tableComponent
   });
-  searchComponent.recentVersion = searchComponentVersion;
-  await em.persistAndFlush(searchComponentVersion);
+  tableComponent.recentVersion = tableComponentVersion;
+  await em.persistAndFlush(tableComponentVersion);
 
   // 创建组件配置项
-  const searchGroup = em.create(PropGroup, {
+  const commonGroup = em.create(PropGroup, {
     name: '常用配置',
     order: 1000,
-    componentVersion: searchComponentVersion,
-    component: searchComponent
+    componentVersion: tableComponentVersion,
+    component: tableComponent
   });
-  await em.persistAndFlush(searchGroup);
+  await em.persistAndFlush(commonGroup);
 
-  const searchBlock = em.create(PropBlock, {
+  const columnBlock = em.create(PropBlock, {
     name: '列配置',
     propKey: 'columns',
     order: 1000,
     struct: PropBlockStructType.List,
-    componentVersion: searchComponentVersion,
-    component: searchComponent,
-    group: searchGroup,
+    componentVersion: tableComponentVersion,
+    component: tableComponent,
+    group: commonGroup,
     layout: PropBlockLayout.Horizontal,
   });
-  await em.persistAndFlush(searchBlock);
+  await em.persistAndFlush(columnBlock);
 
-  const searchInnerItem = em.create(PropItem, {
+  const columnInnerItem = em.create(PropItem, {
     label: '子项模版配置',
     type: PropItemType.Hierarchy,
-    block: searchBlock,
-    group: searchGroup,
-    componentVersion: searchComponentVersion,
-    component: searchComponent,
+    block: columnBlock,
+    group: commonGroup,
+    componentVersion: tableComponentVersion,
+    component: tableComponent,
     order: 1000
   })
-  await em.persistAndFlush(searchInnerItem);
+  await em.persistAndFlush(columnInnerItem);
 
-  const searchInnerGroup = em.create(PropGroup, {
+  const columnInnerGroup = em.create(PropGroup, {
     name: '内嵌分组',
     order: 1000,
-    componentVersion: searchComponentVersion,
-    component: searchComponent,
+    componentVersion: tableComponentVersion,
+    component: tableComponent,
     root: false,
-    parentItem: searchInnerItem
+    parentItem: columnInnerItem
   });
-  await em.persistAndFlush(searchInnerGroup);
+  await em.persistAndFlush(columnInnerGroup);
 
-  searchInnerItem.childGroup = searchInnerGroup;
-  await em.persistAndFlush(searchInnerItem);
+  columnInnerItem.childGroup = columnInnerGroup;
+  await em.persistAndFlush(columnInnerItem);
 
-  const searchInnerBlock = em.create(PropBlock, {
+  const columnInnerBlock = em.create(PropBlock, {
     name: '通用列配置',
     order: 1000,
     struct: PropBlockStructType.Default,
-    componentVersion: searchComponentVersion,
-    component: searchComponent,
-    group: searchInnerGroup,
+    componentVersion: tableComponentVersion,
+    component: tableComponent,
+    group: columnInnerGroup,
     layout: PropBlockLayout.Horizontal,
   });
-  await em.persistAndFlush(searchInnerBlock);
+  await em.persistAndFlush(columnInnerBlock);
 
 
-  const searchItem1 = em.create(PropItem, {
+  const columnItem1 = em.create(PropItem, {
     label: '索引',
     propKey: 'dataIndex',
     type: PropItemType.Text,
-    block: searchInnerBlock,
-    group: searchInnerGroup,
-    componentVersion: searchComponentVersion,
-    component: searchComponent,
+    block: columnInnerBlock,
+    group: columnInnerGroup,
+    componentVersion: tableComponentVersion,
+    component: tableComponent,
     order: 1000
   })
-  await em.persistAndFlush(searchItem1);
+  await em.persistAndFlush(columnItem1);
 
-  const searchItem2 = em.create(PropItem, {
+  const columnItem2 = em.create(PropItem, {
     label: '标题',
     propKey: 'title',
     type: PropItemType.Text,
-    block: searchInnerBlock,
-    group: searchInnerGroup,
-    componentVersion: searchComponentVersion,
-    component: searchComponent,
+    block: columnInnerBlock,
+    group: columnInnerGroup,
+    componentVersion: tableComponentVersion,
+    component: tableComponent,
     order: 2000
   })
-  await em.persistAndFlush(searchItem2);
+  await em.persistAndFlush(columnItem2);
 
-  const searchItem3 = em.create(PropItem, {
+  const columnItem3 = em.create(PropItem, {
     label: '类型',
     propKey: 'valueType',
     type: PropItemType.Select,
     valueOptions: '[{"label": "文本","value": "text"},{"label": "日期","value": "date"},{"label": "下拉框","value": "select"}]',
-    block: searchInnerBlock,
-    group: searchInnerGroup,
-    componentVersion: searchComponentVersion,
-    component: searchComponent,
+    block: columnInnerBlock,
+    group: columnInnerGroup,
+    componentVersion: tableComponentVersion,
+    component: tableComponent,
     order: 2000
   })
-  await em.persistAndFlush(searchItem2);
+  await em.persistAndFlush(columnItem2);
 
-  searchBlock.listStructData = `[${searchItem1.id},${searchItem2.id},${searchItem3.id}]`;
-  await em.persistAndFlush(searchBlock);
+  columnBlock.listStructData = `[${columnItem1.id},${columnItem2.id},${columnItem3.id}]`;
+  await em.persistAndFlush(columnBlock);
 
-  await createValue(em, searchInnerItem, searchComponent, searchComponentVersion, [searchItem1, searchItem2, searchItem3]);
+  await createValue(em, columnInnerItem, tableComponent, tableComponentVersion, [columnItem1, columnItem2, columnItem3]);
 
-  // 创建组件实例
+
+  ////////////////
+
+
+  const requestBlock = em.create(PropBlock, {
+    name: '其他配置',
+    propKey: '',
+    order: 2000,
+    struct: PropBlockStructType.Default,
+    componentVersion: tableComponentVersion,
+    component: tableComponent,
+    group: commonGroup,
+  });
+  await em.persistAndFlush(requestBlock);
+
+  const rowKeyItem = em.create(PropItem, {
+    label: '唯一键',
+    propKey: 'rowKey',
+    type: PropItemType.Text,
+    block: requestBlock,
+    group: commonGroup,
+    componentVersion: tableComponentVersion,
+    component: tableComponent,
+    order: 1000
+  })
+  await em.persistAndFlush(rowKeyItem);
+
+  const requestItem = em.create(PropItem, {
+    label: '接口',
+    propKey: 'request',
+    type: PropItemType.Function,
+    block: requestBlock,
+    group: commonGroup,
+    componentVersion: tableComponentVersion,
+    component: tableComponent,
+    order: 2000
+  })
+  await em.persistAndFlush(requestItem);
+
+  ///////////////
+
   const tableComponentInstance = em.create(ComponentInstance, {
     name: '查询页',
     path: '/search',
-    component: searchComponent,
-    componentVersion: searchComponentVersion,
+    component: tableComponent,
+    componentVersion: tableComponentVersion,
     release,
     trackId: 0
   });
@@ -142,130 +182,197 @@ export const create = async (em: EntityManager, scaffold: Scaffold, release: Rel
   tableComponentInstance.trackId = tableComponentInstance.id;
   await em.persistAndFlush(tableComponentInstance);
 
-  await createValue(em, searchInnerItem, searchComponent, searchComponentVersion, [searchItem1, searchItem2, searchItem3], tableComponentInstance);
+  await createValue(em, columnInnerItem, tableComponent, tableComponentVersion, [columnItem1, columnItem2, columnItem3], tableComponentInstance);
+
+  const requestValue = em.create(PropValue, {
+    propItem: requestItem,
+    component: tableComponent,
+    componentVersion: tableComponentVersion,
+    componentInstance: tableComponentInstance,
+    type: PropValueType.Instance,
+    value: `
+    $exportFn = async function requestData(params, sort, filter) {
+      console.log($groot.tick++);
+      const res = await fetch('http://127.0.0.1:3000/workbench/demo');
+      const result = await res.json();
+      return { data: result.data, success: true };
+    }
+    `
+  });
+
+  const rowKeyValue = em.create(PropValue, {
+    propItem: rowKeyItem,
+    component: tableComponent,
+    componentVersion: tableComponentVersion,
+    componentInstance: tableComponentInstance,
+    type: PropValueType.Instance,
+    value: '"id"'
+  });
+
+  await em.persistAndFlush([requestValue, rowKeyValue]);
 }
 
-async function createValue(em: EntityManager, searchInnerItem: PropItem,
-  searchComponent: Component, searchComponentVersion: ComponentVersion,
-  [searchItem1, searchItem2, searchItem3]: PropItem[], instance?: ComponentInstance) {
+async function createValue(em: EntityManager, columnInnerItem: PropItem,
+  tableComponent: Component, tableComponentVersion: ComponentVersion,
+  [columnItem1, columnItem2, columnItem3]: PropItem[], instance?: ComponentInstance) {
 
-  const searchValue1 = em.create(PropValue, {
-    propItem: searchInnerItem,
-    component: searchComponent,
-    componentVersion: searchComponentVersion,
+  const columnValue1 = em.create(PropValue, {
+    propItem: columnInnerItem,
+    component: tableComponent,
+    componentVersion: tableComponentVersion,
     componentInstance: instance || undefined,
     type: instance ? PropValueType.Instance : PropValueType.Prototype,
   });
 
-  const searchValue2 = em.create(PropValue, {
-    propItem: searchInnerItem,
-    component: searchComponent,
-    componentVersion: searchComponentVersion,
+  const columnValue2 = em.create(PropValue, {
+    propItem: columnInnerItem,
+    component: tableComponent,
+    componentVersion: tableComponentVersion,
     componentInstance: instance || undefined,
     type: instance ? PropValueType.Instance : PropValueType.Prototype,
   });
 
-  const searchValue3 = em.create(PropValue, {
-    propItem: searchInnerItem,
-    component: searchComponent,
-    componentVersion: searchComponentVersion,
+  const columnValue3 = em.create(PropValue, {
+    propItem: columnInnerItem,
+    component: tableComponent,
+    componentVersion: tableComponentVersion,
     componentInstance: instance || undefined,
     type: instance ? PropValueType.Instance : PropValueType.Prototype,
   });
-  await em.persistAndFlush([searchValue1, searchValue2, searchValue3]);
 
-  const searchValue1Item1 = em.create(PropValue, {
-    propItem: searchItem1,
-    component: searchComponent,
-    componentVersion: searchComponentVersion,
-    abstractValueIdChain: `${searchValue1.id}`,
+  const columnValue4 = em.create(PropValue, {
+    propItem: columnInnerItem,
+    component: tableComponent,
+    componentVersion: tableComponentVersion,
+    componentInstance: instance || undefined,
+    type: instance ? PropValueType.Instance : PropValueType.Prototype,
+  });
+  await em.persistAndFlush([columnValue1, columnValue2, columnValue3, columnValue4]);
+
+  const columnValue1Item1 = em.create(PropValue, {
+    propItem: columnItem1,
+    component: tableComponent,
+    componentVersion: tableComponentVersion,
+    abstractValueIdChain: `${columnValue1.id}`,
     componentInstance: instance || undefined,
     type: instance ? PropValueType.Instance : PropValueType.Prototype,
     value: '"id"'
   });
 
-  const searchValue1Item2 = em.create(PropValue, {
-    propItem: searchItem2,
-    component: searchComponent,
-    componentVersion: searchComponentVersion,
-    abstractValueIdChain: `${searchValue1.id}`,
+  const columnValue1Item2 = em.create(PropValue, {
+    propItem: columnItem2,
+    component: tableComponent,
+    componentVersion: tableComponentVersion,
+    abstractValueIdChain: `${columnValue1.id}`,
     componentInstance: instance || undefined,
     type: instance ? PropValueType.Instance : PropValueType.Prototype,
     value: '"ID"'
   });
 
-  const searchValue1Item3 = em.create(PropValue, {
-    propItem: searchItem3,
-    component: searchComponent,
-    componentVersion: searchComponentVersion,
-    abstractValueIdChain: `${searchValue1.id}`,
+  const columnValue1Item3 = em.create(PropValue, {
+    propItem: columnItem3,
+    component: tableComponent,
+    componentVersion: tableComponentVersion,
+    abstractValueIdChain: `${columnValue1.id}`,
     componentInstance: instance || undefined,
     type: instance ? PropValueType.Instance : PropValueType.Prototype,
     value: '"text"'
   });
 
-  const searchValue2Item1 = em.create(PropValue, {
-    propItem: searchItem1,
-    component: searchComponent,
-    componentVersion: searchComponentVersion,
-    abstractValueIdChain: `${searchValue2.id}`,
+  const columnValue2Item1 = em.create(PropValue, {
+    propItem: columnItem1,
+    component: tableComponent,
+    componentVersion: tableComponentVersion,
+    abstractValueIdChain: `${columnValue2.id}`,
     componentInstance: instance || undefined,
     type: instance ? PropValueType.Instance : PropValueType.Prototype,
     value: '"name"'
   });
 
-  const searchValue2Item2 = em.create(PropValue, {
-    propItem: searchItem2,
-    component: searchComponent,
-    componentVersion: searchComponentVersion,
-    abstractValueIdChain: `${searchValue2.id}`,
+  const columnValue2Item2 = em.create(PropValue, {
+    propItem: columnItem2,
+    component: tableComponent,
+    componentVersion: tableComponentVersion,
+    abstractValueIdChain: `${columnValue2.id}`,
     componentInstance: instance || undefined,
     type: instance ? PropValueType.Instance : PropValueType.Prototype,
     value: '"姓名"'
   });
 
-  const searchValue2Item3 = em.create(PropValue, {
-    propItem: searchItem3,
-    component: searchComponent,
-    componentVersion: searchComponentVersion,
-    abstractValueIdChain: `${searchValue2.id}`,
+  const columnValue2Item3 = em.create(PropValue, {
+    propItem: columnItem3,
+    component: tableComponent,
+    componentVersion: tableComponentVersion,
+    abstractValueIdChain: `${columnValue2.id}`,
     componentInstance: instance || undefined,
     type: instance ? PropValueType.Instance : PropValueType.Prototype,
     value: '"text"'
   });
 
-  const searchValue3Item1 = em.create(PropValue, {
-    propItem: searchItem1,
-    component: searchComponent,
-    componentVersion: searchComponentVersion,
-    abstractValueIdChain: `${searchValue3.id}`,
+  const columnValue3Item1 = em.create(PropValue, {
+    propItem: columnItem1,
+    component: tableComponent,
+    componentVersion: tableComponentVersion,
+    abstractValueIdChain: `${columnValue3.id}`,
     componentInstance: instance || undefined,
     type: instance ? PropValueType.Instance : PropValueType.Prototype,
     value: '"age"'
   });
 
-  const searchValue3Item2 = em.create(PropValue, {
-    propItem: searchItem2,
-    component: searchComponent,
-    componentVersion: searchComponentVersion,
-    abstractValueIdChain: `${searchValue3.id}`,
+  const columnValue3Item2 = em.create(PropValue, {
+    propItem: columnItem2,
+    component: tableComponent,
+    componentVersion: tableComponentVersion,
+    abstractValueIdChain: `${columnValue3.id}`,
     componentInstance: instance || undefined,
     type: instance ? PropValueType.Instance : PropValueType.Prototype,
     value: '"年龄"'
   });
 
-  const searchValue3Item3 = em.create(PropValue, {
-    propItem: searchItem3,
-    component: searchComponent,
-    componentVersion: searchComponentVersion,
-    abstractValueIdChain: `${searchValue3.id}`,
+  const columnValue3Item3 = em.create(PropValue, {
+    propItem: columnItem3,
+    component: tableComponent,
+    componentVersion: tableComponentVersion,
+    abstractValueIdChain: `${columnValue3.id}`,
+    componentInstance: instance || undefined,
+    type: instance ? PropValueType.Instance : PropValueType.Prototype,
+    value: '"text"'
+  });
+
+  const columnValue4Item1 = em.create(PropValue, {
+    propItem: columnItem1,
+    component: tableComponent,
+    componentVersion: tableComponentVersion,
+    abstractValueIdChain: `${columnValue4.id}`,
+    componentInstance: instance || undefined,
+    type: instance ? PropValueType.Instance : PropValueType.Prototype,
+    value: '"address"'
+  });
+
+  const columnValue4Item2 = em.create(PropValue, {
+    propItem: columnItem2,
+    component: tableComponent,
+    componentVersion: tableComponentVersion,
+    abstractValueIdChain: `${columnValue4.id}`,
+    componentInstance: instance || undefined,
+    type: instance ? PropValueType.Instance : PropValueType.Prototype,
+    value: '"地址"'
+  });
+
+  const columnValue4Item3 = em.create(PropValue, {
+    propItem: columnItem3,
+    component: tableComponent,
+    componentVersion: tableComponentVersion,
+    abstractValueIdChain: `${columnValue4.id}`,
     componentInstance: instance || undefined,
     type: instance ? PropValueType.Instance : PropValueType.Prototype,
     value: '"text"'
   });
 
   await em.persistAndFlush([
-    searchValue1Item1, searchValue1Item2, searchValue1Item3,
-    searchValue2Item1, searchValue2Item2, searchValue2Item3,
-    searchValue3Item1, searchValue3Item2, searchValue3Item3]);
+    columnValue1Item1, columnValue1Item2, columnValue1Item3,
+    columnValue2Item1, columnValue2Item2, columnValue2Item3,
+    columnValue3Item1, columnValue3Item2, columnValue3Item3,
+    columnValue4Item1, columnValue4Item2, columnValue4Item3,
+  ]);
 }
