@@ -95,7 +95,7 @@ const processAdvancedProp = (metadata: Metadata, store: Metadata[]) => {
       }
     } else if (propMetadata.type === PropMetadataType.Function) {
       try {
-        ctx[endPropKey] = functionCreate(ctx[endPropKey]);
+        ctx[endPropKey] = functionCreate(ctx[endPropKey], ctx);
       } catch (e) {
         console.error(`高级属性解析失败  ${keys}:${ctx[endPropKey]}`)
         ctx[endPropKey] = undefined;

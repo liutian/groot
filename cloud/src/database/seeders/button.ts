@@ -72,7 +72,20 @@ export const create = async (em: EntityManager, scaffold: Scaffold, release: Rel
     order: 2000,
     component: btnComponent
   })
-  await em.persistAndFlush([btnItem1, btnItem2]);
+
+  const btnItem3 = em.create(PropItem, {
+    label: '点击事件',
+    propKey: 'onClick',
+    type: PropItemType.Function,
+    defaultValue: '$exportFn = () => alert($props.children)',
+    block: btnBlock,
+    group: btnGroup,
+    componentVersion: btnComponentVersion,
+    order: 3000,
+    component: btnComponent
+  })
+
+  await em.persistAndFlush([btnItem1, btnItem2, btnItem3]);
 
   // 创建组件实例
   const btnComponentInstance = em.create(ComponentInstance, {

@@ -3,17 +3,17 @@ const $groot = {
   tick: 1
 }
 
-function create(functionBody: string) {
-  const newFunction = new window.Function('$groot', `
+function create(functionBody: string, $props: Object) {
+  const newFunction = new window.Function('$props', '$groot', `
     'use strict';
-    return function __grootFn($groot){
+    return function __grootFn($groot,$props){
       let $exportFn;
       ${functionBody}
       return $exportFn;
-    }($groot);
+    }($groot,$props);
   `);
 
-  return newFunction($groot);
+  return newFunction($props, $groot);
 }
 
 

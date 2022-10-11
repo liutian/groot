@@ -40,7 +40,8 @@ function TextEditor({ onChange, value, type = 'json' }: propsType) {
       const version: string;
       let tick: number;
     }
-    declare let $exportFn:Function
+    declare let $exportFn: Function;
+    declare const $props: any;
     `, '');
 
     editorRef.current = monaco.editor.create(codeEditorContainerRef.current, {
