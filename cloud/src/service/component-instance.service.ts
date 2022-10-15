@@ -67,6 +67,7 @@ export class ComponentInstanceService {
       ...pick(rawInstance, ['name', 'path']),
       parent: rawInstance.parentId,
       root: rawInstance.rootId,
+      wrapperType: component.wrapperType,
       component,
       componentVersion: component.recentVersion,
       release,

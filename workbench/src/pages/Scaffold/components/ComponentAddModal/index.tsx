@@ -1,6 +1,6 @@
 import { ModalStatus } from "@util/common";
 import { useModel } from "@util/robot";
-import { Form, Input, Modal, Switch } from "antd";
+import { Form, Input, Modal, Radio, Switch } from "antd";
 import ScaffoldModel from "pages/Scaffold/ScaffoldModel";
 
 const ComponentAddModal: React.FC = () => {
@@ -38,6 +38,14 @@ const ComponentAddModal: React.FC = () => {
 
       <Form.Item label="组件包名" name="packageName" rules={[{ required: true }]}>
         <Input />
+      </Form.Item>
+
+      <Form.Item label="包裹方式" name="wrapperType" rules={[{ required: true }]} initialValue="block">
+        <Radio.Group >
+          <Radio.Button value="block">块状</Radio.Button>
+          <Radio.Button value="inline-block">行内快</Radio.Button>
+          <Radio.Button value="inline">行内</Radio.Button>
+        </Radio.Group>
       </Form.Item>
     </Form>
   </Modal>

@@ -56,7 +56,7 @@ export class ReleaseService {
       // 创建组件实例
       originInstanceList.forEach((originInstance) => {
         const instance = em.create(ComponentInstance, {
-          ...pick(originInstance, ['name', 'component', 'componentVersion', 'path', 'trackId']),
+          ...pick(originInstance, ['name', 'component', 'componentVersion', 'path', 'trackId', 'wrapperType']),
           release: newRelease,
         });
         instanceMap.set(originInstance.id, instance);

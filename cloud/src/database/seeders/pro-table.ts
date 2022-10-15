@@ -1,4 +1,4 @@
-import { PropBlockLayout, PropBlockStructType, PropItemType, PropValueType } from "@grootio/common";
+import { PropBlockLayout, PropBlockStructType, PropItemType, PropValueType, WrapperType } from "@grootio/common";
 import { EntityManager } from "@mikro-orm/core";
 
 import { Component } from "../../entities/Component";
@@ -17,6 +17,7 @@ export const create = async (em: EntityManager, scaffold: Scaffold, release: Rel
     name: '列表查询',
     packageName: '@ant-design/pro-table',
     componentName: 'ProTable',
+    wrapperType: WrapperType.Block,
     scaffold
   });
   await em.persistAndFlush(tableComponent);
@@ -151,6 +152,7 @@ export const create = async (em: EntityManager, scaffold: Scaffold, release: Rel
     group: commonGroup,
     componentVersion: tableComponentVersion,
     component: tableComponent,
+    defaultValue: '"id"',
     order: 1000
   })
   await em.persistAndFlush(rowKeyItem);
@@ -174,6 +176,7 @@ export const create = async (em: EntityManager, scaffold: Scaffold, release: Rel
     path: '/search',
     component: tableComponent,
     componentVersion: tableComponentVersion,
+    wrapperType: WrapperType.Block,
     release,
     trackId: 0
   });

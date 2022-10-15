@@ -50,11 +50,11 @@ const createComponentWrapper = (metadata: Metadata) => {
       return React.createElement(module, metadata.propsObj)
     } else {
 
-      return React.createElement('span', {
+      return React.createElement('div', {
         'data-groot-component-instance-id': metadata.id,
         'data-groot-wrapper': metadata.id,
         'data-groot-wrapper-tag-name': componentName,
-        style: { display: 'inline-block' }
+        style: { display: metadata.wrapperType || 'block' }
       },
         React.createElement(module, metadata.propsObj)
       );
@@ -106,13 +106,16 @@ const processAdvancedProp = (metadata: Metadata, store: Metadata[]) => {
 }
 
 const createComponentByValue = (ids: number[], propMetadata: PropMetadata, store: Metadata[]) => {
+  const rootData = propMetadata.data as RuntimeComponentValueType<null>;
   const nodes = (ids || []).map((instanceId) => {
     const metadata = store.find(m => m.id === instanceId);
-
+    if (!metadata) {
+      throw new Error('数据异常');
+    }
     return buildComponent(metadata, store);
   });
 
-  (nodes as any)._groot = propMetadata.data as RuntimeComponentValueType<null>;
+  (nodes as any)._groot = rootData;
 
   return nodes;
 }

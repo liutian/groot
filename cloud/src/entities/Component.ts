@@ -1,6 +1,6 @@
-import { Entity, ManyToOne, OneToOne, Property } from "@mikro-orm/core";
+import { WrapperType } from "@grootio/common";
+import { Entity, Enum, ManyToOne, OneToOne, Property } from "@mikro-orm/core";
 import { BaseEntity } from "./BaseEntity";
-import { ComponentInstance } from "./ComponentInstance";
 import { ComponentVersion } from "./ComponentVersion";
 import { PropBlock } from "./PropBlock";
 import { PropGroup } from "./PropGroup";
@@ -41,6 +41,9 @@ export class Component extends BaseEntity {
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'scaffoldId' })
   scaffold: Scaffold;
+
+  @Enum()
+  wrapperType: WrapperType = WrapperType.Block;
 
   //************************已下是接口入参或者查询返回需要定义的属性************************
 

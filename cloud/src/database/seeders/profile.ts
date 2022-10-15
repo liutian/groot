@@ -1,4 +1,4 @@
-import { ComponentValueType, PropBlockLayout, PropBlockStructType, PropItemType, PropValueType } from "@grootio/common";
+import { ComponentValueType, PropBlockLayout, PropBlockStructType, PropItemType, PropValueType, WrapperType } from "@grootio/common";
 import { EntityManager } from "@mikro-orm/core";
 
 import { PropValue } from "../../entities/PropValue";
@@ -17,6 +17,7 @@ export const create = async (em: EntityManager, scaffold: Scaffold, release: Rel
     name: '头像',
     packageName: 'antd',
     componentName: 'Avatar',
+    wrapperType: WrapperType.InlineBlock,
     scaffold
   });
   await em.persistAndFlush(avatarComponent);
@@ -81,6 +82,7 @@ export const create = async (em: EntityManager, scaffold: Scaffold, release: Rel
     name: '个人资料',
     component: avatarComponent,
     componentVersion: avatarComponentVersion,
+    wrapperType: WrapperType.InlineBlock,
     release,
     trackId: 0
   });
@@ -100,6 +102,7 @@ export const create = async (em: EntityManager, scaffold: Scaffold, release: Rel
     name: '个人资料',
     packageName: 'app',
     componentName: 'Profile',
+    wrapperType: WrapperType.Block,
     scaffold
   });
   await em.persistAndFlush(profileComponent);
@@ -186,6 +189,7 @@ export const create = async (em: EntityManager, scaffold: Scaffold, release: Rel
     path: '/profile',
     component: profileComponent,
     componentVersion: profileComponentVersion,
+    wrapperType: WrapperType.Block,
     release,
     trackId: 0
   });

@@ -1,4 +1,4 @@
-import { PropBlockLayout, PropBlockStructType, PropItemType } from "@grootio/common";
+import { PropBlockLayout, PropBlockStructType, PropItemType, WrapperType } from "@grootio/common";
 import { EntityManager } from "@mikro-orm/core";
 
 import { Component } from "../../entities/Component";
@@ -16,6 +16,7 @@ export const create = async (em: EntityManager, scaffold: Scaffold, release: Rel
     name: '按钮',
     packageName: 'antd',
     componentName: 'Button',
+    wrapperType: WrapperType.InlineBlock,
     scaffold
   });
   await em.persistAndFlush(btnComponent);
@@ -93,6 +94,7 @@ export const create = async (em: EntityManager, scaffold: Scaffold, release: Rel
     path: '/button',
     component: btnComponent,
     componentVersion: btnComponentVersion,
+    wrapperType: WrapperType.InlineBlock,
     release,
     trackId: 0
   });

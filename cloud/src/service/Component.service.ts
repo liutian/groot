@@ -52,7 +52,7 @@ export class ComponentService {
     const scaffold = await em.findOne(Scaffold, rawComponent.scaffoldId);
     LogicException.assertNotFound(scaffold, 'Scaffold', rawComponent.scaffoldId);
 
-    const newComponent = em.create(Component, pick(rawComponent, ['name', 'componentName', 'packageName', 'container']));
+    const newComponent = em.create(Component, pick(rawComponent, ['name', 'componentName', 'packageName', 'container', 'wrapperType']));
     newComponent.scaffold = scaffold;
 
     await em.begin();

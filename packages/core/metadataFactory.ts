@@ -9,6 +9,7 @@ export function metadataFactory(rootGroupList: IPropGroup[], component: ICompone
     componentName: component.componentName,
     propsObj: {},
     advancedProps: [],
+    wrapperType: component.wrapperType,
   } as Metadata;
 
   rootGroupList.forEach((group) => {

@@ -40,6 +40,7 @@ export type Metadata = {
   packageName: string,
   componentName: string,
   parentId?: number,
+  wrapperType: WrapperType,
 
   advancedProps?: PropMetadata[],
   propsObj: {
@@ -176,6 +177,7 @@ export interface IComponent {
   id: number,
   packageName: string,
   componentName: string,
+  wrapperType: WrapperType
 }
 
 export enum DeployStatusType {
@@ -213,7 +215,6 @@ export type requestFnType<Store extends Record<string, any[]>> =
 export type ComponentValueItemType = { instanceId: number, componentId: number, componentName: string }
 
 export type ComponentValueSettingType = {
-
 }
 
 export type ComponentValueType = {
@@ -240,3 +241,8 @@ export type DragAddComponentEventDataType = {
   componentId: number
 }
 
+export enum WrapperType {
+  Block = 'block',
+  InlineBlock = 'inline-block',
+  Inline = 'inline'
+}
