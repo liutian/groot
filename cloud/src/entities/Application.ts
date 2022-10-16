@@ -1,4 +1,5 @@
 import { Entity, ManyToOne, Property } from "@mikro-orm/core";
+
 import { BaseEntity } from "./BaseEntity";
 import { Project } from "./Project";
 import { Release } from "./Release";
@@ -15,11 +16,9 @@ export class Application extends BaseEntity {
   @ManyToOne({ serializer: value => value?.id, serializedName: 'projectId' })
   project: Project;
 
+  // 调试应用各种功能的演练场接受外部窗口传来调试参数
   @Property({ length: 100 })
   playgroundPath: string;
-
-  @Property()
-  pathPrefix?: string;
 
   // 此处必须为可选，否则创建application会引发devRelease非空校验
   @ManyToOne({ serializer: value => value?.id, serializedName: 'devReleaseId' })

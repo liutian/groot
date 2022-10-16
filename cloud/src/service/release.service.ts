@@ -1,14 +1,14 @@
 import { RequestContext } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
+import { PropValueType } from '@grootio/common';
+
 import { LogicException, LogicExceptionCode } from 'config/logic.exception';
 import { Release } from 'entities/Release';
-
 import { pick } from 'util/common';
 import { ComponentInstanceService } from './component-instance.service';
 import { PropValueService } from './prop-value.service';
 import { ComponentInstance } from 'entities/ComponentInstance';
 import { PropValue } from 'entities/PropValue';
-import { PropValueType } from '@grootio/common';
 
 
 @Injectable()
@@ -56,7 +56,7 @@ export class ReleaseService {
       // 创建组件实例
       originInstanceList.forEach((originInstance) => {
         const instance = em.create(ComponentInstance, {
-          ...pick(originInstance, ['name', 'component', 'componentVersion', 'path', 'trackId', 'wrapperType']),
+          ...pick(originInstance, ['name', 'component', 'componentVersion', 'trackId', 'entry']),
           release: newRelease,
         });
         instanceMap.set(originInstance.id, instance);
@@ -106,7 +106,7 @@ export class ReleaseService {
       throw e;
     }
 
-    newRelease.instanceList = await em.find(ComponentInstance, { release: newRelease, path: { $ne: null } });
+    newRelease.instanceList = await em.find(ComponentInstance, { release: newRelease, entry: true });
 
     return newRelease;
   }
@@ -116,7 +116,7 @@ export class ReleaseService {
 
     LogicException.assertParamEmpty(releaseId, 'releaseId');
     const release = await em.findOne(Release, releaseId);
-    release.instanceList = await em.find(ComponentInstance, { release, path: { $ne: null } });
+    release.instanceList = await em.find(ComponentInstance, { release, entry: true });
 
     return release;
   }

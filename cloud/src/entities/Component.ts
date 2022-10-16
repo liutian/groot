@@ -1,5 +1,6 @@
-import { WrapperType } from "@grootio/common";
+import { ComponentParserType } from "@grootio/common";
 import { Entity, Enum, ManyToOne, OneToOne, Property } from "@mikro-orm/core";
+
 import { BaseEntity } from "./BaseEntity";
 import { ComponentVersion } from "./ComponentVersion";
 import { PropBlock } from "./PropBlock";
@@ -7,7 +8,7 @@ import { PropGroup } from "./PropGroup";
 import { PropItem } from "./PropItem";
 import { PropValue } from "./PropValue";
 import { Release } from "./Release";
-import { Scaffold } from "./Scaffold";
+import { Organization } from "./Organization";
 
 @Entity()
 export class Component extends BaseEntity {
@@ -28,22 +29,16 @@ export class Component extends BaseEntity {
   componentName: string;
 
   /**
-   * 是否是容器组件
-   */
-  @Property()
-  container = false;
-
-  /**
    * 组件最新版本，此处必须为可选，否则创建组建会引发recentVersion非空校验
    */
   @OneToOne({ serializer: value => value?.id, serializedName: 'recentVersionId' })
   recentVersion?: ComponentVersion;
 
-  @ManyToOne({ serializer: value => value?.id, serializedName: 'scaffoldId' })
-  scaffold: Scaffold;
+  @ManyToOne({ serializer: value => value?.id, serializedName: 'orgId' })
+  org: Organization;
 
   @Enum()
-  wrapperType: WrapperType = WrapperType.Block;
+  parserType: ComponentParserType = ComponentParserType.ReactComponent;
 
   //************************已下是接口入参或者查询返回需要定义的属性************************
 
@@ -63,7 +58,7 @@ export class Component extends BaseEntity {
   releaseList: Release[];
 
   @Property({ persist: false })
-  scaffoldId?: number;
+  orgId?: number;
 
   @Property({ persist: false })
   groupList?: PropGroup[];

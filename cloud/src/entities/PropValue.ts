@@ -1,8 +1,9 @@
 import { Entity, ManyToOne, Property } from "@mikro-orm/core";
+import { PropValueType } from "@grootio/common";
+
 import { BaseEntity } from "./BaseEntity";
 import { ComponentInstance } from "./ComponentInstance";
 import { Component } from "./Component";
-import { PropValueType } from "@grootio/common";
 import { ComponentVersion } from "./ComponentVersion";
 import { PropItem } from "./PropItem";
 
@@ -45,7 +46,7 @@ export class PropValue extends BaseEntity {
   componentVersionId?: number;
 
   @Property({ persist: false })
-  scaffoldId?: number;
+  orgId?: number;
 
   @Property({ persist: false })
   releaseId?: number;

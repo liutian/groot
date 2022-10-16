@@ -1,6 +1,7 @@
 import { PropValueType } from '@grootio/common';
 import { RequestContext, wrap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
+
 import { LogicException, LogicExceptionCode } from 'config/logic.exception';
 import { Component } from 'entities/Component';
 import { ComponentVersion } from 'entities/ComponentVersion';
@@ -8,7 +9,7 @@ import { PropBlock } from 'entities/PropBlock';
 import { PropGroup } from 'entities/PropGroup';
 import { PropItem } from 'entities/PropItem';
 import { PropValue } from 'entities/PropValue';
-import { Scaffold } from 'entities/Scaffold';
+import { Organization } from 'entities/Organization';
 import { pick } from 'util/common';
 
 
@@ -47,13 +48,13 @@ export class ComponentService {
     if (!rawComponent.packageName || !rawComponent.componentName) {
       throw new LogicException('参数packageName和componentName不能同时为空', LogicExceptionCode.ParamEmpty);
     }
-    LogicException.assertParamEmpty(rawComponent.scaffoldId, 'scaffoldId');
+    LogicException.assertParamEmpty(rawComponent.orgId, 'orgId');
 
-    const scaffold = await em.findOne(Scaffold, rawComponent.scaffoldId);
-    LogicException.assertNotFound(scaffold, 'Scaffold', rawComponent.scaffoldId);
+    const org = await em.findOne(Organization, rawComponent.orgId);
+    LogicException.assertNotFound(org, 'Organization', rawComponent.orgId);
 
-    const newComponent = em.create(Component, pick(rawComponent, ['name', 'componentName', 'packageName', 'container', 'wrapperType']));
-    newComponent.scaffold = scaffold;
+    const newComponent = em.create(Component, pick(rawComponent, ['name', 'componentName', 'packageName']));
+    newComponent.org = org;
 
     await em.begin();
     try {
@@ -89,10 +90,10 @@ export class ComponentService {
     return newComponent;
   }
 
-  async list(container: string) {
+  async list() {
     const em = RequestContext.getEntityManager();
 
-    const list = await em.find(Component, { container: container === 'true' });
+    const list = await em.find(Component, {});
 
     return list;
   }

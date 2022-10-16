@@ -1,10 +1,11 @@
 import { Entity, Enum, ManyToOne, OneToOne, Property } from "@mikro-orm/core";
+import { PropItemType } from '@grootio/common';
+
 import { BaseEntity } from "./BaseEntity";
 import { Component } from "./Component";
 import { ComponentVersion } from "./ComponentVersion";
 import { PropBlock } from "./PropBlock";
 import { PropGroup } from "./PropGroup";
-import { PropItemType } from '@grootio/common';
 
 @Entity()
 export class PropItem extends BaseEntity {
@@ -46,6 +47,7 @@ export class PropItem extends BaseEntity {
    * 版本升级时，确认当前propItem是否被改动的判断条件
    * 上一个版本versionTraceId，如果为空则是上一个版本对应propItem 的 ID
    * 如果propItem类型变化，则重置versionTraceId为当前ID，并删除管理propValue
+   * 组件实例在升级组件版本时可以尽量保留propValue
    */
   @Property()
   versionTraceId?: number;

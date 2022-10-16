@@ -1,6 +1,7 @@
 import { PropValueType } from '@grootio/common';
-import { EntityManager, RequestContext, wrap } from '@mikro-orm/core';
+import { EntityManager, RequestContext } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
+
 import { LogicException, LogicExceptionCode } from 'config/logic.exception';
 import { Component } from 'entities/Component';
 import { ComponentInstance } from 'entities/ComponentInstance';
@@ -9,7 +10,6 @@ import { PropGroup } from 'entities/PropGroup';
 import { PropItem } from 'entities/PropItem';
 import { PropValue } from 'entities/PropValue';
 import { Release } from 'entities/Release';
-
 import { pick } from 'util/common';
 
 @Injectable()
@@ -27,30 +27,30 @@ export class ComponentInstanceService {
     const release = await em.findOne(Release, rawInstance.releaseId);
     LogicException.assertNotFound(release, 'Release', rawInstance.releaseId);
 
-    if (rawInstance.path) {
+    if (rawInstance.rootId) {
       if (rawInstance.rootId) {
-        throw new LogicException(`如果传递参数path，则不能传递参数rootId`, LogicExceptionCode.UnExpect);
+        throw new LogicException(`如果传递参数key，则不能传递参数rootId`, LogicExceptionCode.UnExpect);
       }
 
       if (rawInstance.parentId) {
-        throw new LogicException(`如果传递参数path，则不能传递参数parentId`, LogicExceptionCode.UnExpect);
+        throw new LogicException(`如果传递参数key，则不能传递参数parentId`, LogicExceptionCode.UnExpect);
       }
 
       const count = await em.count(ComponentInstance, {
-        path: rawInstance.path,
+        key: rawInstance.key,
         release
       });
 
       if (count > 0) {
-        throw new LogicException(`参数path冲突，改值必须在迭代版本中唯一`, LogicExceptionCode.NotUnique);
+        throw new LogicException(`参数key冲突，该值必须在单个迭代版本中唯一`, LogicExceptionCode.NotUnique);
       }
     } else {
       if (!rawInstance.parentId) {
-        throw new LogicException(`如果不传递参数path，则必须传递参数parentId`, LogicExceptionCode.UnExpect);
+        throw new LogicException(`如果不传递参数key，则必须传递参数parentId`, LogicExceptionCode.UnExpect);
       }
 
       if (!rawInstance.rootId) {
-        throw new LogicException(`如果不传递参数path，则必须传递参数rootId`, LogicExceptionCode.UnExpect);
+        throw new LogicException(`如果不传递参数key，则必须传递参数rootId`, LogicExceptionCode.UnExpect);
       }
     }
 
@@ -64,10 +64,9 @@ export class ComponentInstanceService {
     });
 
     const newInstance = em.create(ComponentInstance, {
-      ...pick(rawInstance, ['name', 'path']),
+      ...pick(rawInstance, ['name', 'key']),
       parent: rawInstance.parentId,
       root: rawInstance.rootId,
-      wrapperType: component.wrapperType,
       component,
       componentVersion: component.recentVersion,
       release,
@@ -125,22 +124,22 @@ export class ComponentInstanceService {
   }
 
   // todo **id为componentInstanceId**
-  async getPageDetail(instanceId: number) {
+  async getRootDetail(instanceId: number) {
     const em = RequestContext.getEntityManager();
 
     LogicException.assertParamEmpty(instanceId, 'instanceId');
-    const pageInstance = await em.findOne(ComponentInstance, instanceId, {
+    const rootInstance = await em.findOne(ComponentInstance, instanceId, {
       populate: ['componentVersion', 'component']
     });
-    LogicException.assertNotFound(pageInstance, 'pageInstance', instanceId);
-    if (!pageInstance.path) {
-      throw new LogicException(`组件实例path为空`, LogicExceptionCode.UnExpect);
+    LogicException.assertNotFound(rootInstance, 'Instance', instanceId);
+    if (rootInstance.root) {
+      throw new LogicException(`当前组件不是入口组件`, LogicExceptionCode.UnExpect);
     }
 
-    pageInstance.groupList = await em.find(PropGroup, { component: pageInstance.component, componentVersion: pageInstance.componentVersion });
-    pageInstance.blockList = await em.find(PropBlock, { component: pageInstance.component, componentVersion: pageInstance.componentVersion });
-    pageInstance.itemList = await em.find(PropItem, { component: pageInstance.component, componentVersion: pageInstance.componentVersion });
-    pageInstance.valueList = await em.find(PropValue, { componentInstance: pageInstance });
+    rootInstance.groupList = await em.find(PropGroup, { component: rootInstance.component, componentVersion: rootInstance.componentVersion });
+    rootInstance.blockList = await em.find(PropBlock, { component: rootInstance.component, componentVersion: rootInstance.componentVersion });
+    rootInstance.itemList = await em.find(PropItem, { component: rootInstance.component, componentVersion: rootInstance.componentVersion });
+    rootInstance.valueList = await em.find(PropValue, { componentInstance: rootInstance });
 
     const instanceList = await em.find(ComponentInstance, { root: instanceId }, {
       populate: ['component', 'componentVersion'],
@@ -155,7 +154,7 @@ export class ComponentInstanceService {
       instance.valueList = await em.find(PropValue, { componentInstance: instance });
     }
 
-    return { root: pageInstance, children: instanceList };
+    return { root: rootInstance, children: instanceList };
   }
 
   async detailIdByTrackId(trackId: number, releaseId: number) {
@@ -222,7 +221,7 @@ export class ComponentInstanceService {
 
     LogicException.assertNotFound(instance, 'ComponentInstance', id);
 
-    if (instance.path) {
+    if (!instance.root) {
       const list = await em.find(ComponentInstance, { root: id });
       removeIds.push(...list.map(item => item.id));
     } else {

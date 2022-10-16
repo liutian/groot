@@ -1,4 +1,4 @@
-import { PropBlockLayout, PropBlockStructType, PropItemType, PropValueType, WrapperType } from "@grootio/common";
+import { PropBlockLayout, PropBlockStructType, PropItemType, PropValueType } from "@grootio/common";
 import { EntityManager } from "@mikro-orm/core";
 
 import { Component } from "../../entities/Component";
@@ -9,16 +9,15 @@ import { PropGroup } from "../../entities/PropGroup";
 import { PropItem } from "../../entities/PropItem";
 import { PropValue } from "../../entities/PropValue";
 import { Release } from "../../entities/Release";
-import { Scaffold } from "../../entities/Scaffold";
+import { Organization } from "../../entities/Organization";
 
-export const create = async (em: EntityManager, scaffold: Scaffold, release: Release) => {
+export const create = async (em: EntityManager, org: Organization, release: Release) => {
   // 创建组件
   const tableComponent = em.create(Component, {
     name: '列表查询',
     packageName: '@ant-design/pro-table',
     componentName: 'ProTable',
-    wrapperType: WrapperType.Block,
-    scaffold
+    org
   });
   await em.persistAndFlush(tableComponent);
 
@@ -173,10 +172,10 @@ export const create = async (em: EntityManager, scaffold: Scaffold, release: Rel
 
   const tableComponentInstance = em.create(ComponentInstance, {
     name: '查询页',
-    path: '/search',
+    key: '/admin/groot/table',
+    entry: true,
     component: tableComponent,
     componentVersion: tableComponentVersion,
-    wrapperType: WrapperType.Block,
     release,
     trackId: 0
   });

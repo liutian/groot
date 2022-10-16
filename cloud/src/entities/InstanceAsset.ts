@@ -1,4 +1,5 @@
 import { Entity, ManyToOne, Property } from "@mikro-orm/core";
+
 import { BaseEntity } from "./BaseEntity";
 import { Bundle } from "./Bundle";
 import { ComponentInstance } from "./ComponentInstance";
@@ -16,5 +17,5 @@ export class InstanceAsset extends BaseEntity {
   bundle: Bundle;
 
   @Property()
-  path: string;
+  key: string;
 }

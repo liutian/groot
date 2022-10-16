@@ -1,4 +1,5 @@
 import { Collection, Entity, ManyToOne, OneToMany, Property } from "@mikro-orm/core";
+
 import { Application } from "./Application";
 import { InstanceAsset } from "./InstanceAsset";
 import { BaseEntity } from "./BaseEntity";

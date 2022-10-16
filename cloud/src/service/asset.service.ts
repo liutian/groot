@@ -57,7 +57,7 @@ export class AssetService {
     const release = await em.findOne(Release, releaseId);
     LogicException.assertNotFound(release, 'Release', releaseId);
 
-    const rootInstanceList = await em.find(ComponentInstance, { release, path: { $ne: null } },
+    const rootInstanceList = await em.find(ComponentInstance, { release, entry: true },
       { populate: ['component'] }
     );
     const instanceMetadataMap = new Map<ComponentInstance, Metadata[]>();
@@ -100,7 +100,7 @@ export class AssetService {
           content: JSON.stringify(metadataList),
           componetInstace: instance,
           bundle,
-          path: instance.path
+          key: instance.key
         });
         newAssetList.push(asset);
       });
@@ -144,10 +144,9 @@ export class AssetService {
     }
 
     const newAssetList = bundle.newAssetList.getItems();
-    const pathPrefix = bundle.application.pathPrefix || '';
-    const pages = newAssetList.map((asset) => {
+    const instances = newAssetList.map((asset) => {
       return {
-        path: pathPrefix + asset.path,
+        key: asset.key,
         metadataUrl: `http://127.0.0.1:3000/asset/instance/${asset.id}`
       }
     })
@@ -155,7 +154,7 @@ export class AssetService {
     const appData: ApplicationData = {
       name: bundle.appName,
       key: bundle.appKey,
-      pages,
+      instances,
       envData: {}
     }
 

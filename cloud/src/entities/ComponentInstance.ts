@@ -1,5 +1,6 @@
-import { WrapperType } from "@grootio/common";
+import { ComponentParserType } from "@grootio/common";
 import { Entity, Enum, ManyToOne, Property } from "@mikro-orm/core";
+
 import { BaseEntity } from "./BaseEntity";
 import { Component } from "./Component";
 import { ComponentVersion } from "./ComponentVersion";
@@ -36,14 +37,14 @@ export class ComponentInstance extends BaseEntity {
   @ManyToOne({ serializer: value => value?.id, serializedName: 'parentId' })
   parent?: ComponentInstance;
 
-  /**
-   * 页面地址，可选
-   */
   @Property({ length: 100 })
-  path?: string;
+  key?: string;
 
   @Enum()
-  wrapperType: WrapperType = WrapperType.Block;
+  parserType: ComponentParserType = ComponentParserType.ReactComponent;
+
+  @Property()
+  entry: boolean = false;
 
   //************************已下是接口入参或者查询返回需要定义的属性************************
 

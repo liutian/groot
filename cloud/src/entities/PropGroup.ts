@@ -1,9 +1,9 @@
 import { PropGroupStructType } from "@grootio/common";
-import { Collection, Entity, ManyToOne, OneToMany, Property } from "@mikro-orm/core";
+import { Entity, ManyToOne, Property } from "@mikro-orm/core";
+
 import { BaseEntity } from "./BaseEntity";
 import { Component } from "./Component";
 import { ComponentVersion } from "./ComponentVersion";
-import { PropBlock } from "./PropBlock";
 import { PropItem } from "./PropItem";
 
 @Entity()
@@ -13,7 +13,7 @@ export class PropGroup extends BaseEntity {
   name: string;
 
   /**
-   * 只有根配置组可以在页面上以tab方式展示
+   * 属性编辑器最顶层配置组
    */
   @Property()
   root = true;
@@ -25,7 +25,7 @@ export class PropGroup extends BaseEntity {
   componentVersion: ComponentVersion;
 
   /**
-   * Item 其下没有配置块这一层，直接展示配置项
+   * Flat 没有配置块这一层，直接展示配置项
    * Default 直接下级为配置块，配置块直接下级为配置项
    */
   @Property()

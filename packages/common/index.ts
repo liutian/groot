@@ -25,12 +25,12 @@ export type IframeDebuggerConfig = {
 export type ApplicationData = {
   name: string,
   key: string,
-  pages: PageData[],
+  instances: InstanceData[],
   envData: Record<string, any>
 }
 
-export type PageData = {
-  path: string;
+export type InstanceData = {
+  key: string;
   metadataUrl?: string;
   metadataList?: Metadata[];
 }
@@ -40,7 +40,6 @@ export type Metadata = {
   packageName: string,
   componentName: string,
   parentId?: number,
-  wrapperType: WrapperType,
 
   advancedProps?: PropMetadata[],
   propsObj: {
@@ -177,7 +176,6 @@ export interface IComponent {
   id: number,
   packageName: string,
   componentName: string,
-  wrapperType: WrapperType
 }
 
 export enum DeployStatusType {
@@ -241,8 +239,9 @@ export type DragAddComponentEventDataType = {
   componentId: number
 }
 
-export enum WrapperType {
-  Block = 'block',
-  InlineBlock = 'inline-block',
-  Inline = 'inline'
+export enum ComponentParserType {
+  ReactComponent = 'react_component',
+  VueComponent = 'vue_component',
+  Http = 'http',
+  DataSource = 'data_source',
 }

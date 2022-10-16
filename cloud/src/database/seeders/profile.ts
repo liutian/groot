@@ -1,4 +1,4 @@
-import { ComponentValueType, PropBlockLayout, PropBlockStructType, PropItemType, PropValueType, WrapperType } from "@grootio/common";
+import { ComponentValueType, PropBlockLayout, PropBlockStructType, PropItemType, PropValueType } from "@grootio/common";
 import { EntityManager } from "@mikro-orm/core";
 
 import { PropValue } from "../../entities/PropValue";
@@ -9,16 +9,15 @@ import { PropBlock } from "../../entities/PropBlock";
 import { PropGroup } from "../../entities/PropGroup";
 import { PropItem } from "../../entities/PropItem";
 import { Release } from "../../entities/Release";
-import { Scaffold } from "../../entities/Scaffold";
+import { Organization } from "../../entities/Organization";
 
-export const create = async (em: EntityManager, scaffold: Scaffold, release: Release) => {
+export const create = async (em: EntityManager, org: Organization, release: Release) => {
   // 创建组件
   const avatarComponent = em.create(Component, {
     name: '头像',
     packageName: 'antd',
     componentName: 'Avatar',
-    wrapperType: WrapperType.InlineBlock,
-    scaffold
+    org
   });
   await em.persistAndFlush(avatarComponent);
 
@@ -79,10 +78,9 @@ export const create = async (em: EntityManager, scaffold: Scaffold, release: Rel
 
   // 创建组件实例
   const avatarComponentInstance = em.create(ComponentInstance, {
-    name: '个人资料',
+    name: '头像',
     component: avatarComponent,
     componentVersion: avatarComponentVersion,
-    wrapperType: WrapperType.InlineBlock,
     release,
     trackId: 0
   });
@@ -102,8 +100,7 @@ export const create = async (em: EntityManager, scaffold: Scaffold, release: Rel
     name: '个人资料',
     packageName: 'app',
     componentName: 'Profile',
-    wrapperType: WrapperType.Block,
-    scaffold
+    org
   });
   await em.persistAndFlush(profileComponent);
 
@@ -186,10 +183,10 @@ export const create = async (em: EntityManager, scaffold: Scaffold, release: Rel
   // 创建组件实例
   const profileComponentInstance = em.create(ComponentInstance, {
     name: '个人资料',
-    path: '/profile',
+    key: '/admin/groot/profile',
+    entry: true,
     component: profileComponent,
     componentVersion: profileComponentVersion,
-    wrapperType: WrapperType.Block,
     release,
     trackId: 0
   });

@@ -7,7 +7,7 @@ import { ApplicationService } from 'service/application.service';
 import { PropBlockService } from 'service/prop-block.service';
 import { PropGroupService } from 'service/prop-group.service';
 import { PropItemService } from 'service/prop-item.service';
-import { ScaffoldService } from 'service/scaffold.service';
+import { OrgService } from 'service/org.service';
 import { PropValueService } from 'service/prop-value.service';
 import { PropValue } from 'entities/PropValue';
 import { Component } from 'entities/Component';
@@ -30,7 +30,7 @@ export class WorkbenchController {
     private readonly groupService: PropGroupService,
     private readonly componentService: ComponentService,
     private readonly applicationService: ApplicationService,
-    private readonly scaffoldService: ScaffoldService,
+    private readonly orgService: OrgService,
     private readonly propValueService: PropValueService,
     private readonly componentVersionService: ComponentVersionService,
     private readonly componentInstanceService: ComponentInstanceService,
@@ -126,13 +126,13 @@ export class WorkbenchController {
   }
 
   @Get('/component/list')
-  async componentList(@Query('container') container: string) {
-    return await this.componentService.list(container);
+  async componentList() {
+    return await this.componentService.list();
   }
 
-  @Get('/scaffold/detail/:scaffoldId')
-  async scaffoldDetail(@Param('scaffoldId') scaffoldId: number) {
-    return this.scaffoldService.getDetail(scaffoldId);
+  @Get('/org/detail/:orgId')
+  async orgDetail(@Param('orgId') orgId: number) {
+    return this.orgService.getDetail(orgId);
   }
 
   @Get('/component-prototype/detail/:componentId')
@@ -145,9 +145,9 @@ export class WorkbenchController {
     return this.applicationService.getDetail(applicationId, releaseId);
   }
 
-  @Get('/component-instance/page-detail/:instanceId')
-  async componentInstanceDetail(@Param('instanceId') instanceId: number) {
-    return this.componentInstanceService.getPageDetail(instanceId);
+  @Get('/component-instance/root-detail/:instanceId')
+  async rootComponentInstanceDetail(@Param('instanceId') instanceId: number) {
+    return this.componentInstanceService.getRootDetail(instanceId);
   }
 
   @Post('/component-version/add')

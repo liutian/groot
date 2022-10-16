@@ -1,4 +1,4 @@
-import { PropBlockLayout, PropBlockStructType, PropItemType, WrapperType } from "@grootio/common";
+import { PropBlockLayout, PropBlockStructType, PropItemType } from "@grootio/common";
 import { EntityManager } from "@mikro-orm/core";
 
 import { Component } from "../../entities/Component";
@@ -8,16 +8,15 @@ import { PropBlock } from "../../entities/PropBlock";
 import { PropGroup } from "../../entities/PropGroup";
 import { PropItem } from "../../entities/PropItem";
 import { Release } from "../../entities/Release";
-import { Scaffold } from "../../entities/Scaffold";
+import { Organization } from "../../entities/Organization";
 
-export const create = async (em: EntityManager, scaffold: Scaffold, release: Release) => {
+export const create = async (em: EntityManager, org: Organization, release: Release) => {
   // 创建组件
   const btnComponent = em.create(Component, {
     name: '按钮',
     packageName: 'antd',
     componentName: 'Button',
-    wrapperType: WrapperType.InlineBlock,
-    scaffold
+    org
   });
   await em.persistAndFlush(btnComponent);
 
@@ -91,10 +90,10 @@ export const create = async (em: EntityManager, scaffold: Scaffold, release: Rel
   // 创建组件实例
   const btnComponentInstance = em.create(ComponentInstance, {
     name: '按钮',
-    path: '/button',
+    key: '/admin/groot/button',
+    entry: true,
     component: btnComponent,
     componentVersion: btnComponentVersion,
-    wrapperType: WrapperType.InlineBlock,
     release,
     trackId: 0
   });

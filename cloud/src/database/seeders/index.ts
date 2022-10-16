@@ -2,12 +2,13 @@ import { EntityManager } from '@mikro-orm/core';
 import { Seeder } from '@mikro-orm/seeder';
 import { Application } from '../../entities/Application';
 import { Release } from '../../entities/Release';
-import { Scaffold } from '../../entities/Scaffold';
+import { Organization } from '../../entities/Organization';
 import { Project } from '../../entities/Project';
 
 import { create as btnCreate } from './button';
 import { create as profileCreate } from './profile';
 import { create as proTableCreate } from './pro-table';
+import { create as pageCreate } from './page';
 
 export class DatabaseSeeder extends Seeder {
 
@@ -25,7 +26,6 @@ export class DatabaseSeeder extends Seeder {
       name: '管理端应用',
       playgroundPath: '/admin/groot/playground',
       project,
-      pathPrefix: '/admin/groot'
     });
     await em.persistAndFlush(application);
 
@@ -41,17 +41,19 @@ export class DatabaseSeeder extends Seeder {
     await em.persistAndFlush(release);
 
 
-    // 创建脚手架
-    const scaffold = em.create(Scaffold, {
+    // 创建组织
+    const org = em.create(Organization, {
       name: '管理平台',
       playgroundPath: '/admin/groot/playground'
     });
-    await em.persistAndFlush(scaffold);
+    await em.persistAndFlush(org);
 
-    await proTableCreate(em, scaffold, release);
+    await proTableCreate(em, org, release);
 
-    await btnCreate(em, scaffold, release);
+    await btnCreate(em, org, release);
 
-    await profileCreate(em, scaffold, release);
+    await profileCreate(em, org, release);
+
+    await pageCreate(em, org, release);
   }
 }

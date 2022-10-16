@@ -1,5 +1,6 @@
-import { DeployStatusType, EnvType } from "@grootio/common";
 import { Entity, Enum, ManyToOne, Property } from "@mikro-orm/core";
+import { DeployStatusType, EnvType } from "@grootio/common";
+
 import { Application } from "./Application";
 import { BaseEntity } from "./BaseEntity";
 import { Bundle } from "./Bundle";
