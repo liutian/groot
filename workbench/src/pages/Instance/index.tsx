@@ -41,10 +41,10 @@ const Instance: React.FC = () => {
     const instanceId = +searchParams.get('page');
     instanceModel.fetchApplication(applicationId, releaseId).then(() => {
       if (instanceId) {
-        instanceModel.fetchPage(instanceId);
+        instanceModel.fetchRootInstance(instanceId);
       } else if (workbenchModel.application.release.instanceList.length) {
         const instance = workbenchModel.application.release.instanceList[0];
-        instanceModel.fetchPage(instance.id);
+        instanceModel.fetchRootInstance(instance.id);
       }
     })
   }, []);

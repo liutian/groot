@@ -148,7 +148,7 @@ const ComponentSelectItem: React.FC<ItemPropTypeItem> = ({ value, onChange: _onC
       return
     }
 
-    request(APIPath.component_list, { container: false }).then(({ data }) => {
+    request(APIPath.component_list).then(({ data }) => {
       setComponentList(data);
     })
   }

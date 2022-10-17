@@ -120,9 +120,9 @@ export class WorkbenchController {
     return await this.propValueService.update(rawPropValue);
   }
 
-  @Post('/component-instance/add')
+  @Post('/component-instance/add-root')
   async componentInstanceAdd(@Body() componentInstance: ComponentInstance) {
-    return await this.componentInstanceService.add(componentInstance);
+    return await this.componentInstanceService.addRoot(componentInstance);
   }
 
   @Get('/component/list')

@@ -10,14 +10,14 @@ export type APIStore = {
   [APIPath.application_detail]: [{ applicationId: number, releaseId?: number }, API.Response<Application>];
   [APIPath.move_position]: [{ originId: number, targetId: number, type: 'group' | 'block' | 'item' }];
   [APIPath.componentInstance_addChild]: [ComponentInstance, API.Response<ComponentInstance>];
-  [APIPath.component_list]: [{ container: boolean }, API.Response<Component[]>];
+  [APIPath.component_list]: [null, API.Response<Component[]>];
   [APIPath.componentPrototype_detail]: [{ componentId: number, versionId: number }, API.Response<Component>];
   [APIPath.org_detail]: [{ orgId: number }, API.Response<Organization>];
   [APIPath.component_add]: [Component, API.Response<Component>];
   [APIPath.componentVersion_add]: [ComponentVersion, API.Response<ComponentVersion>];
   [APIPath.componentVersion_publish]: [{ componentId: number, versioinId: number }];
   [APIPath.componentInstance_rootDetail]: [{ instanceId: number }, API.Response<{ children: ComponentInstance[], root: ComponentInstance }>];
-  [APIPath.componentInstance_add]: [ComponentInstance, API.Response<ComponentInstance>];
+  [APIPath.componentInstance_addRoot]: [ComponentInstance, API.Response<ComponentInstance>];
   [APIPath.release_add]: [Release, API.Response<Release>],
   [APIPath.release_detail]: [{ releaseId: number }, API.Response<Release>],
   [APIPath.componentInstance_reverseDetectId]: [Partial<ComponentInstance>, API.Response<number>],

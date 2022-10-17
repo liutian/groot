@@ -13,7 +13,7 @@ export enum APIPath {
   componentVersion_add = 'POST component-version/add',
   componentVersion_publish = 'POST component-version/publish',
   componentInstance_rootDetail = 'component-instance/root-detail/:instanceId',
-  componentInstance_add = 'POST component-instance/add',
+  componentInstance_addRoot = 'POST component-instance/add-root',
   componentInstance_reverseDetectId = 'component-instance/reverse-detect-id',
   release_add = 'POST release/add',
   release_detail = 'release/detail/:releaseId',

@@ -8,7 +8,7 @@ export const DragComponentList: React.FC = () => {
   const [componentList, setComponentList] = useState<Component[]>([]);
 
   useEffect(() => {
-    request(APIPath.component_list, { container: false }).then(({ data }) => {
+    request(APIPath.component_list).then(({ data }) => {
       setComponentList(data);
     })
   }, []);

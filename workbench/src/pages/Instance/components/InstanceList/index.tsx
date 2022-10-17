@@ -7,14 +7,18 @@ import { useModel } from "@util/robot";
 import EditorModel from "pages/Instance/InstanceModel";
 
 import styles from './index.module.less';
+import { ComponentParserType } from "@grootio/common";
+import { useState } from "react";
 
 const InstanceList: React.FC = () => {
   const [editorModel, editorUpdateAction] = useModel(EditorModel);
   const [workbenchModel] = useModel(WorkbenchModel);
+  const [openKeys, setOpenKeys] = useState(['entry', 'no-entry']);
 
-  const pageComponentInstanceList = workbenchModel.application.release.instanceList;
-  const componentList = pageComponentInstanceList.map((componentInstance) => {
-    return {
+  let entryInstanceList = [];
+  let noEntryInstanceList = [];
+  workbenchModel.application.release.instanceList.forEach((componentInstance) => {
+    const instance = {
       label: componentInstance.name,
       key: componentInstance.id,
       onClick: () => {
@@ -22,28 +26,39 @@ const InstanceList: React.FC = () => {
           return;
         }
 
-        editorModel.fetchPage(componentInstance.id);
+        editorModel.fetchRootInstance(componentInstance.id);
       }
     };
+
+    if (componentInstance.entry) {
+      entryInstanceList.push(instance)
+    } else {
+      noEntryInstanceList.push(instance);
+    }
   });
 
-  const showPageAdd = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
-    editorUpdateAction(() => editorModel.pageAddModalStatus = ModalStatus.Init);
+  const showInstanceAdd = (e: React.MouseEvent<HTMLElement, MouseEvent>, entry: boolean) => {
+    editorUpdateAction(() => {
+      editorModel.instanceAddModalStatus = ModalStatus.Init;
+      editorModel.instanceAddEntry = entry;
+    });
     e.stopPropagation();
   }
 
   const componentTypes = [
-    { label: '主要', key: 'entry', children: componentList },
-    { label: '其他', key: 'no-entry', children: [] },
+    { label: '主要', key: 'entry', children: entryInstanceList },
+    { label: '其他', key: 'no-entry', children: noEntryInstanceList },
   ]
 
-  const renderActions = () => {
+  const renderActions = (menuInfo: any) => {
     return <>
-      <Button icon={<PlusOutlined />} type="link" onClick={showPageAdd} />
+      <Button icon={<PlusOutlined />} type="link" onClick={(e) => {
+        showInstanceAdd(e, menuInfo.eventKey === 'entry');
+      }} />
     </>
   }
 
-  return <Menu mode="inline" openKeys={['entry']} className={styles.menuContainer} expandIcon={renderActions()} selectedKeys={[`${workbenchModel.componentInstance?.id}`]} items={componentTypes} />
+  return <Menu mode="inline" onOpenChange={(openKeys) => setOpenKeys(openKeys)} openKeys={openKeys} className={styles.menuContainer} expandIcon={renderActions} selectedKeys={[`${workbenchModel.componentInstance?.id}`]} items={componentTypes} />
 }
 
 export default InstanceList;

@@ -1,4 +1,4 @@
-import { PropValueType } from '@grootio/common';
+import { ComponentValueType, PropValueType } from '@grootio/common';
 import { EntityManager, RequestContext } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 
@@ -14,10 +14,42 @@ import { pick } from 'util/common';
 
 @Injectable()
 export class ComponentInstanceService {
+
+  // root key entry wrapper parserType
+  async addRoot(rawInstance: ComponentInstance) {
+    let em = RequestContext.getEntityManager();
+
+    LogicException.assertParamEmpty(rawInstance.key, 'key');
+    LogicException.assertParamEmpty(rawInstance.name, 'name');
+    LogicException.assertParamEmpty(rawInstance.releaseId, 'releaseId');
+
+    if (!rawInstance.componentId && !rawInstance.wrapper) {
+      throw new LogicException('componentId和wrapper不能同时为空', LogicExceptionCode.ParamError);
+    }
+
+    let wrapperRawInstance;
+
+    if (rawInstance.wrapper) {
+      const [packageName, componentName] = rawInstance.wrapper.split('/');
+      const wrapperComponent = await em.findOne(Component, { packageName, componentName });
+      LogicException.assertNotFound(wrapperComponent, 'Component');
+
+      wrapperRawInstance = pick(rawInstance, ['name', 'key', 'releaseId', 'entry']);
+      wrapperRawInstance.componentId = wrapperComponent.id;
+    }
+
+    if (rawInstance.wrapper && !rawInstance.componentId) {
+      return await this.add(wrapperRawInstance, em);
+    } else if (rawInstance.componentId && !rawInstance.wrapper) {
+      return await this.add(rawInstance, em);
+    } else {
+      return await this.addRootForWrapper(rawInstance, wrapperRawInstance, em);
+    }
+  }
+
   async add(rawInstance: ComponentInstance, parentEm?: EntityManager) {
     let em = parentEm || RequestContext.getEntityManager();
 
-    LogicException.assertParamEmpty(rawInstance.name, 'name');
     LogicException.assertParamEmpty(rawInstance.componentId, 'componentId');
     LogicException.assertParamEmpty(rawInstance.releaseId, 'releaseId');
 
@@ -27,7 +59,7 @@ export class ComponentInstanceService {
     const release = await em.findOne(Release, rawInstance.releaseId);
     LogicException.assertNotFound(release, 'Release', rawInstance.releaseId);
 
-    if (rawInstance.rootId) {
+    if (rawInstance.key) {
       if (rawInstance.rootId) {
         throw new LogicException(`如果传递参数key，则不能传递参数rootId`, LogicExceptionCode.UnExpect);
       }
@@ -42,7 +74,7 @@ export class ComponentInstanceService {
       });
 
       if (count > 0) {
-        throw new LogicException(`参数key冲突，该值必须在单个迭代版本中唯一`, LogicExceptionCode.NotUnique);
+        throw new LogicException(`参数key冲突，该值必须在全局唯一`, LogicExceptionCode.NotUnique);
       }
     } else {
       if (!rawInstance.parentId) {
@@ -64,13 +96,14 @@ export class ComponentInstanceService {
     });
 
     const newInstance = em.create(ComponentInstance, {
-      ...pick(rawInstance, ['name', 'key']),
+      ...pick(rawInstance, ['name', 'key', 'entry']),
       parent: rawInstance.parentId,
       root: rawInstance.rootId,
       component,
       componentVersion: component.recentVersion,
       release,
-      trackId: 0
+      trackId: 0,
+      parserType: component.parserType
     });
 
     let parentCtx = parentEm ? em.getTransactionContext() : undefined;
@@ -237,6 +270,78 @@ export class ComponentInstanceService {
     }
 
     await em.nativeDelete(ComponentInstance, { id: { $in: removeIds } });
+  }
+
+  private async addRootForWrapper(rawInstance: ComponentInstance, wrapperRawInstance: ComponentInstance, em: EntityManager) {
+    let wrapperInstance, childInstance;
+
+    await em.begin();
+    try {
+      wrapperInstance = await this.add(wrapperRawInstance, em);
+
+      const childRawInstance = {
+        releaseId: rawInstance.releaseId,
+        componentId: rawInstance.componentId,
+        parentId: wrapperInstance.id,
+        rootId: wrapperInstance.id
+      } as ComponentInstance;
+      childInstance = await this.add(childRawInstance, em);
+
+      const rawContentValue = {
+        setting: {},
+        list: [{
+          instanceId: childInstance.id,
+          componentId: childInstance.component.id,
+          componentName: childInstance.component.name
+        }]
+      } as ComponentValueType;
+
+      const contentItem = await em.findOne(PropItem, {
+        component: wrapperInstance.component,
+        propKey: 'content'
+      })
+
+      const contentComponentValue = em.create(PropValue, {
+        propItem: contentItem,
+        component: wrapperInstance.component.id,
+        componentVersion: wrapperInstance.component.recentVersion.id,
+        componentInstance: wrapperInstance,
+        type: PropValueType.Instance,
+        value: JSON.stringify(rawContentValue)
+      });
+
+      const titleItem = await em.findOne(PropItem, {
+        component: wrapperInstance.component,
+        propKey: 'title'
+      })
+
+      const titleComponentValue = em.create(PropValue, {
+        propItem: titleItem,
+        component: wrapperInstance.component.id,
+        componentVersion: wrapperInstance.component.recentVersion.id,
+        componentInstance: wrapperInstance,
+        type: PropValueType.Instance,
+        value: `"${rawInstance.name}"`
+      });
+
+      await em.persistAndFlush([contentComponentValue, titleComponentValue]);
+
+      await em.commit();
+
+      return wrapperInstance;
+    } catch (e) {
+      await em.rollback();
+
+      if (wrapperInstance) {
+        await this.remove(wrapperInstance.id, em);
+      }
+
+      if (childInstance) {
+        await this.remove(childInstance.id, em);
+      }
+
+      throw e;
+    }
   }
 }
 

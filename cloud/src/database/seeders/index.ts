@@ -8,7 +8,8 @@ import { Project } from '../../entities/Project';
 import { create as btnCreate } from './button';
 import { create as profileCreate } from './profile';
 import { create as proTableCreate } from './pro-table';
-import { create as pageCreate } from './page';
+import { create as containerCreate } from './groot-container';
+import { create as pageContainerCreate } from './groot-page-container';
 
 export class DatabaseSeeder extends Seeder {
 
@@ -54,6 +55,8 @@ export class DatabaseSeeder extends Seeder {
 
     await profileCreate(em, org, release);
 
-    await pageCreate(em, org, release);
+    await containerCreate(em, org);
+
+    await pageContainerCreate(em, org);
   }
 }

@@ -2,15 +2,13 @@ import { PropBlockLayout, PropBlockStructType, PropItemType } from "@grootio/com
 import { EntityManager } from "@mikro-orm/core";
 
 import { Component } from "../../entities/Component";
-import { ComponentInstance } from "../../entities/ComponentInstance";
 import { ComponentVersion } from "../../entities/ComponentVersion";
 import { PropBlock } from "../../entities/PropBlock";
 import { PropGroup } from "../../entities/PropGroup";
-import { PropItem } from "../../entities/PropItem";
-import { Release } from "../../entities/Release";
 import { Organization } from "../../entities/Organization";
+import { PropItem } from "../../entities/PropItem";
 
-export const create = async (em: EntityManager, org: Organization, release: Release) => {
+export const create = async (em: EntityManager, org: Organization) => {
   // 创建组件
   const pageComponent = em.create(Component, {
     name: '页面',
@@ -49,7 +47,7 @@ export const create = async (em: EntityManager, org: Organization, release: Rele
   await em.persistAndFlush(pageBlock);
 
   const titleItem = em.create(PropItem, {
-    label: '页面标题',
+    label: '标题',
     propKey: 'title',
     type: PropItemType.Text,
     defaultValue: '"空白页"',
@@ -62,7 +60,7 @@ export const create = async (em: EntityManager, org: Organization, release: Rele
   await em.persistAndFlush(titleItem);
 
   const contentItem = em.create(PropItem, {
-    label: '页面内容',
+    label: '内容',
     propKey: 'content',
     type: PropItemType.Component,
     block: pageBlock,
@@ -74,18 +72,4 @@ export const create = async (em: EntityManager, org: Organization, release: Rele
   await em.persistAndFlush(contentItem);
 
 
-  // 创建组件实例
-  const pageComponentInstance = em.create(ComponentInstance, {
-    name: '空白页面',
-    key: '/admin/groot/demo',
-    entry: true,
-    component: pageComponent,
-    componentVersion: pageComponentVersion,
-    release,
-    trackId: 0
-  });
-  await em.persistAndFlush(pageComponentInstance);
-
-  pageComponentInstance.trackId = pageComponentInstance.id;
-  await em.persistAndFlush(pageComponentInstance);
 }

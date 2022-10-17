@@ -2,13 +2,14 @@ import { ModalStatus } from "@util/common";
 import { APIPath } from "api/API.path";
 import request from "@util/request";
 import WorkbenchModel from "../../model/WorkbenchModel";
-import { EnvType } from "@grootio/common";
+import { ComponentParserType, EnvType } from "@grootio/common";
 
 export default class InstanceModel {
   static modelName = 'editor';
 
   public loadStatus: 'doing' | 'no-component' | 'no-application' | 'ok' = 'doing';
-  public pageAddModalStatus: ModalStatus = ModalStatus.None;
+  public instanceAddModalStatus: ModalStatus = ModalStatus.None;
+  public instanceAddEntry = true;
   public releaseAddModalStatus: ModalStatus = ModalStatus.None;
   public assetBuildModalStatus: ModalStatus = ModalStatus.None;
   public assetDeployModalStatus: ModalStatus = ModalStatus.None;
@@ -32,7 +33,7 @@ export default class InstanceModel {
     })
   }
 
-  public fetchPage = (instanceId: number) => {
+  public fetchRootInstance = (instanceId: number) => {
     return request(APIPath.componentInstance_rootDetail, { instanceId }).then(({ data: { children, root } }) => {
       this.loadStatus = 'ok';
 
@@ -61,16 +62,22 @@ export default class InstanceModel {
     }
   }
 
-  public addPage = (rawComponentInstance: ComponentInstance) => {
-    this.pageAddModalStatus = ModalStatus.Submit;
-    return request(APIPath.componentInstance_add, {
+  public addInstance = (rawComponentInstance: ComponentInstance) => {
+    this.instanceAddModalStatus = ModalStatus.Submit;
+    if (this.instanceAddEntry) {
+      rawComponentInstance.wrapper = 'groot/PageContainer';
+    } else {
+      rawComponentInstance.wrapper = 'groot/Container';
+    }
+    return request(APIPath.componentInstance_addRoot, {
       ...rawComponentInstance,
+      entry: this.instanceAddEntry,
       releaseId: this.workbench.application.release.id
     }).then(({ data }) => {
-      this.pageAddModalStatus = ModalStatus.None;
+      this.instanceAddModalStatus = ModalStatus.None;
       this.workbench.application.release.instanceList.push(data);
 
-      return this.fetchPage(data.id);
+      return this.fetchRootInstance(data.id);
     });
   }
 
@@ -98,10 +105,10 @@ export default class InstanceModel {
   private switchReleaseByTrackId = (releaseId: number, trackId: number) => {
     return request(APIPath.componentInstance_reverseDetectId, { releaseId, trackId }).then(({ data }) => {
       if (data) {
-        return this.fetchPage(data);
+        return this.fetchRootInstance(data);
       } else if (this.workbench.application.release.instanceList.length) {
         const instance = this.workbench.application.release.instanceList[0];
-        return this.fetchPage(instance.id);
+        return this.fetchRootInstance(instance.id);
       } else {
         return Promise.resolve();
       }
