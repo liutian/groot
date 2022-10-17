@@ -12,11 +12,11 @@ export type APIStore = {
   [APIPath.componentInstance_addChild]: [ComponentInstance, API.Response<ComponentInstance>];
   [APIPath.component_list]: [{ container: boolean }, API.Response<Component[]>];
   [APIPath.componentPrototype_detail]: [{ componentId: number, versionId: number }, API.Response<Component>];
-  [APIPath.scaffold_detail]: [{ scaffoldId: number }, API.Response<Scaffold>];
+  [APIPath.org_detail]: [{ orgId: number }, API.Response<Organization>];
   [APIPath.component_add]: [Component, API.Response<Component>];
   [APIPath.componentVersion_add]: [ComponentVersion, API.Response<ComponentVersion>];
   [APIPath.componentVersion_publish]: [{ componentId: number, versioinId: number }];
-  [APIPath.componentInstance_pageDetail]: [{ instanceId: number }, API.Response<{ children: ComponentInstance[], root: ComponentInstance }>];
+  [APIPath.componentInstance_rootDetail]: [{ instanceId: number }, API.Response<{ children: ComponentInstance[], root: ComponentInstance }>];
   [APIPath.componentInstance_add]: [ComponentInstance, API.Response<ComponentInstance>];
   [APIPath.release_add]: [Release, API.Response<Release>],
   [APIPath.release_detail]: [{ releaseId: number }, API.Response<Release>],

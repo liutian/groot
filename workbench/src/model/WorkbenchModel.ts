@@ -14,7 +14,7 @@ export default class WorkbenchModel extends EventTarget {
    * 是否是组件原型设计模式
    */
   public prototypeMode = false;
-  public scaffold: Scaffold;
+  public org: Organization;
   public component: Component;
   public componentVersion: ComponentVersion;
   public application: Application;
@@ -33,7 +33,7 @@ export default class WorkbenchModel extends EventTarget {
   private iframeReadyPromise: Promise<any>;
   private iframeReadyResolve: Function;
 
-  public currActiveTab: 'props' | 'scaffold' = 'props';
+  public currActiveTab: 'props' = 'props';
   /**
    * 窗口部件缩放大小
    */
@@ -75,15 +75,15 @@ export default class WorkbenchModel extends EventTarget {
       return;
     }
 
-    const playgroundPath = this.prototypeMode ? this.scaffold.playgroundPath : this.application.playgroundPath;
+    const playgroundPath = this.prototypeMode ? this.org.playgroundPath : this.application.playgroundPath;
     const appData = this.buildApplicationData(playgroundPath);
     this.iframeManager = launchIframeManager(iframe, this.iframeBasePath, playgroundPath, appData, this);
     this.iframeReadyResolve();
   }
 
-  public startScaffold(scaffold: Scaffold) {
+  public startPrototype(org: Organization) {
     this.prototypeMode = true;
-    this.scaffold = scaffold;
+    this.org = org;
   }
 
   public startComponent(component: Component,) {
@@ -100,7 +100,7 @@ export default class WorkbenchModel extends EventTarget {
       });
     });
 
-    window.history.pushState(null, '', `?scaffold=${this.scaffold.id}&version=${this.componentVersion.id}&component=${component.id}`);
+    window.history.pushState(null, '', `?org=${this.org.id}&version=${this.componentVersion.id}&component=${component.id}`);
   }
 
   public startApplication(app: Application) {
@@ -184,15 +184,15 @@ export default class WorkbenchModel extends EventTarget {
     const name = this.prototypeMode ? '原型' : '实例';
     const key = this.prototypeMode ? 'prototype-demo' : 'instance-demo';
 
-    const pageData = {
-      path: playgroundPath,
+    const instanceData = {
+      key: playgroundPath,
       metadataList: []
     };
 
     const appData: ApplicationData = {
       name,
       key,
-      pages: [pageData],
+      instances: [instanceData],
       envData: {}
     };
 

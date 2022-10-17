@@ -1,6 +1,6 @@
 import { Avatar, Button, Input, Select } from 'antd';
 import { ProTable } from '@ant-design/pro-table';
-import { UIManager } from '@grootio/renderer';
+import { UIManager } from '@grootio/react-parser';
 import { useLocation } from 'react-router';
 import react from 'react';
 import * as tslib from 'tslib';

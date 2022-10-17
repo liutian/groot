@@ -115,9 +115,9 @@ type Application = {
   release: Release
 } & Omit<import("../../cloud/src/entities/Application").Application, ''>;
 
-type Scaffold = {
+type Organization = {
   componentList: Component[]
-} & Omit<import("../../cloud/src/entities/Scaffold").Scaffold, ''>;
+} & Omit<import("../../cloud/src/entities/Organization").Organization, ''>;
 
 type Deploy = {
 } & Omit<import("../../cloud/src/entities/Deploy").Deploy, ''>;

@@ -2,8 +2,8 @@ import { useRoutes } from 'react-router-dom';
 import zhCN from 'antd/es/locale/zh_CN';
 
 
-import Editor from 'pages/Editor';
-import Scaffold from './pages/Scaffold';
+import Instance from 'pages/Instance';
+import Prototype from './pages/Prototype';
 import { ConfigProvider } from 'antd';
 import moment from 'moment';
 
@@ -12,11 +12,11 @@ moment.locale('zh-cn');
 function App() {
   const element = useRoutes([
     {
-      path: '/scaffold',
-      element: <Scaffold />,
+      path: '/prototype',
+      element: <Prototype />,
     }, {
-      path: '/editor',
-      element: <Editor />,
+      path: '/instance',
+      element: <Instance />,
     }, {
       path: '*',
       element: <NoMatch />

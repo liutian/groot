@@ -5,7 +5,7 @@
   "description": "component assembly workshop",
   "workspaces": [
     "packages/core",
-    "packages/renderer",
+    "packages/react-parser",
     "packages/common"
   ],
   "scripts": {},
