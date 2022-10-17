@@ -96,7 +96,7 @@ export default class InstanceModel {
   }
 
   private switchReleaseByTrackId = (releaseId: number, trackId: number) => {
-    return request(APIPath.componentInstance_detailId, { releaseId, trackId }).then(({ data }) => {
+    return request(APIPath.componentInstance_reverseDetectId, { releaseId, trackId }).then(({ data }) => {
       if (data) {
         return this.fetchPage(data);
       } else if (this.workbench.application.release.instanceList.length) {

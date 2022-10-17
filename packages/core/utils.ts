@@ -81,6 +81,9 @@ export const parsePropItemValue = (propItem: IPropItem, value?: any) => {
 export const stringifyPropItemValue = (propItem: IPropItem, value?: any) => {
   if (propItem.type === PropItemType.Function) {
     // ... 不做任何处理
+  } else if (propItem.type === PropItemType.Switch) {
+    // 防止react报错 Warning: Received `true` for a non-boolean attribute
+    value = value ? '1' : '0';
   } else if (value !== undefined) {
     value = JSON.stringify(value);
   }

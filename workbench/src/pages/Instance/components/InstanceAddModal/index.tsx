@@ -6,7 +6,7 @@ import request from "@util/request";
 import EditorModel from "pages/Instance/InstanceModel";
 import { useEffect, useState } from "react";
 
-const PageAddModal: React.FC = () => {
+const InstanceAddModal: React.FC = () => {
   const [editorModel, updateAction] = useModel(EditorModel);
   const [form] = Form.useForm();
   const [componentList, setComponentList] = useState<Component[]>([]);
@@ -67,4 +67,4 @@ const PageAddModal: React.FC = () => {
   </Modal>
 }
 
-export default PageAddModal;
+export default InstanceAddModal;

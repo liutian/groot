@@ -1,13 +1,14 @@
 import { PlusOutlined } from "@ant-design/icons";
+import { Button, Menu } from "antd";
+
 import WorkbenchModel from "@model/WorkbenchModel";
 import { ModalStatus } from "@util/common";
 import { useModel } from "@util/robot";
-import { Button, Menu } from "antd";
 import EditorModel from "pages/Instance/InstanceModel";
 
 import styles from './index.module.less';
 
-const PageList: React.FC = () => {
+const InstanceList: React.FC = () => {
   const [editorModel, editorUpdateAction] = useModel(EditorModel);
   const [workbenchModel] = useModel(WorkbenchModel);
 
@@ -32,8 +33,8 @@ const PageList: React.FC = () => {
   }
 
   const componentTypes = [
-    { label: '页面', key: 'page', children: componentList },
-    { label: '公共模版', key: 'templatePage', children: [] },
+    { label: '主要', key: 'entry', children: componentList },
+    { label: '其他', key: 'no-entry', children: [] },
   ]
 
   const renderActions = () => {
@@ -42,7 +43,7 @@ const PageList: React.FC = () => {
     </>
   }
 
-  return <Menu mode="inline" className={styles.menuContainer} expandIcon={renderActions()} selectedKeys={[`${workbenchModel.componentInstance?.id}`]} items={componentTypes} />
+  return <Menu mode="inline" openKeys={['entry']} className={styles.menuContainer} expandIcon={renderActions()} selectedKeys={[`${workbenchModel.componentInstance?.id}`]} items={componentTypes} />
 }
 
-export default PageList;
+export default InstanceList;

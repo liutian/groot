@@ -1,11 +1,11 @@
-import { PropItemType, PropValueType, } from "@grootio/common";
+import { PropValueType, } from "@grootio/common";
+import { stringifyPropItemValue } from "@grootio/core";
 
 import { assignBaseType, autoIncrementForName, calcPropValueIdChain, stringifyOptions } from "@util/utils";
 import { APIPath } from "api/API.path";
 import request from "@util/request";
 import PropHandleModel from "./PropHandleModel";
 import WorkbenchModel from "./WorkbenchModel";
-import { stringifyPropItemValue } from "@grootio/core";
 
 /**
  * 负责属性编辑器涉及到的接口调用，以及相关UI状态
@@ -196,12 +196,7 @@ export default class PropPersistModel {
   public updateOrAddPropItem = (item: PropItem) => {
     const newItem = Object.assign(this.currSettingPropItem, item);
 
-    const typesOfHasOption = [PropItemType.Select, PropItemType.Radio, PropItemType.Checkbox, PropItemType.Button_Group] as string[];
-    if (!typesOfHasOption.includes(newItem.type)) {
-      newItem.optionList = undefined;
-    } else {
-      stringifyOptions(newItem);
-    }
+    stringifyOptions(newItem);
 
     this.settingModalSubmitting = true;
     if (newItem.id) {
@@ -209,7 +204,10 @@ export default class PropPersistModel {
         const block = this.propHandle.getPropBlock(data.blockId);
         let itemIndex = block.propItemList.findIndex(item => item.id === data.id);
         // block.propItemList.splice(itemIndex, 1, propItem);
-        assignBaseType(block.propItemList[itemIndex], data);
+        const originItem = block.propItemList[itemIndex];
+        assignBaseType(originItem, data);
+        // 保障渲染时从valueOptions进行转换
+        originItem.optionList = undefined;
 
         this.settingModalSubmitting = false;
         this.currSettingPropItem = undefined;
@@ -313,7 +311,7 @@ export default class PropPersistModel {
       abstractValueIdChain,
       componentVersionId: this.workbench.componentVersion.id,
       componentId: this.workbench.component.id,
-      scaffoldId: this.workbench.component.scaffoldId
+      orgId: this.workbench.component.orgId
     } as PropValue;
 
     if (this.workbench.prototypeMode) {
@@ -360,7 +358,7 @@ export default class PropPersistModel {
       paramData.propItemId = propItem.id;
       paramData.componentId = this.workbench.component.id;
       paramData.componentVersionId = this.workbench.componentVersion.id;
-      paramData.scaffoldId = this.workbench.component.scaffoldId;
+      paramData.orgId = this.workbench.component.orgId;
       paramData.value = valueStr;
 
       if (this.workbench.prototypeMode) {
@@ -383,5 +381,12 @@ export default class PropPersistModel {
         propItem.defaultValue = valueStr;
       }
     });
+  }
+
+  public addChildComponentInstance = (instance: ComponentInstance) => {
+    return request(APIPath.componentInstance_addChild, instance).then(({ data }) => {
+      this.workbench.instanceList.push(data);
+      return data;
+    })
   }
 }

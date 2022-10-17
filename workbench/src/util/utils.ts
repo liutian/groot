@@ -31,6 +31,12 @@ export const stringifyOptions = (propItem: PropItem) => {
   }
 }
 
+export const parseOptions = (propItem: PropItem) => {
+  if (([PropItemType.Checkbox, PropItemType.Radio, PropItemType.Select, PropItemType.Button_Group] as string[]).includes(propItem.type)) {
+    propItem.optionList = JSON.parse(propItem.valueOptions || '[]');
+  }
+}
+
 
 export const stringify = (obj) => {
   return JSON.stringify(obj, function (_, value) {

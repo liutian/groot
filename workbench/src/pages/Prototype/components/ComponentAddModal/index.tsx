@@ -1,6 +1,7 @@
+import { ComponentParserType } from "@grootio/common";
 import { ModalStatus } from "@util/common";
 import { useModel } from "@util/robot";
-import { Form, Input, Modal, Radio, Switch } from "antd";
+import { Form, Input, Modal } from "antd";
 import PrototypeModel from "pages/Prototype/PrototypeModel";
 
 const ComponentAddModal: React.FC = () => {
@@ -28,8 +29,8 @@ const ComponentAddModal: React.FC = () => {
         <Input />
       </Form.Item>
 
-      <Form.Item label="是否是容器" name="container" valuePropName="checked" initialValue={false}>
-        <Switch />
+      <Form.Item label="解析器" name="parserType" rules={[{ required: true }]} initialValue={ComponentParserType.ReactComponent}>
+        <Input disabled />
       </Form.Item>
 
       <Form.Item label="组件名称" name="componentName" rules={[{ required: true }]}>

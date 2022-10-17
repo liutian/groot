@@ -8,6 +8,7 @@ import { APIPath } from 'api/API.path';
 import request from '@util/request';
 import styles from './index.module.less';
 import { ComponentValueItemType, RuntimeComponentValueType } from '@grootio/common';
+import PropPersistModel from '@model/PropPersistModel';
 
 type PropType = {
   value?: RuntimeComponentValueType<ComponentInstance>,
@@ -99,6 +100,7 @@ type ItemPropTypeItem = {
 
 const ComponentSelectItem: React.FC<ItemPropTypeItem> = ({ value, onChange: _onChange, parentInstanceId }) => {
   const [workbenchModel] = useModel(WorkbenchModel);
+  const [propPersistModel] = useModel(PropPersistModel);
   const [componentList, setComponentList] = useState<Component[]>([]);
   const [valueData, setValueData] = useState<number>();
 
@@ -127,12 +129,12 @@ const ComponentSelectItem: React.FC<ItemPropTypeItem> = ({ value, onChange: _onC
       oldChildId: value.instanceId
     } as ComponentInstance;
 
-    request(APIPath.componentInstance_addChild, rawInstance).then(({ data }) => {
+    propPersistModel.addChildComponentInstance(rawInstance).then((data) => {
       if (rawInstance.oldChildId) {
         const index = workbenchModel.instanceList.findIndex(i => i.id === value.instanceId);
         workbenchModel.instanceList.splice(index, 1);
       }
-      workbenchModel.instanceList.push(data);
+
       _onChange({
         instanceId: data.id,
         componentName: data.component.name,

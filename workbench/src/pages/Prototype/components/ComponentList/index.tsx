@@ -1,4 +1,5 @@
 import { PlusOutlined } from "@ant-design/icons";
+import { ComponentParserType } from "@grootio/common";
 import WorkbenchModel from "@model/WorkbenchModel";
 import { ModalStatus } from "@util/common";
 import { useModel, } from "@util/robot";
@@ -30,8 +31,7 @@ const ComponentList: React.FC = () => {
   }
 
   const componentTypes = [
-    { label: '组件', key: 'component', children: componentList },
-    { label: '容器', key: 'container', children: [] },
+    { label: '组件', key: ComponentParserType.ReactComponent, children: componentList },
   ]
 
   const renderActions = () => {
@@ -40,7 +40,7 @@ const ComponentList: React.FC = () => {
     </>
   }
 
-  return <Menu mode="inline" className={styles.menuContainer} expandIcon={renderActions()} selectedKeys={[`${workbenchModel.component?.id}`]} items={componentTypes} />
+  return <Menu mode="inline" openKeys={[ComponentParserType.ReactComponent]} className={styles.menuContainer} expandIcon={renderActions()} selectedKeys={[`${workbenchModel.component?.id}`]} items={componentTypes} />
 }
 
 export default ComponentList;

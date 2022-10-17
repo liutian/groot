@@ -1,8 +1,6 @@
-import { ComponentValueItemType, ComponentValueType, DragAddComponentEventDataType, PostMessageType, PropItemType, PropValueType, RuntimeComponentValueType } from "@grootio/common";
+import { ComponentValueItemType, ComponentValueType, DragAddComponentEventDataType, PostMessageType, PropItemType, PropValueType } from "@grootio/common";
 import { metadataFactory, propTreeFactory } from "@grootio/core";
 import { WorkbenchEvent } from "@util/common";
-import request from "@util/request";
-import { APIPath } from "api/API.path";
 import PropPersistModel from "./PropPersistModel";
 import WorkbenchModel from "./WorkbenchModel";
 
@@ -262,9 +260,7 @@ export default class PropHandleModel {
         componentId: eventData.componentId
       } as ComponentInstance;
 
-      request(APIPath.componentInstance_addChild, rawInstance).then(({ data: instanceData }) => {
-        this.workbench.instanceList.push(instanceData);
-
+      this.propPersist.addChildComponentInstance(rawInstance).then((instanceData) => {
         const propItem = this.getItemById(eventData.propItemId);
         const propValue = propItem.valueList.filter(v => v.type === PropValueType.Instance).find(value => {
           return value.abstractValueIdChain === eventData.abstractValueIdChain || (!value.abstractValueIdChain && !eventData.abstractValueIdChain)

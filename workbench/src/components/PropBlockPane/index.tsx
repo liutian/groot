@@ -9,7 +9,7 @@ import PropHandleModel from "@model/PropHandleModel";
 import { PropItemType, PropValueType, RuntimeComponentValueType } from "@grootio/common";
 import NumberSlider from "@components/NumberSlider";
 import TextEditor from "@components/TextEditor";
-import { calcPropValueIdChain, stringify } from "@util/utils";
+import { calcPropValueIdChain, parseOptions, stringify } from "@util/utils";
 import { useState } from "react";
 import { parsePropItemValue } from "@grootio/core";
 import ComponentSelect from "@components/ComponentSelect";
@@ -129,10 +129,9 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
   }
 
   const renderFormItem = (item: PropItem) => {
-    if (([PropItemType.Checkbox, PropItemType.Radio, PropItemType.Select, PropItemType.Button_Group] as string[]).includes(item.type)) {
-      if (item.valueOptions && !item.optionList) {
-        item.optionList = JSON.parse(item.valueOptions || '[]');
-      }
+    // 延迟到渲染时在进行转换
+    if (item.valueOptions && !item.optionList) {
+      parseOptions(item);
     }
 
     if (item.type === PropItemType.Text) {

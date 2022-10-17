@@ -46,8 +46,11 @@ const createComponentWrapper = (metadata: Metadata) => {
       debugInfo(`组件刷新 ${componentName}`);
     }
 
+    // react不接受$开头的属性
+    const propsObj = Object.assign({}, metadata.propsObj);
+    delete propsObj.$setting;
     if (!controlMode && !globalConfig.useWrapper) {
-      return React.createElement(module, metadata.propsObj)
+      return React.createElement(module, propsObj)
     } else {
 
       return React.createElement('div', {
@@ -56,7 +59,7 @@ const createComponentWrapper = (metadata: Metadata) => {
         'data-groot-wrapper-tag-name': componentName,
         style: { display: metadata.propsObj.$setting?.wrapperDisplay || 'block' }
       },
-        React.createElement(module, metadata.propsObj)
+        React.createElement(module, propsObj)
       );
     }
 

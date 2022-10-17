@@ -5,6 +5,7 @@ import PropHandleModel from "@model/PropHandleModel";
 import PropPersistModel from "@model/PropPersistModel";
 import WorkbenchModel from "@model/WorkbenchModel";
 import { useModel } from "@util/robot";
+import { parseOptions } from "@util/utils";
 import { DatePicker, Form, Input, InputNumber, Select, Space, Switch, Table, TimePicker, Tooltip, Typography } from "antd";
 import { useState } from "react";
 
@@ -137,10 +138,9 @@ const PropBlockListStructPane: React.FC<PropsType> = ({ block: propBlock }) => {
   }
 
   const renderFormItem = (item: PropItem) => {
-    if (PropItemType.Select === item.type) {
-      if (item.valueOptions && !item.optionList) {
-        item.optionList = JSON.parse(item.valueOptions || '[]');
-      }
+    // 延迟到渲染时在进行转换
+    if (item.valueOptions && !item.optionList) {
+      parseOptions(item);
     }
 
     if (item.type === PropItemType.Text) {

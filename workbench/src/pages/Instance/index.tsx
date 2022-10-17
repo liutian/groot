@@ -9,12 +9,12 @@ import PropPersistModel from "@model/PropPersistModel";
 import PropHandleModel from "@model/PropHandleModel";
 import Workbench from "@components/Workbench";
 import InstanceModel from "./InstanceModel";
-import PageAddModal from "./components/PageAddModal";
+import InstanceAddModal from "./components/InstanceAddModal";
 import ReleaseAddModal from "./components/ReleaseAddModal";
 import BuildModal from "./components/BuildModal";
 import DeployModal from "./components/DeployModal";
 import { DragComponentList } from "./components/DragComponentList";
-import PageList from "./components/PageList";
+import InstanceList from "./components/InstanceList";
 import Release from "./components/Release";
 import { ModalStatus } from "@util/common";
 
@@ -51,11 +51,11 @@ const Instance: React.FC = () => {
 
   function init() {
     workbenchModel.renderExtraTabPanes.push(() => {
-      return (<Tabs.TabPane key="application" tab="应用页面"><PageList /></Tabs.TabPane>)
+      return (<Tabs.TabPane key="instance-list" tab="实例列表"><InstanceList /></Tabs.TabPane>)
     });
 
     workbenchModel.renderExtraTabPanes.push(() => {
-      return (<Tabs.TabPane key="component" tab="组件列表"><DragComponentList /></Tabs.TabPane>)
+      return (<Tabs.TabPane key="prototype-list" tab="原型列表"><DragComponentList /></Tabs.TabPane>)
     });
 
     workbenchModel.renderFooterLeftActionItems.push(() => {
@@ -113,7 +113,7 @@ const Instance: React.FC = () => {
   } else {
     return (<>
       <Workbench />
-      <PageAddModal />
+      <InstanceAddModal />
       <ReleaseAddModal />
       <BuildModal />
       <DeployModal />

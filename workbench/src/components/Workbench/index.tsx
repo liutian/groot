@@ -29,7 +29,7 @@ const Workbench: React.FC<PropsType> = () => {
       {/* 防止拖拽缩放过程中由于鼠标移入iframe中丢失鼠标移动事件 */}
       <iframe ref={iframeRef}></iframe>
       <IframeDragMask />
-      <IframeMarker />
+      {!workbenchModel.prototypeMode ? <IframeMarker /> : null}
     </div>
 
     <WidgetWindow />
