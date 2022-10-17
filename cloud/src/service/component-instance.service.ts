@@ -157,7 +157,7 @@ export class ComponentInstanceService {
     return { root: rootInstance, children: instanceList };
   }
 
-  async detailIdByTrackId(trackId: number, releaseId: number) {
+  async reverseDetectId(trackId: number, releaseId: number) {
     const em = RequestContext.getEntityManager();
 
     LogicException.assertParamEmpty(trackId, 'trackId');

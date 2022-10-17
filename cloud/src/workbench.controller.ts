@@ -166,9 +166,9 @@ export class WorkbenchController {
     return await this.releaseService.detail(releaseId);
   }
 
-  @Get('/component-instance/detail-id')
-  async componentInstanceDetailIdByTrackId(@Query('releaseId') releaseId: number, @Query('trackId') trackId: number) {
-    return await this.componentInstanceService.detailIdByTrackId(trackId, releaseId);
+  @Get('/component-instance/reverse-detect-id')
+  async componentInstanceReverseDetectId(@Query('releaseId') releaseId: number, @Query('trackId') trackId: number) {
+    return await this.componentInstanceService.reverseDetectId(trackId, releaseId);
   }
 
   @Post('/component-version/publish')
