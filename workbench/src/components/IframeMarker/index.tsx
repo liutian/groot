@@ -39,7 +39,7 @@ const IframeMarker: React.FC = () => {
       cloneToolbarRef.current = toolbarRef.current.cloneNode(true) as HTMLDivElement;
       toolbarRef.current.insertAdjacentElement('beforebegin', cloneToolbarRef.current);
 
-      workbenchModel.switchComponentInstance(data.instanceId, false);
+      workbenchModel.switchComponentInstance(data.instanceId);
     });
 
     workbenchModel.addEventListener(WorkbenchEvent.CanvasMarkerReset, () => {

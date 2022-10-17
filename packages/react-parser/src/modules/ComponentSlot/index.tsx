@@ -91,12 +91,12 @@ function respondDragOver(positionX: number, positionY: number) {
     const { hitEle } = hitResult;
 
     if (hitEle !== activeSlotEle) {
-      activeSlotEle?.dragLeave();
+      activeSlotEle?.dragLeave && activeSlotEle?.dragLeave();
       activeSlotEle = hitEle;
-      activeSlotEle?.dragEnter();
+      activeSlotEle?.dragEnter && activeSlotEle?.dragEnter();
     }
   } else {
-    activeSlotEle?.dragLeave();
+    activeSlotEle?.dragLeave && activeSlotEle?.dragLeave();
     activeSlotEle = null;
   }
 }
