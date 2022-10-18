@@ -85,7 +85,8 @@ export class PropValueService {
         value: rawPropValue.value,
         abstractValueIdChain: rawPropValue.abstractValueIdChain,
         componentInstance: rawPropValue.componentInstanceId,
-        type: PropValueType.Instance
+        type: PropValueType.Instance,
+        valueStruct: rawPropValue.valueStruct
       });
       await em.flush();
       return newPropValue;
@@ -98,6 +99,7 @@ export class PropValueService {
         const newPropValue = em.create(PropValue, {
           propItem: rawPropValue.propItemId,
           component: rawPropValue.componentId,
+          valueStruct: rawPropValue.valueStruct,
           componentVersion: rawPropValue.componentVersionId,
           value: rawPropValue.value,
           type: PropValueType.Prototype,

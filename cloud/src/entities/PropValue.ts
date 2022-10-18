@@ -1,5 +1,5 @@
-import { Entity, ManyToOne, Property } from "@mikro-orm/core";
-import { PropValueType } from "@grootio/common";
+import { Entity, Enum, ManyToOne, Property } from "@mikro-orm/core";
+import { PropValueType, ValueStruct } from "@grootio/common";
 
 import { BaseEntity } from "./BaseEntity";
 import { ComponentInstance } from "./ComponentInstance";
@@ -33,6 +33,9 @@ export class PropValue extends BaseEntity {
 
   @Property()
   order?: number;
+
+  @Enum()
+  valueStruct: ValueStruct = ValueStruct.Common;
 
   //************************已下是接口入参或者查询返回需要定义的属性************************
 

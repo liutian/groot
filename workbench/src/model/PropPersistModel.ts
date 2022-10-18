@@ -1,4 +1,4 @@
-import { PropValueType, } from "@grootio/common";
+import { PropValueType, ValueStruct } from "@grootio/common";
 import { stringifyPropItemValue } from "@grootio/core";
 
 import { assignBaseType, autoIncrementForName, calcPropValueIdChain, stringifyOptions } from "@util/utils";
@@ -335,7 +335,7 @@ export default class PropPersistModel {
     })
   }
 
-  public updateValue = ({ propItem, value, abstractValueId, abstractValueIdChain }: { propItem: PropItem, value: any, abstractValueId?: number, abstractValueIdChain?: string }) => {
+  public updateValue = ({ propItem, value, abstractValueId, abstractValueIdChain, valueStruct }: { propItem: PropItem, value: any, abstractValueId?: number, abstractValueIdChain?: string, valueStruct?: ValueStruct }) => {
     if (!abstractValueIdChain) {
       abstractValueIdChain = calcPropValueIdChain(propItem, abstractValueId);
     }
@@ -360,6 +360,7 @@ export default class PropPersistModel {
       paramData.componentVersionId = this.workbench.componentVersion.id;
       paramData.orgId = this.workbench.component.orgId;
       paramData.value = valueStr;
+      paramData.valueStruct = valueStruct;
 
       if (this.workbench.prototypeMode) {
         paramData.type = PropValueType.Prototype;

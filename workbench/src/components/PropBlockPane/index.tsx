@@ -6,7 +6,7 @@ import styles from './index.module.less';
 import WorkbenchModel from "@model/WorkbenchModel";
 import PropPersistModel from "@model/PropPersistModel";
 import PropHandleModel from "@model/PropHandleModel";
-import { PropItemType, PropValueType, RuntimeComponentValueType } from "@grootio/common";
+import { PropItemType, PropValueType, RuntimeComponentValueType, ValueStruct } from "@grootio/common";
 import NumberSlider from "@components/NumberSlider";
 import TextEditor from "@components/TextEditor";
 import { calcPropValueIdChain, parseOptions, stringify } from "@util/utils";
@@ -180,13 +180,19 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
   const updateValue = (changedValues: any) => {
     const updateKey = Object.keys(changedValues)[0];
     const propItem = block.propItemList.find(item => item.propKey === updateKey);
+
+
     let extraInstanceList;
     if (propItem.type === PropItemType.Component) {
       extraInstanceList = (changedValues[updateKey] as RuntimeComponentValueType<ComponentInstance>).extraInstanceList;
       delete changedValues[updateKey].extraInstanceList;
     }
 
-    propPersistModel.updateValue({ propItem, value: changedValues[updateKey] }).then(() => {
+    propPersistModel.updateValue({
+      propItem,
+      value: changedValues[updateKey],
+      valueStruct: propItem.type === PropItemType.Component ? ValueStruct.ChildComponentList : undefined
+    }).then(() => {
       propHandleModel.refreshComponent(extraInstanceList);
     })
   }

@@ -245,3 +245,9 @@ export enum ComponentParserType {
   Http = 'http',
   DataSource = 'data_source',
 }
+
+
+export enum ValueStruct {
+  Common = 'common',
+  ChildComponentList = 'ChildComponentList'
+}

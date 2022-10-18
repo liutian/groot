@@ -57,7 +57,7 @@ export class AssetService {
     const release = await em.findOne(Release, releaseId);
     LogicException.assertNotFound(release, 'Release', releaseId);
 
-    const rootInstanceList = await em.find(ComponentInstance, { release, entry: true },
+    const rootInstanceList = await em.find(ComponentInstance, { release, root: null },
       { populate: ['component'] }
     );
     const instanceMetadataMap = new Map<ComponentInstance, Metadata[]>();

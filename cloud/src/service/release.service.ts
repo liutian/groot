@@ -1,6 +1,6 @@
 import { RequestContext } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
-import { PropValueType } from '@grootio/common';
+import { ComponentValueType, PropValueType, ValueStruct } from '@grootio/common';
 
 import { LogicException, LogicExceptionCode } from 'config/logic.exception';
 import { Release } from 'entities/Release';
@@ -56,7 +56,7 @@ export class ReleaseService {
       // 创建组件实例
       originInstanceList.forEach((originInstance) => {
         const instance = em.create(ComponentInstance, {
-          ...pick(originInstance, ['name', 'component', 'componentVersion', 'trackId', 'entry']),
+          ...pick(originInstance, ['key', 'name', 'component', 'componentVersion', 'trackId', 'entry']),
           release: newRelease,
         });
         instanceMap.set(originInstance.id, instance);
@@ -70,12 +70,16 @@ export class ReleaseService {
           instance.parent = instanceMap.get(originInstance.parent.id);
         }
 
+        if (originInstance.root) {
+          instance.root = instanceMap.get(originInstance.root.id);
+        }
+
         // 创建组件值列表
         originInstance.valueList.forEach((originPropValue) => {
           const newPropValue = em.create(PropValue, {
             ...pick(originPropValue, [
               'propItem', 'value', 'abstractValueIdChain',
-              'component', 'componentVersion', 'order'
+              'component', 'componentVersion', 'order', 'valueStruct'
             ]),
             type: PropValueType.Instance,
             componentInstance: instance
@@ -95,6 +99,14 @@ export class ReleaseService {
           }
           return oldPropValue.id;
         }).join(',');
+
+        if (newPropValue.valueStruct === ValueStruct.ChildComponentList) {
+          const componentValue = JSON.parse(newPropValue.value) as ComponentValueType;
+          componentValue.list.forEach(data => {
+            data.instanceId = instanceMap.get(data.instanceId).id;
+          });
+          newPropValue.value = JSON.stringify(componentValue);
+        }
 
         newPropValue.abstractValueIdChain = abstractValueIdChain;
       });

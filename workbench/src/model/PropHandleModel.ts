@@ -1,4 +1,4 @@
-import { ComponentValueItemType, ComponentValueType, DragAddComponentEventDataType, PostMessageType, PropItemType, PropValueType } from "@grootio/common";
+import { ComponentValueItemType, ComponentValueType, DragAddComponentEventDataType, PostMessageType, PropItemType, PropValueType, ValueStruct } from "@grootio/common";
 import { metadataFactory, propTreeFactory } from "@grootio/core";
 import { WorkbenchEvent } from "@util/common";
 import PropPersistModel from "./PropPersistModel";
@@ -275,7 +275,7 @@ export default class PropHandleModel {
         const value = JSON.parse(propValue?.value || '{"setting": {},"list":[]}') as ComponentValueType;
         value.list.push(newValueItem);
 
-        this.propPersist.updateValue({ propItem, value, abstractValueIdChain: eventData.abstractValueIdChain }).then(() => {
+        this.propPersist.updateValue({ propItem, value, abstractValueIdChain: eventData.abstractValueIdChain, valueStruct: ValueStruct.ChildComponentList }).then(() => {
           this.refreshComponent([instanceData]);
         })
       })

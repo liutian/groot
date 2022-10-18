@@ -1,4 +1,4 @@
-import { ComponentValueType, PropValueType } from '@grootio/common';
+import { ComponentValueType, PropValueType, ValueStruct } from '@grootio/common';
 import { EntityManager, RequestContext } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 
@@ -96,7 +96,8 @@ export class ComponentInstanceService {
     });
 
     const newInstance = em.create(ComponentInstance, {
-      ...pick(rawInstance, ['name', 'key', 'entry']),
+      ...pick(rawInstance, ['key', 'entry']),
+      name: rawInstance.name || component.name,
       parent: rawInstance.parentId,
       root: rawInstance.rootId,
       component,
@@ -119,7 +120,7 @@ export class ComponentInstanceService {
         const newPropValue = em.create(PropValue, {
           ...pick(propValue, [
             'propItem', 'value', 'abstractValueIdChain',
-            'component', 'componentVersion', 'order'
+            'component', 'componentVersion', 'order', 'valueStruct'
           ]),
           componentInstance: newInstance,
           type: PropValueType.Instance
@@ -307,6 +308,7 @@ export class ComponentInstanceService {
         componentVersion: wrapperInstance.component.recentVersion.id,
         componentInstance: wrapperInstance,
         type: PropValueType.Instance,
+        valueStruct: ValueStruct.ChildComponentList,
         value: JSON.stringify(rawContentValue)
       });
 
