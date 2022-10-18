@@ -1,8 +1,8 @@
-import { ModalStatus } from "@util/common";
+import { BreadcrumbChange, ModalStatus } from "@util/common";
 import { APIPath } from "api/API.path";
 import request from "@util/request";
 import WorkbenchModel from "../../model/WorkbenchModel";
-import { ComponentParserType, EnvType } from "@grootio/common";
+import { EnvType } from "@grootio/common";
 
 export default class InstanceModel {
   static modelName = 'editor';
@@ -45,7 +45,7 @@ export default class InstanceModel {
     });
   }
 
-  public switchComponentInstance = (instanceId: number, breadcrumbAppend: boolean) => {
+  public switchComponentInstance = (instanceId: number, breadcrumbAppend: BreadcrumbChange) => {
     if (this.workbench.componentInstance.id === instanceId) {
       return;
     }
@@ -53,11 +53,14 @@ export default class InstanceModel {
     const instance = this.workbench.instanceList.find(i => i.id === instanceId);
     this.workbench.startInstance(instance);
 
-    if (breadcrumbAppend) {
+    if (breadcrumbAppend === BreadcrumbChange.Append) {
       this.breadcrumbList.push({ id: instanceId, name: instance.name })
-    } else {
+    } else if (breadcrumbAppend === BreadcrumbChange.Insert) {
       const length = this.breadcrumbList.findIndex(item => item.id === instanceId);
       this.breadcrumbList.length = length === -1 ? 0 : length;
+      this.breadcrumbList.push({ id: instanceId, name: instance.name });
+    } else if (breadcrumbAppend === BreadcrumbChange.AppendRoot) {
+      this.breadcrumbList.length = 1;
       this.breadcrumbList.push({ id: instanceId, name: instance.name });
     }
   }

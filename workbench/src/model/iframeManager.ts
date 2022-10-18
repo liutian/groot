@@ -49,7 +49,7 @@ function onMessage(event: MessageEvent) {
       return;
     }
 
-    pageNavCallback();// 内部一般执行 Outer_Set_Page
+    pageNavCallback();// 内部一般执行 Outer_Full_Update_Components
     pageNavCallback = null;
   } else if (event.data.type === PostMessageType.Drag_Hit_Slot) {
     const newEvent = new CustomEvent(WorkbenchEvent.AddComponent, { detail: event.data.data });

@@ -15,3 +15,9 @@ export enum WorkbenchEvent {
   CanvasSelect = 'canvas_select',
   CanvasMarkerReset = 'canvas_marker_reset'
 }
+
+export enum BreadcrumbChange {
+  Append = 'append',
+  Insert = 'insert',
+  AppendRoot = 'append_root'
+}

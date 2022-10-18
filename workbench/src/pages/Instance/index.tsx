@@ -16,7 +16,7 @@ import DeployModal from "./components/DeployModal";
 import { DragComponentList } from "./components/DragComponentList";
 import InstanceList from "./components/InstanceList";
 import Release from "./components/Release";
-import { ModalStatus } from "@util/common";
+import { BreadcrumbChange, ModalStatus } from "@util/common";
 
 const Instance: React.FC = () => {
   const [instanceModel, instanceModelAction] = useRegisterModel(InstanceModel);
@@ -90,7 +90,7 @@ const Instance: React.FC = () => {
         {
           instanceModel.breadcrumbList.map((item) => {
             return (<Breadcrumb.Item key={item.id}
-              onClick={() => instanceModel.switchComponentInstance(item.id, false)}>
+              onClick={() => instanceModel.switchComponentInstance(item.id, BreadcrumbChange.Insert)}>
               {item.name}
             </Breadcrumb.Item>)
           })
@@ -98,7 +98,7 @@ const Instance: React.FC = () => {
       </Breadcrumb>)
     }
 
-    (Object.getPrototypeOf(workbenchModel) as WorkbenchModel).switchComponentInstance = (instanceId, breadcrumbAppend = true) => {
+    (Object.getPrototypeOf(workbenchModel) as WorkbenchModel).switchComponentInstance = (instanceId, breadcrumbAppend = BreadcrumbChange.Append) => {
       instanceModel.switchComponentInstance(instanceId, breadcrumbAppend);
     }
 

@@ -14,7 +14,7 @@ import { Release } from "./Release";
 export class ComponentInstance extends BaseEntity {
 
   @Property({ length: 50 })
-  name?: string;
+  name: string;
 
   @ManyToOne()
   component: Component;

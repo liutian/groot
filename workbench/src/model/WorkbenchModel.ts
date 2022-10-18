@@ -1,6 +1,6 @@
 import { ApplicationData } from "@grootio/common";
 import { IframeManagerInstance, launchIframeManager } from "@model/iframeManager";
-import { needRewrite } from "@util/common";
+import { BreadcrumbChange, needRewrite } from "@util/common";
 import { ReactNode } from "react";
 import PropHandleModel from "./PropHandleModel";
 
@@ -205,7 +205,7 @@ export default class WorkbenchModel extends EventTarget {
   public renderToolBarAction(): ReactNode {
     return needRewrite();
   }
-  public switchComponentInstance(instanceId: number, breadcrumbAppend?: boolean) {
+  public switchComponentInstance(instanceId: number, breadcrumbAppend?: BreadcrumbChange) {
     needRewrite();
   }
 }

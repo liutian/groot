@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react';
 import { Space } from 'antd';
 
 import WorkbenchModel from '@model/WorkbenchModel';
-import { WorkbenchEvent } from '@util/common';
+import { BreadcrumbChange, WorkbenchEvent } from '@util/common';
 import { useModel } from '@util/robot';
 
 import styles from './index.module.less';
@@ -39,7 +39,7 @@ const IframeMarker: React.FC = () => {
       cloneToolbarRef.current = toolbarRef.current.cloneNode(true) as HTMLDivElement;
       toolbarRef.current.insertAdjacentElement('beforebegin', cloneToolbarRef.current);
 
-      workbenchModel.switchComponentInstance(data.instanceId);
+      workbenchModel.switchComponentInstance(data.instanceId, BreadcrumbChange.AppendRoot);
     });
 
     workbenchModel.addEventListener(WorkbenchEvent.CanvasMarkerReset, () => {
