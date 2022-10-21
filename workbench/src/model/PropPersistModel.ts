@@ -384,8 +384,13 @@ export default class PropPersistModel {
     });
   }
 
-  public addChildComponentInstance = (instance: ComponentInstance) => {
-    return request(APIPath.componentInstance_addChild, instance).then(({ data }) => {
+  public addChildComponentInstance = (rawInstance: ComponentInstance) => {
+    return request(APIPath.componentInstance_addChild, rawInstance).then(({ data }) => {
+      if (rawInstance.oldChildId) {
+        const index = this.workbench.instanceList.findIndex(i => i.id === rawInstance.oldChildId);
+        this.workbench.instanceList.splice(index, 1);
+      }
+
       this.workbench.instanceList.push(data);
       return data;
     })

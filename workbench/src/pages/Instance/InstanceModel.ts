@@ -26,7 +26,7 @@ export default class InstanceModel {
 
   public fetchApplication = (applicationId: number, releaseId?: number) => {
     return request(APIPath.application_detail, { applicationId, releaseId }).then(({ data }) => {
-      this.workbench.startApplication(data);
+      this.workbench.launchInstanceBox(data);
     }).catch((e) => {
       this.loadStatus = 'no-application';
       return Promise.reject(e);
@@ -40,8 +40,7 @@ export default class InstanceModel {
       this.breadcrumbList.length = 0;
       this.breadcrumbList.push({ id: instanceId, name: root.name });
 
-      this.workbench.instanceList = [root, ...children];
-      this.workbench.startPage(root, children);
+      this.workbench.startComponentInstance(root, children);
     });
   }
 
@@ -51,7 +50,7 @@ export default class InstanceModel {
     }
 
     const instance = this.workbench.instanceList.find(i => i.id === instanceId);
-    this.workbench.startInstance(instance);
+    this.workbench.changeComponentInstance(instance);
 
     if (breadcrumbAppend === BreadcrumbChange.Append) {
       this.breadcrumbList.push({ id: instanceId, name: instance.name })
@@ -65,7 +64,7 @@ export default class InstanceModel {
     }
   }
 
-  public addInstance = (rawComponentInstance: ComponentInstance) => {
+  public addRootInstance = (rawComponentInstance: ComponentInstance) => {
     this.instanceAddModalStatus = ModalStatus.Submit;
     if (this.instanceAddEntry) {
       rawComponentInstance.wrapper = 'groot/PageContainer';

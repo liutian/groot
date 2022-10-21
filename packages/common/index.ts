@@ -67,7 +67,6 @@ export enum PostMessageType {
   Outer_Set_Application = 'outer_set_application',
   Inner_Applicationn_Ready = 'inner_applicationn_ready',
   Inner_Fetch_Page_Components = 'inner_fetch_page_components',
-  Outer_Full_Update_Components = 'outer_full_update_components',
   Outer_Update_Component = 'outer_update_component',
   Outer_Refresh_Page = 'outer_refresh_page',
 
@@ -227,7 +226,6 @@ export type RuntimeComponentValueType<T> = {
 
   propKeyChain: string,
   propItemId: number,
-  extraInstanceList?: T[],
   abstractValueIdChain?: string
 }
 

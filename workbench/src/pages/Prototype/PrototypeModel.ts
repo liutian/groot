@@ -18,13 +18,13 @@ export default class PrototypeModel {
   public switchComponent = (componentId: number, versionId: number) => {
     return request(APIPath.componentPrototype_detail, { componentId, versionId }).then(({ data }) => {
       this.loadStatus = 'ok';
-      this.workbench.startComponent(data);
+      this.workbench.startComponentPrototype(data);
     })
   }
 
   public fetchOrg = (orgId: number) => {
     return request(APIPath.org_detail, { orgId }).then(({ data }) => {
-      this.workbench.startPrototype(data);
+      this.workbench.launchPrototypeBox(data);
     }).catch((e) => {
       return Promise.reject(e);
     })

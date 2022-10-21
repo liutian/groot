@@ -180,20 +180,18 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
   const updateValue = (changedValues: any) => {
     const updateKey = Object.keys(changedValues)[0];
     const propItem = block.propItemList.find(item => item.propKey === updateKey);
-
-
-    let extraInstanceList;
-    if (propItem.type === PropItemType.Component) {
-      extraInstanceList = (changedValues[updateKey] as RuntimeComponentValueType<ComponentInstance>).extraInstanceList;
-      delete changedValues[updateKey].extraInstanceList;
-    }
+    const valueStruct = propItem.type === PropItemType.Component ? ValueStruct.ChildComponentList : undefined;
 
     propPersistModel.updateValue({
       propItem,
       value: changedValues[updateKey],
-      valueStruct: propItem.type === PropItemType.Component ? ValueStruct.ChildComponentList : undefined
+      valueStruct
     }).then(() => {
-      propHandleModel.refreshComponent(extraInstanceList);
+      if (!workbenchModel.prototypeMode && valueStruct === ValueStruct.ChildComponentList) {
+        propHandleModel.refreshAllComponent();
+      } else {
+        propHandleModel.refreshComponent();
+      }
     })
   }
 

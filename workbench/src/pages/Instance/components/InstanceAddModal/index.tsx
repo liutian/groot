@@ -22,7 +22,7 @@ const InstanceAddModal: React.FC = () => {
 
   const handleOk = async () => {
     const formData = await form.validateFields();
-    editorModel.addInstance(formData as ComponentInstance).then(() => {
+    editorModel.addRootInstance(formData as ComponentInstance).then(() => {
       form.resetFields();
     })
   }

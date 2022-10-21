@@ -11,6 +11,7 @@ export class Page extends EventTarget {
   fetchMetadataResolve?: (data: Metadata[]) => void;
   rootComponent?: any;
   controlMode = false;
+  ready = false;
 
   constructor(data: InstanceData) {
     super();
@@ -29,49 +30,74 @@ export class Page extends EventTarget {
   loadMetadata(): Promise<Metadata[]> {
     if (controlMode && this.controlMode) {
       window.parent.postMessage({ type: PostMessageType.Inner_Fetch_Page_Components, data: this.path }, '*',);
-      return new Promise((resolve) => {
-        this.fetchMetadataResolve = (metadataList: Metadata[]) => {
-          this.metadataList = metadataList;
-          resolve(metadataList);
-        }
-      })
+      if (!this.metadataPromise) {
+        this.metadataPromise = new Promise((resolve) => {
+          this.fetchMetadataResolve = (metadataList: Metadata[]) => {
+            this.metadataList = metadataList;
+            resolve(metadataList);
+          }
+        })
+      }
+
+      return this.metadataPromise;
     } else if (this.metadataList) {
       return Promise.resolve(this.metadataList);
     } else if (this.metadataUrl) {// 从远程地址加载配置信息
       if (!this.metadataPromise) {
-        this.metadataPromise = this.loadMetadataByUrl();
+        this.metadataPromise = fetch(this.metadataUrl)
+          .then((res) => res.json())
+          .then((res) => {
+            this.metadataList = res;
+            return res;
+          });
       }
+
       return this.metadataPromise;
     } else {
       return Promise.reject('metadataUrl and metadata can not both be empty');
     }
   }
 
-
-  /**
-   * 通过url加载页面配置信息
-   */
-  loadMetadataByUrl(): Promise<Metadata[]> {
-    return fetch(this.metadataUrl)
-      .then((res) => res.json())
-      .then((res) => {
-        this.metadataList = res;
-        return res;
-      });
-  }
-
-  update() {
+  init() {
     const rootMetadata = this.metadataList.find(m => !m.parentId);
     this.rootComponent = buildComponent(rootMetadata, this.metadataList);
+    this.ready = true;
   }
 
-  incrementUpdate([newMetadata, ...extra]: Metadata[]) {
-    this.metadataList.push(...extra);
-    const metadata = this.metadataList.find(m => m.id === newMetadata.id);
-    if (metadata) {
-      metadata.propsObj = newMetadata.propsObj;
-      metadata.advancedProps = newMetadata.advancedProps;
-      reBuildComponent(metadata, this.metadataList);
+  update(data: Metadata | Metadata[]) {
+    const isList = Array.isArray(data);
+    if (this.ready) {
+      if (isList) {
+        this.fullUpdate(data);
+      } else {
+        this.incrementUpdate(data)
+      }
+    } else {
+      this.fetchMetadataResolve(isList ? data : [data]);
     }
+  }
+
+  incrementUpdate(data: Metadata) {
+    const metadata = this.metadataList.find(m => m.id === data.id);
+    metadata.propsObj = data.propsObj;
+    metadata.advancedProps = data.advancedProps;
+    reBuildComponent(metadata, this.metadataList);
+  }
+
+  fullUpdate(list: Metadata[]) {
+    const rootMetadata = this.metadataList.find(m => !m.parentId);
+
+    for (let index = 0; index < list.length; index++) {
+      const metadata = list[index];
+      if (!metadata.parentId) {
+        rootMetadata.propsObj = metadata.propsObj;
+        rootMetadata.advancedProps = metadata.advancedProps;
+        list.splice(index, 1, rootMetadata);
+        this.metadataList = list;
+        break;
+      }
+    }
+
+    reBuildComponent(rootMetadata, this.metadataList);
   }
 }

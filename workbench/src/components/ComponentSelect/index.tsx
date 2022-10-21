@@ -31,10 +31,9 @@ const ComponentSelect: React.FC<PropType> = ({ value: _value, onChange: _onChang
     return <Select disabled></Select>
   }
 
-  const onChange = (newValue: ComponentValueItemType, index: number, extraInstance: ComponentInstance) => {
+  const onChange = (newValue: ComponentValueItemType, index: number) => {
     valueList[index] = newValue;
     _value.list = [...valueList];
-    _value.extraInstanceList = [extraInstance];
     _onChange({ ..._value });
   }
 
@@ -64,7 +63,7 @@ const ComponentSelect: React.FC<PropType> = ({ value: _value, onChange: _onChang
       valueList.map((valueItem, index) => {
         return (<div className={styles.itemContainer} key={index}>
 
-          <ComponentSelectItem value={valueItem} onChange={(newValue, extraInstance) => onChange(newValue, index, extraInstance)} parentInstanceId={parentInstanceId} />
+          <ComponentSelectItem value={valueItem} onChange={(newValue) => onChange(newValue, index)} parentInstanceId={parentInstanceId} />
 
           <div className={styles.suffix}>
             <Button type="link" onClick={() => {
@@ -94,12 +93,11 @@ const ComponentSelect: React.FC<PropType> = ({ value: _value, onChange: _onChang
 
 type ItemPropTypeItem = {
   value?: ComponentValueItemType,
-  onChange?: (newValue: ComponentValueItemType, extraInstance?: ComponentInstance) => void;
+  onChange?: (newValue: ComponentValueItemType) => void;
   parentInstanceId?: number,
 };
 
 const ComponentSelectItem: React.FC<ItemPropTypeItem> = ({ value, onChange: _onChange, parentInstanceId }) => {
-  const [workbenchModel] = useModel(WorkbenchModel);
   const [propPersistModel] = useModel(PropPersistModel);
   const [componentList, setComponentList] = useState<Component[]>([]);
   const [valueData, setValueData] = useState<number>();
@@ -130,16 +128,11 @@ const ComponentSelectItem: React.FC<ItemPropTypeItem> = ({ value, onChange: _onC
     } as ComponentInstance;
 
     propPersistModel.addChildComponentInstance(rawInstance).then((data) => {
-      if (rawInstance.oldChildId) {
-        const index = workbenchModel.instanceList.findIndex(i => i.id === value.instanceId);
-        workbenchModel.instanceList.splice(index, 1);
-      }
-
       _onChange({
         instanceId: data.id,
         componentName: data.component.name,
         componentId: data.component.id,
-      }, data);
+      });
     })
   }
 

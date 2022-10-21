@@ -65,7 +65,10 @@ function buildPropGroup(groupIdOrObj: number | IPropGroup,
       const propItem = propItemList[itemIndex];
       propItem.block = propBlock;
 
-      propItem.valueList = store.valueList.filter(v => v.propItemId === propItem.id);
+      // 运行时不从store获取valueList
+      if (!propItem.valueList?.length) {
+        propItem.valueList = store.valueList.filter(v => v.propItemId === propItem.id);
+      }
       if (propItem.type === PropItemType.Flat) {
         const childGroup = buildPropGroup(propItem.childGroupId, store);
         childGroup.parentItem = propItem;

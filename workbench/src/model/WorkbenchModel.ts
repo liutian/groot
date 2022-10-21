@@ -81,12 +81,12 @@ export default class WorkbenchModel extends EventTarget {
     this.iframeReadyResolve();
   }
 
-  public startPrototype(org: Organization) {
+  public launchPrototypeBox(org: Organization) {
     this.prototypeMode = true;
     this.org = org;
   }
 
-  public startComponent(component: Component,) {
+  public startComponentPrototype(component: Component,) {
     this.component = component;
     this.componentVersion = component.componentVersion;
     this.currActiveTab = 'props';
@@ -96,22 +96,23 @@ export default class WorkbenchModel extends EventTarget {
 
     this.iframeReadyPromise.then(() => {
       this.iframeManager.refresh(() => {
-        this.propHandle.fullRefreshComponent();
+        this.propHandle.refreshComponent();
       });
     });
 
     window.history.pushState(null, '', `?org=${this.org.id}&version=${this.componentVersion.id}&component=${component.id}`);
   }
 
-  public startApplication(app: Application) {
+  public launchInstanceBox(app: Application) {
     this.prototypeMode = false;
     this.application = app;
   }
 
-  public startPage(rootInstance: ComponentInstance, instanceChildren: ComponentInstance[]) {
+  public startComponentInstance(rootInstance: ComponentInstance, childrenInstance: ComponentInstance[]) {
     this.componentInstance = rootInstance;
     this.component = rootInstance.component;
     this.componentVersion = rootInstance.componentVersion;
+    this.instanceList = [rootInstance, ...childrenInstance];
     this.currActiveTab = 'props';
 
     const { groupList, blockList, itemList, valueList } = rootInstance;
@@ -120,7 +121,7 @@ export default class WorkbenchModel extends EventTarget {
 
     this.iframeReadyPromise.then(() => {
       this.iframeManager.refresh(() => {
-        this.propHandle.fullRefreshComponent(instanceChildren);
+        this.propHandle.refreshAllComponent();
       });
     });
 
@@ -128,7 +129,7 @@ export default class WorkbenchModel extends EventTarget {
 
   }
 
-  public startInstance(instance: ComponentInstance) {
+  public changeComponentInstance(instance: ComponentInstance) {
     this.componentInstance = instance;
     this.component = instance.component;
     this.componentVersion = instance.componentVersion;

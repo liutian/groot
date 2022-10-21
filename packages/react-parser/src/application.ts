@@ -56,13 +56,13 @@ function onMessage(event: any) {
   } else if (messageType === PostMessageType.Outer_Set_Application) {
     iframeApplicationLoadResolve(event.data.data);
   } else if (messageType === PostMessageType.Outer_Update_Component) {
-    activePage.incrementUpdate(event.data.data);
+    if (activePage.path !== event.data.data.path) {
+      return
+    }
+
+    activePage.update(event.data.data.data);
   } else if (messageType === PostMessageType.Outer_Refresh_Page) {
     window.location.reload();
-  } else if (messageType === PostMessageType.Outer_Full_Update_Components) {
-    if (activePage.path === event.data.data.path) {
-      activePage.fetchMetadataResolve(event.data.data.metadataList);
-    }
   } else if (messageType === PostMessageType.Drag_Component_Over) {
     ComponentSlot.respondDragOver(event.data.data.positionX, event.data.data.positionY);
   } else if (messageType === PostMessageType.Drag_Component_Enter) {
@@ -156,7 +156,7 @@ function loadPage(path: string): Promise<Page> | Page {
   return page.loadMetadata().then(() => {
     loadingPages.delete(path);
     loadedPageMap.set(path, page);
-    page.update();
+    page.init();
     return page;
   });
 }

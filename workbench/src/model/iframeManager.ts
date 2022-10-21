@@ -84,17 +84,15 @@ function notifyIframe(type: PostMessageType, data?: any) {
     return;
   }
 
-  if (type === PostMessageType.Outer_Update_Component) {
-    iframe.contentWindow.postMessage({ type, data }, '*');
-  } else if (type === PostMessageType.Outer_Set_Application) {
+  if (type === PostMessageType.Outer_Set_Application) {
     iframe.contentWindow.postMessage({ type, data: data || applicationData }, '*');
   } else if (type === PostMessageType.Outer_Set_Config) {
     iframe.contentWindow.postMessage({ type, data: data || iframeDebuggerConfig }, '*');
-  } else if (type === PostMessageType.Outer_Full_Update_Components) {
+  } else if (type === PostMessageType.Outer_Update_Component) {
     iframe.contentWindow.postMessage({
       type, data: {
         path: iframeDebuggerConfig.controlPage,
-        metadataList: data
+        data
       }
     }, '*');
   } else if (type === PostMessageType.Outer_Refresh_Page) {
