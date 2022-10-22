@@ -119,12 +119,12 @@ export default class PropHandleModel {
       refreshId = this.workbench.prototypeMode ? this.workbench.component.id : this.workbench.componentInstance.id;
       metadata = metadataFactory(this.propTree, this.workbench.component, refreshId);
     }
-    this.workbench.iframeManager.notifyIframe(PostMessageType.Outer_Update_Component, metadata);
+    this.workbench.iframeManager.notifyIframe(PostMessageType.OuterUpdateComponent, metadata);
   }
 
   public refreshAllComponent() {
     const metadataList = this.instanceToMetadata(this.workbench.instanceList);
-    this.workbench.iframeManager.notifyIframe(PostMessageType.Outer_Update_Component, metadataList);
+    this.workbench.iframeManager.notifyIframe(PostMessageType.OuterUpdateComponent, metadataList);
   }
 
   instanceToMetadata(instanceList: ComponentInstance[]) {
@@ -256,7 +256,7 @@ export default class PropHandleModel {
   }
 
   private watchEvent() {
-    this.workbench.addEventListener(WorkbenchEvent.AddComponent, (event) => {
+    this.workbench.addEventListener(WorkbenchEvent.AddChildComponent, (event) => {
       const { detail: eventData } = event as CustomEvent<DragAddComponentEventDataType>;
 
       const rawInstance = {

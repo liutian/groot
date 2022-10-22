@@ -34,7 +34,7 @@ export function bootstrap(customConfig: UIManagerConfig): ApplicationInstance {
   setConfig(customConfig);
 
   if (controlMode) {
-    window.parent.postMessage(PostMessageType.Inner_Ready, '*');
+    window.parent.postMessage(PostMessageType.InnerReady, '*');
     window.addEventListener('message', onMessage);
   }
 
@@ -48,28 +48,28 @@ export function bootstrap(customConfig: UIManagerConfig): ApplicationInstance {
 
 function onMessage(event: any) {
   const messageType = event.data.type;
-  if (messageType === PostMessageType.Outer_Set_Config) {
+  if (messageType === PostMessageType.OuterSetConfig) {
     iframeDebuggerConfig = event.data.data;
     if (iframeDebuggerConfig.runtimeConfig) {
       setConfig(iframeDebuggerConfig.runtimeConfig);
     }
-  } else if (messageType === PostMessageType.Outer_Set_Application) {
+  } else if (messageType === PostMessageType.OuterSetApplication) {
     iframeApplicationLoadResolve(event.data.data);
-  } else if (messageType === PostMessageType.Outer_Update_Component) {
+  } else if (messageType === PostMessageType.OuterUpdateComponent) {
     if (activePage.path !== event.data.data.path) {
       return
     }
 
     activePage.update(event.data.data.data);
-  } else if (messageType === PostMessageType.Outer_Refresh_Page) {
+  } else if (messageType === PostMessageType.OuterRefreshPage) {
     window.location.reload();
-  } else if (messageType === PostMessageType.Drag_Component_Over) {
+  } else if (messageType === PostMessageType.DragComponentOver) {
     ComponentSlot.respondDragOver(event.data.data.positionX, event.data.data.positionY);
-  } else if (messageType === PostMessageType.Drag_Component_Enter) {
+  } else if (messageType === PostMessageType.DragComponentEnter) {
     ComponentSlot.respondDragEnter();
-  } else if (messageType === PostMessageType.Drag_Component_Leave) {
+  } else if (messageType === PostMessageType.DragComponentLeave) {
     ComponentSlot.respondDragLeave();
-  } else if (messageType === PostMessageType.Drag_Component_Drop) {
+  } else if (messageType === PostMessageType.DragComponentDrop) {
     ComponentSlot.respondDragDrop(event.data.data.positionX, event.data.data.positionY, event.data.data.componentId);
   }
 }
@@ -102,7 +102,7 @@ function fetchApplicationData(): Promise<ApplicationData> {
   if (controlMode) {
     return new Promise((resolve, reject) => {
       iframeApplicationLoadResolve = resolve;
-      window.parent.postMessage(PostMessageType.Inner_Fetch_Application, '*');
+      window.parent.postMessage(PostMessageType.InnerFetchApplication, '*');
       setTimeout(() => {
         reject(new Error('load application timeout'))
       }, 3000);
@@ -128,7 +128,7 @@ function initApplication(data: ApplicationData) {
     allPageMap.set(page.path, page);
   });
   if (controlMode) {
-    window.parent.postMessage(PostMessageType.Inner_Applicationn_Ready, '*');
+    window.parent.postMessage(PostMessageType.InnerApplicationnReady, '*');
   }
 }
 

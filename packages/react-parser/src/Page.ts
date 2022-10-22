@@ -29,7 +29,7 @@ export class Page extends EventTarget {
    */
   loadMetadata(): Promise<Metadata[]> {
     if (controlMode && this.controlMode) {
-      window.parent.postMessage({ type: PostMessageType.Inner_Fetch_Page_Components, data: this.path }, '*',);
+      window.parent.postMessage({ type: PostMessageType.InnerFetchPageComponents, data: this.path }, '*',);
       if (!this.metadataPromise) {
         this.metadataPromise = new Promise((resolve) => {
           this.fetchMetadataResolve = (metadataList: Metadata[]) => {

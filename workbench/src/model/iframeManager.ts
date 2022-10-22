@@ -38,12 +38,12 @@ export function launchIframeManager(ele: HTMLIFrameElement, _basePath: string, _
 
 function onMessage(event: MessageEvent) {
   // iframe页面准备就绪可以进行通信
-  if (event.data === PostMessageType.Inner_Ready) {
+  if (event.data === PostMessageType.InnerReady) {
     iframeReady = true;
-    notifyIframe(PostMessageType.Outer_Set_Config);
-  } else if (event.data === PostMessageType.Inner_Fetch_Application) {
-    notifyIframe(PostMessageType.Outer_Set_Application);
-  } else if (event.data.type === PostMessageType.Inner_Fetch_Page_Components) {
+    notifyIframe(PostMessageType.OuterSetConfig);
+  } else if (event.data === PostMessageType.InnerFetchApplication) {
+    notifyIframe(PostMessageType.OuterSetApplication);
+  } else if (event.data.type === PostMessageType.InnerFetchPageComponents) {
     if (event.data.data !== playgroundPath) {
       console.warn('current iframe path not control');
       return;
@@ -51,13 +51,13 @@ function onMessage(event: MessageEvent) {
 
     pageNavCallback();// 内部一般执行 Outer_Full_Update_Components
     pageNavCallback = null;
-  } else if (event.data.type === PostMessageType.Drag_Hit_Slot) {
-    const newEvent = new CustomEvent(WorkbenchEvent.AddComponent, { detail: event.data.data });
+  } else if (event.data.type === PostMessageType.DragHitSlot) {
+    const newEvent = new CustomEvent(WorkbenchEvent.AddChildComponent, { detail: event.data.data });
     eventTrigger.dispatchEvent(newEvent);
-  } else if (event.data.type === PostMessageType.Wrapper_Hover) {
+  } else if (event.data.type === PostMessageType.WrapperHover) {
     const newEvent = new CustomEvent(WorkbenchEvent.CanvasHover, { detail: event.data.data });
     eventTrigger.dispatchEvent(newEvent);
-  } else if (event.data.type === PostMessageType.Wrapper_Select) {
+  } else if (event.data.type === PostMessageType.WrapperSelect) {
     const newEvent = new CustomEvent(WorkbenchEvent.CanvasSelect, { detail: event.data.data });
     eventTrigger.dispatchEvent(newEvent);
   }
@@ -69,7 +69,7 @@ function refresh(callback: () => void) {
   iframeDebuggerConfig.controlPage = playgroundPath;
 
   if (iframe.src === path) {
-    notifyIframe(PostMessageType.Outer_Refresh_Page, path);
+    notifyIframe(PostMessageType.OuterRefreshPage, path);
   } else {
     iframe.src = path;
   }
@@ -84,18 +84,18 @@ function notifyIframe(type: PostMessageType, data?: any) {
     return;
   }
 
-  if (type === PostMessageType.Outer_Set_Application) {
+  if (type === PostMessageType.OuterSetApplication) {
     iframe.contentWindow.postMessage({ type, data: data || applicationData }, '*');
-  } else if (type === PostMessageType.Outer_Set_Config) {
+  } else if (type === PostMessageType.OuterSetConfig) {
     iframe.contentWindow.postMessage({ type, data: data || iframeDebuggerConfig }, '*');
-  } else if (type === PostMessageType.Outer_Update_Component) {
+  } else if (type === PostMessageType.OuterUpdateComponent) {
     iframe.contentWindow.postMessage({
       type, data: {
         path: iframeDebuggerConfig.controlPage,
         data
       }
     }, '*');
-  } else if (type === PostMessageType.Outer_Refresh_Page) {
+  } else if (type === PostMessageType.OuterRefreshPage) {
     iframe.contentWindow.postMessage({ type, data }, '*');
     const event = new CustomEvent(WorkbenchEvent.CanvasMarkerReset);
     eventTrigger.dispatchEvent(event);

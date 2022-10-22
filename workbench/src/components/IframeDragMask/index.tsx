@@ -12,25 +12,25 @@ const IframeDragMask: React.FC<PropType> = (prop) => {
   // 必须有监听dragover事件否则drop事件无法触发
   const dragover = (event) => {
     event.preventDefault();
-    workbenchModel.iframeManager.notifyIframe(PostMessageType.Drag_Component_Over, {
+    workbenchModel.iframeManager.notifyIframe(PostMessageType.DragComponentOver, {
       positionX: event.pageX,
       positionY: event.pageY,
     });
   }
 
   const dragenter = () => {
-    workbenchModel.iframeManager.notifyIframe(PostMessageType.Drag_Component_Enter, {});
+    workbenchModel.iframeManager.notifyIframe(PostMessageType.DragComponentEnter, {});
     console.log(`iframeDragMask drog enter `);
   }
 
   const drageleave = () => {
-    workbenchModel.iframeManager.notifyIframe(PostMessageType.Drag_Component_Leave, {});
+    workbenchModel.iframeManager.notifyIframe(PostMessageType.DragComponentLeave, {});
     console.log(`iframeDragMask drog leave `);
   }
 
   const drop = (event) => {
     const componentId = event.dataTransfer.getData('componentId');
-    workbenchModel.iframeManager.notifyIframe(PostMessageType.Drag_Component_Drop, {
+    workbenchModel.iframeManager.notifyIframe(PostMessageType.DragComponentDrop, {
       positionX: event.pageX,
       positionY: event.pageY,
       componentId: componentId

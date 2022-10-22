@@ -111,7 +111,7 @@ const PropItemSetting: React.FC = () => {
           <Form.Item dependencies={['type']} noStyle >
             {({ getFieldValue }) => {
               const type = getFieldValue('type');
-              const hasOption = ([PropItemType.Select, PropItemType.Radio, PropItemType.Checkbox, PropItemType.Button_Group]).includes(type);
+              const hasOption = ([PropItemType.Select, PropItemType.Radio, PropItemType.Checkbox, PropItemType.ButtonGroup]).includes(type);
 
               return hasOption ? renderSelectFormItem() : null
             }}

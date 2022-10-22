@@ -1,4 +1,4 @@
-import { useReducer, useState } from 'react';
+import { useReducer } from 'react';
 import React from 'react';
 import { UIManagerConfig } from '@grootio/common';
 

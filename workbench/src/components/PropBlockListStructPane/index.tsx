@@ -151,9 +151,9 @@ const PropBlockListStructPane: React.FC<PropsType> = ({ block: propBlock }) => {
       return <Switch />
     } else if (item.type === PropItemType.Select) {
       return <Select options={item.optionList} />
-    } else if (item.type === PropItemType.Date_Picker) {
+    } else if (item.type === PropItemType.DatePicker) {
       return <DatePicker />;
-    } else if (item.type === PropItemType.Time_Picker) {
+    } else if (item.type === PropItemType.TimePicker) {
       return <TimePicker style={{ width: '100%' }} />;
     } else {
       return <>

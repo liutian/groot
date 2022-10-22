@@ -26,13 +26,13 @@ export const propKeyRule = /^[_a-zA-Z][\w\.]*$/i;
 
 
 export const stringifyOptions = (propItem: PropItem) => {
-  if (([PropItemType.Checkbox, PropItemType.Radio, PropItemType.Select, PropItemType.Button_Group] as string[]).includes(propItem.type)) {
+  if (([PropItemType.Checkbox, PropItemType.Radio, PropItemType.Select, PropItemType.ButtonGroup] as string[]).includes(propItem.type)) {
     propItem.valueOptions = JSON.stringify(propItem.optionList || []);
   }
 }
 
 export const parseOptions = (propItem: PropItem) => {
-  if (([PropItemType.Checkbox, PropItemType.Radio, PropItemType.Select, PropItemType.Button_Group] as string[]).includes(propItem.type)) {
+  if (([PropItemType.Checkbox, PropItemType.Radio, PropItemType.Select, PropItemType.ButtonGroup] as string[]).includes(propItem.type)) {
     propItem.optionList = JSON.parse(propItem.valueOptions || '[]');
   }
 }

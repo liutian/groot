@@ -24,7 +24,7 @@ function hoverAction({ pageX, pageY }: MouseEvent) {
   if (hitEle) {
     const clientRect = hitEle.getBoundingClientRect();
     window.parent.postMessage({
-      type: PostMessageType.Wrapper_Hover,
+      type: PostMessageType.WrapperHover,
       data: {
         clientRect,
         tagName: hitEle.dataset.grootWrapperTagName
@@ -33,7 +33,7 @@ function hoverAction({ pageX, pageY }: MouseEvent) {
   }
   else {
     window.parent.postMessage({
-      type: PostMessageType.Wrapper_Hover,
+      type: PostMessageType.WrapperHover,
       data: null
     }, '*');
   }
@@ -45,7 +45,7 @@ function mousedownAction({ pageX, pageY }: MouseEvent) {
   if (hitEle) {
     const clientRect = hitEle.getBoundingClientRect();
     window.parent.postMessage({
-      type: PostMessageType.Wrapper_Select,
+      type: PostMessageType.WrapperSelect,
       data: {
         clientRect,
         tagName: hitEle.dataset.grootWrapperTagName,

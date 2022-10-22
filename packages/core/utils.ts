@@ -65,7 +65,7 @@ export const fillPropChain = (ctx: Object, propStr: string): [Object, string] =>
 
 export const parsePropItemValue = (propItem: IPropItem, value?: any) => {
   value = value || propItem.defaultValue
-  if (propItem.type === PropItemType.Date_Picker || propItem.type === PropItemType.Time_Picker) {
+  if (propItem.type === PropItemType.DatePicker || propItem.type === PropItemType.TimePicker) {
     // todo ... 包含moment类型的值 postMessage会有问题
     value = moment(value);
   } else if (propItem.type === PropItemType.Function) {

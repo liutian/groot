@@ -142,7 +142,7 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
       return <InputNumber keyboard />;
     } else if (item.type === PropItemType.Slider) {
       return <NumberSlider min={1} max={100} />;
-    } else if (item.type === PropItemType.Button_Group) {
+    } else if (item.type === PropItemType.ButtonGroup) {
       return <Radio.Group>
         {item.optionList.map((option) => {
           return <Tooltip title={option.title} key={option.value}>
@@ -158,9 +158,9 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
       return <Radio.Group options={item.optionList} />
     } else if (item.type === PropItemType.Checkbox) {
       return <Checkbox.Group options={item.optionList} />
-    } else if (item.type === PropItemType.Date_Picker) {
+    } else if (item.type === PropItemType.DatePicker) {
       return <DatePicker />;
-    } else if (item.type === PropItemType.Time_Picker) {
+    } else if (item.type === PropItemType.TimePicker) {
       return <TimePicker style={{ width: '100%' }} />;
     } else if (item.type === PropItemType.Flat) {
       return <Button block onClick={() => { propHandleModel.pushPropItemToStack(item) }}>平铺</Button>

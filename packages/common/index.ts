@@ -2,23 +2,19 @@
  * 配置项
  */
 export type UIManagerConfig = {
-  /**
-   * 应用资源数据地址
-   */
-  appDataUrl?: string;
   appKey: string,
   appEnv: string,
+  modules: { [packageName: string]: { [moduleName: string]: any } };
+  appDataUrl?: string;
   serverUrl?: string,
   lazyLoadApplication?: boolean;
   beforeLoadApplication?: Promise<void> | Function;
   debug?: boolean;
   useWrapper?: boolean;
-  modules: { [packageName: string]: { [moduleName: string]: any } };
 };
 
 export type IframeDebuggerConfig = {
   runtimeConfig?: UIManagerConfig,
-  // 页面启动那一刻调试页面就已经确定，如果要更改iframe src一定会导致页面重新加载，然后重新执行应用启动过程
   controlPage?: string,
 }
 
@@ -61,23 +57,23 @@ export enum PropMetadataType {
 }
 
 export enum PostMessageType {
-  Inner_Ready = 'inner_ready',
-  Outer_Set_Config = 'outer_set_config',
-  Inner_Fetch_Application = 'inner_fetch_application',
-  Outer_Set_Application = 'outer_set_application',
-  Inner_Applicationn_Ready = 'inner_applicationn_ready',
-  Inner_Fetch_Page_Components = 'inner_fetch_page_components',
-  Outer_Update_Component = 'outer_update_component',
-  Outer_Refresh_Page = 'outer_refresh_page',
+  InnerReady = 'inner_ready',
+  OuterSetConfig = 'outer_set_config',
+  InnerFetchApplication = 'inner_fetch_application',
+  OuterSetApplication = 'outer_set_application',
+  InnerApplicationnReady = 'inner_applicationn_ready',
+  InnerFetchPageComponents = 'inner_fetch_page_components',
+  OuterUpdateComponent = 'outer_update_component',
+  OuterRefreshPage = 'outer_refresh_page',
 
-  Drag_Component_Over = 'drag_component_over',
-  Drag_Component_Enter = 'drag_component_enter',
-  Drag_Component_Leave = 'drag_component_leave',
-  Drag_Component_Drop = 'drag_component_drop',
-  Drag_Hit_Slot = 'drag_hit_slot',
+  DragComponentOver = 'drag_component_over',
+  DragComponentEnter = 'drag_component_enter',
+  DragComponentLeave = 'drag_component_leave',
+  DragComponentDrop = 'drag_component_drop',
+  DragHitSlot = 'drag_hit_slot',
 
-  Wrapper_Hover = 'wrapper_hover',
-  Wrapper_Select = 'wrapper_Select'
+  WrapperHover = 'wrapper_hover',
+  WrapperSelect = 'wrapper_Select'
 }
 
 export const iframeNamePrefix = 'groot::';
@@ -87,13 +83,13 @@ export enum PropItemType {
   Textarea = 'textarea',
   Number = 'number',
   Slider = 'slider',
-  Button_Group = 'button_group',
+  ButtonGroup = 'button_group',
   Switch = 'switch',
   Select = 'select',
   Radio = 'radio',
   Checkbox = 'checkbox',
-  Date_Picker = 'date_picker',
-  Time_Picker = 'time_picker',
+  DatePicker = 'date_picker',
+  TimePicker = 'time_picker',
   Hierarchy = 'hierarchy',
   Flat = 'flat',
   Json = 'json',
@@ -188,13 +184,13 @@ export const PropItemTypeNameMap = [
   { name: '多行文本', key: PropItemType.Textarea },
   { name: '数字', key: PropItemType.Number },
   { name: '滑块', key: PropItemType.Slider },
-  { name: '按钮组', key: PropItemType.Button_Group },
+  { name: '按钮组', key: PropItemType.ButtonGroup },
   { name: '开关', key: PropItemType.Switch },
   { name: '下拉框', key: PropItemType.Select },
   { name: '多选', key: PropItemType.Checkbox },
   { name: '单选', key: PropItemType.Radio },
-  { name: '日期', key: PropItemType.Date_Picker },
-  { name: '时间', key: PropItemType.Time_Picker },
+  { name: '日期', key: PropItemType.DatePicker },
+  { name: '时间', key: PropItemType.TimePicker },
   { name: '配置项平铺', key: PropItemType.Flat },
   { name: '层级', key: PropItemType.Hierarchy },
   { name: 'json', key: PropItemType.Json },
