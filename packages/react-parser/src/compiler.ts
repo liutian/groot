@@ -1,11 +1,12 @@
 import { Metadata, PropMetadata, PropMetadataType, RuntimeComponentValueType } from "@grootio/common";
 
-import React, { useEffect, useReducer, useState } from "react";
+import React, { useEffect, useReducer, useRef } from "react";
 import { globalConfig } from "./config";
 import functionCreate from "./function-creator";
 import { debugInfo, controlMode, errorInfo } from "./util";
 
-const metadataRefreshFnMap = new Map<Metadata, Function>();
+const instanceRefreshFnMap = new Map<number, Function>();
+const instanceWrapperEleMap = new Map<number, HTMLElement>();
 
 export const buildComponent = (root: Metadata, store: Metadata[]) => {
   processAdvancedProp(root, store);
@@ -17,8 +18,12 @@ export const buildComponent = (root: Metadata, store: Metadata[]) => {
 export const reBuildComponent = (metadata: Metadata, store: Metadata[]) => {
   processAdvancedProp(metadata, store);
 
-  const refresh = metadataRefreshFnMap.get(metadata);
+  const refresh = instanceRefreshFnMap.get(metadata.id);
   refresh();
+}
+
+export const getInstanceWrapperEle = (instanceId) => {
+  return instanceWrapperEleMap.get(instanceId);
 }
 
 
@@ -33,12 +38,15 @@ const createComponentWrapper = (metadata: Metadata) => {
     // const [, switchBool] = useState(true);
     // const metadataRefresh = () => switchBool(b => !b);
     const [, metadataRefresh] = useReducer((bool) => !bool, true);
+    const containerEleRef = useRef<HTMLElement>();
 
     useEffect(() => {
-      metadataRefreshFnMap.set(metadata, metadataRefresh);
+      instanceRefreshFnMap.set(metadata.id, metadataRefresh);
+      instanceWrapperEleMap.set(metadata.id, containerEleRef.current);
 
       return () => {
-        metadataRefreshFnMap.delete(metadata);
+        instanceRefreshFnMap.delete(metadata.id);
+        instanceWrapperEleMap.delete(metadata.id);
       }
     }, []);
 
@@ -56,7 +64,8 @@ const createComponentWrapper = (metadata: Metadata) => {
       return React.createElement('div', {
         'data-groot-component-instance-id': metadata.id,
         'data-groot-component-name': componentName,
-        style: { display: metadata.propsObj.$setting?.wrapperDisplay || 'block' }
+        style: { display: metadata.propsObj.$setting?.wrapperDisplay || 'block' },
+        ref: containerEleRef
       },
         React.createElement(module, propsObj)
       );

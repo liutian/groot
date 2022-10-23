@@ -60,6 +60,9 @@ function onMessage(event: MessageEvent) {
   } else if (event.data.type === PostMessageType.WrapperSelect) {
     const newEvent = new CustomEvent(WorkbenchEvent.CanvasSelect, { detail: event.data.data });
     eventTrigger.dispatchEvent(newEvent);
+  } else {
+    const newEvent = new CustomEvent(event.data.type, { detail: event.data.data });
+    eventTrigger.dispatchEvent(newEvent);
   }
 }
 
@@ -99,6 +102,7 @@ function notifyIframe(type: PostMessageType, data?: any) {
     iframe.contentWindow.postMessage({ type, data }, '*');
     const event = new CustomEvent(WorkbenchEvent.CanvasMarkerReset);
     eventTrigger.dispatchEvent(event);
+    iframe.contentWindow.postMessage({ type: PostMessageType.OuterMarkerReset }, '*');
   } else {
     iframe.contentWindow.postMessage({ type, data }, '*');
   }

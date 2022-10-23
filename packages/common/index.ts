@@ -73,7 +73,9 @@ export enum PostMessageType {
   DragHitSlot = 'drag_hit_slot',
 
   WrapperHover = 'wrapper_hover',
-  WrapperSelect = 'wrapper_Select'
+  WrapperSelect = 'wrapper_Select',
+  InnerUpdateMarkerRect = 'inner_update_marker_rect',
+  OuterMarkerReset = 'outer_marker_reset'
 }
 
 export const iframeNamePrefix = 'groot::';
@@ -244,4 +246,10 @@ export enum ComponentParserType {
 export enum ValueStruct {
   Common = 'common',
   ChildComponentList = 'ChildComponentList'
+}
+
+export type MarkerRect = {
+  clientRect: DOMRect,
+  tagName: string,
+  instanceId: number
 }

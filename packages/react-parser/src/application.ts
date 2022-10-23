@@ -5,6 +5,7 @@ import { ApplicationStatus } from './types';
 import { controlMode } from './util';
 import { globalConfig, setConfig } from './config';
 import { ComponentSlot } from './modules/ComponentSlot';
+import { resetWatch, updateActiveRect } from './monitor';
 
 
 // 应用实例对象
@@ -61,6 +62,7 @@ function onMessage(event: any) {
     }
 
     activePage.update(event.data.data.data);
+    setTimeout(updateActiveRect);
   } else if (messageType === PostMessageType.OuterRefreshPage) {
     window.location.reload();
   } else if (messageType === PostMessageType.DragComponentOver) {
@@ -71,6 +73,8 @@ function onMessage(event: any) {
     ComponentSlot.respondDragLeave();
   } else if (messageType === PostMessageType.DragComponentDrop) {
     ComponentSlot.respondDragDrop(event.data.data.positionX, event.data.data.positionY, event.data.data.componentId);
+  } else if (messageType === PostMessageType.OuterMarkerReset) {
+    resetWatch()
   }
 }
 
