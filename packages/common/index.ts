@@ -66,14 +66,14 @@ export enum PostMessageType {
   OuterUpdateComponent = 'outer_update_component',
   OuterRefreshPage = 'outer_refresh_page',
 
-  DragComponentOver = 'drag_component_over',
-  DragComponentEnter = 'drag_component_enter',
-  DragComponentLeave = 'drag_component_leave',
-  DragComponentDrop = 'drag_component_drop',
-  DragHitSlot = 'drag_hit_slot',
+  OuterDragComponentOver = 'outer_drag_component_over',
+  OuterDragComponentEnter = 'outer_drag_component_enter',
+  OuterDragComponentLeave = 'outer_drag_component_leave',
+  OuterDragComponentDrop = 'outer_drag_component_drop',
+  OuterDragHitSlot = 'outer_drag_hit_slot',
 
-  WrapperHover = 'wrapper_hover',
-  WrapperSelect = 'wrapper_Select',
+  InnerWrapperHover = 'inner_wrapper_hover',
+  InnerWrapperSelect = 'inner_wrapper_Select',
   InnerUpdateMarkerRect = 'inner_update_marker_rect',
   OuterMarkerReset = 'outer_marker_reset'
 }
@@ -245,7 +245,7 @@ export enum ComponentParserType {
 
 export enum ValueStruct {
   Common = 'common',
-  ChildComponentList = 'ChildComponentList'
+  ChildComponentList = 'child_component_list'
 }
 
 export type MarkerRect = {

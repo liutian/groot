@@ -16,7 +16,7 @@ const IframeMarker: React.FC = () => {
   const cloneOutlineRef = useRef<HTMLDivElement>();
 
   useEffect(() => {
-    workbenchModel.addEventListener(WorkbenchEvent.CanvasHover, (event) => {
+    workbenchModel.addEventListener(PostMessageType.InnerWrapperHover, (event) => {
       const data = (event as CustomEvent).detail as { clientRect: DOMRect, tagName: string };
       if (data) {
         resetOutline(data.clientRect, data.tagName, outlineRef.current);
@@ -25,7 +25,7 @@ const IframeMarker: React.FC = () => {
       }
     });
 
-    workbenchModel.addEventListener(WorkbenchEvent.CanvasSelect, (event) => {
+    workbenchModel.addEventListener(PostMessageType.InnerWrapperSelect, (event) => {
       const data = (event as CustomEvent).detail as { clientRect: DOMRect, tagName: string, instanceId: number };
       resetOutline(data.clientRect, data.tagName, outlineRef.current);
       resetToolbar(data.clientRect, toolbarRef.current);

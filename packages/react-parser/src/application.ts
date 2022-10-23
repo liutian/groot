@@ -65,13 +65,13 @@ function onMessage(event: any) {
     setTimeout(updateActiveRect);
   } else if (messageType === PostMessageType.OuterRefreshPage) {
     window.location.reload();
-  } else if (messageType === PostMessageType.DragComponentOver) {
+  } else if (messageType === PostMessageType.OuterDragComponentOver) {
     ComponentSlot.respondDragOver(event.data.data.positionX, event.data.data.positionY);
-  } else if (messageType === PostMessageType.DragComponentEnter) {
+  } else if (messageType === PostMessageType.OuterDragComponentEnter) {
     ComponentSlot.respondDragEnter();
-  } else if (messageType === PostMessageType.DragComponentLeave) {
+  } else if (messageType === PostMessageType.OuterDragComponentLeave) {
     ComponentSlot.respondDragLeave();
-  } else if (messageType === PostMessageType.DragComponentDrop) {
+  } else if (messageType === PostMessageType.OuterDragComponentDrop) {
     ComponentSlot.respondDragDrop(event.data.data.positionX, event.data.data.positionY, event.data.data.componentId);
   } else if (messageType === PostMessageType.OuterMarkerReset) {
     resetWatch()

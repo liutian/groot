@@ -37,7 +37,7 @@ function hoverAction({ clientX, clientY }: MouseEvent) {
     hoverInstanceId = +hitEle.dataset.grootComponentInstanceId;
     const clientRect = hitEle.getBoundingClientRect();
     window.parent.postMessage({
-      type: PostMessageType.WrapperHover,
+      type: PostMessageType.InnerWrapperHover,
       data: {
         clientRect,
         tagName: hitEle.dataset.grootComponentName
@@ -46,7 +46,7 @@ function hoverAction({ clientX, clientY }: MouseEvent) {
   } else {
     hoverInstanceId = undefined;
     window.parent.postMessage({
-      type: PostMessageType.WrapperHover,
+      type: PostMessageType.InnerWrapperHover,
       data: null
     }, '*');
   }
@@ -59,7 +59,7 @@ function mousedownAction({ clientX, clientY }: MouseEvent) {
     selectedInstanceId = +hitEle.dataset.grootComponentInstanceId;
     const clientRect = hitEle.getBoundingClientRect();
     window.parent.postMessage({
-      type: PostMessageType.WrapperSelect,
+      type: PostMessageType.InnerWrapperSelect,
       data: {
         clientRect,
         tagName: hitEle.dataset.grootComponentName,

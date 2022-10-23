@@ -121,7 +121,7 @@ function respondDragDrop(positionX: number, positionY: number, componentId: numb
   const { instanceEle, slotEle, type } = hitResult;
   if (type === 'dragZone') {
     window.parent.postMessage({
-      type: PostMessageType.DragHitSlot,
+      type: PostMessageType.OuterDragHitSlot,
       data: {
         propKeyChain: slotEle.dataset.grootPropKeyChain,
         placeComponentInstanceId: +instanceEle.dataset.grootComponentInstanceId,

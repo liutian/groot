@@ -51,14 +51,8 @@ function onMessage(event: MessageEvent) {
 
     pageNavCallback();// 内部一般执行 Outer_Full_Update_Components
     pageNavCallback = null;
-  } else if (event.data.type === PostMessageType.DragHitSlot) {
+  } else if (event.data.type === PostMessageType.OuterDragHitSlot) {
     const newEvent = new CustomEvent(WorkbenchEvent.AddChildComponent, { detail: event.data.data });
-    eventTrigger.dispatchEvent(newEvent);
-  } else if (event.data.type === PostMessageType.WrapperHover) {
-    const newEvent = new CustomEvent(WorkbenchEvent.CanvasHover, { detail: event.data.data });
-    eventTrigger.dispatchEvent(newEvent);
-  } else if (event.data.type === PostMessageType.WrapperSelect) {
-    const newEvent = new CustomEvent(WorkbenchEvent.CanvasSelect, { detail: event.data.data });
     eventTrigger.dispatchEvent(newEvent);
   } else {
     const newEvent = new CustomEvent(event.data.type, { detail: event.data.data });
