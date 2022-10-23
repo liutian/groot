@@ -55,8 +55,7 @@ const createComponentWrapper = (metadata: Metadata) => {
 
       return React.createElement('div', {
         'data-groot-component-instance-id': metadata.id,
-        'data-groot-wrapper': metadata.id,
-        'data-groot-wrapper-tag-name': componentName,
+        'data-groot-component-name': componentName,
         style: { display: metadata.propsObj.$setting?.wrapperDisplay || 'block' }
       },
         React.createElement(module, propsObj)

@@ -6,7 +6,7 @@ import { errorInfo } from './util';
 import { ApplicationStatus } from './types';
 import { Page } from './Page';
 import { ApplicationInstance, bootstrap } from './application';
-import { startWrapperMonitor } from './wrapper';
+import { launchWatch } from './monitor';
 
 let app: ApplicationInstance;
 // 保持最新的函数引用
@@ -62,7 +62,7 @@ export const UIManager: IUIManager<{ path: string }> = ({ path }) => {
 
   if (loadPageResult instanceof Page) {
     // 推迟到页面加载时执行监听
-    startWrapperMonitor();
+    launchWatch();
     // 渲染页面组件
     return loadPageResult.rootComponent;
   } else {

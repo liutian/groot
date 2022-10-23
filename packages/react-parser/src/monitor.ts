@@ -3,7 +3,7 @@ import { controlMode } from "./util";
 
 let monitorRunning = false;
 
-export const startWrapperMonitor = () => {
+export const launchWatch = () => {
   if (monitorRunning || !controlMode) {
     return () => { };
   }
@@ -27,7 +27,7 @@ function hoverAction({ pageX, pageY }: MouseEvent) {
       type: PostMessageType.WrapperHover,
       data: {
         clientRect,
-        tagName: hitEle.dataset.grootWrapperTagName
+        tagName: hitEle.dataset.grootComponentName
       }
     }, '*');
   }
@@ -48,8 +48,8 @@ function mousedownAction({ pageX, pageY }: MouseEvent) {
       type: PostMessageType.WrapperSelect,
       data: {
         clientRect,
-        tagName: hitEle.dataset.grootWrapperTagName,
-        instanceId: +hitEle.dataset.grootWrapper
+        tagName: hitEle.dataset.grootComponentName,
+        instanceId: +hitEle.dataset.grootComponentInstanceId
       }
     }, '*');
   }
@@ -61,7 +61,7 @@ function detectWrapperEle(positionX: number, positionY: number) {
   while (hitEle) {
     if (hitEle === document.documentElement || hitEle === document.body) {
       return null;
-    } else if (hitEle.dataset.grootWrapper || hitEle.dataset.grootComponentInstanceId) {
+    } else if (hitEle.dataset.grootComponentInstanceId) {
       return hitEle;
     }
     hitEle = hitEle.parentElement;

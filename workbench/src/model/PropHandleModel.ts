@@ -257,36 +257,46 @@ export default class PropHandleModel {
 
   private watchEvent() {
     this.workbench.addEventListener(WorkbenchEvent.AddChildComponent, (event) => {
-      const { detail: eventData } = event as CustomEvent<DragAddComponentEventDataType>;
+      const { detail } = event as CustomEvent<DragAddComponentEventDataType>;
+      this.addChildComponent(detail);
+    });
+    this.workbench.addEventListener(WorkbenchEvent.RemoveChildComponent, (event) => {
+      this.removeChildComponent();
+    })
+  }
 
-      const rawInstance = {
-        id: eventData.placeComponentInstanceId,
-        componentId: eventData.componentId
-      } as ComponentInstance;
+  private removeChildComponent() {
 
-      this.propPersist.addChildComponentInstance(rawInstance).then((instanceData) => {
-        const propItem = this.getItemById(eventData.propItemId);
-        const propValue = propItem.valueList.filter(v => v.type === PropValueType.Instance).find(value => {
-          return value.abstractValueIdChain === eventData.abstractValueIdChain || (!value.abstractValueIdChain && !eventData.abstractValueIdChain)
-        });
+  }
 
-        const newValueItem = {
-          instanceId: instanceData.id,
-          componentName: instanceData.component.name,
-          componentId: instanceData.component.id,
-        } as ComponentValueItemType;
+  private addChildComponent(data: DragAddComponentEventDataType) {
+    const rawInstance = {
+      id: data.placeComponentInstanceId,
+      componentId: data.componentId
+    } as ComponentInstance;
 
-        const value = JSON.parse(propValue?.value || '{"setting": {},"list":[]}') as ComponentValueType;
-        value.list.push(newValueItem);
+    this.propPersist.addChildComponentInstance(rawInstance).then((instanceData) => {
+      const propItem = this.getItemById(data.propItemId);
+      const propValue = propItem.valueList.filter(v => v.type === PropValueType.Instance).find(value => {
+        return value.abstractValueIdChain === data.abstractValueIdChain || (!value.abstractValueIdChain && !data.abstractValueIdChain)
+      });
 
-        this.propPersist.updateValue({
-          propItem, value,
-          abstractValueIdChain: eventData.abstractValueIdChain,
-          valueStruct: ValueStruct.ChildComponentList
-        }).then(() => {
-          this.workbench.instanceList.push(instanceData);
-          this.refreshAllComponent();
-        })
+      const newValueItem = {
+        instanceId: instanceData.id,
+        componentName: instanceData.component.name,
+        componentId: instanceData.component.id,
+      } as ComponentValueItemType;
+
+      const value = JSON.parse(propValue?.value || '{"setting": {},"list":[]}') as ComponentValueType;
+      value.list.push(newValueItem);
+
+      this.propPersist.updateValue({
+        propItem, value,
+        abstractValueIdChain: data.abstractValueIdChain,
+        valueStruct: ValueStruct.ChildComponentList
+      }).then(() => {
+        this.workbench.instanceList.push(instanceData);
+        this.refreshAllComponent();
       })
     })
   }
