@@ -17,7 +17,7 @@ type PropsType = {
 
 const PropGroupPane: React.FC<PropsType> = ({ group }) => {
   const [propPersistModel, propPersistAction] = useModel(PropPersistModel);
-  const [workbenchModel] = useModel(WorkbenchModel);
+  const [workbenchModel, workbenchAction] = useModel(WorkbenchModel);
   const [, refresh] = useState(0);
   const noSetting = !workbenchModel.prototypeMode || group.parentItem?.noSetting;
 
@@ -28,12 +28,13 @@ const PropGroupPane: React.FC<PropsType> = ({ group }) => {
   }
 
   const onChangeCollapse = (key: string | string[]) => {
-    if (Array.isArray(key)) {
-      group.expandBlockIdList = key.map(k => +k);
-    } else {
-      group.expandBlockIdList = [+key];
-    }
-    refresh(c => ++c);
+    workbenchAction(() => {
+      if (Array.isArray(key)) {
+        group.expandBlockIdList = key.map(k => +k);
+      } else {
+        group.expandBlockIdList = [+key];
+      }
+    })
   }
 
   const renderBlockSetting = (block: PropBlock, blockIndex: number) => {
@@ -89,9 +90,6 @@ const PropGroupPane: React.FC<PropsType> = ({ group }) => {
     </Space>)
   }
 
-  if (!Array.isArray(group.expandBlockIdList)) {
-    group.expandBlockIdList = group.propBlockList.map(block => block.id);
-  }
 
   return (<>
     <Collapse activeKey={group.expandBlockIdList} onChange={onChangeCollapse} bordered={false}

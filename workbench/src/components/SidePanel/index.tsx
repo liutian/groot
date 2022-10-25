@@ -29,24 +29,24 @@ const SidePanel: React.FC<PropsType> = ({ ...props }) => {
     })
   }
 
+  const activeSubPropItem = propHandleModel.propItemStack[propHandleModel.propItemStack.length - 1];
+
   return <div {...props} ref={containerRef}>
     <Tabs type="card" className={styles.tabsContainer} activeKey={workbenchModel.currActiveTab} onChange={tabChange}>
       <Tabs.TabPane key="props" tab="属性">
         <SideToolBar className={styles.toolBar} />
 
         <div className={`${styles.propPaneContainer} `}>
-          <div className={`${styles.propPaneItem}  `}>
-            {!!workbenchModel.component ? <PropPane /> : <>loading ...</>}
-          </div>
-
           {
-            propHandleModel.propItemStack.map(item => {
-              return (
-                <div key={item.id} className={`${styles.propPaneItem} ${styles.cascaderPropPane} `}>
-                  <SubPropPane key={item.id} item={item} />
-                </div>
-              )
-            })
+            propHandleModel.propItemStack.length ? (
+              <div key={activeSubPropItem.id} className={`${styles.propPaneItem}`}>
+                <SubPropPane key={activeSubPropItem.id} item={activeSubPropItem} />
+              </div>
+            ) : (
+              <div className={`${styles.propPaneItem}  `}>
+                {!!workbenchModel.component ? <PropPane /> : <>loading ...</>}
+              </div>
+            )
           }
         </div>
       </Tabs.TabPane>

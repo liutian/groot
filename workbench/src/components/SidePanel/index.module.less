@@ -35,9 +35,8 @@
 }
 
 .propPaneContainer {
-  display: flex;
   flex-grow: 1;
-  overflow: auto;
+  overflow-y: auto;
 }
 
 .footerContainer {
@@ -74,8 +73,6 @@
 }
 
 .propPaneItem {
-  flex: 1;
-  min-width: var(--grid-item-min-width);
 
   :global(.ant-tabs .ant-tabs-nav) {
     margin-bottom: 0 !important;
@@ -94,9 +91,5 @@
     :global(.ant-collapse-item) {
       border-bottom: 1px solid #efefef;
     }
-  }
-
-  &.cascaderPropPane {
-    border-left: solid 1px #efefef;
   }
 }

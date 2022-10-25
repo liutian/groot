@@ -96,6 +96,11 @@ export default class PropHandleModel {
    */
   public buildPropTree(groupList: PropGroup[], blockList: PropBlock[], itemList: PropItem[], valueList: PropValue[]) {
     this.propTree = propTreeFactory(groupList, blockList, itemList, valueList) as any as PropGroup[];
+    groupList.forEach((group) => {
+      if (!Array.isArray(group.expandBlockIdList)) {
+        group.expandBlockIdList = group.propBlockList.map(block => block.id);
+      }
+    })
 
     this.activeGroupId = this.propTree[0].id;
     console.log('<=================== prop tree built out =================>');
@@ -133,6 +138,11 @@ export default class PropHandleModel {
       const valueList = instance.valueList;
       if (!instance.propTree) {
         instance.propTree = propTreeFactory(groupList, blockList, itemList, valueList) as PropGroup[];
+        groupList.forEach((group) => {
+          if (!Array.isArray(group.expandBlockIdList)) {
+            group.expandBlockIdList = group.propBlockList.map(block => block.id);
+          }
+        })
       }
       const metadata = metadataFactory(instance.propTree, instance.component, instance.id);
       return metadata;

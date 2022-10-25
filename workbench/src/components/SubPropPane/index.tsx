@@ -1,10 +1,10 @@
-import { CloseOutlined } from '@ant-design/icons';
+import { LeftOutlined } from '@ant-design/icons';
 import { PropItemType } from '@grootio/common';
 import PropHandleModel from '@model/PropHandleModel';
 import { useModel } from '@util/robot';
 import { Button } from 'antd';
 import BlockListStructPrefs from 'pages/Prototype/components/BlockListStructPrefs';
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 
 import PropBlockPane from '../PropBlockPane';
 import PropGroupPane from '../PropGroupPane';
@@ -19,10 +19,6 @@ const SubPropPane: React.FC<PropsType> = ({ item: propItem }) => {
   const [propHandleModel] = useModel(PropHandleModel);
   const propGroup = propItem.childGroup;
   const containerRef = useRef<HTMLDivElement>({} as any);
-
-  useEffect(() => {
-    containerRef.current.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'end' });
-  }, [propItem.id, propItem.extraUIData?.type]);
 
   const renderContent = () => {
     if (propItem.extraUIData?.type === 'BlockListPrefs') {
@@ -39,7 +35,9 @@ const SubPropPane: React.FC<PropsType> = ({ item: propItem }) => {
   return <div className={styles.container} ref={containerRef}>
     <div className={`${styles.header} ${propGroup.templateDesignMode ? styles.templateDesignMode : ''} clearfix`}>
       <div className="pull-left">
-        <Button type="link" icon={<CloseOutlined />} onClick={() => propHandleModel.popPropItemFromStack(propItem)}></Button>
+        <Button type="link" icon={<LeftOutlined />} onClick={() => propHandleModel.popPropItemFromStack(propItem)}>
+          {propHandleModel.propItemStack.length - 1 || ''}
+        </Button>
       </div>
       <div className={styles.headerContent}>
         {propItem.label}
