@@ -14,10 +14,11 @@ const IframeMarker: React.FC = () => {
   const outlineRef = useRef<HTMLDivElement>();
   const toolbarRef = useRef<HTMLDivElement>();
   const cloneOutlineRef = useRef<HTMLDivElement>();
+  const selectedInfoRef = useRef<{ instanceId: number, parentInstanceId: number }>({} as any);
 
   useEffect(() => {
     workbenchModel.addEventListener(PostMessageType.InnerWrapperHover, (event) => {
-      const data = (event as CustomEvent).detail as { clientRect: DOMRect, tagName: string };
+      const data = (event as CustomEvent).detail as MarkerRect;
       if (data) {
         resetOutline(data.clientRect, data.tagName, outlineRef.current);
       } else {
@@ -26,7 +27,7 @@ const IframeMarker: React.FC = () => {
     });
 
     workbenchModel.addEventListener(PostMessageType.InnerWrapperSelect, (event) => {
-      const data = (event as CustomEvent).detail as { clientRect: DOMRect, tagName: string, instanceId: number };
+      const data = (event as CustomEvent).detail as MarkerRect;
       resetOutline(data.clientRect, data.tagName, outlineRef.current);
       resetToolbar(data.clientRect, toolbarRef.current);
 
@@ -34,7 +35,9 @@ const IframeMarker: React.FC = () => {
       cloneOutlineRef.current = outlineRef.current.cloneNode(true) as HTMLDivElement;
       outlineRef.current.insertAdjacentElement('beforebegin', cloneOutlineRef.current);
 
-      workbenchModel.switchComponentInstance(data.instanceId, BreadcrumbChange.AppendRoot);
+      workbenchModel.switchComponentInstance(data.instanceId, (data.action as BreadcrumbChange) || BreadcrumbChange.AppendRoot);
+      selectedInfoRef.current.instanceId = data.instanceId;
+      selectedInfoRef.current.parentInstanceId = data.parentInstanceId;
     });
 
     workbenchModel.addEventListener(PostMessageType.InnerUpdateMarkerRect, (event) => {
@@ -94,7 +97,14 @@ const IframeMarker: React.FC = () => {
 
     <div className={`${styles.toolbar}`} ref={toolbarRef}>
       <Space size={4} >
-        <div >
+        <div onClick={() => {
+          if (selectedInfoRef.current.parentInstanceId) {
+            workbenchModel.iframeManager.notifyIframe(PostMessageType.OuterWrapperSelect, {
+              id: selectedInfoRef.current.parentInstanceId,
+              action: BreadcrumbChange.Insert
+            });
+          }
+        }}>
           <UpOutlined />
         </div>
         <div >

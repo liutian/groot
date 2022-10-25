@@ -17,6 +17,7 @@ import { DragComponentList } from "./components/DragComponentList";
 import InstanceList from "./components/InstanceList";
 import Release from "./components/Release";
 import { BreadcrumbChange, ModalStatus } from "@util/common";
+import { PostMessageType } from "@grootio/common";
 
 const Instance: React.FC = () => {
   const [instanceModel, instanceModelAction] = useRegisterModel(InstanceModel);
@@ -90,7 +91,12 @@ const Instance: React.FC = () => {
         {
           instanceModel.breadcrumbList.map((item) => {
             return (<Breadcrumb.Item key={item.id}
-              onClick={() => instanceModel.switchComponentInstance(item.id, BreadcrumbChange.Insert)}>
+              onClick={() => {
+                workbenchModel.iframeManager.notifyIframe(PostMessageType.OuterWrapperSelect, {
+                  id: item.id,
+                  action: BreadcrumbChange.Insert
+                })
+              }}>
               {item.name}
             </Breadcrumb.Item>)
           })

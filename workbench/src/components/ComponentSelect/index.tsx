@@ -7,8 +7,9 @@ import { useModel } from '@util/robot';
 import { APIPath } from 'api/API.path';
 import request from '@util/request';
 import styles from './index.module.less';
-import { ComponentValueItemType, RuntimeComponentValueType } from '@grootio/common';
+import { ComponentValueItemType, PostMessageType, RuntimeComponentValueType } from '@grootio/common';
 import PropPersistModel from '@model/PropPersistModel';
+import { BreadcrumbChange } from '@util/common';
 
 type PropType = {
   value?: RuntimeComponentValueType<ComponentInstance>,
@@ -67,7 +68,10 @@ const ComponentSelect: React.FC<PropType> = ({ value: _value, onChange: _onChang
 
           <div className={styles.suffix}>
             <Button type="link" onClick={() => {
-              workbenchModel.switchComponentInstance(valueItem.instanceId)
+              workbenchModel.iframeManager.notifyIframe(PostMessageType.OuterWrapperSelect, {
+                id: valueItem.instanceId,
+                action: BreadcrumbChange.Append
+              })
             }}>
               <EditOutlined />
             </Button>

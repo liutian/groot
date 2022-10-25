@@ -5,7 +5,7 @@ import { ApplicationStatus } from './types';
 import { controlMode } from './util';
 import { globalConfig, setConfig } from './config';
 import { ComponentSlot } from './modules/ComponentSlot';
-import { resetWatch, updateActiveRect } from './monitor';
+import { resetWatch, reverseSelected, updateActiveRect } from './monitor';
 
 
 // 应用实例对象
@@ -75,6 +75,8 @@ function onMessage(event: any) {
     ComponentSlot.respondDragDrop(event.data.data.positionX, event.data.data.positionY, event.data.data.componentId);
   } else if (messageType === PostMessageType.OuterMarkerReset) {
     resetWatch()
+  } else if (messageType === PostMessageType.OuterWrapperSelect) {
+    reverseSelected(event.data.data.id, event.data.data.action)
   }
 }
 

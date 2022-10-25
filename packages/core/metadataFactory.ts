@@ -2,13 +2,14 @@ import { IComponent, Metadata, PropBlockStructType, IPropGroup, IPropItem, PropI
 
 import { fillPropChainGreed, fillPropChain, parsePropItemValue } from './utils';
 
-export function metadataFactory(rootGroupList: IPropGroup[], component: IComponent, metadataId: number) {
+export function metadataFactory(rootGroupList: IPropGroup[], component: IComponent, metadataId: number, parentMetadataId?: number) {
   const metadata = {
     id: metadataId,
     packageName: component.packageName,
     componentName: component.componentName,
     propsObj: {},
     advancedProps: [],
+    parentId: parentMetadataId
   } as Metadata;
 
   rootGroupList.forEach((group) => {

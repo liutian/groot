@@ -75,7 +75,8 @@ export enum PostMessageType {
   InnerWrapperHover = 'inner_wrapper_hover',
   InnerWrapperSelect = 'inner_wrapper_Select',
   InnerUpdateMarkerRect = 'inner_update_marker_rect',
-  OuterMarkerReset = 'outer_marker_reset'
+  OuterMarkerReset = 'outer_marker_reset',
+  OuterWrapperSelect = 'outer_wrapper_select',
 }
 
 export const iframeNamePrefix = 'groot::';
@@ -251,5 +252,7 @@ export enum ValueStruct {
 export type MarkerRect = {
   clientRect: DOMRect,
   tagName: string,
-  instanceId: number
+  instanceId: number,
+  parentInstanceId?: number,
+  action?: string
 }

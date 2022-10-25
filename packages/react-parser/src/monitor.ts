@@ -1,10 +1,9 @@
-import { PostMessageType } from "@grootio/common";
+import { MarkerRect, PostMessageType } from "@grootio/common";
 import { getInstanceWrapperEle } from "./compiler";
 import { controlMode } from "./util";
 
 let monitorRunning = false;
-let selectedInstanceId;
-let hoverInstanceId;
+let selectedInstanceId, hoverInstanceId;
 
 export const launchWatch = () => {
   if (monitorRunning || !controlMode) {
@@ -63,8 +62,9 @@ function mousedownAction({ clientX, clientY }: MouseEvent) {
       data: {
         clientRect,
         tagName: hitEle.dataset.grootComponentName,
-        instanceId: +hitEle.dataset.grootComponentInstanceId
-      }
+        instanceId: +hitEle.dataset.grootComponentInstanceId,
+        parentInstanceId: +hitEle.dataset.grootComponentParentInstanceId,
+      } as MarkerRect
     }, '*');
   }
 }
@@ -84,6 +84,25 @@ function detectWrapperEle(positionX: number, positionY: number) {
   return null;
 }
 
+export function reverseSelected(instanceId: number, action: string) {
+  const selectedEle = getInstanceWrapperEle(instanceId);
+  if (!selectedEle) {
+    return;
+  }
+
+  selectedInstanceId = instanceId;
+  const clientRect = selectedEle.getBoundingClientRect();
+  window.parent.postMessage({
+    type: PostMessageType.InnerWrapperSelect,
+    data: {
+      clientRect,
+      tagName: selectedEle.dataset.grootComponentName,
+      instanceId,
+      parentInstanceId: +selectedEle.dataset.grootComponentParentInstanceId,
+      action
+    } as MarkerRect
+  }, '*');
+}
 
 export function updateActiveRect() {
   if (!selectedInstanceId) {

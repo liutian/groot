@@ -121,8 +121,14 @@ export default class PropHandleModel {
       const newMetadataList = this.instanceToMetadata([newInstance]);
       metadata = newMetadataList[0];
     } else {
-      refreshId = this.workbench.prototypeMode ? this.workbench.component.id : this.workbench.componentInstance.id;
-      metadata = metadataFactory(this.propTree, this.workbench.component, refreshId);
+      let parentId;
+      if (this.workbench.prototypeMode) {
+        refreshId = this.workbench.component.id;
+      } else {
+        refreshId = this.workbench.componentInstance.id;
+        parentId = this.workbench.componentInstance.parentId;
+      }
+      metadata = metadataFactory(this.propTree, this.workbench.component, refreshId, parentId);
     }
     this.workbench.iframeManager.notifyIframe(PostMessageType.OuterUpdateComponent, metadata);
   }
@@ -144,7 +150,7 @@ export default class PropHandleModel {
           }
         })
       }
-      const metadata = metadataFactory(instance.propTree, instance.component, instance.id);
+      const metadata = metadataFactory(instance.propTree, instance.component, instance.id, instance.parentId);
       return metadata;
     })
   }
