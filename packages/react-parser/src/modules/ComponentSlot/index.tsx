@@ -3,7 +3,7 @@ import { useEffect, useRef } from "react";
 import { controlMode } from "../../util";
 
 type PropType = {
-  children: React.ReactNode[] & { _groot?: RuntimeComponentValueType<null> },
+  children: React.ReactNode[] & { _groot?: RuntimeComponentValueType },
 }
 
 type FnType = {

@@ -12,8 +12,8 @@ import PropPersistModel from '@model/PropPersistModel';
 import { BreadcrumbChange } from '@util/common';
 
 type PropType = {
-  value?: RuntimeComponentValueType<ComponentInstance>,
-  onChange?: (newValue: RuntimeComponentValueType<ComponentInstance>) => void;
+  value?: RuntimeComponentValueType,
+  onChange?: (newValue: RuntimeComponentValueType) => void;
   parentInstanceId?: number,
   prototypeMode: boolean
 };
