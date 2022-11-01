@@ -64,7 +64,7 @@ export const create = async (em: EntityManager, org: Organization, release: Rele
   const avatarItem2 = em.create(PropItem, {
     label: '形状',
     propKey: 'shape',
-    type: PropItemType.Button_Group,
+    type: PropItemType.ButtonGroup,
     defaultValue: '"circle"',
     valueOptions: '[{"label": "圆形","value": "circle"},{"label": "方形","value": "square"}]',
     block: avatarBlock,

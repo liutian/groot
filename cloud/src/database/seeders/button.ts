@@ -63,7 +63,7 @@ export const create = async (em: EntityManager, org: Organization, release: Rele
   const btnItem2 = em.create(PropItem, {
     label: '按钮类型',
     propKey: 'type',
-    type: PropItemType.Button_Group,
+    type: PropItemType.ButtonGroup,
     defaultValue: '"primary"',
     valueOptions: '[{"label": "主要","value": "primary"},{"label": "默认","value": "default"},{"label": "幽灵","value": "dashed"},{"label": "链接","value": "link"}]',
     block: btnBlock,
