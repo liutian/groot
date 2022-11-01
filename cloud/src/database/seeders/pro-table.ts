@@ -164,7 +164,15 @@ export const create = async (em: EntityManager, org: Organization, release: Rele
     group: commonGroup,
     componentVersion: tableComponentVersion,
     component: tableComponent,
-    order: 2000
+    order: 2000,
+    defaultValue: `
+    $exportFn = async function requestData(params, sort, filter) {
+      console.log($groot.tick++);
+      const res = await fetch('http://127.0.0.1:3000/workbench/demo');
+      const result = await res.json();
+      return { data: result.data, success: true };
+    }
+    `
   })
   await em.persistAndFlush(requestItem);
 
