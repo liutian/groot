@@ -7,11 +7,12 @@ import { debugInfo, controlMode, errorInfo } from "./util";
 
 const instanceRefreshFnMap = new Map<number, Function>();
 const instanceWrapperEleMap = new Map<number, HTMLElement>();
+const instanceMetadataMap = new Map<number, Metadata>();
 
-export const buildComponent = (root: Metadata, store: Metadata[]) => {
+export const buildComponent = (root: Metadata, store: Metadata[], isRoot = false) => {
   processAdvancedProp(root, store);
 
-  const wrapper = createComponentWrapper(root);
+  const wrapper = createComponentWrapper(root, isRoot);
   return React.createElement(wrapper, { key: root.id });
 }
 
@@ -26,14 +27,17 @@ export const getInstanceWrapperEle = (instanceId) => {
   return instanceWrapperEleMap.get(instanceId);
 }
 
+export const getInstanceMetadata = (instanceId) => {
+  return instanceMetadataMap.get(instanceId);
+}
 
-const createComponentWrapper = (metadata: Metadata) => {
+
+const createComponentWrapper = (metadata: Metadata, isRoot: boolean) => {
   const module = globalConfig.modules[metadata.packageName][metadata.componentName];
   if (!module) {
     errorInfo(`模块未找到 ${metadata.packageName}/${metadata.componentName}`, 'compiler');
   }
   const componentName = `${metadata.packageName}_${metadata.componentName}`;
-
   function ComponentFunction() {
     // const [, switchBool] = useState(true);
     // const metadataRefresh = () => switchBool(b => !b);
@@ -43,10 +47,12 @@ const createComponentWrapper = (metadata: Metadata) => {
     useEffect(() => {
       instanceRefreshFnMap.set(metadata.id, metadataRefresh);
       instanceWrapperEleMap.set(metadata.id, containerEleRef.current);
+      instanceMetadataMap.set(metadata.id, metadata);
 
       return () => {
         instanceRefreshFnMap.delete(metadata.id);
         instanceWrapperEleMap.delete(metadata.id);
+        instanceMetadataMap.delete(metadata.id);
       }
     }, []);
 
@@ -61,15 +67,16 @@ const createComponentWrapper = (metadata: Metadata) => {
       return React.createElement(module, propsObj)
     } else {
 
-      return React.createElement('div', {
+      const props = {
         'data-groot-component-instance-id': metadata.id,
-        'data-groot-component-name': componentName,
-        'data-groot-component-parent-instance-id': metadata.parentId,
         style: { display: metadata.propsObj.$setting?.wrapperDisplay || 'block' },
         ref: containerEleRef
-      },
-        React.createElement(module, propsObj)
-      );
+      }
+
+      if (isRoot) {
+        props['data-groot-root'] = 'true';
+      }
+      return React.createElement('div', props, React.createElement(module, propsObj));
     }
 
   }
@@ -118,11 +125,15 @@ const processAdvancedProp = (metadata: Metadata, store: Metadata[]) => {
 }
 
 const createComponentByValue = (ids: number[], propMetadata: PropMetadata, store: Metadata[]) => {
-  const rootData = propMetadata.data as RuntimeComponentValueType<null>;
+  const rootData = propMetadata.data as RuntimeComponentValueType;
   const nodes = (ids || []).map((instanceId) => {
     const metadata = store.find(m => m.id === instanceId);
     if (!metadata) {
       throw new Error('数据异常');
+    }
+    metadata.$$runtime = {
+      propItemId: rootData.propItemId,
+      abstractValueIdChain: rootData.abstractValueIdChain
     }
     return buildComponent(metadata, store);
   });

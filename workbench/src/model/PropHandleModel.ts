@@ -25,6 +25,7 @@ export default class PropHandleModel {
 
   public workbench: WorkbenchModel;
   public propPersist: PropPersistModel;
+  public forceUpdateFormKey = 0;
 
   public inject(workbench: WorkbenchModel, propPersist: PropPersistModel) {
     this.workbench = workbench;
@@ -121,14 +122,15 @@ export default class PropHandleModel {
       const newMetadataList = this.instanceToMetadata([newInstance]);
       metadata = newMetadataList[0];
     } else {
-      let parentId;
+      let parentId, rootId;
       if (this.workbench.prototypeMode) {
         refreshId = this.workbench.component.id;
       } else {
         refreshId = this.workbench.componentInstance.id;
         parentId = this.workbench.componentInstance.parentId;
+        rootId = this.workbench.componentInstance.rootId;
       }
-      metadata = metadataFactory(this.propTree, this.workbench.component, refreshId, parentId);
+      metadata = metadataFactory(this.propTree, this.workbench.component, refreshId, rootId, parentId);
     }
     this.workbench.iframeManager.notifyIframe(PostMessageType.OuterUpdateComponent, metadata);
   }
@@ -150,7 +152,7 @@ export default class PropHandleModel {
           }
         })
       }
-      const metadata = metadataFactory(instance.propTree, instance.component, instance.id, instance.parentId);
+      const metadata = metadataFactory(instance.propTree, instance.component, instance.id, instance.rootId, instance.parentId);
       return metadata;
     })
   }
@@ -160,8 +162,8 @@ export default class PropHandleModel {
    * @param itemId 配置项ID
    * @returns 配置项对象
    */
-  getPropItem(itemId: number, pathChain?: [PropItem | PropBlock | PropGroup]): PropItem {
-    return this.getPropBlockOrGroupOrItem(itemId, 'item', pathChain)
+  getPropItem(itemId: number, pathChain?: [PropItem | PropBlock | PropGroup | null], propTree?: PropGroup[]): PropItem {
+    return this.getPropBlockOrGroupOrItem(itemId, 'item', pathChain, propTree)
   }
 
   /**
@@ -169,8 +171,8 @@ export default class PropHandleModel {
    * @param blockId 配置块ID
    * @returns 配置块对象
    */
-  getPropBlock(blockId: number, pathChain?: [PropItem | PropBlock | PropGroup]): PropBlock {
-    return this.getPropBlockOrGroupOrItem(blockId, 'block', pathChain);
+  getPropBlock(blockId: number, pathChain?: [PropItem | PropBlock | PropGroup], propTree?: PropGroup[]): PropBlock {
+    return this.getPropBlockOrGroupOrItem(blockId, 'block', pathChain, propTree);
   }
 
   /**
@@ -178,17 +180,18 @@ export default class PropHandleModel {
    * @param groupId 配置组ID
    * @returns 配置组对象
    */
-  getPropGroup(groupId: number, pathChain?: [PropItem | PropBlock | PropGroup]): PropGroup {
-    return this.getPropBlockOrGroupOrItem(groupId, 'group', pathChain);
+  getPropGroup(groupId: number, pathChain?: [PropItem | PropBlock | PropGroup], propTree?: PropGroup[]): PropGroup {
+    return this.getPropBlockOrGroupOrItem(groupId, 'group', pathChain, propTree);
   }
 
-  getPropBlockOrGroupOrItem(id: number, type: 'group' | 'block' | 'item', pathChain?: [PropItem | PropBlock | PropGroup]) {
+  getPropBlockOrGroupOrItem(id: number, type: 'group' | 'block' | 'item', pathChain?: [PropItem | PropBlock | PropGroup], propTree?: PropGroup[]) {
     if (!pathChain) {
       pathChain = [] as any;
     }
 
-    for (let index = 0; index < this.propTree.length; index++) {
-      const rootGroup = this.propTree[index];
+    const rootGroupList = propTree || this.propTree;
+    for (let index = 0; index < rootGroupList.length; index++) {
+      const rootGroup = rootGroupList[index];
 
       const pathChainEndIndex = pathChain.length;
       const result = this.getProp(id, type, rootGroup, pathChain);
@@ -276,13 +279,6 @@ export default class PropHandleModel {
       const { detail } = event as CustomEvent<DragAddComponentEventDataType>;
       this.addChildComponent(detail);
     });
-    this.workbench.addEventListener(WorkbenchEvent.RemoveChildComponent, (event) => {
-      this.removeChildComponent();
-    })
-  }
-
-  private removeChildComponent() {
-
   }
 
   private addChildComponent(data: DragAddComponentEventDataType) {
@@ -314,6 +310,25 @@ export default class PropHandleModel {
         this.workbench.instanceList.push(instanceData);
         this.refreshAllComponent();
       })
+    })
+  }
+
+  public removeChild(instanceId: number, itemId: number, abstractValueIdChain?: string) {
+    this.propPersist.removeChildInstance(instanceId, itemId, abstractValueIdChain).then(() => {
+      const instanceIndex = this.workbench.instanceList.findIndex(i => i.id === instanceId);
+      const instance = this.workbench.instanceList[instanceIndex];
+      this.workbench.instanceList.splice(instanceIndex, 1);
+
+      if (instance.parentId && instance.parentId !== instance.rootId) {
+        this.workbench.iframeManager.notifyIframe(PostMessageType.OuterWrapperSelect, instance.parentId)
+      } else {// 父级为根组件实例
+        this.workbench.switchComponentInstance(instance.parentId);
+        this.workbench.iframeManager.notifyIframe(PostMessageType.OuterMarkerReset);
+        this.workbench.dispatchEvent(new CustomEvent(WorkbenchEvent.CanvasMarkerReset));
+        this.refreshAllComponent();
+      }
+
+      // this.forceUpdateFormKey++;
     })
   }
 

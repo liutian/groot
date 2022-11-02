@@ -16,7 +16,7 @@ import DeployModal from "./components/DeployModal";
 import { DragComponentList } from "./components/DragComponentList";
 import InstanceList from "./components/InstanceList";
 import Release from "./components/Release";
-import { BreadcrumbChange, ModalStatus } from "@util/common";
+import { ModalStatus, WorkbenchEvent } from "@util/common";
 import { PostMessageType } from "@grootio/common";
 
 const Instance: React.FC = () => {
@@ -89,13 +89,19 @@ const Instance: React.FC = () => {
           <HomeOutlined />
         </Breadcrumb.Item>
         {
-          instanceModel.breadcrumbList.map((item) => {
+          instanceModel.breadcrumbList.map((item, index) => {
             return (<Breadcrumb.Item key={item.id}
               onClick={() => {
-                workbenchModel.iframeManager.notifyIframe(PostMessageType.OuterWrapperSelect, {
-                  id: item.id,
-                  action: BreadcrumbChange.Insert
-                })
+                if (index === instanceModel.breadcrumbList.length - 1) {
+                  return;
+                } else if (index > 0) {
+                  workbenchModel.iframeManager.notifyIframe(PostMessageType.OuterWrapperSelect, item.id)
+                } else {
+                  // 根组件不需要选择效果，直接切换，并情况标记
+                  instanceModel.switchComponentInstance(item.id);
+                  workbenchModel.iframeManager.notifyIframe(PostMessageType.OuterMarkerReset);
+                  workbenchModel.dispatchEvent(new CustomEvent(WorkbenchEvent.CanvasMarkerReset));
+                }
               }}>
               {item.name}
             </Breadcrumb.Item>)
@@ -104,8 +110,8 @@ const Instance: React.FC = () => {
       </Breadcrumb>)
     }
 
-    (Object.getPrototypeOf(workbenchModel) as WorkbenchModel).switchComponentInstance = (instanceId, breadcrumbAppend = BreadcrumbChange.Append) => {
-      instanceModel.switchComponentInstance(instanceId, breadcrumbAppend);
+    (Object.getPrototypeOf(workbenchModel) as WorkbenchModel).switchComponentInstance = (instanceId) => {
+      instanceModel.switchComponentInstance(instanceId);
     }
 
   }

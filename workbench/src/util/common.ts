@@ -11,12 +11,5 @@ export function needRewrite(): any {
 
 export enum WorkbenchEvent {
   AddChildComponent = 'add_child_component',
-  RemoveChildComponent = 'remove_child_component',
   CanvasMarkerReset = 'canvas_marker_reset'
-}
-
-export enum BreadcrumbChange {
-  Append = 'append',
-  Insert = 'insert',
-  AppendRoot = 'append_root'
 }

@@ -7,6 +7,7 @@ import { ApplicationStatus } from './types';
 import { Page } from './Page';
 import { ApplicationInstance, bootstrap } from './application';
 import { launchWatch } from './monitor';
+import { globalConfig } from './config';
 
 let app: ApplicationInstance;
 // 保持最新的函数引用
@@ -61,8 +62,10 @@ export const UIManager: IUIManager<{ path: string }> = ({ path }) => {
   const loadPageResult = app.loadPage(path);
 
   if (loadPageResult instanceof Page) {
-    // 推迟到页面加载时执行监听
-    launchWatch();
+    if (!globalConfig.prototypeMode) {
+      // 推迟到页面加载时执行监听
+      launchWatch();
+    }
     // 渲染页面组件
     return loadPageResult.rootComponent;
   } else {

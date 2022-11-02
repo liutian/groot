@@ -5,7 +5,7 @@ import { ApplicationStatus } from './types';
 import { controlMode } from './util';
 import { globalConfig, setConfig } from './config';
 import { ComponentSlot } from './modules/ComponentSlot';
-import { resetWatch, reverseSelected, updateActiveRect } from './monitor';
+import { resetWatch, outerSelected, updateActiveRect } from './monitor';
 
 
 // 应用实例对象
@@ -52,7 +52,7 @@ function onMessage(event: any) {
   if (messageType === PostMessageType.OuterSetConfig) {
     iframeDebuggerConfig = event.data.data;
     if (iframeDebuggerConfig.runtimeConfig) {
-      setConfig(iframeDebuggerConfig.runtimeConfig);
+      setConfig(iframeDebuggerConfig.runtimeConfig as any);
     }
   } else if (messageType === PostMessageType.OuterSetApplication) {
     iframeApplicationLoadResolve(event.data.data);
@@ -76,7 +76,7 @@ function onMessage(event: any) {
   } else if (messageType === PostMessageType.OuterMarkerReset) {
     resetWatch()
   } else if (messageType === PostMessageType.OuterWrapperSelect) {
-    reverseSelected(event.data.data.id, event.data.data.action)
+    outerSelected(event.data.data)
   }
 }
 

@@ -2,11 +2,12 @@
  * 配置项
  */
 export type UIManagerConfig = {
-  appKey: string,
-  appEnv: string,
+  appKey: string;
+  appEnv: string;
   modules: { [packageName: string]: { [moduleName: string]: any } };
+  prototypeMode?: boolean;
   appDataUrl?: string;
-  serverUrl?: string,
+  serverUrl?: string;
   lazyLoadApplication?: boolean;
   beforeLoadApplication?: Promise<void> | Function;
   debug?: boolean;
@@ -14,7 +15,7 @@ export type UIManagerConfig = {
 };
 
 export type IframeDebuggerConfig = {
-  runtimeConfig?: UIManagerConfig,
+  runtimeConfig?: Partial<UIManagerConfig>,
   controlPage?: string,
 }
 
@@ -35,6 +36,7 @@ export type Metadata = {
   id: number,
   packageName: string,
   componentName: string,
+  rootId: number,
   parentId?: number,
 
   advancedProps?: PropMetadata[],
@@ -42,12 +44,16 @@ export type Metadata = {
     [key: string]: any
   }
 
+  $$runtime?: {
+    propItemId: number,
+    abstractValueIdChain?: string
+  }
 }
 
 export type PropMetadata = {
   keyChain: string,
   type: PropMetadataType,
-  data?: any,
+  data?: RuntimeComponentValueType,
 }
 
 export enum PropMetadataType {
@@ -219,7 +225,7 @@ export type ComponentValueType = {
 }
 
 
-export type RuntimeComponentValueType<T> = {
+export type RuntimeComponentValueType = {
   setting: ComponentValueSettingType,
   list: ComponentValueItemType[],
 
@@ -249,10 +255,12 @@ export enum ValueStruct {
   ChildComponentList = 'child_component_list'
 }
 
-export type MarkerRect = {
+export type MarkerInfo = {
   clientRect: DOMRect,
   tagName: string,
   instanceId: number,
   parentInstanceId?: number,
-  action?: string
+  rootInstanceId: number,
+  propItemId?: number,
+  abstractValueIdChain?: string
 }

@@ -39,9 +39,11 @@ function PropPane() {
 
   const renderTabContent = () => {
     const list = propHandleModel.propTree.map((group) => {
-      let content = <PropGroupPane group={group} />;
+      let content = <PropGroupPane group={group}
+        key={`group-${group.id}-${propHandleModel.forceUpdateFormKey}`} />;
       if (group.struct === PropGroupStructType.Flat) {
-        content = <PropBlockPane noWrapMode block={group.propBlockList[0]} />;
+        content = <PropBlockPane noWrapMode block={group.propBlockList[0]}
+          key={`block-${group.propBlockList[0].id}-${propHandleModel.forceUpdateFormKey}`} />;
       }
 
       return (<Tabs.TabPane key={group.id} tab={renderTabBarItem(group)} >

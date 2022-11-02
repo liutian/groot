@@ -1,5 +1,5 @@
-import { MarkerRect, PostMessageType } from "@grootio/common";
-import { getInstanceWrapperEle } from "./compiler";
+import { MarkerInfo, PostMessageType } from "@grootio/common";
+import { getInstanceMetadata, getInstanceWrapperEle } from "./compiler";
 import { controlMode } from "./util";
 
 let monitorRunning = false;
@@ -35,11 +35,12 @@ function hoverAction({ clientX, clientY }: MouseEvent) {
   if (hitEle) {
     hoverInstanceId = +hitEle.dataset.grootComponentInstanceId;
     const clientRect = hitEle.getBoundingClientRect();
+    const metadata = getInstanceMetadata(hoverInstanceId);
     window.parent.postMessage({
       type: PostMessageType.InnerWrapperHover,
       data: {
         clientRect,
-        tagName: hitEle.dataset.grootComponentName
+        tagName: `${metadata.packageName}/${metadata.componentName}`
       }
     }, '*');
   } else {
@@ -56,15 +57,19 @@ function mousedownAction({ clientX, clientY }: MouseEvent) {
   const hitEle = detectWrapperEle(clientX, clientY);
   if (hitEle) {
     selectedInstanceId = +hitEle.dataset.grootComponentInstanceId;
+    const metadata = getInstanceMetadata(selectedInstanceId);
     const clientRect = hitEle.getBoundingClientRect();
     window.parent.postMessage({
       type: PostMessageType.InnerWrapperSelect,
       data: {
         clientRect,
-        tagName: hitEle.dataset.grootComponentName,
+        tagName: `${metadata.packageName}/${metadata.componentName}`,
         instanceId: +hitEle.dataset.grootComponentInstanceId,
-        parentInstanceId: +hitEle.dataset.grootComponentParentInstanceId,
-      } as MarkerRect
+        parentInstanceId: metadata.parentId,
+        rootInstanceId: metadata.rootId,
+        propItemId: metadata.$$runtime.propItemId,
+        abstractValueIdChain: metadata.$$runtime.abstractValueIdChain
+      } as MarkerInfo
     }, '*');
   }
 }
@@ -76,7 +81,10 @@ function detectWrapperEle(positionX: number, positionY: number) {
     if (hitEle === document.documentElement || hitEle === document.body) {
       return null;
     } else if (hitEle.dataset.grootComponentInstanceId) {
-      return hitEle;
+      const metadata = getInstanceMetadata(+hitEle.dataset.grootComponentInstanceId);
+      if (metadata.parentId) {
+        return hitEle;
+      }
     }
     hitEle = hitEle.parentElement;
   }
@@ -84,23 +92,26 @@ function detectWrapperEle(positionX: number, positionY: number) {
   return null;
 }
 
-export function reverseSelected(instanceId: number, action: string) {
+export function outerSelected(instanceId: number) {
   const selectedEle = getInstanceWrapperEle(instanceId);
   if (!selectedEle) {
     return;
   }
 
   selectedInstanceId = instanceId;
+  const metadata = getInstanceMetadata(selectedInstanceId);
   const clientRect = selectedEle.getBoundingClientRect();
   window.parent.postMessage({
     type: PostMessageType.InnerWrapperSelect,
     data: {
       clientRect,
-      tagName: selectedEle.dataset.grootComponentName,
-      instanceId,
-      parentInstanceId: +selectedEle.dataset.grootComponentParentInstanceId,
-      action
-    } as MarkerRect
+      tagName: `${metadata.packageName}/${metadata.componentName}`,
+      instanceId: selectedInstanceId,
+      parentInstanceId: metadata.parentId,
+      rootInstanceId: metadata.rootId,
+      propItemId: metadata.$$runtime.propItemId,
+      abstractValueIdChain: metadata.$$runtime.abstractValueIdChain
+    } as MarkerInfo
   }, '*');
 }
 
@@ -110,13 +121,14 @@ export function updateActiveRect() {
   }
 
   const selectedEle = getInstanceWrapperEle(selectedInstanceId);
+  const metadata = getInstanceMetadata(selectedInstanceId);
   window.parent.postMessage({
     type: PostMessageType.InnerUpdateMarkerRect,
     data: {
       selected: selectedEle && {
         clientRect: selectedEle.getBoundingClientRect(),
-        tagName: selectedEle.dataset.grootComponentName,
-        instanceId: +selectedEle.dataset.grootComponentInstanceId
+        tagName: `${metadata.packageName}/${metadata.componentName}`,
+        instanceId: selectedInstanceId
       }
     }
   }, '*');

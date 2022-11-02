@@ -2,11 +2,14 @@ import { ApplicationData, IframeDebuggerConfig, iframeNamePrefix, PostMessageTyp
 import { WorkbenchEvent } from "@util/common";
 
 
+export let iframeDebuggerConfig: IframeDebuggerConfig = {
+  runtimeConfig: {
+
+  }
+}
+
 let iframe: HTMLIFrameElement;
 let iframeReady = false;
-let iframeDebuggerConfig: IframeDebuggerConfig = {
-
-}
 let applicationData: ApplicationData;
 let playgroundPath: string;
 let basePath: string;

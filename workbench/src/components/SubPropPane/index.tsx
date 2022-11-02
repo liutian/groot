@@ -26,9 +26,10 @@ const SubPropPane: React.FC<PropsType> = ({ item: propItem }) => {
     }
 
     if (propItem.type === PropItemType.Flat) {
-      return <PropBlockPane noWrapMode block={propItem.childGroup.propBlockList[0]} />;
+      return <PropBlockPane noWrapMode block={propItem.childGroup.propBlockList[0]}
+        key={`block-${propItem.childGroup.propBlockList[0].id}-${propHandleModel.forceUpdateFormKey}`} />;
     } else {
-      return <PropGroupPane group={propGroup} />;
+      return <PropGroupPane group={propGroup} key={`group-${propGroup.id}-${propHandleModel.forceUpdateFormKey}`} />;
     }
   }
 

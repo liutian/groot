@@ -9,7 +9,6 @@ import request from '@util/request';
 import styles from './index.module.less';
 import { ComponentValueItemType, PostMessageType, RuntimeComponentValueType } from '@grootio/common';
 import PropPersistModel from '@model/PropPersistModel';
-import { BreadcrumbChange } from '@util/common';
 
 type PropType = {
   value?: RuntimeComponentValueType,
@@ -68,10 +67,7 @@ const ComponentSelect: React.FC<PropType> = ({ value: _value, onChange: _onChang
 
           <div className={styles.suffix}>
             <Button type="link" onClick={() => {
-              workbenchModel.iframeManager.notifyIframe(PostMessageType.OuterWrapperSelect, {
-                id: valueItem.instanceId,
-                action: BreadcrumbChange.Append
-              })
+              workbenchModel.iframeManager.notifyIframe(PostMessageType.OuterWrapperSelect, valueItem.instanceId)
             }}>
               <EditOutlined />
             </Button>

@@ -2,14 +2,15 @@ import { IComponent, Metadata, PropBlockStructType, IPropGroup, IPropItem, PropI
 
 import { fillPropChainGreed, fillPropChain, parsePropItemValue } from './utils';
 
-export function metadataFactory(rootGroupList: IPropGroup[], component: IComponent, metadataId: number, parentMetadataId?: number) {
+export function metadataFactory(rootGroupList: IPropGroup[], component: IComponent, metadataId: number, rootMetadataId: number, parentMetadataId?: number) {
   const metadata = {
     id: metadataId,
     packageName: component.packageName,
     componentName: component.componentName,
     propsObj: {},
     advancedProps: [],
-    parentId: parentMetadataId
+    parentId: parentMetadataId,
+    rootId: rootMetadataId
   } as Metadata;
 
   rootGroupList.forEach((group) => {
@@ -137,7 +138,10 @@ function buildPropObjectForLeafItem(propItem: IPropItem, ctx: Object, ctxKeyChai
       type: PropMetadataType.Function,
     })
   } else if (propItem.type === PropItemType.Component) {
-    const data = (newCTX[propEnd] || { list: [] }) as RuntimeComponentValueType<null>;
+    if (!newCTX[propEnd]) {
+      throw new Error(`类型为: ${PropItemType.Component}，值未正常初始化`);
+    }
+    const data = newCTX[propEnd] as RuntimeComponentValueType;
     data.propItemId = propItem.id;
     data.propKeyChain = ctxKeyChain;
     data.abstractValueIdChain = abstractValueIdChain;

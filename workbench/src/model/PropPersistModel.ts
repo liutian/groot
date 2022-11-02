@@ -1,4 +1,4 @@
-import { PropValueType, ValueStruct } from "@grootio/common";
+import { PropValueType, RuntimeComponentValueType, ValueStruct } from "@grootio/common";
 import { stringifyPropItemValue } from "@grootio/core";
 
 import { assignBaseType, autoIncrementForName, calcPropValueIdChain, stringifyOptions } from "@util/utils";
@@ -395,4 +395,28 @@ export default class PropPersistModel {
       return data;
     })
   }
+
+  public removeChildInstance(instanceId: number, itemId: number, abstractValueIdChain?: string) {
+    return request(APIPath.componentInstance_remove, { instanceId }).then(() => {
+      let propItem;
+      for (let index = 0; index < this.workbench.instanceList.length; index++) {
+        const instance = this.workbench.instanceList[index];
+        propItem = this.propHandle.getPropItem(itemId, [null], instance.propTree);
+        if (propItem) {
+          break;
+        }
+      }
+
+      const propValue = propItem.valueList.filter(v => v.type === PropValueType.Instance).find(value => {
+        return value.abstractValueIdChain === abstractValueIdChain || (!value.abstractValueIdChain && !abstractValueIdChain)
+      });
+
+      const componentValue = JSON.parse(propValue.value) as RuntimeComponentValueType;
+      const index = componentValue.list.findIndex(i => i.instanceId === instanceId);
+      componentValue.list.splice(index, 1);
+
+      return this.updateValue({ propItem, value: componentValue, abstractValueIdChain: propValue.abstractValueIdChain, valueStruct: ValueStruct.ChildComponentList })
+    });
+  }
+
 }

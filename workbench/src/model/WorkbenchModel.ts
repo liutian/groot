@@ -1,6 +1,6 @@
 import { ApplicationData } from "@grootio/common";
-import { IframeManagerInstance, launchIframeManager } from "@model/iframeManager";
-import { BreadcrumbChange, needRewrite } from "@util/common";
+import { iframeDebuggerConfig, IframeManagerInstance, launchIframeManager } from "@model/iframeManager";
+import { needRewrite } from "@util/common";
 import { ReactNode } from "react";
 import PropHandleModel from "./PropHandleModel";
 
@@ -83,6 +83,7 @@ export default class WorkbenchModel extends EventTarget {
 
   public launchPrototypeBox(org: Organization) {
     this.prototypeMode = true;
+    iframeDebuggerConfig.runtimeConfig.prototypeMode = true;
     this.org = org;
   }
 
@@ -105,6 +106,7 @@ export default class WorkbenchModel extends EventTarget {
 
   public launchInstanceBox(app: Application) {
     this.prototypeMode = false;
+    iframeDebuggerConfig.runtimeConfig.prototypeMode = false;
     this.application = app;
   }
 
@@ -206,7 +208,7 @@ export default class WorkbenchModel extends EventTarget {
   public renderToolBarAction(): ReactNode {
     return needRewrite();
   }
-  public switchComponentInstance(instanceId: number, breadcrumbAppend?: BreadcrumbChange) {
+  public switchComponentInstance(instanceId: number) {
     needRewrite();
   }
 }

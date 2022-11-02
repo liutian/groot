@@ -60,7 +60,7 @@ export class Page extends EventTarget {
 
   init() {
     const rootMetadata = this.metadataList.find(m => !m.parentId);
-    this.rootComponent = buildComponent(rootMetadata, this.metadataList);
+    this.rootComponent = buildComponent(rootMetadata, this.metadataList, true);
     this.ready = true;
   }
 

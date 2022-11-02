@@ -1,4 +1,4 @@
-import { BreadcrumbChange, ModalStatus } from "@util/common";
+import { ModalStatus } from "@util/common";
 import { APIPath } from "api/API.path";
 import request from "@util/request";
 import WorkbenchModel from "../../model/WorkbenchModel";
@@ -44,23 +44,19 @@ export default class InstanceModel {
     });
   }
 
-  public switchComponentInstance = (instanceId: number, breadcrumbAppend: BreadcrumbChange) => {
+  public switchComponentInstance = (instanceId: number) => {
     if (this.workbench.componentInstance.id === instanceId) {
       return;
     }
 
     const instance = this.workbench.instanceList.find(i => i.id === instanceId);
     this.workbench.changeComponentInstance(instance);
+    this.breadcrumbList.length = 1;
 
-    if (breadcrumbAppend === BreadcrumbChange.Append) {
-      this.breadcrumbList.push({ id: instanceId, name: instance.name })
-    } else if (breadcrumbAppend === BreadcrumbChange.Insert) {
-      const length = this.breadcrumbList.findIndex(item => item.id === instanceId);
-      this.breadcrumbList.length = length === -1 ? 0 : length;
-      this.breadcrumbList.push({ id: instanceId, name: instance.name });
-    } else if (breadcrumbAppend === BreadcrumbChange.AppendRoot) {
-      this.breadcrumbList.length = 1;
-      this.breadcrumbList.push({ id: instanceId, name: instance.name });
+    let ctxInstance = instance;
+    while (ctxInstance.parentId) {
+      ctxInstance = this.workbench.instanceList.find((item) => item.id === ctxInstance.parentId);
+      this.breadcrumbList.push({ id: ctxInstance.id, name: ctxInstance.name });
     }
   }
 

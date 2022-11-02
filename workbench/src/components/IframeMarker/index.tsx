@@ -3,22 +3,25 @@ import { useEffect, useRef } from 'react';
 import { Space } from 'antd';
 
 import WorkbenchModel from '@model/WorkbenchModel';
-import { BreadcrumbChange, WorkbenchEvent } from '@util/common';
+import { WorkbenchEvent } from '@util/common';
 import { useModel } from '@util/robot';
 
 import styles from './index.module.less';
-import { MarkerRect, PostMessageType } from '@grootio/common';
+import { MarkerInfo, PostMessageType } from '@grootio/common';
+import PropHandleModel from '@model/PropHandleModel';
 
 const IframeMarker: React.FC = () => {
   const [workbenchModel] = useModel(WorkbenchModel);
+  const [propHandleModel] = useModel(PropHandleModel);
+
   const outlineRef = useRef<HTMLDivElement>();
   const toolbarRef = useRef<HTMLDivElement>();
   const cloneOutlineRef = useRef<HTMLDivElement>();
-  const selectedInfoRef = useRef<{ instanceId: number, parentInstanceId: number }>({} as any);
+  const markerInfoRef = useRef<MarkerInfo>({} as any);
 
   useEffect(() => {
     workbenchModel.addEventListener(PostMessageType.InnerWrapperHover, (event) => {
-      const data = (event as CustomEvent).detail as MarkerRect;
+      const data = (event as CustomEvent).detail as MarkerInfo;
       if (data) {
         resetOutline(data.clientRect, data.tagName, outlineRef.current);
       } else {
@@ -27,7 +30,7 @@ const IframeMarker: React.FC = () => {
     });
 
     workbenchModel.addEventListener(PostMessageType.InnerWrapperSelect, (event) => {
-      const data = (event as CustomEvent).detail as MarkerRect;
+      const data = (event as CustomEvent).detail as MarkerInfo;
       resetOutline(data.clientRect, data.tagName, outlineRef.current);
       resetToolbar(data.clientRect, toolbarRef.current);
 
@@ -35,13 +38,12 @@ const IframeMarker: React.FC = () => {
       cloneOutlineRef.current = outlineRef.current.cloneNode(true) as HTMLDivElement;
       outlineRef.current.insertAdjacentElement('beforebegin', cloneOutlineRef.current);
 
-      workbenchModel.switchComponentInstance(data.instanceId, (data.action as BreadcrumbChange) || BreadcrumbChange.AppendRoot);
-      selectedInfoRef.current.instanceId = data.instanceId;
-      selectedInfoRef.current.parentInstanceId = data.parentInstanceId;
+      workbenchModel.switchComponentInstance(data.instanceId);
+      Object.assign(markerInfoRef.current, data);
     });
 
     workbenchModel.addEventListener(PostMessageType.InnerUpdateMarkerRect, (event) => {
-      const { selected, hover } = (event as CustomEvent).detail as { selected: MarkerRect, hover: MarkerRect };
+      const { selected, hover } = (event as CustomEvent).detail as { selected: MarkerInfo, hover: MarkerInfo };
 
       if (selected) {
         resetOutline(selected.clientRect, selected.tagName, cloneOutlineRef.current);
@@ -97,17 +99,19 @@ const IframeMarker: React.FC = () => {
 
     <div className={`${styles.toolbar}`} ref={toolbarRef}>
       <Space size={4} >
+        {
+          markerInfoRef.current.parentInstanceId !== markerInfoRef.current.rootInstanceId && (
+            <div onClick={() => {
+              workbenchModel.iframeManager.notifyIframe(PostMessageType.OuterWrapperSelect, markerInfoRef.current.parentInstanceId);
+            }}>
+              <UpOutlined />
+            </div>
+          )
+        }
+
         <div onClick={() => {
-          if (selectedInfoRef.current.parentInstanceId) {
-            workbenchModel.iframeManager.notifyIframe(PostMessageType.OuterWrapperSelect, {
-              id: selectedInfoRef.current.parentInstanceId,
-              action: BreadcrumbChange.Insert
-            });
-          }
+          propHandleModel.removeChild(markerInfoRef.current.instanceId, markerInfoRef.current.propItemId, markerInfoRef.current.abstractValueIdChain)
         }}>
-          <UpOutlined />
-        </div>
-        <div >
           <DeleteOutlined />
         </div>
       </Space>
