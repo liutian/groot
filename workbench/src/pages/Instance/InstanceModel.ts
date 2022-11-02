@@ -87,7 +87,9 @@ export default class InstanceModel {
       this.workbench.application.releaseList.push(data);
 
       const currInstance = this.workbench.componentInstance;
-      return this.switchReleaseByTrackId(data.id, currInstance.trackId);
+      const rootInstance = !currInstance.parentId ? currInstance : this.workbench.instanceList.find(item => item.id === currInstance.rootId);
+
+      return this.switchReleaseByTrackId(data.id, rootInstance.trackId);
     });
   }
 
