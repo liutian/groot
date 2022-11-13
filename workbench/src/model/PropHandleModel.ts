@@ -275,7 +275,7 @@ export default class PropHandleModel {
   }
 
   private watchEvent() {
-    this.workbench.addEventListener(WorkbenchEvent.AddChildComponent, (event) => {
+    this.workbench.addEventListener(PostMessageType.InnerDragHitSlot, (event) => {
       const { detail } = event as CustomEvent<DragAddComponentEventDataType>;
       this.addChildComponent(detail);
     });
@@ -283,31 +283,53 @@ export default class PropHandleModel {
 
   private addChildComponent(data: DragAddComponentEventDataType) {
     const rawInstance = {
-      id: data.placeComponentInstanceId,
-      componentId: data.componentId
+      id: data.parentInstanceId,
+      componentId: data.componentId,
     } as ComponentInstance;
 
     this.propPersist.addChildComponentInstance(rawInstance).then((instanceData) => {
+      this.workbench.instanceList.push(instanceData);
+
       const propItem = this.getItemById(data.propItemId);
       const propValue = propItem.valueList.filter(v => v.type === PropValueType.Instance).find(value => {
         return value.abstractValueIdChain === data.abstractValueIdChain || (!value.abstractValueIdChain && !data.abstractValueIdChain)
       });
+      const value = JSON.parse(propValue?.value || '{"setting": {},"list":[]}') as ComponentValueType;
 
+      let order = 1000;
+      if (data.currentInstanceId) {
+        const activeIndex = value.list.findIndex(item => item.instanceId === data.currentInstanceId);
+
+        if (data.direction === 'next') {
+          if (activeIndex === value.list.length - 1) {
+            order = value.list[activeIndex].order + 1000;
+          } else {
+            order = (value.list[activeIndex].order + value.list[activeIndex + 1].order) / 2;
+          }
+        } else {
+          if (activeIndex === 0) {
+            order = value.list[activeIndex].order / 2;
+          } else {
+            order = (value.list[activeIndex - 1].order + value.list[activeIndex].order) / 2;
+          }
+        }
+      }
       const newValueItem = {
         instanceId: instanceData.id,
         componentName: instanceData.component.name,
         componentId: instanceData.component.id,
+        order
       } as ComponentValueItemType;
 
-      const value = JSON.parse(propValue?.value || '{"setting": {},"list":[]}') as ComponentValueType;
       value.list.push(newValueItem);
+      value.list = value.list.sort((a, b) => a.order - b.order);
 
       this.propPersist.updateValue({
         propItem, value,
         abstractValueIdChain: data.abstractValueIdChain,
-        valueStruct: ValueStruct.ChildComponentList
+        valueStruct: ValueStruct.ChildComponentList,
+        hostComponentInstanceId: data.parentInstanceId
       }).then(() => {
-        this.workbench.instanceList.push(instanceData);
         this.refreshAllComponent();
       })
     })

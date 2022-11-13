@@ -4,8 +4,7 @@ import { Page } from './Page';
 import { ApplicationStatus } from './types';
 import { controlMode } from './util';
 import { globalConfig, setConfig } from './config';
-import { ComponentSlot } from './modules/ComponentSlot';
-import { resetWatch, outerSelected, updateActiveRect } from './monitor';
+import { resetWatch, outerSelected, updateActiveRect, respondDragOver, respondDragEnter, respondDragLeave, respondDragDrop } from './monitor';
 
 
 // 应用实例对象
@@ -66,13 +65,13 @@ function onMessage(event: any) {
   } else if (messageType === PostMessageType.OuterRefreshPage) {
     window.location.reload();
   } else if (messageType === PostMessageType.OuterDragComponentOver) {
-    ComponentSlot.respondDragOver(event.data.data.positionX, event.data.data.positionY);
+    respondDragOver(event.data.data.positionX, event.data.data.positionY);
   } else if (messageType === PostMessageType.OuterDragComponentEnter) {
-    ComponentSlot.respondDragEnter();
+    respondDragEnter();
   } else if (messageType === PostMessageType.OuterDragComponentLeave) {
-    ComponentSlot.respondDragLeave();
+    respondDragLeave();
   } else if (messageType === PostMessageType.OuterDragComponentDrop) {
-    ComponentSlot.respondDragDrop(event.data.data.positionX, event.data.data.positionY, event.data.data.componentId);
+    respondDragDrop(event.data.data.positionX, event.data.data.positionY, event.data.data.componentId);
   } else if (messageType === PostMessageType.OuterMarkerReset) {
     resetWatch()
   } else if (messageType === PostMessageType.OuterWrapperSelect) {

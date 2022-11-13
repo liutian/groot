@@ -42,7 +42,7 @@ export type Metadata = {
   advancedProps?: PropMetadata[],
   propsObj: {
     [key: string]: any
-  }
+  },
 
   $$runtime?: {
     propItemId: number,
@@ -76,11 +76,12 @@ export enum PostMessageType {
   OuterDragComponentEnter = 'outer_drag_component_enter',
   OuterDragComponentLeave = 'outer_drag_component_leave',
   OuterDragComponentDrop = 'outer_drag_component_drop',
-  OuterDragHitSlot = 'outer_drag_hit_slot',
+  InnerDragHitSlot = 'inner_drag_hit_slot',
+  InnerDragLine = 'inner_drag_line',
 
-  InnerWrapperHover = 'inner_wrapper_hover',
-  InnerWrapperSelect = 'inner_wrapper_Select',
-  InnerUpdateMarkerRect = 'inner_update_marker_rect',
+  InnerOutlineHover = 'inner_outline_hover',
+  InnerOutlineSelect = 'inner_outline_Select',
+  InnerOutlineUpdate = 'inner_outline_update',
   OuterMarkerReset = 'outer_marker_reset',
   OuterWrapperSelect = 'outer_wrapper_select',
 }
@@ -214,7 +215,7 @@ export type requestFnType<Store extends Record<string, any[]>> =
     config?: any,
   ) => R;
 
-export type ComponentValueItemType = { instanceId: number, componentId: number, componentName: string }
+export type ComponentValueItemType = { instanceId: number, componentId: number, componentName: string, order: number }
 
 export type ComponentValueSettingType = {
 }
@@ -229,17 +230,19 @@ export type RuntimeComponentValueType = {
   setting: ComponentValueSettingType,
   list: ComponentValueItemType[],
 
+  parentId: number,
   propKeyChain: string,
   propItemId: number,
-  abstractValueIdChain?: string
+  abstractValueIdChain?: string,
 }
 
 export type DragAddComponentEventDataType = {
   propItemId: number,
-  propKeyChain: string,
   abstractValueIdChain?: string,
-  placeComponentInstanceId: number
-  componentId: number
+  parentInstanceId: number
+  componentId: number,
+  currentInstanceId?: number,
+  direction?: 'next' | 'pre'
 }
 
 export enum ComponentParserType {
@@ -263,4 +266,12 @@ export type MarkerInfo = {
   rootInstanceId: number,
   propItemId?: number,
   abstractValueIdChain?: string
+}
+
+export type DragLineInfo = {
+  direction: 'bottom' | 'top',
+  left: number,
+  width: number,
+  top: number,
+  hitEle?: HTMLElement
 }

@@ -54,9 +54,6 @@ function onMessage(event: MessageEvent) {
 
     pageNavCallback();// 内部一般执行 Outer_Full_Update_Components
     pageNavCallback = null;
-  } else if (event.data.type === PostMessageType.OuterDragHitSlot) {
-    const newEvent = new CustomEvent(WorkbenchEvent.AddChildComponent, { detail: event.data.data });
-    eventTrigger.dispatchEvent(newEvent);
   } else {
     const newEvent = new CustomEvent(event.data.type, { detail: event.data.data });
     eventTrigger.dispatchEvent(newEvent);

@@ -334,8 +334,7 @@ export default class PropPersistModel {
       this.propHandle.refreshComponent();
     })
   }
-
-  public updateValue = ({ propItem, value, abstractValueId, abstractValueIdChain, valueStruct }: { propItem: PropItem, value: any, abstractValueId?: number, abstractValueIdChain?: string, valueStruct?: ValueStruct }) => {
+  public updateValue = ({ propItem, value, abstractValueId, abstractValueIdChain, valueStruct, hostComponentInstanceId }: { propItem: PropItem, value: any, abstractValueId?: number, abstractValueIdChain?: string, valueStruct?: ValueStruct, hostComponentInstanceId?: number }) => {
     if (!abstractValueIdChain) {
       abstractValueIdChain = calcPropValueIdChain(propItem, abstractValueId);
     }
@@ -358,7 +357,6 @@ export default class PropPersistModel {
       paramData.propItemId = propItem.id;
       paramData.componentId = this.workbench.component.id;
       paramData.componentVersionId = this.workbench.componentVersion.id;
-      paramData.orgId = this.workbench.component.orgId;
       paramData.value = valueStr;
       paramData.valueStruct = valueStruct;
 
@@ -368,6 +366,13 @@ export default class PropPersistModel {
         paramData.type = PropValueType.Instance;
         paramData.releaseId = this.workbench.application.release.id;
         paramData.componentInstanceId = this.workbench.componentInstance.id;
+
+        if (hostComponentInstanceId) {
+          paramData.componentInstanceId = hostComponentInstanceId;
+          const instance = this.workbench.instanceList.find(item => item.id === hostComponentInstanceId);
+          paramData.componentId = instance.componentVersionId;
+          paramData.componentVersionId = instance.componentId;
+        }
       }
     }
 
@@ -385,15 +390,7 @@ export default class PropPersistModel {
   }
 
   public addChildComponentInstance = (rawInstance: ComponentInstance) => {
-    return request(APIPath.componentInstance_addChild, rawInstance).then(({ data }) => {
-      if (rawInstance.oldChildId) {
-        const index = this.workbench.instanceList.findIndex(i => i.id === rawInstance.oldChildId);
-        this.workbench.instanceList.splice(index, 1);
-      }
-
-      this.workbench.instanceList.push(data);
-      return data;
-    })
+    return request(APIPath.componentInstance_addChild, rawInstance).then(({ data }) => data);
   }
 
   public removeChildInstance(instanceId: number, itemId: number, abstractValueIdChain?: string) {

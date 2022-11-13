@@ -216,17 +216,14 @@ export class ComponentInstanceService {
 
     await em.begin();
     try {
-      if (rawComponentInstace.oldChildId) {
-        await this.remove(rawComponentInstace.oldChildId, em);
-      }
-
       const rawInstance = {
         name: `内部组件实例 -- ${component.name}`,
         componentId: rawComponentInstace.componentId,
         releaseId: parentInstance.release.id,
         parentId: parentInstance.id,
-        rootId: parentInstance.root?.id || parentInstance.id
+        rootId: parentInstance.root?.id || parentInstance.id,
       } as ComponentInstance;
+
       const childInstance = await this.add(rawInstance, em);
       newInstanceId = childInstance.id;
 

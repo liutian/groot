@@ -12,7 +12,7 @@ import TextEditor from "@components/TextEditor";
 import { calcPropValueIdChain, parseOptions, stringify } from "@util/utils";
 import { useState } from "react";
 import { parsePropItemValue } from "@grootio/core";
-import ComponentSelect from "@components/ComponentSelect";
+import ComponentChildren from "@components/ComponentChildren";
 
 type PropType = {
   block: PropBlock,
@@ -46,12 +46,6 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
 
       const value = parsePropItemValue(propItem, propValue?.value);
       cacheMap.set(propItem, value);
-
-
-      if (propItem.type === PropItemType.Component && !value) {
-        return { list: {} };
-      }
-
       return value;
     }
   })
@@ -171,7 +165,7 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
     } else if (item.type === PropItemType.Function) {
       return <TextEditor type="function" />
     } else if (item.type === PropItemType.Component) {
-      return <ComponentSelect parentInstanceId={workbenchModel.componentInstance?.id} prototypeMode={workbenchModel.prototypeMode} />
+      return <ComponentChildren />
     }
 
     return <>not found item</>

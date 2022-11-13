@@ -10,7 +10,7 @@ import styles from './index.module.less';
 import { MarkerInfo, PostMessageType } from '@grootio/common';
 import PropHandleModel from '@model/PropHandleModel';
 
-const IframeMarker: React.FC = () => {
+const IframeOutlineMarker: React.FC = () => {
   const [workbenchModel] = useModel(WorkbenchModel);
   const [propHandleModel] = useModel(PropHandleModel);
 
@@ -20,7 +20,7 @@ const IframeMarker: React.FC = () => {
   const markerInfoRef = useRef<MarkerInfo>({} as any);
 
   useEffect(() => {
-    workbenchModel.addEventListener(PostMessageType.InnerWrapperHover, (event) => {
+    workbenchModel.addEventListener(PostMessageType.InnerOutlineHover, (event) => {
       const data = (event as CustomEvent).detail as MarkerInfo;
       if (data) {
         resetOutline(data.clientRect, data.tagName, outlineRef.current);
@@ -29,7 +29,7 @@ const IframeMarker: React.FC = () => {
       }
     });
 
-    workbenchModel.addEventListener(PostMessageType.InnerWrapperSelect, (event) => {
+    workbenchModel.addEventListener(PostMessageType.InnerOutlineSelect, (event) => {
       const data = (event as CustomEvent).detail as MarkerInfo;
       resetOutline(data.clientRect, data.tagName, outlineRef.current);
       resetToolbar(data.clientRect, toolbarRef.current);
@@ -42,7 +42,7 @@ const IframeMarker: React.FC = () => {
       Object.assign(markerInfoRef.current, data);
     });
 
-    workbenchModel.addEventListener(PostMessageType.InnerUpdateMarkerRect, (event) => {
+    workbenchModel.addEventListener(PostMessageType.InnerOutlineUpdate, (event) => {
       const { selected, hover } = (event as CustomEvent).detail as { selected: MarkerInfo, hover: MarkerInfo };
 
       if (selected) {
@@ -120,4 +120,4 @@ const IframeMarker: React.FC = () => {
 }
 
 
-export default IframeMarker;
+export default IframeOutlineMarker;

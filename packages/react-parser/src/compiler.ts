@@ -104,7 +104,7 @@ const processAdvancedProp = (metadata: Metadata, store: Metadata[]) => {
     })
 
     if (propMetadata.type === PropMetadataType.Component) {
-      ctx[endPropKey] = createComponentByValue(ctx[endPropKey], propMetadata, store);
+      ctx[endPropKey] = createComponentByValue(propMetadata, store);
     } else if (propMetadata.type === PropMetadataType.Json) {
       try {
         ctx[endPropKey] = JSON.parse(ctx[endPropKey]);
@@ -124,10 +124,10 @@ const processAdvancedProp = (metadata: Metadata, store: Metadata[]) => {
 
 }
 
-const createComponentByValue = (ids: number[], propMetadata: PropMetadata, store: Metadata[]) => {
+const createComponentByValue = (propMetadata: PropMetadata, store: Metadata[]) => {
   const rootData = propMetadata.data as RuntimeComponentValueType;
-  const nodes = (ids || []).map((instanceId) => {
-    const metadata = store.find(m => m.id === instanceId);
+  const nodes = propMetadata.data.list.map((item) => {
+    const metadata = store.find(m => m.id === item.instanceId);
     if (!metadata) {
       throw new Error('数据异常');
     }

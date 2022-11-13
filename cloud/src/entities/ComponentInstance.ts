@@ -70,9 +70,6 @@ export class ComponentInstance extends BaseEntity {
   componentVersionId?: number;
 
   @Property({ persist: false })
-  oldChildId?: number;
-
-  @Property({ persist: false })
   parentId?: number;
 
   @Property({ persist: false })

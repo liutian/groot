@@ -10,6 +10,5 @@ export function needRewrite(): any {
 }
 
 export enum WorkbenchEvent {
-  AddChildComponent = 'add_child_component',
   CanvasMarkerReset = 'canvas_marker_reset'
 }

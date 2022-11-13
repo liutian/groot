@@ -145,6 +145,7 @@ function buildPropObjectForLeafItem(propItem: IPropItem, ctx: Object, ctxKeyChai
     data.propItemId = propItem.id;
     data.propKeyChain = ctxKeyChain;
     data.abstractValueIdChain = abstractValueIdChain;
+    data.parentId = metadata.id;
     metadata.advancedProps.push({
       keyChain: ctxKeyChain,
       type: PropMetadataType.Component,

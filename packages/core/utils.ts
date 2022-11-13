@@ -72,6 +72,10 @@ export const parsePropItemValue = (propItem: IPropItem, value?: any) => {
     // ... 不做任何处理
   } else if (value !== undefined) {
     value = JSON.parse(value);
+
+    if (propItem.type === PropItemType.Component && !value) {
+      value = { list: [] };
+    }
   }
 
   return value;
