@@ -96,7 +96,7 @@ function notifyIframe(type: PostMessageType, data?: any) {
     iframe.contentWindow.postMessage({ type, data }, '*');
     const event = new CustomEvent(WorkbenchEvent.CanvasMarkerReset);
     eventTrigger.dispatchEvent(event);
-    iframe.contentWindow.postMessage({ type: PostMessageType.OuterMarkerReset }, '*');
+    iframe.contentWindow.postMessage({ type: PostMessageType.OuterOutlineReset }, '*');
   } else {
     iframe.contentWindow.postMessage({ type, data }, '*');
   }

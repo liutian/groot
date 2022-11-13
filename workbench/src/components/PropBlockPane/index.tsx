@@ -28,13 +28,13 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
   const noSetting = !workbenchModel.prototypeMode || freezeSetting || block.group.parentItem?.noSetting;
 
   const [getInitValue] = useState(() => {
-    const cacheMap = new Map<PropItem, any>();
+    // const cacheMap = new Map<PropItem, any>();
 
     return (propItem: PropItem) => {
-      const hitValue = cacheMap.get(propItem);
-      if (hitValue) {
-        return hitValue;
-      }
+      // const hitValue = cacheMap.get(propItem);
+      // if (hitValue) {
+      //   return hitValue;
+      // }
 
       const valueIdChain = calcPropValueIdChain(propItem);
       const propValue = propItem.valueList.filter(value => {
@@ -45,7 +45,7 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
       })
 
       const value = parsePropItemValue(propItem, propValue?.value);
-      cacheMap.set(propItem, value);
+      // cacheMap.set(propItem, value);
       return value;
     }
   })

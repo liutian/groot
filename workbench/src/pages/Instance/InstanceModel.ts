@@ -51,13 +51,14 @@ export default class InstanceModel {
 
     const instance = this.workbench.instanceList.find(i => i.id === instanceId);
     this.workbench.changeComponentInstance(instance);
-    this.breadcrumbList.length = 1;
+    this.breadcrumbList.length = 0;
 
     let ctxInstance = instance;
-    while (ctxInstance.parentId) {
-      ctxInstance = this.workbench.instanceList.find((item) => item.id === ctxInstance.parentId);
+    do {
       this.breadcrumbList.push({ id: ctxInstance.id, name: ctxInstance.name });
-    }
+      ctxInstance = this.workbench.instanceList.find((item) => item.id === ctxInstance.parentId);
+    } while (ctxInstance);
+    this.breadcrumbList.reverse();
   }
 
   public addRootInstance = (rawComponentInstance: ComponentInstance) => {

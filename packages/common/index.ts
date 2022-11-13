@@ -82,7 +82,7 @@ export enum PostMessageType {
   InnerOutlineHover = 'inner_outline_hover',
   InnerOutlineSelect = 'inner_outline_Select',
   InnerOutlineUpdate = 'inner_outline_update',
-  OuterMarkerReset = 'outer_marker_reset',
+  OuterOutlineReset = 'outer_outline_reset',
   OuterWrapperSelect = 'outer_wrapper_select',
 }
 

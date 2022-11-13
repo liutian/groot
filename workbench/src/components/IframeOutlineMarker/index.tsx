@@ -70,6 +70,7 @@ const IframeOutlineMarker: React.FC = () => {
 
     outlineRef.current.parentElement.addEventListener('mouseleave', () => {
       outlineRef.current.style.opacity = '0';
+      workbenchModel.iframeManager.notifyIframe(PostMessageType.OuterOutlineReset, 'hover');
     })
 
     function resetOutline(clientRect: DOMRect, tagName: string, ele: HTMLElement) {

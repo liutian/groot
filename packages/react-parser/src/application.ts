@@ -72,8 +72,8 @@ function onMessage(event: any) {
     respondDragLeave();
   } else if (messageType === PostMessageType.OuterDragComponentDrop) {
     respondDragDrop(event.data.data.positionX, event.data.data.positionY, event.data.data.componentId);
-  } else if (messageType === PostMessageType.OuterMarkerReset) {
-    resetWatch()
+  } else if (messageType === PostMessageType.OuterOutlineReset) {
+    resetWatch(event.data.data)
   } else if (messageType === PostMessageType.OuterWrapperSelect) {
     outerSelected(event.data.data)
   }

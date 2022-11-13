@@ -25,7 +25,7 @@ export class PropValue extends BaseEntity {
   @ManyToOne({ serializer: value => value?.id, serializedName: 'instanceId' })
   componentInstance?: ComponentInstance;
 
-  @Property({ length: 1000 })
+  @Property({ length: 15000 })
   value?: string;
 
   @Property({ length: 1000 })

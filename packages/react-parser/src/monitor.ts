@@ -29,9 +29,15 @@ export const launchWatch = () => {
   }
 }
 
-export const resetWatch = () => {
-  outlineSelectedInstanceId = undefined;
-  outlineHoverInstanceId = undefined;
+export const resetWatch = (type?: 'hover' | 'selected') => {
+  if (type === 'hover') {
+    outlineHoverInstanceId = undefined;
+  } else if (type === 'selected') {
+    outlineSelectedInstanceId = undefined;
+  } else {
+    outlineHoverInstanceId = undefined;
+    outlineSelectedInstanceId = undefined;
+  }
 }
 
 export function outerSelected(instanceId: number) {
@@ -76,7 +82,7 @@ export function updateActiveRect() {
   if (outlineHoverInstanceId) {
     const hoverEle = getInstanceWrapperEle(outlineHoverInstanceId);
     const hoverMetadata = getInstanceMetadata(outlineHoverInstanceId);
-    selectedInfo = {
+    hoverInfo = {
       clientRect: hoverEle.getBoundingClientRect(),
       tagName: `${hoverMetadata.packageName}/${hoverMetadata.componentName}`,
       instanceId: outlineHoverInstanceId
