@@ -32,7 +32,8 @@ const IframeOutlineMarker: React.FC = () => {
     workbenchModel.addEventListener(PostMessageType.InnerOutlineSelect, (event) => {
       const data = (event as CustomEvent).detail as MarkerInfo;
       resetOutline(data.clientRect, data.tagName, outlineRef.current);
-      resetToolbar(data.clientRect, toolbarRef.current);
+      // todo ... 解决部分问题
+      setTimeout(() => resetToolbar(data.clientRect, toolbarRef.current), 1);
 
       cloneOutlineRef.current?.remove();
       cloneOutlineRef.current = outlineRef.current.cloneNode(true) as HTMLDivElement;
