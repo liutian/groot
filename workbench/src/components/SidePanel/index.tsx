@@ -11,6 +11,7 @@ import PropItemSetting from "../PropItemSetting";
 import PropBlockSetting from "../PropBlockSetting";
 import SubPropPane from "../SubPropPane";
 import PropHandleModel from "@model/PropHandleModel";
+import { WorkbenchEvent } from "@util/common";
 
 
 const SidePanel: React.FC = () => {
@@ -47,6 +48,7 @@ const SidePanel: React.FC = () => {
       cursor="col-resize"
       className={styles.moveHandle}
       start={() => {
+        workbenchModel.dispatchEvent(new CustomEvent(WorkbenchEvent.ViewportSizeChange));
         document.getElementById(workbenchModel.viewportMaskId).classList.add('show');
         return containerRef.current.getBoundingClientRect().width;
       }}
@@ -58,8 +60,10 @@ const SidePanel: React.FC = () => {
           sideWidth = workbenchModel.minSideWidth;
         }
         workbenchModel.setContainerCssVar('--side-width', `${sideWidth}px`);
+        workbenchModel.dispatchEvent(new CustomEvent(WorkbenchEvent.ViewportSizeChange));
       }}
       end={() => {
+        workbenchModel.dispatchEvent(new CustomEvent(WorkbenchEvent.ViewportSizeChange));
         document.getElementById(workbenchModel.viewportMaskId).classList.remove('show');
       }}
     />

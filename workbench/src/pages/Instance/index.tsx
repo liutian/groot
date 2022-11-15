@@ -95,9 +95,6 @@ const Instance: React.FC = () => {
 
     (Object.getPrototypeOf(workbenchModel) as WorkbenchModel).renderToolBarBreadcrumb = () => {
       return (<Breadcrumb separator=">">
-        <Breadcrumb.Item >
-          <HomeOutlined />
-        </Breadcrumb.Item>
         {
           instanceModel.breadcrumbList.map((item, index) => {
             return (<Breadcrumb.Item key={item.id}
@@ -113,7 +110,7 @@ const Instance: React.FC = () => {
                   workbenchModel.dispatchEvent(new CustomEvent(WorkbenchEvent.CanvasMarkerReset));
                 }
               }}>
-              {item.name}
+              {index === 0 ? '页面' : item.name}
             </Breadcrumb.Item>)
           })
         }

@@ -34,8 +34,7 @@ export class ComponentInstanceService {
       const wrapperComponent = await em.findOne(Component, { packageName, componentName });
       LogicException.assertNotFound(wrapperComponent, 'Component');
 
-      wrapperRawInstance = pick(rawInstance, ['key', 'releaseId', 'entry']);
-      wrapperRawInstance.name = wrapperComponent.name;
+      wrapperRawInstance = pick(rawInstance, ['name', 'key', 'releaseId', 'entry']);
       wrapperRawInstance.componentId = wrapperComponent.id;
     }
 

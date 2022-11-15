@@ -182,6 +182,10 @@ function outlineHoverAction({ clientX, clientY }: MouseEvent) {
   if (hitEle) {
     instanceId = +hitEle.dataset.grootComponentInstanceId;
     metadata = getInstanceMetadata(instanceId);
+    if (!metadata) {
+      return;
+    }
+
     if (!metadata.parentId) {
       // 根组件不需要选中操作
       hitEle = instanceId = metadata = null;

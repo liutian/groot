@@ -11,7 +11,8 @@ export function needRewrite(): any {
 
 export enum WorkbenchEvent {
   CanvasMarkerReset = 'canvas_marker_reset',
-  DragStart = 'drag_start'
+  DragStart = 'drag_start',
+  ViewportSizeChange = 'viewport_size_chage'
 }
 
 export enum ViewportMode {

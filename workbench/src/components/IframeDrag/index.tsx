@@ -29,7 +29,7 @@ const IframeDrag: React.FC<PropType> = (prop) => {
     console.log(`IframeDrag drog enter `);
   }
 
-  const drageleave = () => {
+  const dragleave = () => {
     workbenchModel.iframeManager.notifyIframe(PostMessageType.OuterDragComponentLeave, {});
     console.log(`IframeDrag drog leave `);
   }
@@ -42,6 +42,7 @@ const IframeDrag: React.FC<PropType> = (prop) => {
       positionY: event.pageY - rect.top,
       componentId
     });
+    setCurrentStyles({});
     console.log(`IframeDrag drog finish`);
   }
 
@@ -70,7 +71,7 @@ const IframeDrag: React.FC<PropType> = (prop) => {
     })
   }, []);
 
-  return <div className={styles.container} style={currentStyles} onDragOver={dragover} onDrop={drop} onDragEnter={dragenter} onDragLeave={drageleave} >
+  return <div className={styles.container} style={currentStyles} onDragOver={dragover} onDrop={drop} onDragEnter={dragenter} onDragLeave={dragleave} >
     <div ref={markerRef} className={styles.marker} />
   </div>
 }

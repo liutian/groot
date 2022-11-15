@@ -18,6 +18,8 @@ const IframeOutlineMarker: React.FC = () => {
   const toolbarRef = useRef<HTMLDivElement>();
   const cloneOutlineRef = useRef<HTMLDivElement>();
   const markerInfoRef = useRef<MarkerInfo>({} as any);
+  const toolbarCacheRef = useRef<DOMRect>();
+  const outlineCacheRef = useRef<{ clientRect: DOMRect, tagName: string }>();
 
   useEffect(() => {
     workbenchModel.addEventListener(PostMessageType.InnerOutlineHover, (event) => {
@@ -32,12 +34,20 @@ const IframeOutlineMarker: React.FC = () => {
     workbenchModel.addEventListener(PostMessageType.InnerOutlineSelect, (event) => {
       const data = (event as CustomEvent).detail as MarkerInfo;
       resetOutline(data.clientRect, data.tagName, outlineRef.current);
+      outlineCacheRef.current = {
+        clientRect: data.clientRect, tagName: data.tagName
+      }
+
       // todo ... 解决部分问题
-      setTimeout(() => resetToolbar(data.clientRect, toolbarRef.current), 1);
+      setTimeout(() => {
+        resetToolbar(data.clientRect, toolbarRef.current);
+        toolbarCacheRef.current = data.clientRect;
+      }, 1);
 
       cloneOutlineRef.current?.remove();
       cloneOutlineRef.current = outlineRef.current.cloneNode(true) as HTMLDivElement;
       outlineRef.current.insertAdjacentElement('beforebegin', cloneOutlineRef.current);
+
 
       workbenchModel.switchComponentInstance(data.instanceId);
       Object.assign(markerInfoRef.current, data);
@@ -48,8 +58,14 @@ const IframeOutlineMarker: React.FC = () => {
 
       if (selected) {
         resetOutline(selected.clientRect, selected.tagName, cloneOutlineRef.current);
+        outlineCacheRef.current = {
+          clientRect: selected.clientRect, tagName: selected.tagName
+        }
         resetToolbar(selected.clientRect, toolbarRef.current);
+        toolbarCacheRef.current = selected.clientRect;
       } else {
+        outlineCacheRef.current = null;
+        toolbarCacheRef.current = null;
         cloneOutlineRef.current?.remove();
         toolbarRef.current.style.opacity = '0';
       }
@@ -66,11 +82,15 @@ const IframeOutlineMarker: React.FC = () => {
     workbenchModel.addEventListener(WorkbenchEvent.CanvasMarkerReset, () => {
       outlineRef.current.style.opacity = '0';
       toolbarRef.current.style.opacity = '0';
+      toolbarCacheRef.current = null;
+      outlineCacheRef.current = null;
       cloneOutlineRef.current?.remove();
     })
 
-    outlineRef.current.parentElement.addEventListener('mouseleave', () => {
+    outlineRef.current.parentElement.addEventListener('mouseover', () => {
       outlineRef.current.style.opacity = '0';
+      toolbarCacheRef.current = null;
+      outlineCacheRef.current = null;
       workbenchModel.iframeManager.notifyIframe(PostMessageType.OuterOutlineReset, 'hover');
     })
 
@@ -94,6 +114,22 @@ const IframeOutlineMarker: React.FC = () => {
       toolbarX = Math.max(clientRect.x + tagNameWidth + 5, toolbarX);
       ele.style.transform = `translate(${left + toolbarX}px,${top + clientRect.y - toolbarHeight}px)`;
     }
+
+    workbenchModel.addEventListener(WorkbenchEvent.ViewportSizeChange, () => {
+      setTimeout(() => {
+        if (toolbarCacheRef.current) {
+          resetToolbar(toolbarCacheRef.current, toolbarRef.current);
+        }
+        if (outlineCacheRef.current) {
+          if (cloneOutlineRef.current) {
+            resetOutline(outlineCacheRef.current.clientRect, outlineCacheRef.current.tagName, cloneOutlineRef.current);
+          }
+          if (outlineRef.current) {
+            resetOutline(outlineCacheRef.current.clientRect, outlineCacheRef.current.tagName, outlineRef.current);
+          }
+        }
+      })
+    })
   }, [])
 
   return <>

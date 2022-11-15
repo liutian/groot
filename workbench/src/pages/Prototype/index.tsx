@@ -103,9 +103,6 @@ const Prototype: React.FC = () => {
 
     (Object.getPrototypeOf(workbenchModel) as WorkbenchModel).renderToolBarBreadcrumb = () => {
       return (<Breadcrumb separator=">">
-        <Breadcrumb.Item>
-          <HomeOutlined />
-        </Breadcrumb.Item>
         <Breadcrumb.Item href="">{workbenchModel.component?.name}</Breadcrumb.Item>
       </Breadcrumb>)
     }

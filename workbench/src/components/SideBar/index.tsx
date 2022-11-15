@@ -1,4 +1,5 @@
 import WorkbenchModel from '@model/WorkbenchModel';
+import { WorkbenchEvent } from '@util/common';
 import { useModel } from '@util/robot';
 import { Button } from 'antd';
 import { useState } from 'react';
@@ -10,6 +11,7 @@ const SideBar: React.FC = () => {
   const [activeKey, setActiveKey] = useState('component-list');
 
   const menuOnClick = (key: string) => {
+    workbenchModel.dispatchEvent(new CustomEvent(WorkbenchEvent.ViewportSizeChange));
     if (key !== activeKey) {
       setActiveKey(key);
       setOpenPanel(true);
