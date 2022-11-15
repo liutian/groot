@@ -2,10 +2,10 @@ import { BranchesOutlined } from "@ant-design/icons";
 import WorkbenchModel from "@model/WorkbenchModel";
 import { useModel } from "@util/robot";
 import { Dropdown, Menu } from "antd";
-import EditorModel from "pages/Instance/InstanceModel";
+import InstanceModel from "pages/Instance/InstanceModel";
 
 const Release: React.FC = () => {
-  const [editorModel] = useModel(EditorModel);
+  const [instanceModel] = useModel(InstanceModel);
   const [workbenchModel] = useModel(WorkbenchModel);
 
   const releaseListMenu = workbenchModel.application.releaseList.map((release) => {
@@ -19,7 +19,7 @@ const Release: React.FC = () => {
         {workbenchModel.application.onlineReleaseId === release.id ? <strong style={{ color: 'red' }}>OL</strong> : null}
       </a>),
       onClick: () => {
-        editorModel.switchRelease(release.id);
+        instanceModel.switchRelease(release.id);
       }
     }
   })

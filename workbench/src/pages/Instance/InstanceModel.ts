@@ -17,6 +17,7 @@ export default class InstanceModel {
   public deployBundleId: number;
   public currPageInstance: ComponentInstance;
   public breadcrumbList: { id: number, name: string }[] = [];
+  public currRootInstanceId: number;
 
   private workbench: WorkbenchModel;
 
@@ -34,12 +35,13 @@ export default class InstanceModel {
     })
   }
 
-  public fetchRootInstance = (instanceId: number) => {
-    return request(APIPath.componentInstance_rootDetail, { instanceId }).then(({ data: { children, root } }) => {
+  public fetchRootInstance = (rootInstanceId: number) => {
+    this.currRootInstanceId = rootInstanceId;
+    return request(APIPath.componentInstance_rootDetail, { instanceId: rootInstanceId }).then(({ data: { children, root } }) => {
       this.loadStatus = 'ok';
 
       this.breadcrumbList.length = 0;
-      this.breadcrumbList.push({ id: instanceId, name: root.name });
+      this.breadcrumbList.push({ id: rootInstanceId, name: root.name });
 
       this.workbench.startComponentInstance(root, children);
     });
@@ -99,8 +101,8 @@ export default class InstanceModel {
     request(APIPath.release_detail, { releaseId }).then(({ data }) => {
       this.workbench.application.release = data;
 
-      const currInstance = this.workbench.componentInstance;
-      return this.switchReleaseByTrackId(data.id, currInstance.trackId);
+      const rootInstance = this.workbench.instanceList.find(item => item.id === this.currRootInstanceId);
+      return this.switchReleaseByTrackId(data.id, rootInstance.trackId);
     });
   }
 
