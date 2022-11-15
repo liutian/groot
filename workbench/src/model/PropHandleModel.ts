@@ -342,7 +342,8 @@ export default class PropHandleModel {
       this.workbench.instanceList.splice(instanceIndex, 1);
 
       if (instance.parentId && instance.parentId !== instance.rootId) {
-        this.workbench.iframeManager.notifyIframe(PostMessageType.OuterWrapperSelect, instance.parentId)
+        this.workbench.iframeManager.notifyIframe(PostMessageType.OuterWrapperSelect, instance.parentId);
+        this.refreshAllComponent();
       } else {// 父级为根组件实例
         this.workbench.switchComponentInstance(instance.parentId);
         this.workbench.iframeManager.notifyIframe(PostMessageType.OuterOutlineReset);

@@ -89,8 +89,6 @@ const IframeOutlineMarker: React.FC = () => {
 
     outlineRef.current.parentElement.addEventListener('mouseover', () => {
       outlineRef.current.style.opacity = '0';
-      toolbarCacheRef.current = null;
-      outlineCacheRef.current = null;
       workbenchModel.iframeManager.notifyIframe(PostMessageType.OuterOutlineReset, 'hover');
     })
 
