@@ -1,3 +1,8 @@
+.title {
+  display: flex;
+  padding: 0 10px;
+}
+
 .breadcrumb {
   flex-grow: 1;
 
@@ -7,10 +12,8 @@
   }
 
   :global(.ant-breadcrumb) {
-    line-height: 32px;
+    line-height: var(--footer-bar-min-height);
   }
 }
 
-.actions {
-  margin-right: -8px;
-}
+.content {}

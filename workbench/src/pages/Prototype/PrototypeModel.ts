@@ -6,7 +6,7 @@ import WorkbenchModel from "../../model/WorkbenchModel";
 export default class PrototypeModel {
   static modelName = 'prototype';
 
-  public loadStatus: 'doing' | 'notfound' | 'ok' = 'doing';
+  public loadStatus: 'doing' | 'fetch-pluginn' | 'notfound' | 'ok' = 'doing';
   public componentAddModalStatus: ModalStatus = ModalStatus.None;
   public componentVersionAddModalStatus: ModalStatus = ModalStatus.None;
   private workbench: WorkbenchModel;
@@ -25,6 +25,7 @@ export default class PrototypeModel {
   public fetchOrg = (orgId: number) => {
     return request(APIPath.org_detail, { orgId }).then(({ data }) => {
       this.workbench.launchPrototypeBox(data);
+      this.loadStatus = 'fetch-pluginn';
     }).catch((e) => {
       return Promise.reject(e);
     })

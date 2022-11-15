@@ -1,7 +1,7 @@
+import { AppstoreOutlined, HomeOutlined, PlusOutlined, SendOutlined, UnorderedListOutlined } from "@ant-design/icons";
 import { useEffect, useState, } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Breadcrumb, Button, Tabs } from "antd";
-import { HomeOutlined, PlusOutlined, SendOutlined } from "@ant-design/icons";
+import { Breadcrumb, Button } from "antd";
 
 import { useRegisterModel } from "@util/robot";
 import WorkbenchModel from "@model/WorkbenchModel";
@@ -17,7 +17,9 @@ import { DragComponentList } from "./components/DragComponentList";
 import InstanceList from "./components/InstanceList";
 import Release from "./components/Release";
 import { ModalStatus, WorkbenchEvent } from "@util/common";
-import { PostMessageType } from "@grootio/common";
+import { PostMessageType, WorkbenchViewConfig } from "@grootio/common";
+import PluginLoader from "@components/PluginLoader";
+import Loading from "@components/Loading";
 
 const Instance: React.FC = () => {
   const [instanceModel, instanceModelAction] = useRegisterModel(InstanceModel);
@@ -32,31 +34,39 @@ const Instance: React.FC = () => {
     propHandleModel.inject(workbenchModel, propPersistModel);
     workbenchModel.inject(propHandleModel);
     instanceModel.inject(workbenchModel);
-
-    init();
   });
 
   useEffect(() => {
     const applicationId = +searchParams.get('app');
     const releaseId = +searchParams.get('release');
-    const instanceId = +searchParams.get('page');
-    instanceModel.fetchApplication(applicationId, releaseId).then(() => {
-      if (instanceId) {
-        instanceModel.fetchRootInstance(instanceId);
-      } else if (workbenchModel.application.release.instanceList.length) {
-        const instance = workbenchModel.application.release.instanceList[0];
-        instanceModel.fetchRootInstance(instance.id);
-      }
-    })
+    instanceModel.fetchApplication(applicationId, releaseId);
   }, []);
 
-  function init() {
-    workbenchModel.renderExtraTabPanes.push(() => {
-      return (<Tabs.TabPane key="instance-list" tab="实例列表"><InstanceList /></Tabs.TabPane>)
-    });
+  const fetchPluginFinish = (config: WorkbenchViewConfig) => {
+    initView();
+    workbenchModel.setViewConfig(config);
 
-    workbenchModel.renderExtraTabPanes.push(() => {
-      return (<Tabs.TabPane key="prototype-list" tab="原型列表"><DragComponentList /></Tabs.TabPane>)
+    const instanceId = +searchParams.get('page');
+    if (instanceId) {
+      instanceModel.fetchRootInstance(instanceId);
+    } else if (workbenchModel.application.release.instanceList.length) {
+      const instance = workbenchModel.application.release.instanceList[0];
+      instanceModel.fetchRootInstance(instance.id);
+    }
+  }
+
+  function initView() {
+    workbenchModel.viewConfig.sidebar.push({
+      key: 'component-list',
+      title: '组件库',
+      icon: <AppstoreOutlined />,
+      view: <DragComponentList />
+    });
+    workbenchModel.viewConfig.sidebar.push({
+      key: 'instance-list',
+      title: '实例列表',
+      icon: <UnorderedListOutlined />,
+      view: <InstanceList />
     });
 
     workbenchModel.renderFooterLeftActionItems.push(() => {
@@ -117,11 +127,13 @@ const Instance: React.FC = () => {
   }
 
   if (instanceModel.loadStatus === 'doing') {
-    return <>loading</>
+    return <Loading text="loading data ..." />
   } else if (instanceModel.loadStatus === 'no-application') {
     return <>not found application</>
   } else if (instanceModel.loadStatus === 'no-component') {
     return <>not found component</>
+  } else if (instanceModel.loadStatus === 'fetch-pluginn') {
+    return <PluginLoader finish={fetchPluginFinish} />
   } else {
     return (<>
       <Workbench />

@@ -1,42 +1,41 @@
-import { useEffect, useRef } from 'react';
 
 import SidePanel from '@components/SidePanel';
 import WidgetWindow from '@components/WidgetWindow';
 import WorkbenchModel from '@model/WorkbenchModel';
 import { useModel } from '@util/robot';
 import styles from './index.module.less';
-import IframeDrag from '@components/IframeDrag';
-import IframeOutlineMarker from '@components/IframeOutlineMarker';
+import SideBar from '@components/SideBar';
+import Viewport from '@components/Viewport';
+import FixedWidgetWindow from '@components/FixedWidgetWindow';
+import TopBar from '@components/TopBar';
 
-type PropsType = {
-}
 
-const Workbench: React.FC<PropsType> = () => {
+const Workbench: React.FC = () => {
   const [workbenchModel] = useModel(WorkbenchModel);
-  const iframeRef = useRef<HTMLIFrameElement>({} as any);
 
-  useEffect(() => {
-    if (workbenchModel.prototypeMode && workbenchModel.org) {
-      workbenchModel.initIframe(iframeRef.current);
-    } else if (!workbenchModel.prototypeMode && workbenchModel.application) {
-      workbenchModel.initIframe(iframeRef.current);
-    }
-  }, [workbenchModel.application, workbenchModel.org])
+  return (<div id={workbenchModel.containerId} className={`${styles.container} ${workbenchModel.prototypeMode ? styles.prototypeMode : ''}`} >
 
-  return (<div className={`${styles.container} ${workbenchModel.prototypeMode ? styles.prototypeMode : ''}`} >
+    <div className={styles.sideBar}>
+      <SideBar />
+    </div>
 
-    <div className={styles.preview}>
-      {/* 防止拖拽缩放过程中由于鼠标移入iframe中丢失鼠标移动事件 */}
-      <iframe ref={iframeRef}></iframe>
-      <div id={workbenchModel.iframeDragMaskId} >
-        {!workbenchModel.prototypeMode ? <IframeDrag /> : null}
-      </div>
-      {!workbenchModel.prototypeMode ? <IframeOutlineMarker /> : null}
+    <div className={styles.topBar}>
+      <TopBar />
+    </div>
+
+    <div className={styles.viewport}>
+      <Viewport />
+    </div>
+
+    <div className={styles.footerWidgetWindow}>
+      <FixedWidgetWindow />
     </div>
 
     <WidgetWindow />
 
-    <SidePanel className={styles.sidePanel} />
+    <div className={styles.sidePanel}>
+      <SidePanel />
+    </div >
   </div>)
 }
 

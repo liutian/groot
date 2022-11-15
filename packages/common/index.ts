@@ -1,3 +1,5 @@
+import { ReactElement } from "react";
+
 /**
  * 配置项
  */
@@ -12,6 +14,7 @@ export type UIManagerConfig = {
   beforeLoadApplication?: Promise<void> | Function;
   debug?: boolean;
   useWrapper?: boolean;
+  viewConfig?: (controlType: IframeControlType) => Promise<WorkbenchViewConfig>;
 };
 
 export type IframeDebuggerConfig = {
@@ -63,6 +66,8 @@ export enum PropMetadataType {
 }
 
 export enum PostMessageType {
+  InnerSetViewConfig = 'inner_set_view_config',
+
   InnerReady = 'inner_ready',
   OuterSetConfig = 'outer_set_config',
   InnerFetchApplication = 'inner_fetch_application',
@@ -86,7 +91,7 @@ export enum PostMessageType {
   OuterWrapperSelect = 'outer_wrapper_select',
 }
 
-export const iframeNamePrefix = 'groot::';
+export const iframeNamePrefix = 'groot_';
 
 export enum PropItemType {
   Text = 'text',
@@ -274,4 +279,20 @@ export type DragLineInfo = {
   width: number,
   top: number,
   hitEle?: HTMLElement
+}
+
+export type WorkbenchViewConfig = {
+  sidebar?: {
+    key: string,
+    title: string,
+    icon: ReactElement,
+    view: ReactElement
+  }[]
+}
+
+export enum IframeControlType {
+  Proptotype = 'prototype',
+  Instance = 'instance',
+  FetchPrototypeViewConfig = 'fetch_prototype_view_config',
+  FetchInstanceViewConfig = 'fetch_instance_view_config'
 }

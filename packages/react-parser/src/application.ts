@@ -1,8 +1,8 @@
-import { ApplicationData, IframeDebuggerConfig, PostMessageType, UIManagerConfig } from '@grootio/common';
+import { ApplicationData, IframeControlType, IframeDebuggerConfig, PostMessageType, UIManagerConfig } from '@grootio/common';
 
 import { Page } from './Page';
 import { ApplicationStatus } from './types';
-import { controlMode } from './util';
+import { controlMode, controlType } from './util';
 import { globalConfig, setConfig } from './config';
 import { resetWatch, outerSelected, updateActiveRect, respondDragOver, respondDragEnter, respondDragLeave, respondDragDrop } from './monitor';
 
@@ -33,14 +33,31 @@ const loadingPages = new Set();
 export function bootstrap(customConfig: UIManagerConfig): ApplicationInstance {
   setConfig(customConfig);
 
-  if (controlMode) {
-    window.parent.postMessage(PostMessageType.InnerReady, '*');
-    window.addEventListener('message', onMessage);
-  }
+  if (controlType === IframeControlType.FetchInstanceViewConfig || controlType === IframeControlType.FetchPrototypeViewConfig) {
+    if (globalConfig.viewConfig) {
+      globalConfig.viewConfig(controlType).then((config) => {
+        window.parent.postMessage({
+          type: PostMessageType.InnerSetViewConfig,
+          config
+        }, '*');
+      }).catch(() => {
+        throw new Error('get view config error');
+      })
+    } else {
+      window.parent.postMessage({
+        type: PostMessageType.InnerSetViewConfig,
+      }, '*');
+    }
+  } else {
+    if (controlMode) {
+      window.parent.postMessage(PostMessageType.InnerReady, '*');
+      window.addEventListener('message', onMessage);
+    }
 
-  // 立即加载应用信息
-  if (globalConfig.lazyLoadApplication === false) {
-    loadApplication();
+    // 立即加载应用信息
+    if (globalConfig.lazyLoadApplication === false) {
+      loadApplication();
+    }
   }
 
   return instance as ApplicationInstance;

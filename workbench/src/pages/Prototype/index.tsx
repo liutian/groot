@@ -10,9 +10,12 @@ import Workbench from "@components/Workbench";
 import ComponentList from "./components/ComponentList";
 import ComponentAddModal from "./components/ComponentAddModal";
 import ComponentVersionAddModal from "./components/ComponentVersionAddModal";
-import { Breadcrumb, Button, Dropdown, Menu, Modal, Tabs } from "antd";
-import { BranchesOutlined, HomeOutlined, PlusOutlined, SendOutlined } from "@ant-design/icons";
+import { Breadcrumb, Button, Dropdown, Menu, Modal } from "antd";
+import { AppstoreOutlined, BranchesOutlined, HomeOutlined, PlusOutlined, SendOutlined } from "@ant-design/icons";
 import { ModalStatus } from "@util/common";
+import Loading from "@components/Loading";
+import PluginLoader from "@components/PluginLoader";
+import { WorkbenchViewConfig } from "@grootio/common";
 
 const Prototype: React.FC = () => {
   const [prototypeModel, prototypeUpdateAction] = useRegisterModel(PrototypeModel);
@@ -27,30 +30,33 @@ const Prototype: React.FC = () => {
     propHandleModel.inject(workbenchModel, propPersistModel);
     workbenchModel.inject(propHandleModel);
     prototypeModel.inject(workbenchModel);
-
-    init();
   })
 
   useEffect(() => {
-    const componentId = +searchParams.get('component');
-    const versionId = +searchParams.get('version');
     const orgId = +searchParams.get('org');
-
-    prototypeModel.fetchOrg(orgId).then(() => {
-      if (componentId) {
-        prototypeModel.switchComponent(componentId, versionId);
-      } else if (workbenchModel.org.componentList.length) {
-        const component = workbenchModel.org.componentList[0];
-        prototypeModel.switchComponent(component.id, versionId);
-      }
-    })
+    prototypeModel.fetchOrg(orgId);
   }, []);
 
-  function init() {
-    workbenchModel.renderExtraTabPanes.push(() => {
-      return (<Tabs.TabPane key="list" tab="组件列表">
-        {<ComponentList />}
-      </Tabs.TabPane>)
+  const fetchPluginFinish = (config: WorkbenchViewConfig) => {
+    initView();
+    workbenchModel.setViewConfig(config);
+
+    const componentId = +searchParams.get('component');
+    const versionId = +searchParams.get('version');
+    if (componentId) {
+      prototypeModel.switchComponent(componentId, versionId);
+    } else if (workbenchModel.org.componentList.length) {
+      const component = workbenchModel.org.componentList[0];
+      prototypeModel.switchComponent(component.id, versionId);
+    }
+  }
+
+  function initView() {
+    workbenchModel.viewConfig.sidebar.push({
+      key: 'component-list',
+      title: '组件库',
+      icon: <AppstoreOutlined />,
+      view: <ComponentList />
     });
 
     workbenchModel.renderFooterLeftActionItems.push(() => {
@@ -106,9 +112,11 @@ const Prototype: React.FC = () => {
   }
 
   if (prototypeModel.loadStatus === 'doing') {
-    return <>loading</>
+    return <Loading text="loading data ..." />
   } else if (prototypeModel.loadStatus === 'notfound') {
     return <>notfound component</>
+  } else if (prototypeModel.loadStatus === 'fetch-pluginn') {
+    return <PluginLoader finish={fetchPluginFinish} />
   } else {
     return (<>
       <Workbench />

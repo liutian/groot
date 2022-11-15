@@ -1,6 +1,6 @@
-import { ApplicationData } from "@grootio/common";
+import { ApplicationData, IframeControlType, PostMessageType, WorkbenchViewConfig } from "@grootio/common";
 import { iframeDebuggerConfig, IframeManagerInstance, launchIframeManager } from "@model/iframeManager";
-import { needRewrite } from "@util/common";
+import { needRewrite, ViewportMode } from "@util/common";
 import { ReactNode } from "react";
 import PropHandleModel from "./PropHandleModel";
 
@@ -22,18 +22,18 @@ export default class WorkbenchModel extends EventTarget {
   public instanceList: ComponentInstance[] = [];
 
   /**
-   * iframe之上的遮罩层用于组件拖拽定位和侧边栏宽度缩放
+   * viewport之上的遮罩层用于组件拖拽定位和侧边栏宽度缩放
    */
-  public iframeDragMaskId = 'iframe-drag-mask';
+  public viewportMaskId = 'viewport-mask';
+
   /**
    * 真正和iframe进行通信的对象
    */
   public iframeManager: IframeManagerInstance;
-  public iframeBasePath = 'http://localhost:8888';
+  public iframeBasePath: string;
   private iframeReadyPromise: Promise<any>;
   private iframeReadyResolve: Function;
 
-  public currActiveTab: 'props' = 'props';
   /**
    * 窗口部件缩放大小
    */
@@ -51,13 +51,15 @@ export default class WorkbenchModel extends EventTarget {
    */
   public renderFooterLeftActionItems: (() => ReactNode)[] = [];
   /**
-   * 自定义属性编辑器tab面板
-   */
-  public renderExtraTabPanes: (() => ReactNode)[] = [];
-  /**
    * 管理属性编辑器内属性面板UI状态
    */
   public propHandle: PropHandleModel;
+
+  public containerId = 'workbench';
+  public viewConfig: WorkbenchViewConfig = { sidebar: [] };
+
+  public viewportMode: ViewportMode = ViewportMode.H5;
+  public iframeEle: HTMLIFrameElement;
 
   public constructor() {
     super();
@@ -77,11 +79,14 @@ export default class WorkbenchModel extends EventTarget {
 
     const playgroundPath = this.prototypeMode ? this.org.playgroundPath : this.application.playgroundPath;
     const appData = this.buildApplicationData(playgroundPath);
-    this.iframeManager = launchIframeManager(iframe, this.iframeBasePath, playgroundPath, appData, this);
+    const controlType = this.prototypeMode ? IframeControlType.Proptotype : IframeControlType.Instance;
+    this.iframeManager = launchIframeManager(iframe, this.iframeBasePath, playgroundPath, appData, this, controlType);
     this.iframeReadyResolve();
+    this.iframeEle = iframe;
   }
 
   public launchPrototypeBox(org: Organization) {
+    this.iframeBasePath = 'http://localhost:8888';
     this.prototypeMode = true;
     iframeDebuggerConfig.runtimeConfig.prototypeMode = true;
     this.org = org;
@@ -90,7 +95,6 @@ export default class WorkbenchModel extends EventTarget {
   public startComponentPrototype(component: Component,) {
     this.component = component;
     this.componentVersion = component.componentVersion;
-    this.currActiveTab = 'props';
 
     const { groupList, blockList, itemList, valueList } = component;
     this.propHandle.buildPropTree(groupList, blockList, itemList, valueList);
@@ -105,6 +109,7 @@ export default class WorkbenchModel extends EventTarget {
   }
 
   public launchInstanceBox(app: Application) {
+    this.iframeBasePath = 'http://localhost:8888';
     this.prototypeMode = false;
     iframeDebuggerConfig.runtimeConfig.prototypeMode = false;
     this.application = app;
@@ -115,7 +120,6 @@ export default class WorkbenchModel extends EventTarget {
     this.component = rootInstance.component;
     this.componentVersion = rootInstance.componentVersion;
     this.instanceList = [rootInstance, ...childrenInstance];
-    this.currActiveTab = 'props';
 
     const { groupList, blockList, itemList, valueList } = rootInstance;
     const propTree = this.propHandle.buildPropTree(groupList, blockList, itemList, valueList);
@@ -135,7 +139,6 @@ export default class WorkbenchModel extends EventTarget {
     this.componentInstance = instance;
     this.component = instance.component;
     this.componentVersion = instance.componentVersion;
-    this.currActiveTab = 'props';
     this.propHandle.setPropTree(instance);
   }
 
@@ -210,5 +213,41 @@ export default class WorkbenchModel extends EventTarget {
   }
   public switchComponentInstance(instanceId: number) {
     needRewrite();
+  }
+
+  public setContainerCssVar(key: string, value: string) {
+    const ele = document.body.querySelector(`#${this.containerId}`) as HTMLDivElement;
+    ele.style.setProperty(key, value);
+  }
+
+  public setViewportMode = (mode: ViewportMode) => {
+    this.viewportMode = mode;
+    this.refresh();
+  }
+
+  public refresh() {
+    this.iframeManager.refresh(() => {
+      this.propHandle.refreshAllComponent();
+    });
+  }
+
+  public getIframeRelativeRect() {
+    const rect = this.iframeEle.getBoundingClientRect();
+    const parentRect = this.iframeEle.parentElement.getBoundingClientRect();
+
+    return {
+      top: rect.top - parentRect.top,
+      left: rect.left - parentRect.left,
+      height: rect.height,
+      width: rect.width
+    }
+  }
+
+  public setViewConfig(config: WorkbenchViewConfig) {
+    if (!config) {
+      return
+    }
+
+    Object.assign(this.viewConfig, config);
   }
 }

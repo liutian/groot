@@ -1,5 +1,5 @@
 .container {
-  display: flex;
+  position: relative;
   height: 100%;
   --side-width: 460px;
   --prop-pane-padding-x: 16px;
@@ -7,46 +7,62 @@
   --font-color: rgba(0, 0, 0, 0.65);
   --theme-color: #0095ff;
   --theme-color-darken: darken(#0095ff, 10%);
+  --side-bar-min-width: 50px;
+  --side-bar-max-width: 310px;
+  --side-bar-width: var(--side-bar-min-width);
+  --top-bar-height: 38px;
+  --footer-bar-min-height: 28px;
+  --widget-window-height: var(--footer-bar-min-height);
+  --center-width: calc(100% - var(--side-bar-width) - var(--side-width));
 
   &.prototypeMode {
     --theme-color: #cc6633;
     --theme-color-darken: darken(#cc6633, 10%);
   }
 
-  :global(#iframe-drag-mask) {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 0;
-    height: 0;
-    overflow: hidden;
-  }
-
-  :global(#iframe-drag-mask.show) {
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-  }
 }
 
-
-.preview {
-  flex-basis: calc(100% - var(--side-width));
-  position: relative;
+.sideBar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--side-bar-width);
+  height: 100%;
   overflow: hidden;
+  z-index: 2;
+}
 
-  iframe {
-    border-width: 0;
-    width: 100%;
-    height: 100%;
-  }
+.topBar {
+  position: absolute;
+  top: 0;
+  left: var(--side-bar-width);
+  height: var(--top-bar-height);
+  width: var(--center-width);
+  overflow: hidden;
+  z-index: 1;
+}
+
+.viewport {
+  position: absolute;
+  top: var(--top-bar-height);
+  bottom: var(--widget-window-height);
+  left: var(--side-bar-width);
+  width: var(--center-width);
+}
+
+.footerWidgetWindow {
+  position: absolute;
+  bottom: 0;
+  height: var(--widget-window-height);
+  left: var(--side-bar-width);
+  width: var(--center-width);
 }
 
 .sidePanel {
-  display: flex;
-  position: relative;
-  flex-basis: var(--side-width);
-  max-width: var(--side-width);
-  flex-direction: column;
+  position: absolute;
+  top: 0;
+  width: var(--side-width);
+  right: 0;
+  height: 100%;
   box-shadow: 0px 0px 15px 0px rgb(0 0 0 / 20%);
 }

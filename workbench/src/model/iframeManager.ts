@@ -1,4 +1,4 @@
-import { ApplicationData, IframeDebuggerConfig, iframeNamePrefix, PostMessageType } from "@grootio/common";
+import { ApplicationData, IframeControlType, IframeDebuggerConfig, iframeNamePrefix, PostMessageType } from "@grootio/common";
 import { WorkbenchEvent } from "@util/common";
 
 
@@ -25,9 +25,9 @@ const instancePrototype = {
 
 export type IframeManagerInstance = typeof instancePrototype;
 
-export function launchIframeManager(ele: HTMLIFrameElement, _basePath: string, _playgroundPath: string, _applicationData: ApplicationData, _eventTrigger: EventTarget): IframeManagerInstance {
+export function launchIframeManager(ele: HTMLIFrameElement, _basePath: string, _playgroundPath: string, _applicationData: ApplicationData, _eventTrigger: EventTarget, controlType: IframeControlType): IframeManagerInstance {
   iframe = ele;
-  iframe.contentWindow.name = iframeNamePrefix;
+  iframe.contentWindow.name = `${iframeNamePrefix}${controlType}`;
   playgroundPath = _playgroundPath;
   basePath = _basePath;
   applicationData = _applicationData;
@@ -40,6 +40,10 @@ export function launchIframeManager(ele: HTMLIFrameElement, _basePath: string, _
 }
 
 function onMessage(event: MessageEvent) {
+  if (!event.data) {
+    throw new Error('iframe通讯异常');
+  }
+
   // iframe页面准备就绪可以进行通信
   if (event.data === PostMessageType.InnerReady) {
     iframeReady = true;
@@ -52,15 +56,18 @@ function onMessage(event: MessageEvent) {
       return;
     }
 
-    pageNavCallback();// 内部一般执行 Outer_Full_Update_Components
-    pageNavCallback = null;
+    if (pageNavCallback) {
+      // 内部一般执行 Outer_Full_Update_Components
+      pageNavCallback();
+      pageNavCallback = null;
+    }
   } else {
     const newEvent = new CustomEvent(event.data.type, { detail: event.data.data });
     eventTrigger.dispatchEvent(newEvent);
   }
 }
 
-function refresh(callback: () => void) {
+function refresh(callback?: () => void) {
   pageNavCallback = callback;
   const path = `${basePath}${playgroundPath}`;
   iframeDebuggerConfig.controlPage = playgroundPath;

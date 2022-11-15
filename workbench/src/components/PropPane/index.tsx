@@ -11,6 +11,8 @@ import PropHandleModel from "@model/PropHandleModel";
 import PropPersistModel from "@model/PropPersistModel";
 import { PropGroupStructType } from "@grootio/common";
 
+import styles from './index.module.less';
+
 function PropPane() {
   const [propHandleModel] = useModel(PropHandleModel);
   const [propPersistModel, propPersistAction] = useModel(PropPersistModel);
@@ -46,7 +48,7 @@ function PropPane() {
           key={`block-${group.propBlockList[0].id}-${propHandleModel.forceUpdateFormKey}`} />;
       }
 
-      return (<Tabs.TabPane key={group.id} tab={renderTabBarItem(group)} >
+      return (<Tabs.TabPane key={group.id} tab={renderTabBarItem(group)} className={styles.content}>
         {content}
       </Tabs.TabPane>)
     })

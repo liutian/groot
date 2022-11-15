@@ -75,7 +75,8 @@ const IframeOutlineMarker: React.FC = () => {
     })
 
     function resetOutline(clientRect: DOMRect, tagName: string, ele: HTMLElement) {
-      ele.style.transform = `translate(${clientRect.x}px,${clientRect.y}px)`;
+      const { top, left } = workbenchModel.getIframeRelativeRect();
+      ele.style.transform = `translate(${left + clientRect.x}px,${top + clientRect.y}px)`;
       ele.style.width = `${clientRect.width}px`;
       ele.style.height = `${clientRect.height}px`;
       ele.style.opacity = '1';
@@ -84,13 +85,14 @@ const IframeOutlineMarker: React.FC = () => {
     }
 
     function resetToolbar(clientRect: DOMRect, ele: HTMLElement) {
+      const { top, left } = workbenchModel.getIframeRelativeRect();
       const tagNameEle = outlineRef.current.querySelector('.iframe-marker-outline-tag-name') as HTMLElement;
       const { width: tagNameWidth } = tagNameEle.getBoundingClientRect();
       ele.style.opacity = '1';
       const { width: toolbarWidth, height: toolbarHeight } = ele.getBoundingClientRect();
       let toolbarX = clientRect.x + clientRect.width - toolbarWidth;
       toolbarX = Math.max(clientRect.x + tagNameWidth + 5, toolbarX);
-      ele.style.transform = `translate(${toolbarX}px,${clientRect.y - toolbarHeight}px)`;
+      ele.style.transform = `translate(${left + toolbarX}px,${top + clientRect.y - toolbarHeight}px)`;
     }
   }, [])
 

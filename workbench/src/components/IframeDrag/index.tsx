@@ -1,7 +1,8 @@
 import { DragLineInfo, PostMessageType } from "@grootio/common";
 import WorkbenchModel from "@model/WorkbenchModel";
+import { WorkbenchEvent } from "@util/common";
 import { useModel } from "@util/robot";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from './index.module.less';
 
 type PropType = {
@@ -11,13 +12,15 @@ type PropType = {
 const IframeDrag: React.FC<PropType> = (prop) => {
   const [workbenchModel] = useModel(WorkbenchModel);
   const markerRef = useRef<HTMLDivElement>();
+  const [currentStyles, setCurrentStyles] = useState({});
 
   // 必须有监听dragover事件否则drop事件无法触发
   const dragover = (event) => {
     event.preventDefault();
+    const rect = workbenchModel.iframeEle.getBoundingClientRect();
     workbenchModel.iframeManager.notifyIframe(PostMessageType.OuterDragComponentOver, {
-      positionX: event.pageX,
-      positionY: event.pageY,
+      positionX: event.pageX - rect.left,
+      positionY: event.pageY - rect.top,
     });
   }
 
@@ -33,9 +36,10 @@ const IframeDrag: React.FC<PropType> = (prop) => {
 
   const drop = (event) => {
     const componentId = event.dataTransfer.getData('componentId');
+    const rect = workbenchModel.iframeEle.getBoundingClientRect();
     workbenchModel.iframeManager.notifyIframe(PostMessageType.OuterDragComponentDrop, {
-      positionX: event.pageX,
-      positionY: event.pageY,
+      positionX: event.pageX - rect.left,
+      positionY: event.pageY - rect.top,
       componentId
     });
     console.log(`IframeDrag drog finish`);
@@ -54,9 +58,19 @@ const IframeDrag: React.FC<PropType> = (prop) => {
         markerRef.current.style.display = 'none';
       }
     })
+
+    workbenchModel.addEventListener(WorkbenchEvent.DragStart, () => {
+      const rect = workbenchModel.getIframeRelativeRect();
+      setCurrentStyles({
+        top: `${rect.top}px`,
+        left: `${rect.left}px`,
+        height: `${rect.height}px`,
+        width: `${rect.width}px`,
+      })
+    })
   }, []);
 
-  return <div className={styles.container} onDragOver={dragover} onDrop={drop} onDragEnter={dragenter} onDragLeave={drageleave} >
+  return <div className={styles.container} style={currentStyles} onDragOver={dragover} onDrop={drop} onDragEnter={dragenter} onDragLeave={drageleave} >
     <div ref={markerRef} className={styles.marker} />
   </div>
 }
