@@ -1,14 +1,15 @@
 import { UserOutlined, EnvironmentOutlined, MailOutlined } from '@ant-design/icons';
+import { ComponentSlot } from '@grootio/react-parser';
 type PropType = {
   name: string,
   address: string,
   email: string,
-  avatar: React.ReactNode
+  avatar: React.ReactNode[]
 }
 
 const Profile: React.FC<PropType> = (props) => {
   return <>
-    {props.avatar}
+    <ComponentSlot children={props.avatar} />
     <hr />
     <UserOutlined /> {props.name} <br />
     <EnvironmentOutlined /> {props.address} <br />
