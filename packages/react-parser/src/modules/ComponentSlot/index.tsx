@@ -20,14 +20,16 @@ export const ComponentSlot: React.FC<PropType> = ({ children, minHeight = 100, p
   });
 
   useEffect(() => {
-    (containerRef.current as any).highlight = () => {
-      setDragZoneStyles({ ...dragZoneStyles, backgroundColor: 'rgb(255 216 216)' });
-    }
+    if (containerRef.current) {
+      (containerRef.current as any).highlight = () => {
+        setDragZoneStyles({ ...dragZoneStyles, backgroundColor: 'rgb(255 216 216)' });
+      }
 
-    (containerRef.current as any).cancelHighlight = () => {
-      setDragZoneStyles({ ...dragZoneStyles, backgroundColor: 'rgb(216 244 255)' });
+      (containerRef.current as any).cancelHighlight = () => {
+        setDragZoneStyles({ ...dragZoneStyles, backgroundColor: 'rgb(216 244 255)' });
+      }
     }
-  }, []);
+  }, [containerRef.current]);
 
   if (!children) {
     console.warn('插槽未在组件原型中进行配置！');

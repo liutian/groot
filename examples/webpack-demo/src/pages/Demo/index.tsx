@@ -6,6 +6,7 @@ import react from 'react';
 import * as tslib from 'tslib';
 import * as jsxRuntime from 'react/jsx-runtime';
 import Profile from 'components/Profile';
+import { DateForm, EmailForm, FormContainer, InputForm, PhoneForm, SelectForm } from 'components/FormComponent';
 
 UIManager.init({
   appKey: 'demo',
@@ -24,7 +25,13 @@ UIManager.init({
       ProTable
     },
     app: {
-      Profile
+      Profile,
+      FormContainer,
+      InputForm,
+      SelectForm,
+      DateForm,
+      PhoneForm,
+      EmailForm
     },
     tslib,
     ['react/jsx-runtime']: jsxRuntime,

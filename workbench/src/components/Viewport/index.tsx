@@ -8,8 +8,8 @@ import styles from './index.module.less';
 
 const viewportMode = {
   h5: {
-    width: '390px',
-    height: '844px'
+    width: '400px',
+    height: '700px'
   },
   pc: {
   }

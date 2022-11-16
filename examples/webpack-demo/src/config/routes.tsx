@@ -1,7 +1,6 @@
 import Demo from "pages/Demo";
 import Page1 from "pages/Page1";
 import Home from "pages/Home";
-import Layout from "./Layout";
 
 const routes = [
   {
@@ -12,7 +11,7 @@ const routes = [
     element: <Page1 />,
   }, {
     path: '/admin',
-    element: <Layout />,
+    // element: <Layout />,
     children: [{
       path: 'groot',
       children: [{ path: '*', element: <Demo /> }]
