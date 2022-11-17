@@ -1,6 +1,9 @@
+import { globalConfig } from './config';
+
 const $groot = {
   version: 'v0.1',
-  tick: 1
+  tick: 1,
+  shared: globalConfig.shared
 }
 
 function create(functionBody: string, $props: Object) {
@@ -13,6 +16,7 @@ function create(functionBody: string, $props: Object) {
     }($groot,$props);
   `);
 
+  $groot.shared = globalConfig.shared;
   return newFunction($props, $groot);
 }
 

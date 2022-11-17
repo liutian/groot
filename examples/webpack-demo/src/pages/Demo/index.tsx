@@ -3,8 +3,6 @@ import { ProTable } from '@ant-design/pro-table';
 import { UIManager } from '@grootio/react-parser';
 import { useLocation } from 'react-router';
 import react from 'react';
-import * as tslib from 'tslib';
-import * as jsxRuntime from 'react/jsx-runtime';
 import Profile from 'components/Profile';
 import { DateForm, EmailForm, FormContainer, InputForm, PhoneForm, SelectForm } from 'components/FormComponent';
 
@@ -33,8 +31,6 @@ UIManager.init({
       PhoneForm,
       EmailForm
     },
-    tslib,
-    ['react/jsx-runtime']: jsxRuntime,
   },
 });
 

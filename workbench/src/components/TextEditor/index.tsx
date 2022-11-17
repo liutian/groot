@@ -39,6 +39,7 @@ function TextEditor({ onChange, value, type = 'json' }: propsType) {
     declare namespace $groot{
       const version: string;
       let tick: number;
+      const shared: Record<string, any>;
     }
     declare let $exportFn: Function;
     declare const $props: any;

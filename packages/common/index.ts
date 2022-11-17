@@ -15,6 +15,7 @@ export type UIManagerConfig = {
   debug?: boolean;
   useWrapper?: boolean;
   viewConfig?: (controlType: IframeControlType) => Promise<WorkbenchViewConfig>;
+  shared?: Record<string, any>
 };
 
 export type IframeDebuggerConfig = {
