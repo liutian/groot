@@ -17,7 +17,10 @@ interface Window {
   _moduleCallback: (module: any) => void;
 
   _grootApplicationData: any;
+
 }
+
+declare const __webpack_public_path__: string;
 
 
 

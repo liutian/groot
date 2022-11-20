@@ -283,12 +283,22 @@ export type DragLineInfo = {
 }
 
 export type WorkbenchViewConfig = {
-  sidebar?: {
+  sidebar?: ({
     key: string,
     title: string,
+  } & ({
     icon: ReactElement,
     view: ReactElement
-  }[]
+  } | {
+    icon: string,
+    view: PluginViewConfig
+  }))[]
+}
+
+export type PluginViewConfig = {
+  key: string,
+  url: string,
+  module: string
 }
 
 export enum IframeControlType {

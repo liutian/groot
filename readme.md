@@ -9,3 +9,5 @@
 
 ### 贡献代码
 `react` `typescript` 为项目公共依赖库，在根目录默认安装，根目录 `base.tsconfig.json` 作为各个项目通用ts配置
+
+如果需要本地调试 `examples/webpack-demo` 首先删除改项目下的 `node_modules/react`，防止运行时有两套react

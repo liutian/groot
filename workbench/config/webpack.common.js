@@ -5,7 +5,7 @@ const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyPlugin = require("copy-webpack-plugin");
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
-
+const { ModuleFederationPlugin } = require('webpack').container;
 
 module.exports = (env, args) => {
 	return {
@@ -126,7 +126,37 @@ module.exports = (env, args) => {
 				],
 			}),
 
-			new MonacoWebpackPlugin()
+			new MonacoWebpackPlugin(),
+			new ModuleFederationPlugin({
+				name: 'groot',
+				shared: {
+					react: {
+						eager: true,
+						singleton: true,
+						requiredVersion: '^18.2.0'
+					},
+					'react-dom': {
+						eager: true,
+						singleton: true,
+						requiredVersion: '^18.2.0'
+					},
+					'react/jsx-runtime': {
+						eager: true,
+						singleton: true,
+						requiredVersion: '^1.0.0'
+					},
+					antd: {
+						eager: true,
+						singleton: true,
+						requiredVersion: '^4.21.3'
+					},
+					'@ant-design/icons': {
+						singleton: true,
+						eager: true,
+						requiredVersion: '^4.7.0'
+					}
+				},
+			})
 		]
 	}
 }

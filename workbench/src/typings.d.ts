@@ -17,6 +17,8 @@ interface Window {
   _moduleCallback: (module: any) => void;
 }
 
+declare const __webpack_share_scopes__: any;
+
 /**
  * 描述代码元数据配置的属性分组类型
  */
