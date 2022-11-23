@@ -1,4 +1,4 @@
-import { ApplicationData, IframeControlType, IframeDebuggerConfig, PostMessageType, UIManagerConfig } from '@grootio/common';
+import { ApplicationData, HostContainerConfig, IframeControlType, IframeDebuggerConfig, PluginConfig, PostMessageType, UIManagerConfig } from '@grootio/common';
 
 import { Page } from './Page';
 import { ApplicationStatus } from './types';
@@ -34,20 +34,30 @@ export function bootstrap(customConfig: UIManagerConfig): ApplicationInstance {
   setConfig(customConfig);
 
   if (controlType === IframeControlType.FetchInstanceViewConfig || controlType === IframeControlType.FetchPrototypeViewConfig) {
-    if (globalConfig.viewConfig) {
-      globalConfig.viewConfig(controlType).then((config) => {
-        window.parent.postMessage({
-          type: PostMessageType.InnerSetViewConfig,
-          config
-        }, '*');
-      }).catch(() => {
-        throw new Error('get view config error');
-      })
+    let promise;
+
+    if (globalConfig.hostContainerConfig?.plugin) {
+      const configOrPromise = globalConfig.hostContainerConfig.plugin(controlType);
+      if ((configOrPromise as Promise<PluginConfig>).then) {
+        promise = configOrPromise;
+      } else {
+        promise = Promise.resolve(configOrPromise);
+      }
     } else {
-      window.parent.postMessage({
-        type: PostMessageType.InnerSetViewConfig,
-      }, '*');
+      promise = Promise.resolve();
     }
+
+    promise.then((plugin) => {
+      window.parent.postMessage({
+        type: PostMessageType.InnerSetConfig,
+        data: {
+          ...globalConfig.hostContainerConfig,
+          plugin
+        } as HostContainerConfig
+      }, '*');
+    }).catch(() => {
+      throw new Error('get view config error');
+    })
   } else {
     if (controlMode) {
       window.parent.postMessage(PostMessageType.InnerReady, '*');

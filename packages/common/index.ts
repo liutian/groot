@@ -14,8 +14,19 @@ export type UIManagerConfig = {
   beforeLoadApplication?: Promise<void> | Function;
   debug?: boolean;
   useWrapper?: boolean;
-  viewConfig?: (controlType: IframeControlType) => Promise<WorkbenchViewConfig>;
-  shared?: Record<string, any>
+  hostContainerConfig?: Omit<HostContainerConfig, 'plugin'> & {
+    plugin?: (controlType: IframeControlType) => PluginConfig | Promise<PluginConfig>;
+  },
+  shared?: Record<string, any>,
+};
+
+export type HostContainerConfig = {
+  viewportMode?: ViewportMode,
+  plugin?: PluginConfig
+}
+
+export type RuntimeHostContainerConfig = Omit<HostContainerConfig, 'plugin'> & {
+  plugin?: RuntimePluginConfig
 };
 
 export type IframeDebuggerConfig = {
@@ -67,7 +78,7 @@ export enum PropMetadataType {
 }
 
 export enum PostMessageType {
-  InnerSetViewConfig = 'inner_set_view_config',
+  InnerSetConfig = 'inner_set_config',
 
   InnerReady = 'inner_ready',
   OuterSetConfig = 'outer_set_config',
@@ -111,6 +122,7 @@ export enum PropItemType {
   Json = 'json',
   Function = 'function',
   Component = 'component',
+  Extension = 'extension'
 }
 
 export enum PropBlockLayout {
@@ -282,28 +294,57 @@ export type DragLineInfo = {
   hitEle?: HTMLElement
 }
 
-export type WorkbenchViewConfig = {
-  sidebar?: ({
-    key: string,
-    title: string,
-  } & ({
-    icon: ReactElement,
-    view: ReactElement
-  } | {
-    icon: string,
-    view: PluginViewConfig
-  }))[]
-}
-
-export type PluginViewConfig = {
-  key: string,
-  url: string,
-  module: string
-}
-
 export enum IframeControlType {
   Proptotype = 'prototype',
   Instance = 'instance',
   FetchPrototypeViewConfig = 'fetch_prototype_view_config',
   FetchInstanceViewConfig = 'fetch_instance_view_config'
+}
+
+
+export type PluginConfig = {
+  sidebarView?: SidebarViewType[],
+  propSettingView?: (RemotePlugin | string)[]
+}
+
+export type RuntimePluginConfig = {
+  sidebarView?: RuntimeSidebarViewType[],
+  propSettingView?: RemotePlugin[]
+}
+
+export type RuntimeSidebarViewType = {
+  key: string,
+  title: string,
+  order?: number,
+} & ({
+  icon: ReactElement,
+  view: ReactElement
+} | {
+  icon: string,
+  view: RemotePlugin
+})
+
+export type SidebarViewType = {
+  key: string,
+  title: string,
+  order?: number,
+} & ({
+  icon: ReactElement,
+  view: ReactElement
+} | {
+  icon: string,
+  view: RemotePlugin | string
+})
+
+export type RemotePlugin = {
+  key?: string,
+  package: string,
+  title: string,
+  url: string,
+  module: string
+}
+
+export enum ViewportMode {
+  PC = 'pc',
+  H5 = 'h5'
 }

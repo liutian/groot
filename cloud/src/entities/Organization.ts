@@ -13,6 +13,9 @@ export class Organization extends BaseEntity {
   @Property({ length: 100 })
   playgroundPath: string;
 
+  @Property({ length: 100 })
+  baseUrl: string;
+
   //************************已下是接口入参或者查询返回需要定义的属性************************
 
   @Property({ persist: false })

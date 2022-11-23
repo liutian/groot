@@ -1,4 +1,4 @@
-import { AppstoreOutlined, HomeOutlined, PlusOutlined, SendOutlined, UnorderedListOutlined } from "@ant-design/icons";
+import { AppstoreOutlined, PlusOutlined, SendOutlined, UnorderedListOutlined } from "@ant-design/icons";
 import { useEffect, useState, } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Breadcrumb, Button } from "antd";
@@ -14,12 +14,12 @@ import ReleaseAddModal from "./components/ReleaseAddModal";
 import BuildModal from "./components/BuildModal";
 import DeployModal from "./components/DeployModal";
 import { DragComponentList } from "./components/DragComponentList";
-import InstanceList from "./components/InstanceList";
 import Release from "./components/Release";
 import { ModalStatus, WorkbenchEvent } from "@util/common";
-import { PostMessageType, WorkbenchViewConfig } from "@grootio/common";
+import { PostMessageType, RuntimeHostContainerConfig } from "@grootio/common";
 import PluginLoader from "@components/PluginLoader";
 import Loading from "@components/Loading";
+import InstanceList from "./components/InstanceList";
 
 const Instance: React.FC = () => {
   const [instanceModel, instanceModelAction] = useRegisterModel(InstanceModel);
@@ -42,9 +42,9 @@ const Instance: React.FC = () => {
     instanceModel.fetchApplication(applicationId, releaseId);
   }, []);
 
-  const fetchPluginFinish = (config: WorkbenchViewConfig) => {
+  const fetchPluginFinish = (config: RuntimeHostContainerConfig) => {
     initView();
-    workbenchModel.setViewConfig(config);
+    workbenchModel.processConfig(config);
 
     const instanceId = +searchParams.get('page');
     if (instanceId) {
@@ -56,13 +56,12 @@ const Instance: React.FC = () => {
   }
 
   function initView() {
-    workbenchModel.viewConfig.sidebar.push({
+    workbenchModel.sidebarView.push({
       key: 'component-list',
       title: '组件库',
       icon: <AppstoreOutlined />,
       view: <DragComponentList />
-    });
-    workbenchModel.viewConfig.sidebar.push({
+    }, {
       key: 'instance-list',
       title: '实例列表',
       icon: <UnorderedListOutlined />,
@@ -120,7 +119,6 @@ const Instance: React.FC = () => {
     (Object.getPrototypeOf(workbenchModel) as WorkbenchModel).switchComponentInstance = (instanceId) => {
       instanceModel.switchComponentInstance(instanceId);
     }
-
   }
 
   if (instanceModel.loadStatus === 'doing') {

@@ -77,5 +77,8 @@ export class PropItem extends BaseEntity {
 
   @Property({ persist: false })
   blockId?: number;
+
+  @Property({ length: 50 })
+  subType?: string;
 }
 

@@ -1,14 +1,16 @@
 import { useEffect, useRef } from "react";
 
-import { IframeControlType, iframeNamePrefix, PostMessageType, WorkbenchViewConfig } from "@grootio/common";
+import { HostContainerConfig, IframeControlType, iframeNamePrefix, PluginConfig, PostMessageType, RuntimeHostContainerConfig, RuntimePluginConfig } from "@grootio/common";
 import WorkbenchModel from "@model/WorkbenchModel";
 import { useModel } from "@util/robot";
 
 import styles from './index.module.less';
 import Loading from "@components/Loading";
+import request from "@util/request";
+import { APIPath } from "api/API.path";
 
 type PropType = {
-  finish: (config: WorkbenchViewConfig) => void,
+  finish: (config?: RuntimeHostContainerConfig) => void,
 }
 
 const PluginLoader: React.FC<PropType> = ({ finish }) => {
@@ -25,10 +27,43 @@ const PluginLoader: React.FC<PropType> = ({ finish }) => {
     window.self.addEventListener('message', onMessage);
     iframeEleRef.current.src = workbenchModel.iframeBasePath;
 
-    function onMessage(event) {
-      const messageData = (event as MessageEvent).data;
-      if (messageData.type === PostMessageType.InnerSetViewConfig) {
-        finish(messageData.data);
+    function onMessage(event: MessageEvent) {
+      const messageData = event.data;
+      if (messageData.type === PostMessageType.InnerSetConfig) {
+        const configData = messageData.data as HostContainerConfig;
+        if (!configData || !configData.plugin) {
+          finish(configData as RuntimeHostContainerConfig);
+          return;
+        }
+
+        const keys = [
+          ...(configData.plugin.sidebarView || []).filter(item => typeof item.view === 'string').map(item => (item.view as string)),
+          ...(configData.plugin.propSettingView || []).filter(item => typeof item === 'string').map(item => (item as string)),
+        ];
+
+        if (keys.length) {
+          request(APIPath.remote_module_list, { keys }).then((list) => {
+            configData.plugin.sidebarView = (configData.plugin.sidebarView || []).map(viewConfig => {
+              if (typeof viewConfig.view === 'string') {
+                viewConfig.view = list.find(item => item.key === viewConfig.view)
+              }
+
+              return viewConfig;
+            });
+            configData.plugin.propSettingView = (configData.plugin.propSettingView || []).map(viewConfig => {
+              if (typeof viewConfig === 'string') {
+                return list.find(item => item.key === viewConfig)
+              }
+
+              return viewConfig;
+            })
+
+            finish(configData as RuntimeHostContainerConfig);
+          })
+        } else {
+          finish(configData as RuntimeHostContainerConfig);
+        }
+
       }
     }
 

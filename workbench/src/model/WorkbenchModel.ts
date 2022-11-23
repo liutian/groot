@@ -1,6 +1,6 @@
-import { ApplicationData, IframeControlType, PostMessageType, WorkbenchViewConfig } from "@grootio/common";
+import { ApplicationData, IframeControlType, RemotePlugin, RuntimeHostContainerConfig, RuntimePluginConfig, RuntimeSidebarViewType, SidebarViewType, ViewportMode, } from "@grootio/common";
 import { iframeDebuggerConfig, IframeManagerInstance, launchIframeManager } from "@model/iframeManager";
-import { needRewrite, ViewportMode } from "@util/common";
+import { needRewrite } from "@util/common";
 import { ReactNode } from "react";
 import PropHandleModel from "./PropHandleModel";
 
@@ -56,10 +56,12 @@ export default class WorkbenchModel extends EventTarget {
   public propHandle: PropHandleModel;
 
   public containerId = 'workbench';
-  public viewConfig: WorkbenchViewConfig = { sidebar: [] };
+  public originPluginConfig: RuntimePluginConfig = {};
 
-  public viewportMode: ViewportMode = ViewportMode.H5;
+  public viewportMode: ViewportMode = ViewportMode.PC;
   public iframeEle: HTMLIFrameElement;
+  public sidebarView: RuntimeSidebarViewType[] = [];
+  public propSettingView: RemotePlugin[] = [];
 
   public constructor() {
     super();
@@ -86,7 +88,7 @@ export default class WorkbenchModel extends EventTarget {
   }
 
   public launchPrototypeBox(org: Organization) {
-    this.iframeBasePath = 'http://localhost:8888';
+    this.iframeBasePath = org.baseUrl;
     this.prototypeMode = true;
     iframeDebuggerConfig.runtimeConfig.prototypeMode = true;
     this.org = org;
@@ -109,7 +111,7 @@ export default class WorkbenchModel extends EventTarget {
   }
 
   public launchInstanceBox(app: Application) {
-    this.iframeBasePath = 'http://localhost:8888';
+    this.iframeBasePath = app.baseUrl;
     this.prototypeMode = false;
     iframeDebuggerConfig.runtimeConfig.prototypeMode = false;
     this.application = app;
@@ -243,11 +245,25 @@ export default class WorkbenchModel extends EventTarget {
     }
   }
 
-  public setViewConfig(config: WorkbenchViewConfig) {
-    if (!config) {
-      return
+  public processConfig(config: RuntimeHostContainerConfig) {
+    if (config.viewportMode) {
+      this.viewportMode = config.viewportMode;
     }
+    Object.assign(this.originPluginConfig, config.plugin);
 
-    Object.assign(this.viewConfig, config);
+    const incrementSidebarView = [];
+    this.originPluginConfig.sidebarView?.forEach((item) => {
+      const index = this.sidebarView.findIndex(i => i.key === item.key);
+      if (index !== -1) {
+        this.sidebarView[index] = item;
+      } else {
+        incrementSidebarView.push(item);
+      }
+    });
+    this.sidebarView.push(...incrementSidebarView);
+    this.sidebarView.sort((a, b) => a.order - b.order);
+
+    this.propSettingView.push(...this.originPluginConfig.propSettingView);
   }
+
 }

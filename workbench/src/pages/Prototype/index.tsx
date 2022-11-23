@@ -11,11 +11,11 @@ import ComponentList from "./components/ComponentList";
 import ComponentAddModal from "./components/ComponentAddModal";
 import ComponentVersionAddModal from "./components/ComponentVersionAddModal";
 import { Breadcrumb, Button, Dropdown, Menu, Modal } from "antd";
-import { AppstoreOutlined, BranchesOutlined, HomeOutlined, PlusOutlined, SendOutlined } from "@ant-design/icons";
+import { AppstoreOutlined, BranchesOutlined, PlusOutlined, SendOutlined } from "@ant-design/icons";
 import { ModalStatus } from "@util/common";
 import Loading from "@components/Loading";
 import PluginLoader from "@components/PluginLoader";
-import { WorkbenchViewConfig } from "@grootio/common";
+import { RuntimeHostContainerConfig } from "@grootio/common";
 
 const Prototype: React.FC = () => {
   const [prototypeModel, prototypeUpdateAction] = useRegisterModel(PrototypeModel);
@@ -37,9 +37,9 @@ const Prototype: React.FC = () => {
     prototypeModel.fetchOrg(orgId);
   }, []);
 
-  const fetchPluginFinish = (config: WorkbenchViewConfig) => {
+  const fetchPluginFinish = (config: RuntimeHostContainerConfig) => {
     initView();
-    workbenchModel.setViewConfig(config);
+    workbenchModel.processConfig(config);
 
     const componentId = +searchParams.get('component');
     const versionId = +searchParams.get('version');
@@ -52,7 +52,7 @@ const Prototype: React.FC = () => {
   }
 
   function initView() {
-    workbenchModel.viewConfig.sidebar.push({
+    workbenchModel.sidebarView.push({
       key: 'component-list',
       title: '组件库',
       icon: <AppstoreOutlined />,

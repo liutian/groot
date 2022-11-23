@@ -87,7 +87,8 @@ const commonConfig = (env, args) => {
         name: 'approve',
         filename: 'groot-plugin/index.js',
         exposes: {
-          'ComponentList': './src/groot-plugin/side-bar/ComponentList'
+          'ComponentList': './src/groot-plugin/sidebar-view/ComponentList',
+          'FormulaPropItem': './src/groot-plugin/prop-setting-view/FormulaPropItem'
         },
         shared: {
           react: {

@@ -50,7 +50,7 @@ export class PropItemService {
     const firstItem = await em.findOne(PropItem, { block }, { orderBy: { order: 'DESC' } });
 
     const newItem = em.create(PropItem, {
-      ...pick(rawItem, ['label', 'propKey', 'rootPropKey', 'type', 'span', 'valueOptions', 'versionTraceId']),
+      ...pick(rawItem, ['label', 'propKey', 'rootPropKey', 'type', 'subType', 'span', 'valueOptions', 'versionTraceId']),
       block,
       group: block.group,
       component: block.component,
@@ -189,7 +189,7 @@ export class PropItemService {
           type: PropValueType.Prototype
         });
       }
-      pick(rawItem, ['label', 'propKey', 'rootPropKey', 'type', 'span', 'valueOptions'], propItem);
+      pick(rawItem, ['label', 'propKey', 'rootPropKey', 'type', 'subType', 'span', 'valueOptions'], propItem);
       propItem.defaultValue = null;
       await em.flush();
 

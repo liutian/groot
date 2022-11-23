@@ -33,4 +33,5 @@ export enum APIPath {
   value_abstractType_remove = 'value/abstract-type/remove/:propValueId',
   value_update = 'POST value/update',
   move_position = 'POST move/position',
+  remote_module_list = 'POST remote-module/list'
 }

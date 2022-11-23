@@ -1,4 +1,4 @@
-import { EnvType } from '@grootio/common';
+import { RemotePlugin } from '@grootio/common';
 import type { APIPath } from './API.path';
 
 // key APIPath枚举值: value [请求参数类型 , 返回数据类型]
@@ -59,5 +59,6 @@ export type APIStore = {
   [APIPath.value_abstractType_add]: [PropValue, API.Response<PropValue>],
   [APIPath.value_abstractType_remove]: [{ propValueId: number }],
   [APIPath.value_update]: [PropValue, API.Response<PropValue>],
-  [APIPath.componentInstance_remove]: [{ instanceId: number }]
+  [APIPath.componentInstance_remove]: [{ instanceId: number }],
+  [APIPath.remote_module_list]: [{ keys: string[] }, RemotePlugin[]]
 };

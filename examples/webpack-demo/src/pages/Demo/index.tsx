@@ -5,6 +5,7 @@ import { useLocation } from 'react-router';
 import react from 'react';
 import Profile from 'components/Profile';
 import { DateForm, EmailForm, FormContainer, InputForm, PhoneForm, SelectForm } from 'components/FormComponent';
+import { ViewportMode } from '@grootio/common';
 
 UIManager.init({
   appKey: 'demo',
@@ -32,6 +33,19 @@ UIManager.init({
       EmailForm
     },
   },
+  hostContainerConfig: {
+    viewportMode: ViewportMode.H5,
+    plugin: (controlType) => {
+      return {
+        propSettingView: [{
+          package: 'approve',
+          title: '配置项',
+          url: 'http://localhost:10002/groot-plugin/index.js',
+          module: 'FormulaPropItem'
+        }]
+      }
+    }
+  }
 });
 
 function Demo() {

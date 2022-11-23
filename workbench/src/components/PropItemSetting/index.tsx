@@ -1,13 +1,26 @@
 import { useModel } from "@util/robot";
 import { Form, Input, Modal, Radio, Select, Space, Switch, Typography } from "antd";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import PropPersistModel from "@model/PropPersistModel";
 import { PropItemType, PropItemTypeNameMap } from "@grootio/common";
+import WorkbenchModel from "@model/WorkbenchModel";
+import { RemotePluginKeySep } from "@util/common";
 
 
 const PropItemSetting: React.FC = () => {
+  const [workbenchModel] = useModel(WorkbenchModel);
   const [propPersistModel, propPersistAction] = useModel(PropPersistModel);
+  const [propItemTypeOptions] = useState(() => {
+    if (workbenchModel.propSettingView?.length) {
+      return [
+        ...PropItemTypeNameMap,
+        { name: '自定义', key: PropItemType.Extension },
+      ]
+    }
+
+    return [...PropItemTypeNameMap];
+  })
 
   const [form] = Form.useForm<PropItem>();
 
@@ -88,8 +101,26 @@ const PropItemSetting: React.FC = () => {
             <Input />
           </Form.Item>
           <Form.Item label="类型" name="type" rules={[{ required: true }]} >
-            <Select options={PropItemTypeNameMap} fieldNames={{ label: 'name', value: 'key' }} />
+            <Select options={propItemTypeOptions} fieldNames={{ label: 'name', value: 'key' }} />
           </Form.Item>
+          <Form.Item noStyle dependencies={['type']}>
+            {({ getFieldValue }) => {
+              const type = getFieldValue('type');
+
+              if (type === PropItemType.Extension) {
+                const options = workbenchModel.propSettingView.map((item) => {
+                  return { name: item.title, key: `${item.package}${RemotePluginKeySep}${item.module}` }
+                })
+
+                return (<Form.Item label="子类型" name="subType" rules={[{ required: true }]} >
+                  <Select options={options} fieldNames={{ label: 'name', value: 'key' }} />
+                </Form.Item>)
+              } else {
+                return null;
+              }
+            }}
+          </Form.Item>
+
           <Form.Item label="属性名" rules={[{ required: true }]} name="propKey">
             <Input />
           </Form.Item>

@@ -96,7 +96,7 @@ export class ComponentVersionService {
         const originItem = originItemList[itemIndex];
         const item = em.create(PropItem, {
           ...pick(originItem,
-            ['label', 'propKey', 'type', 'valueOptions', 'span', 'rootPropKey', 'order', 'component', 'versionTraceId', 'defaultValue']
+            ['label', 'propKey', 'type', 'valueOptions', 'subType', 'span', 'rootPropKey', 'order', 'component', 'versionTraceId', 'defaultValue']
           ),
           componentVersion,
           block: tempIdData.blockId,

@@ -13,6 +13,8 @@ import { calcPropValueIdChain, parseOptions, stringify } from "@util/utils";
 import { useState } from "react";
 import { parsePropItemValue } from "@grootio/core";
 import ComponentChildren from "@components/ComponentChildren";
+import PluginView from "@components/PluginView";
+import { RemotePluginKeySep } from "@util/common";
 
 type PropType = {
   block: PropBlock,
@@ -166,6 +168,9 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
       return <TextEditor type="function" />
     } else if (item.type === PropItemType.Component) {
       return <ComponentChildren />
+    } else if (item.type === PropItemType.Extension) {
+      const config = workbenchModel.propSettingView.find(configItem => `${configItem.package}${RemotePluginKeySep}${configItem.module}` === item.subType);
+      return <PluginView config={config} />
     }
 
     return <>not found item</>

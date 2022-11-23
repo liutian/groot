@@ -1,6 +1,6 @@
 import { DesktopOutlined, MobileOutlined, RedoOutlined } from '@ant-design/icons';
+import { ViewportMode } from '@grootio/common';
 import WorkbenchModel from '@model/WorkbenchModel';
-import { ViewportMode } from '@util/common';
 import { useModel } from '@util/robot';
 import { Button, Space } from 'antd';
 import styles from './index.module.less';

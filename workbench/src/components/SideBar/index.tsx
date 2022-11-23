@@ -22,7 +22,7 @@ const SideBar: React.FC = () => {
     if (currentKey !== activeKey) {
       setActiveKey(currentKey);
       setOpenPanel(true);
-      const config = workbenchModel.viewConfig.sidebar.find(item => item.key === currentKey);
+      const config = workbenchModel.sidebarView.find(item => item.key === currentKey);
       if (React.isValidElement(config.view)) {
         setActiveComponent(config.view);
       } else {
@@ -45,7 +45,7 @@ const SideBar: React.FC = () => {
   return <div className={styles.container}>
     <div className={styles.barContainner}>
       {
-        workbenchModel.viewConfig.sidebar.map((item) => {
+        workbenchModel.sidebarView.map((item) => {
           return (<Button key={item.key} className={styles.menuItem}
             onClick={() => menuOnClick(item.key)} type={activeKey === item.key ? 'link' : 'text'}>
             {item.icon}

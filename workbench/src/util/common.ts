@@ -15,7 +15,4 @@ export enum WorkbenchEvent {
   ViewportSizeChange = 'viewport_size_chage'
 }
 
-export enum ViewportMode {
-  PC = 'pc',
-  H5 = 'h5'
-}
+export const RemotePluginKeySep = '!%!'
