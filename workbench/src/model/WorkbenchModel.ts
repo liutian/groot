@@ -1,4 +1,4 @@
-import { ApplicationData, IframeControlType, RemotePlugin, RuntimeHostContainerConfig, RuntimePluginConfig, RuntimeSidebarViewType, SidebarViewType, ViewportMode, } from "@grootio/common";
+import { ApplicationData, IframeControlType, RemotePlugin, RuntimeHostContainerConfig, RuntimePluginConfig, RuntimeSidebarViewType, ViewportMode, WorkbenchModelType, } from "@grootio/common";
 import { iframeDebuggerConfig, IframeManagerInstance, launchIframeManager } from "@model/iframeManager";
 import { needRewrite } from "@util/common";
 import { ReactNode } from "react";
@@ -7,7 +7,7 @@ import PropHandleModel from "./PropHandleModel";
 /**
  * 管理编辑器整体UI状态
  */
-export default class WorkbenchModel extends EventTarget {
+export default class WorkbenchModel extends EventTarget implements WorkbenchModelType {
   static modelName = 'workbench';
 
   /**

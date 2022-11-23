@@ -1,3 +1,4 @@
+import { ModelClass, ModelTuple, UseModelFnType } from "@grootio/common";
 import { useEffect, useState } from "react";
 import 'zone.js';
 import { isBaseType } from "./utils";
@@ -63,7 +64,7 @@ export const registerModel = <T>(model: ModelClass<T>): () => void => {
  * @param model 模型类
  * @returns [模型的代理对象, 主动更新的函数] 主动更新的函数可以不执行model方法的情况下更新model数据
  */
-export const useModel = <T>(model: ModelClass<T>, isRoot = false): ModelTuple<T> => {
+export const useModel: UseModelFnType = <T>(model: ModelClass<T>, isRoot = false): ModelTuple<T> => {
   if (!store.has(model.modelName)) {
     throw new Error(`model ${model.modelName} not find`);
   }
@@ -194,6 +195,3 @@ type ModelContainer = {
   rootTrigger?: Function,
 };
 
-type ModelClass<T> = (new () => T) & { modelName: string };
-
-type ModelTuple<T> = [T, (fun: Function, execTrigger?: boolean) => void];

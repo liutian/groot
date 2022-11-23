@@ -1,4 +1,4 @@
-import { ReactElement } from "react";
+import React, { ReactElement } from "react";
 
 /**
  * 配置项
@@ -348,3 +348,23 @@ export enum ViewportMode {
   PC = 'pc',
   H5 = 'h5'
 }
+
+
+export type ModelClass<T> = (new () => T) & { modelName: string };
+
+export type ModelTuple<T> = [T, (fun: Function, execTrigger?: boolean) => void];
+
+export type UseModelFnType = <T>(model: ModelClass<T>, isRoot?: boolean) => ModelTuple<T>;
+
+export class WorkbenchModelType extends EventTarget {
+  static modelName: string;
+  prototypeMode: boolean;
+  component: IComponent;
+}
+
+
+
+export type PluginViewComponent = React.FC<{
+  useModel: UseModelFnType,
+  WorkbenchModel: ((new () => WorkbenchModelType) & { modelName: string })
+}>;

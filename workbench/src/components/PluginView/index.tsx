@@ -1,13 +1,15 @@
-import { RemotePlugin } from "@grootio/common";
+import { PluginViewComponent, RemotePlugin } from "@grootio/common";
 import { loadRemoteModule } from "@util/fetch-remote-module";
 import React, { useEffect, useState } from "react";
 import request from "@util/request";
 import { APIPath } from "api/API.path";
+import { useModel } from "@util/robot";
+import WorkbenchModel from "@model/WorkbenchModel";
 
 const remoteModuleMap = new Map<string, RemotePlugin>();
 
 const PluginView: React.FC<{ config: RemotePlugin | string }> = ({ config }) => {
-  const [Component, setComponent] = useState<React.FC>();
+  const [Component, setComponent] = useState<PluginViewComponent>();
 
   useEffect(() => {
     if (!config) {
@@ -37,7 +39,7 @@ const PluginView: React.FC<{ config: RemotePlugin | string }> = ({ config }) => 
   return <>{
     !!Component ? (
       <React.Suspense fallback="loading plugin" >
-        <Component />
+        <Component useModel={useModel} WorkbenchModel={WorkbenchModel} />
       </React.Suspense >
     ) : null
   }</>
