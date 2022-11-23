@@ -90,7 +90,7 @@ export const create = async (em: EntityManager, org: Organization, release: Rele
   // 创建组件实例
   const btnComponentInstance = em.create(ComponentInstance, {
     name: '按钮',
-    key: '/admin/groot/button',
+    key: '/groot/button',
     entry: true,
     component: btnComponent,
     componentVersion: btnComponentVersion,

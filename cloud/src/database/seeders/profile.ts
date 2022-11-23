@@ -183,7 +183,7 @@ export const create = async (em: EntityManager, org: Organization, release: Rele
   // 创建组件实例
   const profileComponentInstance = em.create(ComponentInstance, {
     name: '个人资料',
-    key: '/admin/groot/profile',
+    key: '/groot/profile',
     entry: true,
     component: profileComponent,
     componentVersion: profileComponentVersion,

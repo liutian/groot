@@ -180,7 +180,7 @@ export const create = async (em: EntityManager, org: Organization, release: Rele
 
   const tableComponentInstance = em.create(ComponentInstance, {
     name: '查询页',
-    key: '/admin/groot/table',
+    key: '/groot/table',
     entry: true,
     component: tableComponent,
     componentVersion: tableComponentVersion,

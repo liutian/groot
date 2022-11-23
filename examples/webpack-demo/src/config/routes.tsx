@@ -9,14 +9,20 @@ const routes = [
   }, {
     path: '/page1',
     element: <Page1 />,
-  }, {
-    path: '/admin',
-    // element: <Layout />,
-    children: [{
-      path: 'groot',
-      children: [{ path: '*', element: <Demo /> }]
-    }]
-  }, {
+  },
+  // {
+  //   path: '/admin',
+  //   element: <Layout />,
+  //   children: [{
+  //     path: 'groot',
+  //     children: [{ path: '*', element: <Demo /> }]
+  //   }]
+  // },
+  {
+    path: '/groot',
+    children: [{ path: '*', element: <Demo /> }]
+  },
+  {
     path: '*',
     element: <NoMatch />
   }
