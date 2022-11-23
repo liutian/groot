@@ -22,7 +22,7 @@ const ComponentVersionAddModal: React.FC = () => {
     })
   }
 
-  return <Modal visible={prototypeModel.componentVersionAddModalStatus !== ModalStatus.None} mask={false} title="创建版本"
+  return <Modal open={prototypeModel.componentVersionAddModalStatus !== ModalStatus.None} mask={false} title="创建版本"
     confirmLoading={prototypeModel.componentVersionAddModalStatus === ModalStatus.Submit}
     onOk={handleOk} onCancel={handleCancel} okText="创建">
     <Form form={form} colon={false} labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>

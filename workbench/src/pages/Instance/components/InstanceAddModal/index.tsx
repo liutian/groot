@@ -33,7 +33,7 @@ const InstanceAddModal: React.FC = () => {
     })
   }
 
-  return <Modal visible={editorModel.instanceAddModalStatus !== ModalStatus.None} mask={false} title="新增实例"
+  return <Modal open={editorModel.instanceAddModalStatus !== ModalStatus.None} mask={false} title="新增实例"
     confirmLoading={editorModel.instanceAddModalStatus === ModalStatus.Submit}
     onOk={handleOk} onCancel={handleCancel} okText="新增">
     <Form form={form} colon={false} labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>

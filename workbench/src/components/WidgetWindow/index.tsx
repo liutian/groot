@@ -59,7 +59,13 @@ const WidgetWindow: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
   }, []);
 
   const renderTabs = () => {
-    return <Tabs tabBarStyle={tabBarStyles} tabBarExtraContent={
+    const tabItems = [
+      { label: 'Tab 1', key: '1', children: '1' },
+      { label: 'Tab 2', key: '2', children: '2' },
+      { label: 'Tab 3', key: '3', children: '3' },
+      { label: 'Tab 4', key: '4', children: '4' }
+    ]
+    return <Tabs items={tabItems} tabBarStyle={tabBarStyles} tabBarExtraContent={
       <>
         <Button type="text" icon={<LineOutlined />} onClick={() => updateAction(() => workbenchModel.widgetWindowRect = 'min')} />
 
@@ -67,12 +73,7 @@ const WidgetWindow: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
 
         <Button type="text" icon={<CloseOutlined />} onClick={() => updateAction(() => workbenchModel.widgetWindowRect = 'none')} />
       </>
-    }>
-      <Tabs.TabPane tab="Tab 1" key="1">1</Tabs.TabPane>
-      <Tabs.TabPane tab="Tab 2" key="2">2</Tabs.TabPane>
-      <Tabs.TabPane tab="Tab 3" key="3">3</Tabs.TabPane>
-      <Tabs.TabPane tab="Tab 4" key="4">4</Tabs.TabPane>
-    </Tabs>
+    } />
   }
 
   return <div {...props} ref={containerRef} className={`${styles.widgetWindow} ${typeof workbenchModel.widgetWindowRect === 'string' ? workbenchModel.widgetWindowRect : ''}`}>

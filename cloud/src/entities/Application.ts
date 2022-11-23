@@ -57,5 +57,5 @@ export class Application extends BaseEntity {
   onlineReleaseId: number;
 
   @Property({ length: 100 })
-  baseUrl: string;
+  debugBaseUrl: string;
 }

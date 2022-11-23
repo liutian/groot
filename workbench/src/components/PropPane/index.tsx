@@ -39,7 +39,7 @@ function PropPane() {
     })
   }
 
-  const renderTabContent = () => {
+  const createTabItems = () => {
     const list = propHandleModel.propTree.map((group) => {
       let content = <PropGroupPane group={group}
         key={`group-${group.id}-${propHandleModel.forceUpdateFormKey}`} />;
@@ -48,23 +48,23 @@ function PropPane() {
           key={`block-${group.propBlockList[0].id}-${propHandleModel.forceUpdateFormKey}`} />;
       }
 
-      return (<Tabs.TabPane key={group.id} tab={renderTabBarItem(group)} className={styles.content}>
-        {content}
-      </Tabs.TabPane>)
+      return { key: `${group.id}`, label: renderTabBarItem(group), className: styles.content, children: content };
     })
 
-    return <>
-      {list}
-      {workbenchModel.prototypeMode && <Tabs.TabPane key="__add" tab={<Typography.Link><PlusOutlined /></Typography.Link>}></Tabs.TabPane>}
-    </>
+    if (workbenchModel.prototypeMode) {
+      list.push({
+        key: '__add',
+        label: <Typography.Link><PlusOutlined /></Typography.Link>,
+      } as any)
+    }
+
+    return list;
   }
 
   /////////////////////////////////////////////////////////////////////////////
   return <>
     <Tabs size="small" activeKey={propHandleModel.activeGroupId?.toString()}
-      onChange={tabOnChange} tabBarExtraContent={<PropGroupToolBar />}>
-      {renderTabContent()}
-    </Tabs>
+      onChange={tabOnChange} tabBarExtraContent={<PropGroupToolBar />} items={createTabItems() as any} />
   </>
 }
 

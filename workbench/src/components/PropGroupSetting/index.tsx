@@ -34,7 +34,7 @@ const PropGroupSetting: React.FC = () => {
 
   return (<Modal mask={false} width={400} title={propPersistModel.currSettingPropGroup?.id ? '更新配置组' : '创建配置组'}
     confirmLoading={propPersistModel.settingModalSubmitting} okText={propPersistModel.currSettingPropGroup?.id ? '更新' : '创建'}
-    visible={!!propPersistModel.currSettingPropGroup} onOk={handleOk} onCancel={handleCancel}>
+    open={!!propPersistModel.currSettingPropGroup} onOk={handleOk} onCancel={handleCancel}>
     {
       !!propPersistModel.currSettingPropGroup && (
 

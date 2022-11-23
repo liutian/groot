@@ -91,7 +91,7 @@ const PropItemSetting: React.FC = () => {
   }
 
   return (<Modal mask={false} destroyOnClose width={600} title={propPersistModel.currSettingPropItem?.id ? '更新配置项' : '创建配置项'}
-    confirmLoading={propPersistModel.settingModalSubmitting} visible={!!propPersistModel.currSettingPropItem}
+    confirmLoading={propPersistModel.settingModalSubmitting} open={!!propPersistModel.currSettingPropItem}
     onOk={handleOk} onCancel={handleCancel} okText={propPersistModel.currSettingPropItem?.id ? '更新' : '创建'}>
     {
       !!propPersistModel.currSettingPropItem && (

@@ -21,7 +21,7 @@ const ComponentAddModal: React.FC = () => {
     })
   }
 
-  return <Modal visible={prototypeModel.componentAddModalStatus !== ModalStatus.None} mask={false} title="创建组件"
+  return <Modal open={prototypeModel.componentAddModalStatus !== ModalStatus.None} mask={false} title="创建组件"
     confirmLoading={prototypeModel.componentAddModalStatus === ModalStatus.Submit}
     onOk={handleOk} onCancel={handleCancel} okText="创建">
     <Form form={form} colon={false} labelCol={{ span: 6 }} wrapperCol={{ span: 18 }} >

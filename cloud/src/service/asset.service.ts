@@ -107,7 +107,7 @@ export class AssetService {
       await em.flush();
 
       // 更新newAssetList
-      bundle.newAssetList.add(...newAssetList);
+      bundle.newAssetList.add(newAssetList);
       await em.flush();
 
       await em.commit();

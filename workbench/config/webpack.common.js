@@ -143,7 +143,7 @@ module.exports = (env, args) => {
 					'react/jsx-runtime': {
 						eager: true,
 						singleton: true,
-						requiredVersion: '^1.0.0'
+						requiredVersion: '^18.2.0'
 					},
 					antd: {
 						eager: true,

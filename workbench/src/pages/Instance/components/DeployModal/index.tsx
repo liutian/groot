@@ -21,7 +21,7 @@ const DeployModal: React.FC = () => {
     editorModel.assetDeploy(formData);
   }
 
-  return <Modal visible={editorModel.assetDeployModalStatus !== ModalStatus.None} title="部署"
+  return <Modal open={editorModel.assetDeployModalStatus !== ModalStatus.None} title="部署"
     confirmLoading={editorModel.assetDeployModalStatus === ModalStatus.Submit} onOk={onOk}>
     <Form form={form} layout="horizontal" labelCol={{ span: 4 }} wrapperCol={{ span: 20 }}>
       <Form.Item label="环境" name="env" initialValue={EnvType.Dev}>

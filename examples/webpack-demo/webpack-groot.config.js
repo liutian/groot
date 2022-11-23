@@ -97,6 +97,7 @@ const commonConfig = (env, args) => {
           },
           'react/jsx-runtime': {
             singleton: true,
+            requiredVersion: '^18.2.0'
           },
           'react-dom': {
             singleton: true,

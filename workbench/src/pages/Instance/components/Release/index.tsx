@@ -24,7 +24,7 @@ const Release: React.FC = () => {
     }
   })
 
-  return (<Dropdown placement="topLeft" overlay={<Menu items={releaseListMenu} />}>
+  return (<Dropdown placement="topLeft" menu={{ items: releaseListMenu }}>
     <span >
       <BranchesOutlined title="迭代" />
       <span>{workbenchModel.application.release.name}</span>

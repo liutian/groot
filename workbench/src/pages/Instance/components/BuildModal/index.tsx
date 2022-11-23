@@ -35,7 +35,7 @@ const BuildModal: React.FC = () => {
     ]
   }
 
-  return <Modal visible={editorModel.assetBuildModalStatus !== ModalStatus.None} onCancel={onCancel} title="构建" footer={[actions]}>
+  return <Modal open={editorModel.assetBuildModalStatus !== ModalStatus.None} onCancel={onCancel} title="构建" footer={[actions]}>
     {
       editorModel.assetBuildStatus === 'init' && (
         <div>

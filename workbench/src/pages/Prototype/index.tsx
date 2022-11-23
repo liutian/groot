@@ -73,7 +73,7 @@ const Prototype: React.FC = () => {
         }
       })
 
-      return (<Dropdown placement="topLeft" overlay={<Menu items={versionListMenu} />}>
+      return (<Dropdown placement="topLeft" menu={{ items: versionListMenu }}>
         <span>
           <BranchesOutlined title="版本" />
           <span>{workbenchModel.componentVersion.name}</span>

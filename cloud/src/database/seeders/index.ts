@@ -26,7 +26,7 @@ export class DatabaseSeeder extends Seeder {
       key: 'demo',
       name: '管理端应用',
       playgroundPath: '/groot/playground',
-      baseUrl: 'http://localhost:8888',
+      debugBaseUrl: 'http://localhost:8888',
       project,
     });
     await em.persistAndFlush(application);
@@ -47,7 +47,7 @@ export class DatabaseSeeder extends Seeder {
     const org = em.create(Organization, {
       name: '管理平台',
       playgroundPath: '/groot/playground',
-      baseUrl: 'http://localhost:8888'
+      debugBaseUrl: 'http://localhost:8888'
     });
     await em.persistAndFlush(org);
 

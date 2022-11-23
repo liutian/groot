@@ -88,7 +88,7 @@ export default class WorkbenchModel extends EventTarget {
   }
 
   public launchPrototypeBox(org: Organization) {
-    this.iframeBasePath = org.baseUrl;
+    this.iframeBasePath = org.debugBaseUrl;
     this.prototypeMode = true;
     iframeDebuggerConfig.runtimeConfig.prototypeMode = true;
     this.org = org;
@@ -111,7 +111,7 @@ export default class WorkbenchModel extends EventTarget {
   }
 
   public launchInstanceBox(app: Application) {
-    this.iframeBasePath = app.baseUrl;
+    this.iframeBasePath = app.debugBaseUrl;
     this.prototypeMode = false;
     iframeDebuggerConfig.runtimeConfig.prototypeMode = false;
     this.application = app;
