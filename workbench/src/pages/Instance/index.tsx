@@ -16,8 +16,8 @@ import DeployModal from "./components/DeployModal";
 import { DragComponentList } from "./components/DragComponentList";
 import Release from "./components/Release";
 import { ModalStatus, WorkbenchEvent } from "@util/common";
-import { PostMessageType, RuntimeHostContainerConfig } from "@grootio/common";
-import PluginLoader from "@components/PluginLoader";
+import { PostMessageType, RuntimeHostConfig } from "@grootio/common";
+import ConfigLoader from "@components/ConfigLoader";
 import Loading from "@components/Loading";
 import InstanceList from "./components/InstanceList";
 
@@ -42,7 +42,7 @@ const Instance: React.FC = () => {
     instanceModel.fetchApplication(applicationId, releaseId);
   }, []);
 
-  const fetchPluginFinish = (config: RuntimeHostContainerConfig) => {
+  const fetchPluginFinish = (config: RuntimeHostConfig) => {
     initView();
     workbenchModel.processConfig(config);
 
@@ -128,7 +128,7 @@ const Instance: React.FC = () => {
   } else if (instanceModel.loadStatus === 'no-component') {
     return <>not found component</>
   } else if (instanceModel.loadStatus === 'fetch-pluginn') {
-    return <PluginLoader finish={fetchPluginFinish} />
+    return <ConfigLoader finish={fetchPluginFinish} />
   } else {
     return (<>
       <Workbench />

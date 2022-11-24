@@ -14,18 +14,18 @@ export type UIManagerConfig = {
   beforeLoadApplication?: Promise<void> | Function;
   debug?: boolean;
   useWrapper?: boolean;
-  hostContainerConfig?: Omit<HostContainerConfig, 'plugin'> & {
+  hostConfig?: Omit<HostConfig, 'plugin'> & {
     plugin?: (controlType: IframeControlType) => PluginConfig | Promise<PluginConfig>;
   },
   shared?: Record<string, any>,
 };
 
-export type HostContainerConfig = {
+export type HostConfig = {
   viewportMode?: ViewportMode,
   plugin?: PluginConfig
 }
 
-export type RuntimeHostContainerConfig = Omit<HostContainerConfig, 'plugin'> & {
+export type RuntimeHostConfig = Omit<HostConfig, 'plugin'> & {
   plugin?: RuntimePluginConfig
 };
 

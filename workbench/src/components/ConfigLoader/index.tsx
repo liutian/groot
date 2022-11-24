@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 
-import { HostContainerConfig, IframeControlType, iframeNamePrefix, PluginConfig, PostMessageType, RuntimeHostContainerConfig, RuntimePluginConfig } from "@grootio/common";
+import { RuntimeHostConfig, IframeControlType, iframeNamePrefix, PostMessageType, HostConfig } from "@grootio/common";
 import WorkbenchModel from "@model/WorkbenchModel";
 import { useModel } from "@util/robot";
 
@@ -10,10 +10,10 @@ import request from "@util/request";
 import { APIPath } from "api/API.path";
 
 type PropType = {
-  finish: (config?: RuntimeHostContainerConfig) => void,
+  finish: (config?: RuntimeHostConfig) => void,
 }
 
-const PluginLoader: React.FC<PropType> = ({ finish }) => {
+const ConfigLoader: React.FC<PropType> = ({ finish }) => {
   const [workbenchModel] = useModel(WorkbenchModel);
   const iframeEleRef = useRef<HTMLIFrameElement>();
 
@@ -30,9 +30,9 @@ const PluginLoader: React.FC<PropType> = ({ finish }) => {
     function onMessage(event: MessageEvent) {
       const messageData = event.data;
       if (messageData.type === PostMessageType.InnerSetConfig) {
-        const configData = messageData.data as HostContainerConfig;
+        const configData = messageData.data as HostConfig;
         if (!configData || !configData.plugin) {
-          finish(configData as RuntimeHostContainerConfig);
+          finish(configData as RuntimeHostConfig);
           return;
         }
 
@@ -58,10 +58,10 @@ const PluginLoader: React.FC<PropType> = ({ finish }) => {
               return viewConfig;
             })
 
-            finish(configData as RuntimeHostContainerConfig);
+            finish(configData as RuntimeHostConfig);
           })
         } else {
-          finish(configData as RuntimeHostContainerConfig);
+          finish(configData as RuntimeHostConfig);
         }
 
       }
@@ -74,9 +74,9 @@ const PluginLoader: React.FC<PropType> = ({ finish }) => {
 
   // 如果对iframe节点进行移动追加到其他DOM会导致iframe重写刷新，所以只做一次行取配置的动作
   return <div className={styles.container}>
-    <Loading text="loading plugin ..." />
+    <Loading text="loading config ..." />
     <iframe ref={iframeEleRef} ></iframe>
   </div>
 }
 
-export default PluginLoader;
+export default ConfigLoader;

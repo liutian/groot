@@ -4,7 +4,7 @@ import { useModel } from "@util/robot";
 import WorkbenchModel from "@model/WorkbenchModel";
 import MouseFollow from "components/MouseFollow";
 import styles from './index.module.less';
-import SideFooter from "./SideFooter";
+import PropFooter from "./PropFooter";
 import PropPane from "./PropPane";
 import PropGroupSetting from "./PropGroupSetting";
 import PropItemSetting from "./PropItemSetting";
@@ -38,7 +38,7 @@ const PropSetter: React.FC = () => {
       }
     </div>
 
-    <SideFooter className={styles.footerContainer} />
+    <PropFooter className={styles.footerContainer} />
 
     <PropGroupSetting />
     <PropBlockSetting />

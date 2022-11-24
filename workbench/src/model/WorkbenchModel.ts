@@ -1,4 +1,4 @@
-import { ApplicationData, IframeControlType, RemotePlugin, RuntimeHostContainerConfig, RuntimePluginConfig, RuntimeSidebarViewType, ViewportMode, WorkbenchModelType, } from "@grootio/common";
+import { ApplicationData, IframeControlType, RemotePlugin, RuntimeHostConfig, RuntimePluginConfig, RuntimeSidebarViewType, ViewportMode, WorkbenchModelType, } from "@grootio/common";
 import { iframeDebuggerConfig, IframeManagerInstance, launchIframeManager } from "@model/iframeManager";
 import { needRewrite } from "@util/common";
 import { ReactNode } from "react";
@@ -245,7 +245,7 @@ export default class WorkbenchModel extends EventTarget implements WorkbenchMode
     }
   }
 
-  public processConfig(config: RuntimeHostContainerConfig) {
+  public processConfig(config: RuntimeHostConfig) {
     if (config.viewportMode) {
       this.viewportMode = config.viewportMode;
     }

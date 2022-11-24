@@ -7,12 +7,12 @@ import WorkbenchModel from "@model/WorkbenchModel";
 import PropPersistModel from "@model/PropPersistModel";
 import PropHandleModel from "@model/PropHandleModel";
 import { PropItemType, PropValueType, ValueStruct } from "@grootio/common";
-import NumberSlider from "@components/PropSetter/NumberSlider";
-import TextEditor from "@components/PropSetter/TextEditor";
+import NumberSlider from "@components/PropSetter/item-components/NumberSlider";
+import TextEditor from "@components/PropSetter/item-components/TextEditor";
 import { calcPropValueIdChain, parseOptions, stringify } from "@util/utils";
 import { useState } from "react";
 import { parsePropItemValue } from "@grootio/core";
-import ComponentChildren from "@components/PropSetter/ComponentChildren";
+import ComponentChildren from "@components/PropSetter/item-components/ComponentChildren";
 import PluginView from "@components/PluginView";
 import { RemotePluginKeySep } from "@util/common";
 

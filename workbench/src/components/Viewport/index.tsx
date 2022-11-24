@@ -1,5 +1,5 @@
-import IframeDrag from "@components/IframeDrag";
-import IframeOutlineMarker from "@components/IframeOutlineMarker";
+import ViewportDrag from "@components/ViewportDrag";
+import ViewportOutlineMarker from "@components/ViewportOutlineMarker";
 import WorkbenchModel from "@model/WorkbenchModel";
 import { useModel } from "@util/robot";
 import { useEffect, useRef } from "react";
@@ -29,8 +29,8 @@ const Viewport: React.FC = () => {
     {/* 防止拖拽缩放过程中由于鼠标移入iframe中丢失鼠标移动事件 */}
     <iframe ref={iframeRef} style={iframeStyles} ></iframe>
     <div id={workbenchModel.viewportMaskId} />
-    {!workbenchModel.prototypeMode ? <IframeDrag /> : null}
-    {!workbenchModel.prototypeMode ? <IframeOutlineMarker /> : null}
+    {!workbenchModel.prototypeMode ? <ViewportDrag /> : null}
+    {!workbenchModel.prototypeMode ? <ViewportOutlineMarker /> : null}
   </div>
 }
 

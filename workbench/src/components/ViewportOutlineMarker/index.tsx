@@ -10,7 +10,7 @@ import styles from './index.module.less';
 import { MarkerInfo, PostMessageType } from '@grootio/common';
 import PropHandleModel from '@model/PropHandleModel';
 
-const IframeOutlineMarker: React.FC = () => {
+const ViewportOutlineMarker: React.FC = () => {
   const [workbenchModel] = useModel(WorkbenchModel);
   const [propHandleModel] = useModel(PropHandleModel);
 
@@ -158,4 +158,4 @@ const IframeOutlineMarker: React.FC = () => {
 }
 
 
-export default IframeOutlineMarker;
+export default ViewportOutlineMarker;

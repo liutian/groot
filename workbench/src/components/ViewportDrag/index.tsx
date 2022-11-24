@@ -9,7 +9,7 @@ type PropType = {
 
 }
 
-const IframeDrag: React.FC<PropType> = (prop) => {
+const ViewportDrag: React.FC<PropType> = (prop) => {
   const [workbenchModel] = useModel(WorkbenchModel);
   const markerRef = useRef<HTMLDivElement>();
   const [currentStyles, setCurrentStyles] = useState({});
@@ -76,4 +76,4 @@ const IframeDrag: React.FC<PropType> = (prop) => {
   </div>
 }
 
-export default IframeDrag;
+export default ViewportDrag;

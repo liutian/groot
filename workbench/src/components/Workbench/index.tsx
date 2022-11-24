@@ -6,7 +6,7 @@ import { useModel } from '@util/robot';
 import styles from './index.module.less';
 import SideBar from '@components/SideBar';
 import Viewport from '@components/Viewport';
-import FixedWidgetWindow from '@components/FixedWidgetWindow';
+import FooterBar from '@components/FooterBar';
 import TopBar from '@components/TopBar';
 
 
@@ -27,8 +27,8 @@ const Workbench: React.FC = () => {
       <Viewport />
     </div>
 
-    <div className={styles.footerWidgetWindow}>
-      <FixedWidgetWindow />
+    <div className={styles.footerBar}>
+      <FooterBar />
     </div>
 
     <WidgetWindow />

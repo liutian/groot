@@ -33,7 +33,7 @@ UIManager.init({
       EmailForm
     },
   },
-  hostContainerConfig: {
+  hostConfig: {
     viewportMode: ViewportMode.H5,
     plugin: (controlType) => {
       return {

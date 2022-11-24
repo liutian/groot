@@ -14,8 +14,8 @@ import { Breadcrumb, Button, Dropdown, Menu, Modal } from "antd";
 import { AppstoreOutlined, BranchesOutlined, PlusOutlined, SendOutlined } from "@ant-design/icons";
 import { ModalStatus } from "@util/common";
 import Loading from "@components/Loading";
-import PluginLoader from "@components/PluginLoader";
-import { RuntimeHostContainerConfig } from "@grootio/common";
+import ConfigLoader from "@components/ConfigLoader";
+import { RuntimeHostConfig } from "@grootio/common";
 
 const Prototype: React.FC = () => {
   const [prototypeModel, prototypeUpdateAction] = useRegisterModel(PrototypeModel);
@@ -37,7 +37,7 @@ const Prototype: React.FC = () => {
     prototypeModel.fetchOrg(orgId);
   }, []);
 
-  const fetchPluginFinish = (config: RuntimeHostContainerConfig) => {
+  const fetchPluginFinish = (config: RuntimeHostConfig) => {
     initView();
     workbenchModel.processConfig(config);
 
@@ -113,7 +113,7 @@ const Prototype: React.FC = () => {
   } else if (prototypeModel.loadStatus === 'notfound') {
     return <>notfound component</>
   } else if (prototypeModel.loadStatus === 'fetch-pluginn') {
-    return <PluginLoader finish={fetchPluginFinish} />
+    return <ConfigLoader finish={fetchPluginFinish} />
   } else {
     return (<>
       <Workbench />

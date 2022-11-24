@@ -38,7 +38,7 @@ const WidgetWindow: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
           document.getElementById(workbenchModel.viewportMaskId).classList.remove('show');
         }}
       >
-        <Button type="text" icon={<DragOutlined />} />;
+        <Button type="text" icon={<DragOutlined />} />
       </MouseFollow>
     </>
   }

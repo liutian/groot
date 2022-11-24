@@ -1,12 +1,12 @@
 import { BellOutlined, BlockOutlined, BranchesOutlined, CommentOutlined, NumberOutlined, PlusOutlined } from '@ant-design/icons';
 import { useModel } from '@util/robot';
-import { Dropdown, Menu, Typography } from 'antd';
+import { Typography } from 'antd';
 import { HTMLAttributes, useEffect, useRef } from 'react';
 import styles from './index.module.less';
 
 import WorkbenchModel from '@model/WorkbenchModel';
 
-const SideFooter: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
+const PropFooter: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
   const [workbenchModel, workbenchUpdateAction] = useModel(WorkbenchModel);
   const propPathChainRef = useRef<HTMLElement>();
 
@@ -54,4 +54,4 @@ const SideFooter: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
   </div>
 }
 
-export default SideFooter;
+export default PropFooter;

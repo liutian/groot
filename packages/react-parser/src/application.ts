@@ -1,4 +1,4 @@
-import { ApplicationData, HostContainerConfig, IframeControlType, IframeDebuggerConfig, PluginConfig, PostMessageType, UIManagerConfig } from '@grootio/common';
+import { ApplicationData, HostConfig, IframeControlType, IframeDebuggerConfig, PluginConfig, PostMessageType, UIManagerConfig } from '@grootio/common';
 
 import { Page } from './Page';
 import { ApplicationStatus } from './types';
@@ -36,8 +36,8 @@ export function bootstrap(customConfig: UIManagerConfig): ApplicationInstance {
   if (controlType === IframeControlType.FetchInstanceViewConfig || controlType === IframeControlType.FetchPrototypeViewConfig) {
     let promise;
 
-    if (globalConfig.hostContainerConfig?.plugin) {
-      const configOrPromise = globalConfig.hostContainerConfig.plugin(controlType);
+    if (globalConfig.hostConfig?.plugin) {
+      const configOrPromise = globalConfig.hostConfig.plugin(controlType);
       if ((configOrPromise as Promise<PluginConfig>).then) {
         promise = configOrPromise;
       } else {
@@ -51,9 +51,9 @@ export function bootstrap(customConfig: UIManagerConfig): ApplicationInstance {
       window.parent.postMessage({
         type: PostMessageType.InnerSetConfig,
         data: {
-          ...globalConfig.hostContainerConfig,
+          ...globalConfig.hostConfig,
           plugin
-        } as HostContainerConfig
+        } as HostConfig
       }, '*');
     }).catch(() => {
       throw new Error('get view config error');
