@@ -4,17 +4,17 @@ import { useModel } from "@util/robot";
 import WorkbenchModel from "@model/WorkbenchModel";
 import MouseFollow from "components/MouseFollow";
 import styles from './index.module.less';
-import SideFooter from "../SideFooter";
-import PropPane from "../PropPane";
-import PropGroupSetting from "../PropGroupSetting";
-import PropItemSetting from "../PropItemSetting";
-import PropBlockSetting from "../PropBlockSetting";
-import SubPropPane from "../SubPropPane";
+import SideFooter from "./SideFooter";
+import PropPane from "./PropPane";
+import PropGroupSetting from "./PropGroupSetting";
+import PropItemSetting from "./PropItemSetting";
+import PropBlockSetting from "./PropBlockSetting";
+import SubPropPane from "./SubPropPane";
 import PropHandleModel from "@model/PropHandleModel";
 import { WorkbenchEvent } from "@util/common";
 
 
-const SidePanel: React.FC = () => {
+const PropSetter: React.FC = () => {
   const [propHandleModel] = useModel(PropHandleModel);
   const [workbenchModel] = useModel(WorkbenchModel);
 
@@ -70,4 +70,4 @@ const SidePanel: React.FC = () => {
   </div >
 }
 
-export default SidePanel;
+export default PropSetter;

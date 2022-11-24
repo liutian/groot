@@ -1,5 +1,5 @@
 
-import SidePanel from '@components/SidePanel';
+import PropSetter from '@components/PropSetter';
 import WidgetWindow from '@components/WidgetWindow';
 import WorkbenchModel from '@model/WorkbenchModel';
 import { useModel } from '@util/robot';
@@ -33,8 +33,8 @@ const Workbench: React.FC = () => {
 
     <WidgetWindow />
 
-    <div className={styles.sidePanel}>
-      <SidePanel />
+    <div className={styles.propSetter}>
+      <PropSetter />
     </div >
   </div>)
 }

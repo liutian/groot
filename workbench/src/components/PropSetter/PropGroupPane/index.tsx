@@ -8,7 +8,7 @@ import styles from './index.module.less';
 import { useState } from "react";
 import PropPersistModel from "@model/PropPersistModel";
 import { PropBlockStructType } from "@grootio/common";
-import PropBlockListStructPane from "@components/PropBlockListStructPane";
+import PropBlockListStructPane from "@components/PropSetter/PropBlockListStructPane";
 import { stringify } from "@util/utils";
 
 type PropsType = {

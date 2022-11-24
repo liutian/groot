@@ -3,7 +3,7 @@ import { PropItemType } from '@grootio/common';
 import PropHandleModel from '@model/PropHandleModel';
 import { useModel } from '@util/robot';
 import { Button } from 'antd';
-import BlockListStructPrefs from '@components/BlockListStructPrefs';
+import BlockListStructPrefs from '@components/PropSetter/BlockListStructPrefs';
 import { useRef } from 'react';
 
 import PropBlockPane from '../PropBlockPane';
