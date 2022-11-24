@@ -1,4 +1,6 @@
 import React, { ReactElement } from "react";
+import { Component, ComponentInstance, ComponentVersion } from "./entities";
+export * from './entities';
 
 /**
  * 配置项
@@ -152,54 +154,6 @@ export enum EnvType {
   Ol = 'online'
 }
 
-export interface IPropGroup {
-  id: number,
-  propKey?: string,
-  propBlockList: IPropBlock[],
-  root: boolean,
-  order: number,
-  parentItem?: IPropItem
-}
-
-export interface IPropBlock {
-  id: number,
-  propKey?: string,
-  rootPropKey: boolean,
-  struct: PropBlockStructType,
-  propItemList: IPropItem[],
-  groupId?: number,
-  order: number,
-  group: IPropGroup,
-}
-
-export interface IPropItem {
-  id: number,
-  propKey?: string,
-  rootPropKey: boolean,
-  valueList: IPropValue[],
-  childGroup?: IPropGroup,
-  type: PropItemType,
-  defaultValue: string,
-  groupId: number,
-  blockId?: number,
-  order: number,
-  block: IPropBlock,
-  childGroupId?: number,
-}
-
-export interface IPropValue {
-  id: number,
-  abstractValueIdChain?: string,
-  value?: string,
-  propItemId?: number,
-  type: PropValueType
-}
-
-export interface IComponent {
-  id: number,
-  packageName: string,
-  componentName: string,
-}
 
 export enum DeployStatusType {
   Approval = 'approval',
@@ -359,7 +313,10 @@ export type UseModelFnType = <T>(model: ModelClass<T>, isRoot?: boolean) => Mode
 export class WorkbenchModelType extends EventTarget {
   static modelName: string;
   prototypeMode: boolean;
-  component: IComponent;
+  component: Component;
+  componentInstance: ComponentInstance;
+  instanceList: ComponentInstance[] = [];
+  componentVersion: ComponentVersion;
 }
 
 

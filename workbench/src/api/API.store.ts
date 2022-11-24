@@ -1,4 +1,4 @@
-import { RemotePlugin } from '@grootio/common';
+import { Application, Component, ComponentInstance, ComponentVersion, Deploy, Organization, PropBlock, PropGroup, PropItem, PropValue, Release, RemotePlugin } from '@grootio/common';
 import type { APIPath } from './API.path';
 
 // key APIPath枚举值: value [请求参数类型 , 返回数据类型]

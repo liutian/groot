@@ -1,3 +1,4 @@
+import { PropBlock, PropItem } from "@grootio/common";
 import PropPersistModel from "@model/PropPersistModel"
 import { useModel } from "@util/robot"
 import { Button, Checkbox, Space } from "antd"

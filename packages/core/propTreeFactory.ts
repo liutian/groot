@@ -1,7 +1,7 @@
-import { IPropBlock, IPropGroup, IPropItem, IPropValue, PropItemType } from "@grootio/common";
+import { PropBlock, PropGroup, PropItem, PropValue, PropItemType } from "@grootio/common";
 
-export function propTreeFactory(groupList: IPropGroup[], blockList: IPropBlock[], itemList: IPropItem[], valueList: IPropValue[]) {
-  const rootGroupList: IPropGroup[] = [];
+export function propTreeFactory(groupList: PropGroup[], blockList: PropBlock[], itemList: PropItem[], valueList: PropValue[]) {
+  const rootGroupList: PropGroup[] = [];
 
   const rootGroupIds = groupList.filter(g => g.root)
     .sort((a, b) => a.order - b.order)
@@ -23,9 +23,9 @@ export function propTreeFactory(groupList: IPropGroup[], blockList: IPropBlock[]
  * @param store 数据源
  * @returns 构建好的配置分组
  */
-function buildPropGroup(groupIdOrObj: number | IPropGroup,
-  store: { groupList: IPropGroup[], blockList: IPropBlock[], itemList: IPropItem[], valueList: IPropValue[] }) {
-  let group: IPropGroup;
+function buildPropGroup(groupIdOrObj: number | PropGroup,
+  store: { groupList: PropGroup[], blockList: PropBlock[], itemList: PropItem[], valueList: PropValue[] }) {
+  let group: PropGroup;
   if (typeof groupIdOrObj === 'number') {
     group = store.groupList.find(g => g.id === groupIdOrObj)!;
     if (!group) {

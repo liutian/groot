@@ -21,7 +21,6 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
       response.status(HttpStatus.OK).json({
         code: exception.code,
         message: exception.message,
-        // todo ...
       })
       // todo **log**
     } else {

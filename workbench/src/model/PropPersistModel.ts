@@ -1,4 +1,4 @@
-import { PropValueType, RuntimeComponentValueType, ValueStruct } from "@grootio/common";
+import { ComponentInstance, PropBlock, PropGroup, PropItem, PropValue, PropValueType, RuntimeComponentValueType, ValueStruct } from "@grootio/common";
 import { stringifyPropItemValue } from "@grootio/core";
 
 import { assignBaseType, autoIncrementForName, calcPropValueIdChain, stringifyOptions } from "@util/utils";
@@ -134,7 +134,6 @@ export default class PropPersistModel {
       })
     } else {
       request(APIPath.group_add, newGroup).then(({ data: { newGroup, extra } }) => {
-        // todo
         newGroup.expandBlockIdList = [];
         newGroup.propBlockList = [];
         this.propHandle.propTree.push(newGroup);

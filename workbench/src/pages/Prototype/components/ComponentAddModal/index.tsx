@@ -1,4 +1,4 @@
-import { ComponentParserType } from "@grootio/common";
+import { Component, ComponentParserType } from "@grootio/common";
 import { ModalStatus } from "@util/common";
 import { useModel } from "@util/robot";
 import { Form, Input, Modal } from "antd";

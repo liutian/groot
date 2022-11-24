@@ -1,4 +1,4 @@
-import { PropItemType } from "@grootio/common";
+import { PropItem, PropItemType } from "@grootio/common";
 
 export const uuid = (() => {
   let id = 0xaaaaaaaa;

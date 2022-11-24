@@ -3,6 +3,7 @@ import request from "@util/request";
 import { useEffect, useState } from "react";
 import { DragComponent } from "../DragComponent";
 import styles from './index.module.less';
+import { Component } from "@grootio/common";
 
 export const DragComponentList: React.FC = () => {
   const [componentList, setComponentList] = useState<Component[]>([]);

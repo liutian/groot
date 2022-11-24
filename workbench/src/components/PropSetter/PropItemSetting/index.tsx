@@ -3,7 +3,7 @@ import { Form, Input, Modal, Radio, Select, Space, Switch, Typography } from "an
 import React, { useEffect, useState } from "react";
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import PropPersistModel from "@model/PropPersistModel";
-import { PropItemType, PropItemTypeNameMap } from "@grootio/common";
+import { PropItem, PropItemType, PropItemTypeNameMap } from "@grootio/common";
 import WorkbenchModel from "@model/WorkbenchModel";
 import { RemotePluginKeySep } from "@util/common";
 

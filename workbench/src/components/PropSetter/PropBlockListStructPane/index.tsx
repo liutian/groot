@@ -1,5 +1,5 @@
 import { DeleteOutlined, DragOutlined, QuestionCircleOutlined, SettingOutlined } from "@ant-design/icons";
-import { PropBlockStructType, PropItemType, PropValueType } from "@grootio/common";
+import { PropBlock, PropBlockStructType, PropItem, PropItemType, PropValue, PropValueType } from "@grootio/common";
 import { parsePropItemValue } from "@grootio/core";
 import PropHandleModel from "@model/PropHandleModel";
 import PropPersistModel from "@model/PropPersistModel";

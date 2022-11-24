@@ -1,5 +1,5 @@
 import { LeftOutlined } from '@ant-design/icons';
-import { PropItemType } from '@grootio/common';
+import { PropItem, PropItemType } from '@grootio/common';
 import PropHandleModel from '@model/PropHandleModel';
 import { useModel } from '@util/robot';
 import { Button } from 'antd';

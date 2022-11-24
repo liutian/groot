@@ -1,4 +1,4 @@
-import { ApplicationData, DeployStatusType, EnvType, IComponent, IPropBlock, IPropGroup, IPropItem, IPropValue, Metadata, PropValueType } from '@grootio/common';
+import { ApplicationData, DeployStatusType, EnvType, Metadata, PropGroup as IPropGroup, PropBlock as IPropBlock, PropItem as IPropItem, PropValue as IPropValue, Component as IComponent } from '@grootio/common';
 import { EntityManager, RequestContext, wrap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { propTreeFactory, metadataFactory } from '@grootio/core';
@@ -194,7 +194,7 @@ export class AssetService {
       valueList.map(v => wrap(v).toObject()) as any as IPropValue[]
     );
 
-    const metadata = metadataFactory(rootGroupList, instance.component as IComponent, instance.id, instance.rootId, instance.parentId);
+    const metadata = metadataFactory(rootGroupList, instance.component as any as IComponent, instance.id, instance.rootId, instance.parentId);
 
     return metadata;
   }

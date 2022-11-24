@@ -1,4 +1,4 @@
-import { IPropItem, IPropValue, PropItemType, PropValueType } from "@grootio/common";
+import { PropItem, PropItemType } from "@grootio/common";
 import moment from "moment";
 
 /**
@@ -63,7 +63,7 @@ export const fillPropChain = (ctx: Object, propStr: string): [Object, string] =>
 
 
 
-export const parsePropItemValue = (propItem: IPropItem, value?: any) => {
+export const parsePropItemValue = (propItem: PropItem, value?: any) => {
   value = value || propItem.defaultValue
   if (propItem.type === PropItemType.DatePicker || propItem.type === PropItemType.TimePicker) {
     // todo ... 包含moment类型的值 postMessage会有问题
@@ -82,7 +82,7 @@ export const parsePropItemValue = (propItem: IPropItem, value?: any) => {
 }
 
 
-export const stringifyPropItemValue = (propItem: IPropItem, value?: any) => {
+export const stringifyPropItemValue = (propItem: PropItem, value?: any) => {
   if (propItem.type === PropItemType.Function) {
     // ... 不做任何处理
   } else if (propItem.type === PropItemType.Switch) {

@@ -9,7 +9,7 @@ import PropGroupToolBar from "../PropGroupToolBar";
 import WorkbenchModel from "@model/WorkbenchModel";
 import PropHandleModel from "@model/PropHandleModel";
 import PropPersistModel from "@model/PropPersistModel";
-import { PropGroupStructType } from "@grootio/common";
+import { PropGroup, PropGroupStructType } from "@grootio/common";
 
 import styles from './index.module.less';
 

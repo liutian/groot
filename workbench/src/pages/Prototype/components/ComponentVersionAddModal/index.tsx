@@ -1,3 +1,4 @@
+import { ComponentVersion } from "@grootio/common";
 import WorkbenchModel from "@model/WorkbenchModel";
 import { ModalStatus } from "@util/common";
 import { useModel } from "@util/robot";

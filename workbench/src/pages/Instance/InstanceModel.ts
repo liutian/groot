@@ -2,7 +2,7 @@ import { ModalStatus } from "@util/common";
 import { APIPath } from "api/API.path";
 import request from "@util/request";
 import WorkbenchModel from "../../model/WorkbenchModel";
-import { EnvType } from "@grootio/common";
+import { ComponentInstance, Deploy, EnvType, Release } from "@grootio/common";
 
 export default class InstanceModel {
   static modelName = 'editor';

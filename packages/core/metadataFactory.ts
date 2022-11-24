@@ -1,8 +1,8 @@
-import { IComponent, Metadata, PropBlockStructType, IPropGroup, IPropItem, PropItemType, PropMetadataType, IPropValue, RuntimeComponentValueType } from '@grootio/common';
+import { Component, Metadata, PropBlockStructType, PropGroup, PropItem, PropItemType, PropMetadataType, PropValue, RuntimeComponentValueType } from '@grootio/common';
 
 import { fillPropChainGreed, fillPropChain, parsePropItemValue } from './utils';
 
-export function metadataFactory(rootGroupList: IPropGroup[], component: IComponent, metadataId: number, rootMetadataId: number, parentMetadataId?: number) {
+export function metadataFactory(rootGroupList: PropGroup[], component: Component, metadataId: number, rootMetadataId: number, parentMetadataId?: number) {
   const metadata = {
     id: metadataId,
     packageName: component.packageName,
@@ -26,7 +26,7 @@ export function metadataFactory(rootGroupList: IPropGroup[], component: ICompone
 }
 
 
-function buildPropObject(group: IPropGroup, ctx: Object, ctxKeyChain: string, metadata: Metadata, parentValueList?: IPropValue[]) {
+function buildPropObject(group: PropGroup, ctx: Object, ctxKeyChain: string, metadata: Metadata, parentValueList?: PropValue[]) {
   group.propBlockList.forEach((block) => {
     const preCTX = ctx;
     const preCTXKeyChain = ctxKeyChain;
@@ -86,7 +86,7 @@ function buildPropObject(group: IPropGroup, ctx: Object, ctxKeyChain: string, me
 }
 
 
-function buildPropObjectForItem(item: IPropItem, ctx: Object, ctxKeyChain: string, metadata: Metadata, parentValueList?: IPropValue[]) {
+function buildPropObjectForItem(item: PropItem, ctx: Object, ctxKeyChain: string, metadata: Metadata, parentValueList?: PropValue[]) {
   const preCTX = ctx;
   const preCTXKeyChain = ctxKeyChain;
 
@@ -113,7 +113,7 @@ function buildPropObjectForItem(item: IPropItem, ctx: Object, ctxKeyChain: strin
 }
 
 
-function buildPropObjectForLeafItem(propItem: IPropItem, ctx: Object, ctxKeyChain: string, metadata: Metadata, parentValueList?: IPropValue[]) {
+function buildPropObjectForLeafItem(propItem: PropItem, ctx: Object, ctxKeyChain: string, metadata: Metadata, parentValueList?: PropValue[]) {
   const [newCTX, propEnd] = fillPropChain(propItem.rootPropKey ? metadata.propsObj : ctx, propItem.propKey);
   ctxKeyChain = propItem.rootPropKey ? propItem.propKey : `${ctxKeyChain}.${propItem.propKey}`;
   ctxKeyChain = ctxKeyChain.replace(/^\.|\.$/g, '');

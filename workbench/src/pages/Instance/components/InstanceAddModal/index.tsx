@@ -6,6 +6,7 @@ import { useModel } from "@util/robot";
 import { APIPath } from "api/API.path";
 import request from "@util/request";
 import EditorModel from "pages/Instance/InstanceModel";
+import { Component, ComponentInstance } from "@grootio/common";
 
 const InstanceAddModal: React.FC = () => {
   const [editorModel, updateAction] = useModel(EditorModel);

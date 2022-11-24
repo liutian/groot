@@ -9,6 +9,7 @@ import { useModel } from "@util/robot";
 
 import styles from './index.module.less';
 import { stringify } from "@util/utils";
+import { PropGroup } from "@grootio/common";
 
 const PropGroupToolBar: React.FC = () => {
   const [propPersistModel, propPersistAction] = useModel<PropPersistModel>(PropPersistModel);

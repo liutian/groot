@@ -6,7 +6,7 @@ import styles from './index.module.less';
 import WorkbenchModel from "@model/WorkbenchModel";
 import PropPersistModel from "@model/PropPersistModel";
 import PropHandleModel from "@model/PropHandleModel";
-import { PropItemType, PropValueType, ValueStruct } from "@grootio/common";
+import { PropBlock, PropItem, PropItemType, PropValueType, ValueStruct } from "@grootio/common";
 import NumberSlider from "@components/PropSetter/item-components/NumberSlider";
 import TextEditor from "@components/PropSetter/item-components/TextEditor";
 import { calcPropValueIdChain, parseOptions, stringify } from "@util/utils";

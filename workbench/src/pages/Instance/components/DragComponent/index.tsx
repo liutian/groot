@@ -1,4 +1,5 @@
 import { DropboxOutlined } from "@ant-design/icons";
+import { Component } from "@grootio/common";
 import WorkbenchModel from "@model/WorkbenchModel";
 import { WorkbenchEvent } from "@util/common";
 import { useModel } from "@util/robot";
