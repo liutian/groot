@@ -1,9 +1,9 @@
-import { ReactNode, useEffect } from "react";
+import { ReactElement, useEffect } from "react";
 import { ComponentSlot } from "./ComponentSlot";
 
 type PropsType = {
   title: string,
-  content: ReactNode[]
+  content: ReactElement[]
 }
 
 const PageContainer: React.FC<PropsType> = ({ title, content }) => {

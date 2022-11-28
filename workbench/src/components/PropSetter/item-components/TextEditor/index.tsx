@@ -36,13 +36,15 @@ function TextEditor({ onChange, value, type = 'json' }: propsType) {
     });
 
     monaco.languages.typescript.typescriptDefaults.addExtraLib(`
-    declare namespace $groot{
-      const version: string;
-      let tick: number;
-      const shared: Record<string, any>;
-    }
-    declare let $exportFn: Function;
-    declare const $props: any;
+    declare const _groot:{
+      readonly version: string;
+      readonly controlMode: boolean;
+      readonly controlType: 'prototype' | 'instance';
+    };
+    
+    declare const _shared: Record<string, any>;
+    declare let _exportFn: Function;
+    declare const _props: any;
     `, '');
 
     editorRef.current = monaco.editor.create(codeEditorContainerRef.current, {

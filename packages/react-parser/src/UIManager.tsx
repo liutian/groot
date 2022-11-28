@@ -1,6 +1,6 @@
 import { useReducer } from 'react';
 import React from 'react';
-import { UIManagerConfig } from '@grootio/common';
+import { Groot, UIManagerConfig } from '@grootio/common';
 
 import { errorInfo } from './util';
 import { ApplicationStatus } from './types';
@@ -8,6 +8,7 @@ import { Page } from './Page';
 import { ApplicationInstance, bootstrap } from './application';
 import { launchWatch } from './monitor';
 import { globalConfig } from './config';
+import groot from './groot';
 
 let app: ApplicationInstance;
 // 保持最新的函数引用
@@ -88,9 +89,9 @@ UIManager.init = (config: UIManagerConfig) => {
   app = bootstrap(config);
 
   console.log('UIManager.init .....');
-  return app;
+  return groot;
 };
 
 interface IUIManager<T> extends React.FC<T> {
-  init: (config: UIManagerConfig) => ApplicationInstance;
+  init: (config: UIManagerConfig) => Groot;
 }

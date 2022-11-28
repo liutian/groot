@@ -3,6 +3,7 @@ import { Metadata, PropMetadata, PropMetadataType, RuntimeComponentValueType } f
 import React, { useEffect, useReducer, useRef } from "react";
 import { globalConfig } from "./config";
 import functionCreate from "./function-creator";
+import groot from "./groot";
 import { debugInfo, controlMode, errorInfo } from "./util";
 
 const instanceRefreshFnMap = new Map<number, Function>();
@@ -63,6 +64,7 @@ const createComponentWrapper = (metadata: Metadata, isRoot: boolean) => {
     // react不接受$开头的属性
     const propsObj = Object.assign({}, metadata.propsObj);
     delete propsObj.$setting;
+    propsObj._groot = groot;
     if (!controlMode && !globalConfig.useWrapper) {
       return React.createElement(module, propsObj)
     } else {

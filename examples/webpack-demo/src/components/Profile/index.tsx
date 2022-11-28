@@ -4,7 +4,7 @@ type PropType = {
   name: string,
   address: string,
   email: string,
-  avatar: React.ReactNode[]
+  avatar: React.ReactElement[]
 }
 
 const Profile: React.FC<PropType> = (props) => {

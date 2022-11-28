@@ -73,8 +73,17 @@ export class ComponentService {
       await em.flush();
 
       // 创建默认配置组
-      em.create(PropGroup, {
+      const newGroup = em.create(PropGroup, {
         name: '常用配置',
+        order: 1000,
+        componentVersion: newVersion,
+        component: newComponent
+      });
+      await em.flush();
+
+      em.create(PropBlock, {
+        name: '基本配置',
+        group: newGroup,
         order: 1000,
         componentVersion: newVersion,
         component: newComponent

@@ -4,7 +4,7 @@ import { UIManager } from '@grootio/react-parser';
 import { useLocation } from 'react-router';
 import react from 'react';
 import Profile from 'components/Profile';
-import { DateForm, EmailForm, FormContainer, InputForm, PhoneForm, SelectForm } from 'components/FormComponent';
+import { DateFormItem, EmailFormItem, FormContainer, InputFormItem, MultiDetailFormItem, PhoneFormItem, SelectFormItem } from 'components/FormComponent';
 import { ViewportMode } from '@grootio/common';
 
 UIManager.init({
@@ -26,11 +26,12 @@ UIManager.init({
     app: {
       Profile,
       FormContainer,
-      InputForm,
-      SelectForm,
-      DateForm,
-      PhoneForm,
-      EmailForm
+      InputFormItem,
+      SelectFormItem,
+      DateFormItem,
+      PhoneFormItem,
+      EmailFormItem,
+      MultiDetailFormItem
     },
   },
   hostConfig: {

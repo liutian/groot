@@ -1,23 +1,18 @@
 import { globalConfig } from './config';
+import groot from './groot';
 
-const $groot = {
-  version: 'v0.1',
-  tick: 1,
-  shared: globalConfig.shared
-}
 
 function create(functionBody: string, $props: Object) {
-  const newFunction = new window.Function('$props', '$groot', `
+  const newFunction = new window.Function('_props', '_groot', '_shared', `
     'use strict';
-    return function __grootFn($groot,$props){
-      let $exportFn;
+    return function __grootFn(_groot,_props,_shared){
+      let _exportFn;
       ${functionBody}
-      return $exportFn;
-    }($groot,$props);
+      return _exportFn;
+    }(_groot,_props,_shared);
   `);
 
-  $groot.shared = globalConfig.shared;
-  return newFunction($props, $groot);
+  return newFunction($props, groot, globalConfig.shared);
 }
 
 

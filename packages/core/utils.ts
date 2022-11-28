@@ -70,12 +70,10 @@ export const parsePropItemValue = (propItem: PropItem, value?: any) => {
     value = moment(value);
   } else if (propItem.type === PropItemType.Function) {
     // ... 不做任何处理
-  } else if (value !== undefined) {
+  } else if (propItem.type === PropItemType.Component && !value) {
+    value = { list: [] };
+  } else if (value !== undefined && value !== null) {
     value = JSON.parse(value);
-
-    if (propItem.type === PropItemType.Component && !value) {
-      value = { list: [] };
-    }
   }
 
   return value;
