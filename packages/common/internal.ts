@@ -219,7 +219,8 @@ export type DragLineInfo = {
   left: number,
   width: number,
   top: number,
-  hitEle?: HTMLElement
+  hitEle?: HTMLElement,
+  slotRect: DOMRect
 }
 
 

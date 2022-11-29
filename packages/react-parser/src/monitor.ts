@@ -279,7 +279,8 @@ function calcDragRect(positionX: number, positionY: number, slotEle: HTMLElement
       left: slotEleRect.left,
       width: slotEleRect.width,
       top: hitEleRect.bottom,
-      hitEle
+      hitEle,
+      slotRect: slotEleRect
     };
   } else {
     return {
@@ -287,7 +288,8 @@ function calcDragRect(positionX: number, positionY: number, slotEle: HTMLElement
       left: slotEleRect.left,
       width: slotEleRect.width,
       top: hitEleRect.top,
-      hitEle
+      hitEle,
+      slotRect: slotEleRect
     };
   }
 }

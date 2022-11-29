@@ -46,6 +46,8 @@ const ViewportOutlineMarker: React.FC = () => {
 
       cloneOutlineRef.current?.remove();
       cloneOutlineRef.current = outlineRef.current.cloneNode(true) as HTMLDivElement;
+      const cloneTagNameEle = cloneOutlineRef.current.querySelector('.iframe-marker-outline-tag-name') as HTMLElement;
+      cloneTagNameEle.style['pointer-events'] = 'all';
       outlineRef.current.insertAdjacentElement('beforebegin', cloneOutlineRef.current);
 
 
@@ -131,11 +133,11 @@ const ViewportOutlineMarker: React.FC = () => {
   }, [])
 
   return <>
-    <div className={`${styles.outline}`} ref={outlineRef}>
+    <div className={styles.outline} ref={outlineRef}>
       <div className={`${styles.tagName} iframe-marker-outline-tag-name`} ></div>
     </div>
 
-    <div className={`${styles.toolbar}`} ref={toolbarRef}>
+    <div className={styles.toolbar} ref={toolbarRef}>
       <Space size={4} >
         {
           markerInfoRef.current.parentInstanceId !== markerInfoRef.current.rootInstanceId && (

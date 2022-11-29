@@ -11,8 +11,9 @@ type PropType = {
 
 const ViewportDrag: React.FC<PropType> = (prop) => {
   const [workbenchModel] = useModel(WorkbenchModel);
-  const markerRef = useRef<HTMLDivElement>();
-  const [currentStyles, setCurrentStyles] = useState({});
+  const markerLineRef = useRef<HTMLDivElement>();
+  const slotRef = useRef<HTMLDivElement>();
+  const containerRef = useRef<HTMLDivElement>();
 
   // 必须有监听dragover事件否则drop事件无法触发
   const dragover = (event) => {
@@ -42,7 +43,7 @@ const ViewportDrag: React.FC<PropType> = (prop) => {
       positionY: event.pageY - rect.top,
       componentId
     });
-    setCurrentStyles({});
+    containerRef.current.style.display = 'none';
     console.log(`IframeDrag drog finish`);
   }
 
@@ -50,29 +51,38 @@ const ViewportDrag: React.FC<PropType> = (prop) => {
     workbenchModel.addEventListener(PostMessageType.InnerDragLine, (event) => {
       const data = (event as any).detail as DragLineInfo;
       if (data) {
-        const styles = markerRef.current.style;
+        let styles = markerLineRef.current.style;
         styles.display = 'inline-block';
         styles.left = `${data.left}px`;
         styles.top = `${data.top}px`;
         styles.width = `${data.width}px`;
+
+        styles = slotRef.current.style;
+        styles.display = 'inline-block';
+        styles.top = `${data.slotRect.top}px`;
+        styles.left = `${data.slotRect.left}px`;
+        styles.width = `${data.slotRect.width}px`;
+        styles.height = `${data.slotRect.height}px`;
       } else {
-        markerRef.current.style.display = 'none';
+        markerLineRef.current.style.display = 'none';
+        slotRef.current.style.display = 'none';
       }
     })
 
     workbenchModel.addEventListener(WorkbenchEvent.DragStart, () => {
       const rect = workbenchModel.getIframeRelativeRect();
-      setCurrentStyles({
-        top: `${rect.top}px`,
-        left: `${rect.left}px`,
-        height: `${rect.height}px`,
-        width: `${rect.width}px`,
-      })
+      const styles = containerRef.current.style;
+      styles.top = `${rect.top}px`;
+      styles.left = `${rect.left}px`;
+      styles.height = `${rect.height}px`;
+      styles.width = `${rect.width}px`;
+      styles.display = 'inline-block';
     })
   }, []);
 
-  return <div className={styles.container} style={currentStyles} onDragOver={dragover} onDrop={drop} onDragEnter={dragenter} onDragLeave={dragleave} >
-    <div ref={markerRef} className={styles.marker} />
+  return <div className={styles.container} ref={containerRef} onDragOver={dragover} onDrop={drop} onDragEnter={dragenter} onDragLeave={dragleave} >
+    <div ref={markerLineRef} className={styles.markerLine} />
+    <div ref={slotRef} className={styles.slot}></div>
   </div>
 }
 
