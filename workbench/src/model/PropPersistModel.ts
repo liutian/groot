@@ -369,8 +369,8 @@ export default class PropPersistModel {
         if (hostComponentInstanceId) {
           paramData.componentInstanceId = hostComponentInstanceId;
           const instance = this.workbench.instanceList.find(item => item.id === hostComponentInstanceId);
-          paramData.componentId = instance.componentVersionId;
-          paramData.componentVersionId = instance.componentId;
+          paramData.componentId = instance.component.id;
+          paramData.componentVersionId = instance.componentVersion.id;
         }
       }
     }
