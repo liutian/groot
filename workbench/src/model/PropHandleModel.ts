@@ -331,6 +331,10 @@ export default class PropHandleModel {
         hostComponentInstanceId: data.parentInstanceId
       }).then(() => {
         this.refreshAllComponent();
+
+        setTimeout(() => {
+          this.workbench.iframeManager.notifyIframe(PostMessageType.OuterWrapperSelect, instanceData.id)
+        }, 100)
       })
     })
   }
