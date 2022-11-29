@@ -1,5 +1,5 @@
-import ViewportDrag from "@components/ViewportDrag";
-import ViewportOutlineMarker from "@components/ViewportOutlineMarker";
+import ViewportDrag from "@components/Viewport/ViewportDrag";
+import ViewportOutlineMarker from "@components/Viewport/ViewportOutlineMarker";
 import WorkbenchModel from "@model/WorkbenchModel";
 import { useModel } from "@util/robot";
 import { useEffect, useRef } from "react";
