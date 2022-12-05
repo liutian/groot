@@ -1,0 +1,26 @@
+{
+  "name": "@grootio/runtime",
+  "version": "0.0.1",
+  "description": "",
+  "main": "dist/index.js",
+  "devDependencies": {},
+  "scripts": {
+    "build": "npx tsc"
+  },
+  "dependencies": {
+    "@grootio/common": "0.0.1"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "package.json",
+    "dist"
+  ]
+}

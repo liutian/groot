@@ -6,7 +6,8 @@
   "workspaces": [
     "packages/core",
     "packages/react-parser",
-    "packages/common"
+    "packages/common",
+    "packages/runtime"
   ],
   "scripts": {},
   "lint-staged": {
