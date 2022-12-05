@@ -12,7 +12,7 @@ const Viewport: React.FC = () => {
     workbenchUpdateAction(() => {
       workbenchModel.workAreaMaskEle = maskEleRef.current;
     })
-  })
+  }, []);
 
   return <div className={styles.container}>
     <Viewport />
