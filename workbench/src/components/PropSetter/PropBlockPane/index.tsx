@@ -1,20 +1,21 @@
 import { Button, Checkbox, Col, DatePicker, Form, Input, InputNumber, Radio, Row, Select, Space, Switch, TimePicker, Tooltip, Typography } from "antd";
 import { VerticalAlignTopOutlined, DeleteOutlined, VerticalAlignBottomOutlined, EditOutlined } from '@ant-design/icons';
+import { useState } from "react";
 
 import { useModel } from "@util/robot";
-import styles from './index.module.less';
 import WorkbenchModel from "@model/WorkbenchModel";
 import PropPersistModel from "@model/PropPersistModel";
 import PropHandleModel from "@model/PropHandleModel";
 import { PropBlock, PropItem, PropItemType, PropValueType, ValueStruct } from "@grootio/common";
-import NumberSlider from "@components/PropSetter/item-components/NumberSlider";
-import TextEditor from "@components/PropSetter/item-components/TextEditor";
 import { calcPropValueIdChain, parseOptions, stringify } from "@util/utils";
-import { useState } from "react";
 import { parsePropItemValue } from "@grootio/core";
-import ComponentChildren from "@components/PropSetter/item-components/ComponentChildren";
 import PluginView from "@components/PluginView";
 import { RemotePluginKeySep } from "@util/common";
+
+import ComponentChildren from "./ComponentChildren";
+import NumberSlider from "./NumberSlider";
+import styles from './index.module.less';
+import TextEditor from "./TextEditor";
 
 type PropType = {
   block: PropBlock,
