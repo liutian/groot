@@ -5,7 +5,7 @@ import WorkbenchModel from '@model/WorkbenchModel';
 import { useModel } from '@util/robot';
 import styles from './index.module.less';
 import SideBar from '@components/SideBar';
-import Viewport from '@components/Viewport';
+import WorkArea from '@components/WorkArea';
 import FooterBar from '@components/FooterBar';
 import TopBar from '@components/TopBar';
 
@@ -23,8 +23,8 @@ const Workbench: React.FC = () => {
       <TopBar />
     </div>
 
-    <div className={styles.viewport}>
-      <Viewport />
+    <div className={styles.workarea}>
+      <WorkArea />
     </div>
 
     <div className={styles.footerBar}>

@@ -7,19 +7,7 @@
   padding: 20px;
   background-color: #efefef;
 
-  .viewport {
-    position: relative;
-    overflow: hidden;
-
-    iframe {
-      border-width: 0;
-      width: 100%;
-      height: 100%;
-      background-color: #fff;
-    }
-  }
-
-  :global(#viewport-mask) {
+  :global(#work-area-mask) {
     position: absolute;
     top: 0;
     left: 0;
@@ -27,7 +15,7 @@
     height: 0;
   }
 
-  :global(#viewport-mask.show) {
+  :global(#work-area-mask.show) {
     width: 100%;
     height: 100%;
   }

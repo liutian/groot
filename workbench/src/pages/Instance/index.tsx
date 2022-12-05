@@ -101,7 +101,7 @@ const Instance: React.FC = () => {
                 if (index === instanceModel.breadcrumbList.length - 1) {
                   return;
                 } else if (index > 0) {
-                  workbenchModel.iframeManager.notifyIframe(PostMessageType.OuterWrapperSelect, item.id)
+                  workbenchModel.iframeManager.notifyIframe(PostMessageType.OuterComponentSelect, item.id)
                 } else {
                   // 根组件不需要选择效果，直接切换，并清空标记
                   instanceModel.switchComponentInstance(item.id);

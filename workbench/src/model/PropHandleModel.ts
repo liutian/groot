@@ -333,7 +333,7 @@ export default class PropHandleModel {
         this.refreshAllComponent();
 
         setTimeout(() => {
-          this.workbench.iframeManager.notifyIframe(PostMessageType.OuterWrapperSelect, instanceData.id)
+          this.workbench.iframeManager.notifyIframe(PostMessageType.OuterComponentSelect, instanceData.id)
         }, 100)
       })
     })
@@ -346,7 +346,7 @@ export default class PropHandleModel {
       this.workbench.instanceList.splice(instanceIndex, 1);
 
       if (instance.parentId && instance.parentId !== instance.rootId) {
-        this.workbench.iframeManager.notifyIframe(PostMessageType.OuterWrapperSelect, instance.parentId);
+        this.workbench.iframeManager.notifyIframe(PostMessageType.OuterComponentSelect, instance.parentId);
         this.refreshAllComponent();
       } else {// 父级为根组件实例
         this.workbench.switchComponentInstance(instance.parentId);

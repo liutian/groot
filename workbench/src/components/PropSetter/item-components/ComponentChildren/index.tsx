@@ -8,7 +8,7 @@ const ComponentChildren: React.FC<{ value?: RuntimeComponentValueType }> = ({ va
 
   return <List size="small" bordered dataSource={value?.list || []}
     renderItem={item => (
-      <List.Item onClick={() => workbenchModel.iframeManager.notifyIframe(PostMessageType.OuterWrapperSelect, item.instanceId)}>
+      <List.Item onClick={() => workbenchModel.iframeManager.notifyIframe(PostMessageType.OuterComponentSelect, item.instanceId)}>
         {item.componentName}
       </List.Item>
     )} />

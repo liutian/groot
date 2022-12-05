@@ -76,7 +76,7 @@ export enum PostMessageType {
   InnerOutlineSelect = 'inner_outline_Select',
   InnerOutlineUpdate = 'inner_outline_update',
   OuterOutlineReset = 'outer_outline_reset',
-  OuterWrapperSelect = 'outer_wrapper_select',
+  OuterComponentSelect = 'outer_component_select',
 }
 
 export const iframeNamePrefix = 'groot_';

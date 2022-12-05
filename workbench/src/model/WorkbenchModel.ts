@@ -24,7 +24,7 @@ export default class WorkbenchModel extends EventTarget implements WorkbenchMode
   /**
    * viewport之上的遮罩层用于组件拖拽定位和侧边栏宽度缩放
    */
-  public viewportMaskId = 'viewport-mask';
+  public workAreaMaskEle: HTMLDivElement;
 
   /**
    * 真正和iframe进行通信的对象

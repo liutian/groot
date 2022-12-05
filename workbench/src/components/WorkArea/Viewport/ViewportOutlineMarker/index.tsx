@@ -127,7 +127,7 @@ const ViewportOutlineMarker: React.FC = () => {
   function toolbarAction(type: 'hover' | 'selected', action: 'select-parent' | 'remove') {
     const ctx = type === 'hover' ? hoverCacheRef.current : selectedCacheRef.current;
     if (action === 'select-parent') {
-      workbenchModel.iframeManager.notifyIframe(PostMessageType.OuterWrapperSelect, ctx.parentInstanceId);
+      workbenchModel.iframeManager.notifyIframe(PostMessageType.OuterComponentSelect, ctx.parentInstanceId);
     } else if (action === 'remove') {
       propHandleModel.removeChild(ctx.instanceId, ctx.propItemId, ctx.abstractValueIdChain);
     }

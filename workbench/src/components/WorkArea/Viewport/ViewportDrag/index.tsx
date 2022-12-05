@@ -14,10 +14,10 @@ const ViewportDrag: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>();
 
   useEffect(() => {
-    workbenchModel.addEventListener(WorkbenchEvent.DragStart, () => {
+    workbenchModel.addEventListener(WorkbenchEvent.DragComponentStart, () => {
       containerRef.current.style.display = 'inline-block';
     });
-    workbenchModel.addEventListener(WorkbenchEvent.DragEnd, () => {
+    workbenchModel.addEventListener(WorkbenchEvent.DragComponentEnd, () => {
       containerRef.current.style.display = 'none';
     });
 

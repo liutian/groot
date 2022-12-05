@@ -48,7 +48,7 @@ const PropSetter: React.FC = () => {
       cursor="col-resize"
       className={styles.moveHandle}
       start={() => {
-        document.getElementById(workbenchModel.viewportMaskId).classList.add('show');
+        workbenchModel.workAreaMaskEle.classList.add('show');
         return containerRef.current.getBoundingClientRect().width;
       }}
       move={(x, _y, originData) => {
@@ -61,7 +61,7 @@ const PropSetter: React.FC = () => {
         workbenchModel.setContainerCssVar('--side-width', `${sideWidth}px`);
       }}
       end={() => {
-        document.getElementById(workbenchModel.viewportMaskId).classList.remove('show');
+        workbenchModel.workAreaMaskEle.classList.remove('show');
       }}
     />
   </div >

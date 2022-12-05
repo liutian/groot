@@ -101,7 +101,7 @@ function onMessage(event: any) {
     respondDragDrop(event.data.data.positionX, event.data.data.positionY, event.data.data.componentId);
   } else if (messageType === PostMessageType.OuterOutlineReset) {
     resetWatch(event.data.data)
-  } else if (messageType === PostMessageType.OuterWrapperSelect) {
+  } else if (messageType === PostMessageType.OuterComponentSelect) {
     outerSelected(event.data.data)
   }
 }

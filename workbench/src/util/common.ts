@@ -10,8 +10,8 @@ export function needRewrite(): any {
 }
 
 export enum WorkbenchEvent {
-  DragStart = 'drag_start',
-  DragEnd = 'drag_end',
+  DragComponentStart = 'drag_component_start',
+  DragComponentEnd = 'drag_component_end',
 }
 
 export const RemotePluginKeySep = '!%!'
