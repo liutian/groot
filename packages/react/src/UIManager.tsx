@@ -11,14 +11,9 @@ import { globalConfig } from './config';
 import groot from './groot';
 
 let app: ApplicationInstance;
-// 保持最新的函数引用
-let refresh: () => void;
 
 export const UIManager: IUIManager<{ path: string }> = ({ path }) => {
-  // const [, switchBool] = useState(true);
-  // refresh = () => switchBool(b => !b);
-  const [, _refresh] = useReducer((bool) => !bool, true);
-  refresh = _refresh;
+  const [, refresh] = useReducer((bool) => !bool, true);
 
 
   // 确保首先执行 UIManager.init
