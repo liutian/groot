@@ -1,4 +1,4 @@
-import { ComponentSlot } from "@grootio/react-parser";
+import { ComponentSlot } from "@grootio/react";
 import { Button, DatePicker, Divider, Form, Input, Select } from "antd";
 import MultiDetailManager from "components/MultiDetailManager";
 

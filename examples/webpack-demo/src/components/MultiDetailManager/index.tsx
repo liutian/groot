@@ -1,5 +1,5 @@
 import { GrootPropsType } from "@grootio/common";
-import { ComponentSlot } from "@grootio/react-parser"
+import { ComponentSlot } from "@grootio/react"
 import { Button, Form, FormInstance } from "antd";
 import React, { useImperativeHandle } from "react"
 

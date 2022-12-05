@@ -1,6 +1,6 @@
 import { Avatar, Button, Input, Select } from 'antd';
 import { ProTable } from '@ant-design/pro-table';
-import { UIManager } from '@grootio/react-parser';
+import { UIManager } from '@grootio/react';
 import { useLocation } from 'react-router';
 import react from 'react';
 import Profile from 'components/Profile';

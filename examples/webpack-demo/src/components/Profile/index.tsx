@@ -1,5 +1,5 @@
 import { UserOutlined, EnvironmentOutlined, MailOutlined } from '@ant-design/icons';
-import { ComponentSlot } from '@grootio/react-parser';
+import { ComponentSlot } from '@grootio/react';
 type PropType = {
   name: string,
   address: string,

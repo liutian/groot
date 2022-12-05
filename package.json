@@ -5,9 +5,9 @@
   "description": "component assembly workshop",
   "workspaces": [
     "packages/core",
-    "packages/react-parser",
     "packages/common",
-    "packages/runtime"
+    "packages/runtime",
+    "packages/react"
   ],
   "scripts": {},
   "lint-staged": {

@@ -1,7 +1,6 @@
 {
-  "name": "@grootio/react-parser",
+  "name": "@grootio/react",
   "version": "0.0.1",
-  "description": "",
   "main": "dist/index.js",
   "scripts": {
     "build": "npx tsc"
@@ -23,5 +22,16 @@
   "files": [
     "package.json",
     "dist"
-  ]
+  ],
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/liutian/groot.git"
+  },
+  "keywords": [],
+  "bugs": {
+    "url": "https://github.com/liutian/groot/issues"
+  },
+  "homepage": "https://github.com/liutian/groot#readme",
+  "description": ""
 }
