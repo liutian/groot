@@ -199,7 +199,12 @@ function outlineHoverAction({ clientX, clientY }: MouseEvent) {
       type: PostMessageType.InnerOutlineHover,
       data: {
         clientRect,
-        tagName: `${metadata.packageName}/${metadata.componentName}`
+        tagName: `${metadata.packageName}/${metadata.componentName}`,
+        instanceId,
+        parentInstanceId: metadata.parentId,
+        rootInstanceId: metadata.rootId,
+        propItemId: metadata.$$runtime.propItemId,
+        abstractValueIdChain: metadata.$$runtime.abstractValueIdChain
       }
     }, '*');
   } else {

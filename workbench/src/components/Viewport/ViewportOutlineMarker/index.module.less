@@ -1,36 +1,52 @@
-.positionItem() {
-  --var-color: #0000ff;
-
+.hover,
+.selected {
+  --color: rgb(0, 0, 255);
+  --height: 20px;
   position: absolute;
   top: 0;
   left: 0;
-  color: #ffffff;
-  opacity: 0;
-
-  line-height: 20px;
+  line-height: var(--height);
   font-size: 12px;
-}
-
-
-.outline {
-  .positionItem();
-
-  outline: solid 1px var(--var-color);
-  outline-offset: -1px;
+  outline: dashed 2px var(--color);
+  outline-offset: -2px;
   pointer-events: none;
+  color: #fff;
+  display: none;
+  opacity: 0.5;
+
+  .tagName,
+  .toolbar {
+    position: absolute;
+    left: 0;
+    top: calc(-1 * var(--height));
+    background-color: var(--color);
+    pointer-events: all;
+  }
+
+  .tagName {
+    padding: 0 4px;
+  }
+
+  .toolbar {
+    cursor: pointer;
+
+    .toolbarItem {
+      display: inline-block;
+      padding: 0 4px;
+    }
+  }
+
+  &[data-inner-top] {
+
+    .tagName,
+    .toolbar {
+      top: 0;
+    }
+  }
 }
 
-.tagName {
-  position: absolute;
-  left: 0;
-  top: -20px;
-  background-color: var(--var-color);
-  padding: 0 4px;
-}
-
-.toolbar {
-  .positionItem();
-  cursor: pointer;
-  background-color: var(--var-color);
-  padding: 0 4px;
+.selected {
+  outline-style: solid;
+  opacity: 1;
+  z-index: 1;
 }

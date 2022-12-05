@@ -45,7 +45,6 @@ export const ComponentSlot: React.FC<PropType> = ({ children, minHeight = 100, p
     ref={containerRef}
     style={{
       display: 'grid',
-      paddingBottom: controlMode && children?.length ? padding + 'px' : undefined,
     }}>
     {
       children.map((child, index) => {

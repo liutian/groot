@@ -233,18 +233,6 @@ export default class WorkbenchModel extends EventTarget implements WorkbenchMode
     });
   }
 
-  public getIframeRelativeRect() {
-    const rect = this.iframeEle.getBoundingClientRect();
-    const parentRect = this.iframeEle.parentElement.getBoundingClientRect();
-
-    return {
-      top: rect.top - parentRect.top,
-      left: rect.left - parentRect.left,
-      height: rect.height,
-      width: rect.width
-    }
-  }
-
   public processConfig(config: RuntimeHostConfig) {
     if (config.viewportMode) {
       this.viewportMode = config.viewportMode;

@@ -18,7 +18,6 @@ const SideBar: React.FC = () => {
   }, []);
 
   function menuOnClick(currentKey: string) {
-    workbenchModel.dispatchEvent(new CustomEvent(WorkbenchEvent.ViewportSizeChange));
     if (currentKey !== activeKey) {
       setActiveKey(currentKey);
       setOpenPanel(true);

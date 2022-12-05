@@ -48,7 +48,6 @@ const PropSetter: React.FC = () => {
       cursor="col-resize"
       className={styles.moveHandle}
       start={() => {
-        workbenchModel.dispatchEvent(new CustomEvent(WorkbenchEvent.ViewportSizeChange));
         document.getElementById(workbenchModel.viewportMaskId).classList.add('show');
         return containerRef.current.getBoundingClientRect().width;
       }}
@@ -60,10 +59,8 @@ const PropSetter: React.FC = () => {
           sideWidth = workbenchModel.minSideWidth;
         }
         workbenchModel.setContainerCssVar('--side-width', `${sideWidth}px`);
-        workbenchModel.dispatchEvent(new CustomEvent(WorkbenchEvent.ViewportSizeChange));
       }}
       end={() => {
-        workbenchModel.dispatchEvent(new CustomEvent(WorkbenchEvent.ViewportSizeChange));
         document.getElementById(workbenchModel.viewportMaskId).classList.remove('show');
       }}
     />

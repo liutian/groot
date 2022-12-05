@@ -10,9 +10,8 @@ export function needRewrite(): any {
 }
 
 export enum WorkbenchEvent {
-  CanvasMarkerReset = 'canvas_marker_reset',
   DragStart = 'drag_start',
-  ViewportSizeChange = 'viewport_size_chage'
+  DragEnd = 'drag_end',
 }
 
 export const RemotePluginKeySep = '!%!'

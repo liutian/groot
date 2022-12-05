@@ -1,160 +1,167 @@
 import { DeleteOutlined, UpOutlined } from '@ant-design/icons';
 import { useEffect, useRef } from 'react';
-import { Space } from 'antd';
 
+import { MarkerInfo, PostMessageType } from '@grootio/common';
+import PropHandleModel from '@model/PropHandleModel';
 import WorkbenchModel from '@model/WorkbenchModel';
-import { WorkbenchEvent } from '@util/common';
 import { useModel } from '@util/robot';
 
 import styles from './index.module.less';
-import { MarkerInfo, PostMessageType } from '@grootio/common';
-import PropHandleModel from '@model/PropHandleModel';
 
 const ViewportOutlineMarker: React.FC = () => {
   const [workbenchModel] = useModel(WorkbenchModel);
   const [propHandleModel] = useModel(PropHandleModel);
 
-  const outlineRef = useRef<HTMLDivElement>();
-  const toolbarRef = useRef<HTMLDivElement>();
-  const cloneOutlineRef = useRef<HTMLDivElement>();
-  const markerInfoRef = useRef<MarkerInfo>({} as any);
-  const toolbarCacheRef = useRef<DOMRect>();
-  const outlineCacheRef = useRef<{ clientRect: DOMRect, tagName: string }>();
+  const hoverRef = useRef<HTMLDivElement>();
+  const selectedRef = useRef<HTMLDivElement>();
+  const hoverCacheRef = useRef<MarkerInfo>();
+  const selectedCacheRef = useRef<MarkerInfo>();
 
   useEffect(() => {
-    workbenchModel.addEventListener(PostMessageType.InnerOutlineHover, (event) => {
-      const data = (event as CustomEvent).detail as MarkerInfo;
-      if (data) {
-        resetOutline(data.clientRect, data.tagName, outlineRef.current);
-      } else {
-        outlineRef.current.style.opacity = '0';
-      }
-    });
+    workbenchModel.addEventListener(PostMessageType.InnerOutlineHover, onHover);
 
-    workbenchModel.addEventListener(PostMessageType.InnerOutlineSelect, (event) => {
-      const data = (event as CustomEvent).detail as MarkerInfo;
-      resetOutline(data.clientRect, data.tagName, outlineRef.current);
-      outlineCacheRef.current = {
-        clientRect: data.clientRect, tagName: data.tagName
-      }
+    workbenchModel.addEventListener(PostMessageType.InnerOutlineSelect, onSelected);
 
-      // todo ... 解决部分标记定位问题
-      setTimeout(() => {
-        resetToolbar(data.clientRect, toolbarRef.current);
-        toolbarCacheRef.current = data.clientRect;
-      }, 1);
+    // iframe页面内部滚动或者窗口尺寸变化
+    workbenchModel.addEventListener(PostMessageType.InnerOutlineUpdate, onUpdate);
 
-      cloneOutlineRef.current?.remove();
-      cloneOutlineRef.current = outlineRef.current.cloneNode(true) as HTMLDivElement;
-      const cloneTagNameEle = cloneOutlineRef.current.querySelector('.iframe-marker-outline-tag-name') as HTMLElement;
-      cloneTagNameEle.style['pointer-events'] = 'all';
-      outlineRef.current.insertAdjacentElement('beforebegin', cloneOutlineRef.current);
-
-
-      workbenchModel.switchComponentInstance(data.instanceId);
-      Object.assign(markerInfoRef.current, data);
-    });
-
-    workbenchModel.addEventListener(PostMessageType.InnerOutlineUpdate, (event) => {
-      const { selected, hover } = (event as CustomEvent).detail as { selected: MarkerInfo, hover: MarkerInfo };
-
-      if (selected) {
-        resetOutline(selected.clientRect, selected.tagName, cloneOutlineRef.current);
-        outlineCacheRef.current = {
-          clientRect: selected.clientRect, tagName: selected.tagName
-        }
-        resetToolbar(selected.clientRect, toolbarRef.current);
-        toolbarCacheRef.current = selected.clientRect;
-      } else {
-        outlineCacheRef.current = null;
-        toolbarCacheRef.current = null;
-        cloneOutlineRef.current?.remove();
-        toolbarRef.current.style.opacity = '0';
-      }
-
-      if (hover) {
-        resetOutline(hover.clientRect, hover.tagName, outlineRef.current);
-      } else {
-        outlineRef.current.style.opacity = '0';
-      }
-
+    workbenchModel.addEventListener(PostMessageType.OuterRefreshPage, () => {
+      clear();
     })
 
-
-    workbenchModel.addEventListener(WorkbenchEvent.CanvasMarkerReset, () => {
-      outlineRef.current.style.opacity = '0';
-      toolbarRef.current.style.opacity = '0';
-      toolbarCacheRef.current = null;
-      outlineCacheRef.current = null;
-      cloneOutlineRef.current?.remove();
+    // 切换组件到根组件或者删除根组件下子组件需要清空边框
+    workbenchModel.addEventListener(PostMessageType.OuterOutlineReset, (event: any) => {
+      clear(event.detail);
     })
 
-    outlineRef.current.parentElement.addEventListener('mouseover', () => {
-      outlineRef.current.style.opacity = '0';
+    hoverRef.current.parentElement.addEventListener('mouseleave', () => {
       workbenchModel.iframeManager.notifyIframe(PostMessageType.OuterOutlineReset, 'hover');
     })
 
-    function resetOutline(clientRect: DOMRect, tagName: string, ele: HTMLElement) {
-      const { top, left } = workbenchModel.getIframeRelativeRect();
-      ele.style.transform = `translate(${left + clientRect.x}px,${top + clientRect.y}px)`;
-      ele.style.width = `${clientRect.width}px`;
-      ele.style.height = `${clientRect.height}px`;
-      ele.style.opacity = '1';
-      const tagNameEle = ele.querySelector('.iframe-marker-outline-tag-name') as HTMLElement;
-      tagNameEle.innerText = tagName;
-    }
-
-    function resetToolbar(clientRect: DOMRect, ele: HTMLElement) {
-      const { top, left } = workbenchModel.getIframeRelativeRect();
-      const tagNameEle = outlineRef.current.querySelector('.iframe-marker-outline-tag-name') as HTMLElement;
-      const { width: tagNameWidth } = tagNameEle.getBoundingClientRect();
-      ele.style.opacity = '1';
-      const { width: toolbarWidth, height: toolbarHeight } = ele.getBoundingClientRect();
-      let toolbarX = clientRect.x + clientRect.width - toolbarWidth;
-      toolbarX = Math.max(clientRect.x + tagNameWidth + 5, toolbarX);
-      ele.style.transform = `translate(${left + toolbarX}px,${top + clientRect.y - toolbarHeight}px)`;
-    }
-
-    workbenchModel.addEventListener(WorkbenchEvent.ViewportSizeChange, () => {
-      setTimeout(() => {
-        if (toolbarCacheRef.current) {
-          resetToolbar(toolbarCacheRef.current, toolbarRef.current);
-        }
-        if (outlineCacheRef.current) {
-          if (cloneOutlineRef.current) {
-            resetOutline(outlineCacheRef.current.clientRect, outlineCacheRef.current.tagName, cloneOutlineRef.current);
-          }
-          if (outlineRef.current) {
-            resetOutline(outlineCacheRef.current.clientRect, outlineCacheRef.current.tagName, outlineRef.current);
-          }
-        }
-      })
-    })
   }, [])
 
+  function clear(type?: 'hover' | 'selected') {
+    if (!type || type === 'hover') {
+      hoverCacheRef.current = null;
+      hoverRef.current.style.display = 'none';
+    }
+
+    if (!type || type === 'selected') {
+      selectedCacheRef.current = null;
+      selectedRef.current.style.display = 'none';
+    }
+  }
+
+  function onHover(event) {
+    const data = (event as CustomEvent).detail as MarkerInfo;
+
+    if (data) {
+      updateEle(hoverRef.current, data, true);
+    } else {
+      hoverRef.current.style.display = 'none';
+    }
+
+    hoverCacheRef.current = data;
+  }
+
+  function onSelected(event) {
+    const data = (event as CustomEvent).detail as MarkerInfo;
+    updateEle(selectedRef.current, data, true);
+    selectedCacheRef.current = data;
+
+    workbenchModel.switchComponentInstance(data.instanceId);
+  }
+
+  function onUpdate(event) {
+    const { selected, hover } = (event as CustomEvent).detail as { selected: MarkerInfo, hover: MarkerInfo };
+
+    if (hover) {
+      updateEle(hoverRef.current, hover);
+    } else {
+      hoverRef.current.style.display = 'none';
+    }
+    hoverCacheRef.current = hover;
+
+    if (selected) {
+      updateEle(selectedRef.current, selected);
+    } else {
+      selectedRef.current.style.display = 'none';
+    }
+    selectedCacheRef.current = selected;
+  }
+
+  function updateEle(ele: HTMLElement, data: MarkerInfo, refreshToolbar = false) {
+    ele.style.display = 'inline-block';
+    ele.style.left = `${data.clientRect.x}px`;
+    ele.style.top = `${data.clientRect.y}px`;
+    ele.style.width = `${data.clientRect.width}px`;
+    ele.style.height = `${data.clientRect.height}px`;
+
+    if (data.clientRect.y <= 20 && data.clientRect.y >= -20) {
+      ele.dataset.innerTop = 'true';
+    } else {
+      delete ele.dataset.innerTop;
+    }
+
+    if (refreshToolbar) {
+      const tagNameEle = ele.querySelector(`.${styles.tagName}`) as HTMLElement;
+      tagNameEle.innerText = data.tagName;
+      const toolbarEle = ele.querySelector(`.${styles.toolbar}`) as HTMLElement;
+      toolbarEle.style.left = '0px';
+
+      const selectParentEle = toolbarEle.querySelector('.select-parent') as HTMLDivElement;
+      if (data.parentInstanceId === data.rootInstanceId) {
+        selectParentEle.style.display = 'none';
+      } else {
+        selectParentEle.style.display = 'inline-block';
+      }
+
+      const { width: tagNameWidth } = tagNameEle.getBoundingClientRect();
+      const { width: toolbarWidth } = toolbarEle.getBoundingClientRect();
+      let toolbarX = data.clientRect.width - toolbarWidth;
+      toolbarX = Math.max(tagNameWidth + 5, toolbarX);
+      toolbarEle.style.left = `${toolbarX}px`;
+    }
+  }
+
+  function toolbarAction(type: 'hover' | 'selected', action: 'select-parent' | 'remove') {
+    const ctx = type === 'hover' ? hoverCacheRef.current : selectedCacheRef.current;
+    if (action === 'select-parent') {
+      workbenchModel.iframeManager.notifyIframe(PostMessageType.OuterWrapperSelect, ctx.parentInstanceId);
+    } else if (action === 'remove') {
+      propHandleModel.removeChild(ctx.instanceId, ctx.propItemId, ctx.abstractValueIdChain);
+    }
+  }
+
   return <>
-    <div className={styles.outline} ref={outlineRef}>
-      <div className={`${styles.tagName} iframe-marker-outline-tag-name`} ></div>
-    </div>
+    <div className={styles.hover} ref={hoverRef} >
+      <div className={styles.tagName} ></div>
 
-    <div className={styles.toolbar} ref={toolbarRef}>
-      <Space size={4} >
-        {
-          markerInfoRef.current.parentInstanceId !== markerInfoRef.current.rootInstanceId && (
-            <div onClick={() => {
-              workbenchModel.iframeManager.notifyIframe(PostMessageType.OuterWrapperSelect, markerInfoRef.current.parentInstanceId);
-            }}>
-              <UpOutlined />
-            </div>
-          )
-        }
+      <div className={styles.toolbar} >
+        <div className={`${styles.toolbarItem} select-parent`}
+          onClick={() => toolbarAction('hover', 'select-parent')}>
+          <UpOutlined />
+        </div>
 
-        <div onClick={() => {
-          propHandleModel.removeChild(markerInfoRef.current.instanceId, markerInfoRef.current.propItemId, markerInfoRef.current.abstractValueIdChain)
-        }}>
+        <div className={styles.toolbarItem} onClick={() => toolbarAction('hover', 'remove')}>
           <DeleteOutlined />
         </div>
-      </Space>
+      </div>
+    </div>
+
+    <div className={styles.selected} ref={selectedRef} >
+      <div className={styles.tagName} ></div>
+
+      <div className={styles.toolbar} >
+        <div className={`${styles.toolbarItem} select-parent`}
+          onClick={() => toolbarAction('selected', 'select-parent')}>
+          <UpOutlined />
+        </div>
+
+        <div className={styles.toolbarItem} onClick={() => toolbarAction('selected', 'remove')}>
+          <DeleteOutlined />
+        </div>
+      </div>
     </div>
   </>
 }

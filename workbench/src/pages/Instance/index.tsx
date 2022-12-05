@@ -103,10 +103,9 @@ const Instance: React.FC = () => {
                 } else if (index > 0) {
                   workbenchModel.iframeManager.notifyIframe(PostMessageType.OuterWrapperSelect, item.id)
                 } else {
-                  // 根组件不需要选择效果，直接切换，并情况标记
+                  // 根组件不需要选择效果，直接切换，并清空标记
                   instanceModel.switchComponentInstance(item.id);
                   workbenchModel.iframeManager.notifyIframe(PostMessageType.OuterOutlineReset);
-                  workbenchModel.dispatchEvent(new CustomEvent(WorkbenchEvent.CanvasMarkerReset));
                 }
               }}>
               {index === 0 ? '页面' : item.name}

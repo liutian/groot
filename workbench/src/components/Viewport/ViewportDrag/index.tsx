@@ -1,88 +1,84 @@
+import { useEffect, useRef } from "react";
+
 import { DragLineInfo, PostMessageType } from "@grootio/common";
 import WorkbenchModel from "@model/WorkbenchModel";
 import { WorkbenchEvent } from "@util/common";
 import { useModel } from "@util/robot";
-import { useEffect, useRef, useState } from "react";
+
 import styles from './index.module.less';
 
-type PropType = {
-
-}
-
-const ViewportDrag: React.FC<PropType> = (prop) => {
+const ViewportDrag: React.FC = () => {
   const [workbenchModel] = useModel(WorkbenchModel);
-  const markerLineRef = useRef<HTMLDivElement>();
-  const slotRef = useRef<HTMLDivElement>();
+  const dragLineRef = useRef<HTMLDivElement>();
+  const dragSlotRef = useRef<HTMLDivElement>();
   const containerRef = useRef<HTMLDivElement>();
 
+  useEffect(() => {
+    workbenchModel.addEventListener(WorkbenchEvent.DragStart, () => {
+      containerRef.current.style.display = 'inline-block';
+    });
+    workbenchModel.addEventListener(WorkbenchEvent.DragEnd, () => {
+      containerRef.current.style.display = 'none';
+    });
+
+    workbenchModel.addEventListener(PostMessageType.InnerDragLine, dragLine)
+  }, []);
+
+  function onDragEnter() {
+    workbenchModel.iframeManager.notifyIframe(PostMessageType.OuterDragComponentEnter, {});
+  }
+
   // 必须有监听dragover事件否则drop事件无法触发
-  const dragover = (event) => {
+  function onDragOver(event) {
     event.preventDefault();
-    const rect = workbenchModel.iframeEle.getBoundingClientRect();
+    const rect = containerRef.current.getBoundingClientRect();
     workbenchModel.iframeManager.notifyIframe(PostMessageType.OuterDragComponentOver, {
       positionX: event.pageX - rect.left,
       positionY: event.pageY - rect.top,
     });
   }
 
-  const dragenter = () => {
-    workbenchModel.iframeManager.notifyIframe(PostMessageType.OuterDragComponentEnter, {});
-    console.log(`IframeDrag drog enter `);
-  }
-
-  const dragleave = () => {
-    workbenchModel.iframeManager.notifyIframe(PostMessageType.OuterDragComponentLeave, {});
-    console.log(`IframeDrag drog leave `);
-  }
-
-  const drop = (event) => {
+  function onDrop(event) {
     const componentId = event.dataTransfer.getData('componentId');
-    const rect = workbenchModel.iframeEle.getBoundingClientRect();
+    const rect = containerRef.current.getBoundingClientRect();
     workbenchModel.iframeManager.notifyIframe(PostMessageType.OuterDragComponentDrop, {
       positionX: event.pageX - rect.left,
       positionY: event.pageY - rect.top,
       componentId
     });
     containerRef.current.style.display = 'none';
-    console.log(`IframeDrag drog finish`);
   }
 
-  useEffect(() => {
-    workbenchModel.addEventListener(PostMessageType.InnerDragLine, (event) => {
-      const data = (event as any).detail as DragLineInfo;
-      if (data) {
-        let styles = markerLineRef.current.style;
-        styles.display = 'inline-block';
-        styles.left = `${data.left}px`;
-        styles.top = `${data.top}px`;
-        styles.width = `${data.width}px`;
+  function onDragLeave() {
+    workbenchModel.iframeManager.notifyIframe(PostMessageType.OuterDragComponentLeave, {});
+  }
 
-        styles = slotRef.current.style;
-        styles.display = 'inline-block';
-        styles.top = `${data.slotRect.top}px`;
-        styles.left = `${data.slotRect.left}px`;
-        styles.width = `${data.slotRect.width}px`;
-        styles.height = `${data.slotRect.height}px`;
-      } else {
-        markerLineRef.current.style.display = 'none';
-        slotRef.current.style.display = 'none';
-      }
-    })
-
-    workbenchModel.addEventListener(WorkbenchEvent.DragStart, () => {
-      const rect = workbenchModel.getIframeRelativeRect();
-      const styles = containerRef.current.style;
-      styles.top = `${rect.top}px`;
-      styles.left = `${rect.left}px`;
-      styles.height = `${rect.height}px`;
-      styles.width = `${rect.width}px`;
+  function dragLine(event) {
+    const data = (event as any).detail as DragLineInfo;
+    if (data) {
+      let styles = dragLineRef.current.style;
       styles.display = 'inline-block';
-    })
-  }, []);
+      styles.left = `${data.left}px`;
+      styles.top = `${data.top}px`;
+      styles.width = `${data.width}px`;
 
-  return <div className={styles.container} ref={containerRef} onDragOver={dragover} onDrop={drop} onDragEnter={dragenter} onDragLeave={dragleave} >
-    <div ref={markerLineRef} className={styles.markerLine} />
-    <div ref={slotRef} className={styles.slot}></div>
+      styles = dragSlotRef.current.style;
+      styles.display = 'inline-block';
+      styles.top = `${data.slotRect.top}px`;
+      styles.left = `${data.slotRect.left}px`;
+      styles.width = `${data.slotRect.width}px`;
+      styles.height = `${data.slotRect.height}px`;
+    } else {
+      dragLineRef.current.style.display = 'none';
+      dragSlotRef.current.style.display = 'none';
+    }
+  }
+
+  return <div className={styles.container} ref={containerRef}
+    onDragOver={onDragOver} onDrop={onDrop}
+    onDragEnter={onDragEnter} onDragLeave={onDragLeave} >
+    <div ref={dragLineRef} className={styles.dragLine} />
+    <div ref={dragSlotRef} className={styles.dragSlot}></div>
   </div>
 }
 

@@ -351,7 +351,6 @@ export default class PropHandleModel {
       } else {// 父级为根组件实例
         this.workbench.switchComponentInstance(instance.parentId);
         this.workbench.iframeManager.notifyIframe(PostMessageType.OuterOutlineReset);
-        this.workbench.dispatchEvent(new CustomEvent(WorkbenchEvent.CanvasMarkerReset));
         this.refreshAllComponent();
       }
 
