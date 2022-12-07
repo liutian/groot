@@ -25,7 +25,7 @@ const ViewportOutlineMarker: React.FC = () => {
     // iframe页面内部滚动或者窗口尺寸变化
     workbenchModel.addEventListener(PostMessageType.InnerOutlineUpdate, onUpdate);
 
-    workbenchModel.addEventListener(PostMessageType.OuterRefreshPage, () => {
+    workbenchModel.addEventListener(PostMessageType.OuterRefreshView, () => {
       clear();
     })
 

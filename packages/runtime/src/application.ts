@@ -1,65 +1,45 @@
-import { ApplicationData, HostConfig, IframeControlType, IframeDebuggerConfig, PluginConfig, PostMessageType, UIManagerConfig } from '@grootio/common';
+import { ApplicationData, HostConfig, IframeControlType, IframeDebuggerConfig, PostMessageType, UIManagerConfig } from '@grootio/common';
 
-import { Page } from './Page';
-import { ApplicationStatus } from './types';
-import { controlMode, controlType } from './util';
-import { globalConfig, setConfig } from './config';
 import { resetWatch, outerSelected, updateActiveRect, respondDragOver, respondDragEnter, respondDragLeave, respondDragDrop } from './monitor';
+import { appControlMode, appControlType, globalConfig, groot, setConfig } from './config';
+import { View } from './View';
 
+export enum ApplicationStatus {
+  Init = 'init',
+  BeforeLoading = 'before_loading',
+  Loading = 'loading',
+  Finish = 'finish',
+  Fail = 'fail'
+}
 
 // 应用实例对象
-export const instance = {
-  status: ApplicationStatus.Unset,
-  load: loadApplication,
-  hasPage,
-  pageLoading,
-  loadPage,
+const instance = {
+  status: ApplicationStatus.Init,
+  loadApp: loadApplication,
+  hasView,
+  viewLoading,
+  loadView,
+
+  groot
 };
 
 export type ApplicationInstance = typeof instance;
 
 let iframeApplicationLoadResolve: (info: ApplicationData) => void;
 let iframeDebuggerConfig: IframeDebuggerConfig;
-// 当前路由导航激活的页面
-let activePage: Page;
-// 当前应用包含的页面
-const allPageMap = new Map<string, Page>();
-// 已经加载过metadata的页面
-const loadedPageMap = new Map<string, Page>();
-// 正在加载中的页面
-const loadingPages = new Set();
+// 当前激活的界面视图
+let activeView: View;
+// 包含所有界面视图
+const allViewMap = new Map<string, View>();
 
 
-export function bootstrap(customConfig: UIManagerConfig): ApplicationInstance {
-  setConfig(customConfig);
+export function bootstrap(customConfig: UIManagerConfig, defaultConfig: UIManagerConfig): ApplicationInstance {
+  setConfig(customConfig, defaultConfig);
 
-  if (controlType === IframeControlType.FetchInstanceViewConfig || controlType === IframeControlType.FetchPrototypeViewConfig) {
-    let promise;
-
-    if (globalConfig.hostConfig?.plugin) {
-      const configOrPromise = globalConfig.hostConfig.plugin(controlType);
-      if ((configOrPromise as Promise<PluginConfig>).then) {
-        promise = configOrPromise;
-      } else {
-        promise = Promise.resolve(configOrPromise);
-      }
-    } else {
-      promise = Promise.resolve();
-    }
-
-    promise.then((plugin) => {
-      window.parent.postMessage({
-        type: PostMessageType.InnerSetConfig,
-        data: {
-          ...globalConfig.hostConfig,
-          plugin
-        } as HostConfig
-      }, '*');
-    }).catch(() => {
-      throw new Error('get view config error');
-    })
+  if (appControlType === IframeControlType.FetchInstanceViewConfig || appControlType === IframeControlType.FetchPrototypeViewConfig) {
+    outputConfig();
   } else {
-    if (controlMode) {
+    if (appControlMode) {
       window.parent.postMessage(PostMessageType.InnerReady, '*');
       window.addEventListener('message', onMessage);
     }
@@ -70,7 +50,35 @@ export function bootstrap(customConfig: UIManagerConfig): ApplicationInstance {
     }
   }
 
-  return instance as ApplicationInstance;
+  return instance;
+}
+
+function outputConfig() {
+  const hostConfig = globalConfig.hostConfig || {};
+  let promise;
+
+  if (hostConfig.plugin instanceof Function) {
+    const configOrPromise = hostConfig.plugin(appControlType);
+    if (configOrPromise instanceof Promise) {
+      promise = configOrPromise;
+    } else {
+      promise = Promise.resolve(configOrPromise);
+    }
+  } else {
+    promise = Promise.resolve();
+  }
+
+  promise.then((plugin) => {
+    window.parent.postMessage({
+      type: PostMessageType.InnerOutputConfig,
+      data: {
+        ...hostConfig,
+        plugin
+      } as HostConfig
+    }, '*');
+  }).catch(() => {
+    throw new Error('get view config error');
+  })
 }
 
 function onMessage(event: any) {
@@ -83,13 +91,13 @@ function onMessage(event: any) {
   } else if (messageType === PostMessageType.OuterSetApplication) {
     iframeApplicationLoadResolve(event.data.data);
   } else if (messageType === PostMessageType.OuterUpdateComponent) {
-    if (activePage.path !== event.data.data.path) {
+    if (activeView.key !== event.data.data.key) {
       return
     }
 
-    activePage.update(event.data.data.data);
+    activeView.update(event.data.data.data);
     setTimeout(updateActiveRect);
-  } else if (messageType === PostMessageType.OuterRefreshPage) {
+  } else if (messageType === PostMessageType.OuterRefreshView) {
     window.location.reload();
   } else if (messageType === PostMessageType.OuterDragComponentOver) {
     respondDragOver(event.data.data.positionX, event.data.data.positionY);
@@ -119,19 +127,19 @@ function loadApplication(success = () => { }, fail = () => { }) {
 }
 
 function loadApplicationData(): Promise<void> {
-  if (instance.status === ApplicationStatus.OK) {
+  if (instance.status === ApplicationStatus.Finish) {
     throw new Error('应用重复加载');
   }
 
   instance.status = ApplicationStatus.Loading;
   return fetchApplicationData().then((data) => {
     initApplication(data);
-    instance.status = ApplicationStatus.OK;
+    instance.status = ApplicationStatus.Finish;
   });
 }
 
 function fetchApplicationData(): Promise<ApplicationData> {
-  if (controlMode) {
+  if (appControlMode) {
     return new Promise((resolve, reject) => {
       iframeApplicationLoadResolve = resolve;
       window.parent.postMessage(PostMessageType.InnerFetchApplication, '*');
@@ -139,8 +147,8 @@ function fetchApplicationData(): Promise<ApplicationData> {
         reject(new Error('load application timeout'))
       }, 3000);
     });
-  } else if (window._grootApplicationData) {
-    return Promise.resolve(window._grootApplicationData);
+  } else if ((window as any)._grootApplicationData) {
+    return Promise.resolve((window as any)._grootApplicationData);
   } else if (globalConfig.appDataUrl) {
     return window.fetch(globalConfig.appDataUrl).then(response => response.json());
   } else {
@@ -151,46 +159,36 @@ function fetchApplicationData(): Promise<ApplicationData> {
 }
 
 function initApplication(data: ApplicationData) {
-  // 初始化pages
-  data.instances.forEach((pageData) => {
-    const page = new Page(pageData);
-    if (controlMode && page.path === iframeDebuggerConfig.controlPage) {
-      page.controlMode = true;
-    }
-    allPageMap.set(page.path, page);
+  // 初始化view
+  data.views.forEach((viewData) => {
+    const view = new View(viewData, appControlMode && viewData.key === iframeDebuggerConfig.controlView);
+    allViewMap.set(view.key, view);
   });
-  if (controlMode) {
+  if (appControlMode) {
     window.parent.postMessage(PostMessageType.InnerApplicationnReady, '*');
   }
 }
 
-function hasPage(path: string) {
-  return allPageMap.has(path);
+function hasView(key: string) {
+  return allViewMap.has(key);
 }
 
-function pageLoading(path: string) {
-  return loadingPages.has(path);
+function viewLoading(key: string) {
+  const view = allViewMap.get(key);
+  return view && view.status === 'loading';
 }
 
-function loadPage(path: string): Promise<Page> | Page {
-  const page = allPageMap.get(path);
-  activePage = page;
+function loadView(key: string): Promise<View> | View {
+  const view = allViewMap.get(key);
+  activeView = view;
 
-  if (!page) {
-    return Promise.reject(new Error('页面未找到'));
+  if (!view) {
+    return Promise.reject(new Error('界面未找到'));
+  } else if (view.status === 'finish') {
+    return view;
   }
 
-  if (loadedPageMap.has(path)) {
-    return loadedPageMap.get(path)!;
-  }
-
-  loadingPages.add(path);
-  return page.loadMetadata().then(() => {
-    loadingPages.delete(path);
-    loadedPageMap.set(path, page);
-    page.init();
-    return page;
-  });
+  return view.init();
 }
 
 

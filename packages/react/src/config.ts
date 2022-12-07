@@ -1,23 +1,16 @@
-import Container from "./modules/Container";
 import { UIManagerConfig } from "@grootio/common";
+
+import { createComponent, refreshComponent } from "./compiler";
+import Container from "./modules/Container";
 import PageContainer from "./modules/PageContainer";
 
-const internalModules = {
-  groot: {
-    Container,
-    PageContainer
-  }
-}
-
-// 运行时配置项
-export const globalConfig: UIManagerConfig = {
-  useWrapper: true
-  // ...
-} as any;
-
-export const setConfig = (customConfig: UIManagerConfig) => {
-  Object.assign(globalConfig, customConfig);
-  Object.assign(globalConfig.modules, internalModules);
-  return globalConfig;
-}
-
+export const defaultConfig: Partial<UIManagerConfig> = {
+  modules: {
+    groot: {
+      Container,
+      PageContainer
+    },
+  },
+  _createComponent: createComponent,
+  _refreshComponent: refreshComponent
+};

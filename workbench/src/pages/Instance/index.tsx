@@ -126,7 +126,7 @@ const Instance: React.FC = () => {
     return <>not found application</>
   } else if (instanceModel.loadStatus === 'no-component') {
     return <>not found component</>
-  } else if (instanceModel.loadStatus === 'fetch-pluginn') {
+  } else if (instanceModel.loadStatus === 'fetch-plugin') {
     return <ConfigLoader finish={fetchPluginFinish} />
   } else {
     return (<>

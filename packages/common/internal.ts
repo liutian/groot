@@ -7,17 +7,17 @@ export type RuntimeHostConfig = Omit<HostConfig, 'plugin'> & {
 
 export type IframeDebuggerConfig = {
   runtimeConfig?: Partial<UIManagerConfig>,
-  controlPage?: string,
+  controlView?: string,
 }
 
 export type ApplicationData = {
   name: string,
   key: string,
-  instances: InstanceData[],
+  views: ViewData[],
   envData: Record<string, any>
 }
 
-export type InstanceData = {
+export type ViewData = {
   key: string;
   metadataUrl?: string;
   metadataList?: Metadata[];
@@ -54,16 +54,16 @@ export enum PropMetadataType {
 }
 
 export enum PostMessageType {
-  InnerSetConfig = 'inner_set_config',
+  InnerOutputConfig = 'inner_output_config',
 
   InnerReady = 'inner_ready',
   OuterSetConfig = 'outer_set_config',
   InnerFetchApplication = 'inner_fetch_application',
   OuterSetApplication = 'outer_set_application',
   InnerApplicationnReady = 'inner_applicationn_ready',
-  InnerFetchPageComponents = 'inner_fetch_page_components',
+  InnerFetchView = 'inner_fetch_view',
   OuterUpdateComponent = 'outer_update_component',
-  OuterRefreshPage = 'outer_refresh_page',
+  OuterRefreshView = 'outer_refresh_view',
 
   OuterDragComponentOver = 'outer_drag_component_over',
   OuterDragComponentEnter = 'outer_drag_component_enter',

@@ -144,7 +144,7 @@ export class AssetService {
     }
 
     const newAssetList = bundle.newAssetList.getItems();
-    const instances = newAssetList.map((asset) => {
+    const views = newAssetList.map((asset) => {
       return {
         key: asset.key,
         metadataUrl: `http://127.0.0.1:3000/asset/instance/${asset.id}`
@@ -154,7 +154,7 @@ export class AssetService {
     const appData: ApplicationData = {
       name: bundle.appName,
       key: bundle.appKey,
-      instances,
+      views,
       envData: {}
     }
 

@@ -90,7 +90,7 @@ export default class WorkbenchModel extends EventTarget implements WorkbenchMode
   public launchPrototypeBox(org: Organization) {
     this.iframeBasePath = org.debugBaseUrl;
     this.prototypeMode = true;
-    iframeDebuggerConfig.runtimeConfig.prototypeMode = true;
+    iframeDebuggerConfig.runtimeConfig._prototypeMode = true;
     this.org = org;
   }
 
@@ -113,7 +113,7 @@ export default class WorkbenchModel extends EventTarget implements WorkbenchMode
   public launchInstanceBox(app: Application) {
     this.iframeBasePath = app.debugBaseUrl;
     this.prototypeMode = false;
-    iframeDebuggerConfig.runtimeConfig.prototypeMode = false;
+    iframeDebuggerConfig.runtimeConfig._prototypeMode = false;
     this.application = app;
   }
 
@@ -192,7 +192,7 @@ export default class WorkbenchModel extends EventTarget implements WorkbenchMode
     const name = this.prototypeMode ? '原型' : '实例';
     const key = this.prototypeMode ? 'prototype-demo' : 'instance-demo';
 
-    const instanceData = {
+    const viewData = {
       key: playgroundPath,
       metadataList: []
     };
@@ -200,7 +200,7 @@ export default class WorkbenchModel extends EventTarget implements WorkbenchMode
     const appData: ApplicationData = {
       name,
       key,
-      instances: [instanceData],
+      views: [viewData],
       envData: {}
     };
 

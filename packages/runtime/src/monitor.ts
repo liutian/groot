@@ -1,7 +1,8 @@
-import { DragAddComponentEventDataType, DragLineInfo, MarkerInfo, PostMessageType } from "@grootio/common";
-import { getInstanceMetadata, getInstanceWrapperEle } from "./compiler";
-import { controlMode } from "./util";
+import { DragAddComponentEventDataType, DragLineInfo, MarkerInfo, Metadata, PostMessageType } from "@grootio/common";
+import { appControlMode } from "./config";
 
+let _viewEleMap: Map<number, HTMLElement>;
+let _viewMetadataMap: Map<number, Metadata>;
 let monitorRunning = false;
 let outlineSelectedInstanceId, outlineHoverInstanceId;
 let draging;
@@ -10,10 +11,12 @@ let activeSlotEle: HTMLElement & {
   cancelHighlight?: () => void,
 };
 
-export const launchWatch = () => {
-  if (monitorRunning || !controlMode) {
+export const launchWatch = (viewEleMap: Map<number, HTMLElement>, viewMetadataMap: Map<number, Metadata>) => {
+  if (monitorRunning || !appControlMode) {
     return () => { };
   }
+  _viewEleMap = viewEleMap;
+  _viewMetadataMap = viewMetadataMap;
 
   monitorRunning = true;
   document.body.addEventListener('mousemove', outlineHoverAction, true);
@@ -41,13 +44,13 @@ export const resetWatch = (type?: 'hover' | 'selected') => {
 }
 
 export function outerSelected(instanceId: number) {
-  const selectedEle = getInstanceWrapperEle(instanceId);
+  const selectedEle = _viewEleMap.get(instanceId);
   if (!selectedEle) {
     return;
   }
 
   outlineSelectedInstanceId = instanceId;
-  const metadata = getInstanceMetadata(outlineSelectedInstanceId);
+  const metadata = _viewMetadataMap.get(outlineSelectedInstanceId);
   const clientRect = selectedEle.getBoundingClientRect();
   window.parent.postMessage({
     type: PostMessageType.InnerOutlineSelect,
@@ -68,26 +71,37 @@ export function updateActiveRect() {
     return;
   }
 
-  let selectedInfo, hoverInfo;
+  let selectedInfo: Partial<MarkerInfo>, hoverInfo: Partial<MarkerInfo>;
   if (outlineSelectedInstanceId) {
-    const selectedEle = getInstanceWrapperEle(outlineSelectedInstanceId);
-    const selectedMetadata = getInstanceMetadata(outlineSelectedInstanceId);
-    selectedInfo = {
-      clientRect: selectedEle.getBoundingClientRect(),
-      tagName: `${selectedMetadata.packageName}/${selectedMetadata.componentName}`,
-      instanceId: outlineSelectedInstanceId
+    const selectedEle = _viewEleMap.get(outlineSelectedInstanceId);
+    const selectedMetadata = _viewMetadataMap.get(outlineSelectedInstanceId);
+
+    if (selectedEle && selectedMetadata) {
+      selectedInfo = {
+        clientRect: selectedEle.getBoundingClientRect(),
+        tagName: `${selectedMetadata.packageName}/${selectedMetadata.componentName}`,
+        instanceId: outlineSelectedInstanceId
+      }
+    } else {
+      outlineSelectedInstanceId = undefined;
     }
   }
 
   if (outlineHoverInstanceId) {
-    const hoverEle = getInstanceWrapperEle(outlineHoverInstanceId);
-    const hoverMetadata = getInstanceMetadata(outlineHoverInstanceId);
-    hoverInfo = {
-      clientRect: hoverEle.getBoundingClientRect(),
-      tagName: `${hoverMetadata.packageName}/${hoverMetadata.componentName}`,
-      instanceId: outlineHoverInstanceId
+    const hoverEle = _viewEleMap.get(outlineHoverInstanceId);
+    const hoverMetadata = _viewMetadataMap.get(outlineHoverInstanceId);
+
+    if (hoverEle && hoverMetadata) {
+      hoverInfo = {
+        clientRect: hoverEle.getBoundingClientRect(),
+        tagName: `${hoverMetadata.packageName}/${hoverMetadata.componentName}`,
+        instanceId: outlineHoverInstanceId
+      }
+    } else {
+      outlineHoverInstanceId = undefined;
     }
   }
+
 
   window.parent.postMessage({
     type: PostMessageType.InnerOutlineUpdate,
@@ -138,7 +152,7 @@ export function respondDragDrop(positionX: number, positionY: number, componentI
 
   const parentInstanceId = +activeSlotEle.dataset.grootSlot;
   const keyChain = activeSlotEle.dataset.grootKeyChain;
-  const parentMetadata = getInstanceMetadata(parentInstanceId);
+  const parentMetadata = _viewMetadataMap.get(parentInstanceId);
   const propMetadata = parentMetadata.advancedProps.find(item => item.keyChain === keyChain);
   const propItemId = propMetadata.data.propItemId;
   const abstractValueIdChain = propMetadata.data.abstractValueIdChain;
@@ -181,7 +195,7 @@ function outlineHoverAction({ clientX, clientY }: MouseEvent) {
   let instanceId, metadata;
   if (hitEle) {
     instanceId = +hitEle.dataset.grootComponentInstanceId;
-    metadata = getInstanceMetadata(instanceId);
+    metadata = _viewMetadataMap.get(instanceId);
     if (!metadata) {
       return;
     }
@@ -205,7 +219,7 @@ function outlineHoverAction({ clientX, clientY }: MouseEvent) {
         rootInstanceId: metadata.rootId,
         propItemId: metadata.$$runtime.propItemId,
         abstractValueIdChain: metadata.$$runtime.abstractValueIdChain
-      }
+      } as MarkerInfo
     }, '*');
   } else {
     outlineHoverInstanceId = undefined;
@@ -216,23 +230,13 @@ function outlineHoverAction({ clientX, clientY }: MouseEvent) {
 }
 
 function outlineMousedownAction() {
-  // let hitEle = detectWrapperEle(clientX, clientY, 'grootComponentInstanceId');
-  // let instanceId, metadata;
-  // if (hitEle) {
-  //   instanceId = +hitEle.dataset.grootComponentInstanceId;
-  //   metadata = getInstanceMetadata(instanceId);
-  //   if (!metadata.parentId) {
-  //     // 根组件不需要选中操作
-  //     hitEle = instanceId = metadata = null;
-  //   }
-  // }
   if (!outlineHoverInstanceId) {
     return;
   }
 
   outlineSelectedInstanceId = outlineHoverInstanceId;
-  const hitEle = getInstanceWrapperEle(outlineSelectedInstanceId);
-  const metadata = getInstanceMetadata(outlineSelectedInstanceId);
+  const hitEle = _viewEleMap.get(outlineSelectedInstanceId);
+  const metadata = _viewMetadataMap.get(outlineSelectedInstanceId);
   const clientRect = hitEle.getBoundingClientRect();
   window.parent.postMessage({
     type: PostMessageType.InnerOutlineSelect,

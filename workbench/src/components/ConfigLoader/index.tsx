@@ -29,7 +29,7 @@ const ConfigLoader: React.FC<PropType> = ({ finish }) => {
 
     function onMessage(event: MessageEvent) {
       const messageData = event.data;
-      if (messageData.type === PostMessageType.InnerSetConfig) {
+      if (messageData.type === PostMessageType.InnerOutputConfig) {
         const configData = messageData.data as HostConfig;
         if (!configData || !configData.plugin) {
           finish(configData as RuntimeHostConfig);

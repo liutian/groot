@@ -7,7 +7,7 @@ import { ComponentInstance, Deploy, EnvType, Release } from "@grootio/common";
 export default class InstanceModel {
   static modelName = 'editor';
 
-  public loadStatus: 'doing' | 'fetch-pluginn' | 'no-component' | 'no-application' | 'ok' = 'doing';
+  public loadStatus: 'doing' | 'fetch-plugin' | 'no-component' | 'no-application' | 'ok' = 'doing';
   public instanceAddModalStatus: ModalStatus = ModalStatus.None;
   public instanceAddEntry = true;
   public releaseAddModalStatus: ModalStatus = ModalStatus.None;
@@ -28,7 +28,7 @@ export default class InstanceModel {
   public fetchApplication = (applicationId: number, releaseId?: number) => {
     return request(APIPath.application_detail, { applicationId, releaseId }).then(({ data }) => {
       this.workbench.launchInstanceBox(data);
-      this.loadStatus = 'fetch-pluginn';
+      this.loadStatus = 'fetch-plugin';
     }).catch((e) => {
       this.loadStatus = 'no-application';
       return Promise.reject(e);

@@ -1,6 +1,6 @@
 import { RuntimeComponentValueType } from "@grootio/common";
 import { useEffect, useRef, useState } from "react";
-import { controlMode } from "../../util";
+import { appControlMode } from "@grootio/runtime";
 
 type PropType = {
   children: React.ReactElement[] & { _groot?: RuntimeComponentValueType },
@@ -55,7 +55,7 @@ export const ComponentSlot: React.FC<PropType> = ({ children, minHeight = 100, p
     }
 
     {
-      controlMode && !children.length && (
+      appControlMode && !children.length && (
         <div data-groot-slot-drag-zone="true" style={dragZoneStyles} >
           拖拽组件到这里
         </div>

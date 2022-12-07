@@ -1,5 +1,4 @@
 import { ApplicationData, IframeControlType, IframeDebuggerConfig, iframeNamePrefix, PostMessageType } from "@grootio/common";
-import { WorkbenchEvent } from "@util/common";
 
 
 export let iframeDebuggerConfig: IframeDebuggerConfig = {
@@ -50,7 +49,7 @@ function onMessage(event: MessageEvent) {
     notifyIframe(PostMessageType.OuterSetConfig);
   } else if (event.data === PostMessageType.InnerFetchApplication) {
     notifyIframe(PostMessageType.OuterSetApplication);
-  } else if (event.data.type === PostMessageType.InnerFetchPageComponents) {
+  } else if (event.data.type === PostMessageType.InnerFetchView) {
     if (event.data.data !== playgroundPath) {
       console.warn('current iframe path not control');
       return;
@@ -70,10 +69,10 @@ function onMessage(event: MessageEvent) {
 function refresh(callback?: () => void) {
   pageNavCallback = callback;
   const path = `${basePath}${playgroundPath}`;
-  iframeDebuggerConfig.controlPage = playgroundPath;
+  iframeDebuggerConfig.controlView = playgroundPath;
 
   if (iframe.src === path) {
-    notifyIframe(PostMessageType.OuterRefreshPage, path);
+    notifyIframe(PostMessageType.OuterRefreshView, path);
   } else {
     iframe.src = path;
   }
@@ -95,7 +94,7 @@ function notifyIframe(type: PostMessageType, data?: any) {
   } else if (type === PostMessageType.OuterUpdateComponent) {
     iframe.contentWindow.postMessage({
       type, data: {
-        path: iframeDebuggerConfig.controlPage,
+        key: iframeDebuggerConfig.controlView,
         data
       }
     }, '*');

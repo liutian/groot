@@ -54,7 +54,7 @@ function Demo() {
 
   return (
     <>
-      <UIManager path={location.pathname} />
+      <UIManager viewKey={location.pathname} />
     </>
   );
 }
