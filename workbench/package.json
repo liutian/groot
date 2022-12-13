@@ -36,6 +36,7 @@
     "@ant-design/icons": "4.8.0",
     "antd": "4.24.3",
     "axios": "1.2.0",
+    "monaco-editor": "0.34.1",
     "react-dom": "18.2.0",
     "react-router-dom": "6.4.3",
     "webpack-bundle-analyzer": "4.7.0",
