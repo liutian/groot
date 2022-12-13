@@ -4,7 +4,6 @@ const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyPlugin = require("copy-webpack-plugin");
-const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const { ModuleFederationPlugin } = require('webpack').container;
 
 module.exports = (env, args) => {
@@ -122,11 +121,10 @@ module.exports = (env, args) => {
 
 			new CopyPlugin({
 				patterns: [
-					{ from: "public/**/*.*" }
+					{ context: 'public/', from: '**/*.*' }
 				],
 			}),
 
-			new MonacoWebpackPlugin(),
 			new ModuleFederationPlugin({
 				name: 'groot',
 				shared: {

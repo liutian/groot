@@ -1,4 +1,6 @@
-import * as monaco from 'monaco-editor';
+import { monacoLoader } from '@util/monaco-loader';
+import * as monacoInstance from 'monaco-editor';
+import type * as monacoNamespace from 'monaco-editor';
 import { useEffect, useRef, useState } from 'react';
 
 type propsType = {
@@ -7,57 +9,81 @@ type propsType = {
   type?: 'json' | 'function'
 }
 
+type MonacoType = typeof monacoInstance;
+
+let monaco: MonacoType;
+
 
 function TextEditor({ onChange, value, type = 'json' }: propsType) {
   const editorSubscriptionRef = useRef({} as any);
   const editorRef = useRef({} as any);
   const codeEditorContainerRef = useRef({} as any);
-  const [[model, modelUri]] = useState(() => {
-    return createModel(type);
-  })
+  const [ready, setReady] = useState(false);
+
+  // 初始化默认执行一次文档格式化
+  useEffect(() => {
+    if (!ready) return () => { };
+
+    const action = editorRef.current.getAction('editor.action.formatDocument');
+
+    const initRunTimeout = setTimeout(() => {
+      action.run();
+    }, 100);
+
+    return () => {
+      clearTimeout(initRunTimeout);
+    }
+  }, [ready]);
 
   useEffect(() => {
-    if (type === 'json') {
-      model.setValue(JSON.stringify(value || ''));
-    } else {
-      model.setValue(value || '');
-    }
+    monacoLoader().then(() => {
+      monaco = (window as any).monaco;
+      const [model, modelUri] = createModel(type) as any;
 
-    // http://json-schema.org/learn/getting-started-step-by-step
-    // http://json-schema.org/understanding-json-schema/
-    monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
-      validate: true,
-      schemas: [
-        {
-          uri: 'https://groot.dev/metadata-list.schema.json',
-          fileMatch: [modelUri.toString()],
-        }
-      ]
-    });
+      if (type === 'json') {
+        model.setValue(JSON.stringify(value || ''));
+      } else {
+        model.setValue(value || '');
+      }
 
-    monaco.languages.typescript.typescriptDefaults.addExtraLib(`
-    declare const _groot:{
-      readonly version: string;
-      readonly controlMode: boolean;
-      readonly controlType: 'prototype' | 'instance';
-    };
-    
-    declare const _shared: Record<string, any>;
-    declare let _exportFn: Function;
-    declare const _props: any;
+      // http://json-schema.org/learn/getting-started-step-by-step
+      // http://json-schema.org/understanding-json-schema/
+      monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+        validate: true,
+        schemas: [
+          {
+            uri: 'https://groot.dev/metadata-list.schema.json',
+            fileMatch: [modelUri.toString()],
+          }
+        ]
+      });
+
+      monaco.languages.typescript.typescriptDefaults.addExtraLib(`
+        declare const _groot:{
+          readonly version: string;
+          readonly controlMode: boolean;
+          readonly controlType: 'prototype' | 'instance';
+        };
+        
+        declare const _shared: Record<string, any>;
+        declare let _exportFn: Function;
+        declare const _props: any;
     `, '');
 
-    editorRef.current = monaco.editor.create(codeEditorContainerRef.current, {
-      model,
-      theme: 'vs-dark',
-      formatOnPaste: true,
-      minimap: {
-        enabled: false
-      },
+      editorRef.current = monaco.editor.create(codeEditorContainerRef.current, {
+        model,
+        theme: 'vs-dark',
+        formatOnPaste: true,
+        minimap: {
+          enabled: false
+        },
+      });
+
+      setReady(true);
     });
 
     return () => {
-      if (!editorRef.current) {
+      if (!editorRef.current || !ready) {
         return
       }
 
@@ -70,23 +96,12 @@ function TextEditor({ onChange, value, type = 'json' }: propsType) {
         editorSubscriptionRef.current.dispose();
       }
     }
-  }, []);
-
-  // 初始化默认你执行一次文档格式化
-  useEffect(() => {
-    const action = editorRef.current.getAction('editor.action.formatDocument');
-
-    const initRunTimeout = setTimeout(() => {
-      action.run();
-    }, 100);
-
-    return () => {
-      clearTimeout(initRunTimeout);
-    }
-  }, []);
+  }, [])
 
   // 绑定键盘事件，自动触发更新
   useEffect(() => {
+    if (!ready) return;
+
     let keyDown = false;
     editorRef.current.onKeyDown(() => {
       keyDown = true;
@@ -100,13 +115,13 @@ function TextEditor({ onChange, value, type = 'json' }: propsType) {
         onChange(editorRef.current.getValue());
       }
     });
-  }, []);
+  }, [ready]);
 
   return <div style={{ width: '100%', height: '180px' }} ref={codeEditorContainerRef}></div>
 }
 
 let ticket = 0;
-function createModel(type: 'json' | 'function'): [monaco.editor.ITextModel, monaco.Uri] {
+function createModel(type: 'json' | 'function'): [monacoNamespace.editor.ITextModel, monacoNamespace.Uri] {
   if (type === 'json') {
     const jsonModelUri = monaco.Uri.parse(`groot://j-${++ticket}.json`);
     const jsonModel = monaco.editor.createModel('', 'json', jsonModelUri);
