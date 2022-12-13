@@ -1,7 +1,6 @@
 import { AppstoreOutlined, BranchesOutlined, PlusOutlined, SendOutlined } from "@ant-design/icons";
 import { Breadcrumb, Button, Dropdown, Modal } from "antd";
 import { useEffect, useState, } from "react";
-import { useSearchParams } from "react-router-dom";
 import { RuntimeHostConfig } from "@grootio/common";
 
 import { useRegisterModel } from "@util/robot";
@@ -17,13 +16,18 @@ import { ModalStatus } from "@util/common";
 import Loading from "@components/Loading";
 import ConfigLoader from "@components/ConfigLoader";
 
-const Prototype: React.FC = () => {
+
+type PropsType = {
+  orgId: number,
+  componentId?: number,
+  versionId?: number
+}
+
+const Prototype: React.FC<PropsType> = ({ orgId, componentId, versionId }) => {
   const [prototypeModel, prototypeUpdateAction] = useRegisterModel(PrototypeModel);
   const [workbenchModel] = useRegisterModel(WorkbenchModel);
   const [propHandleModel] = useRegisterModel(PropHandleModel);
   const [propPersistModel] = useRegisterModel(PropPersistModel);
-
-  let [searchParams] = useSearchParams();
 
   useState(() => {
     propPersistModel.inject(workbenchModel, propHandleModel);
@@ -33,7 +37,6 @@ const Prototype: React.FC = () => {
   })
 
   useEffect(() => {
-    const orgId = +searchParams.get('org');
     prototypeModel.fetchOrg(orgId);
   }, []);
 
@@ -41,8 +44,6 @@ const Prototype: React.FC = () => {
     initView();
     workbenchModel.processConfig(config);
 
-    const componentId = +searchParams.get('component');
-    const versionId = +searchParams.get('version');
     if (componentId) {
       prototypeModel.switchComponent(componentId, versionId);
     } else if (workbenchModel.org.componentList.length) {

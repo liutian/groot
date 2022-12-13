@@ -1,6 +1,5 @@
 import { AppstoreOutlined, PlusOutlined, SendOutlined, UnorderedListOutlined } from "@ant-design/icons";
 import { useEffect, useState, } from "react";
-import { useSearchParams } from "react-router-dom";
 import { Breadcrumb, Button } from "antd";
 
 import { PostMessageType, RuntimeHostConfig } from "@grootio/common";
@@ -22,13 +21,17 @@ import { DragComponentList } from "./components/DragComponentList";
 import Release from "./components/Release";
 import InstanceList from "./components/InstanceList";
 
-const Instance: React.FC = () => {
+type PropsType = {
+  appId: number,
+  releaseId?: number,
+  instanceId?: number
+}
+
+const Instance: React.FC<PropsType> = ({ appId, releaseId, instanceId }) => {
   const [instanceModel, instanceModelAction] = useRegisterModel(InstanceModel);
   const [workbenchModel] = useRegisterModel(WorkbenchModel);
   const [propHandleModel] = useRegisterModel(PropHandleModel);
   const [propPersistModel] = useRegisterModel(PropPersistModel);
-
-  let [searchParams] = useSearchParams();
 
   useState(() => {
     propPersistModel.inject(workbenchModel, propHandleModel);
@@ -38,16 +41,15 @@ const Instance: React.FC = () => {
   });
 
   useEffect(() => {
-    const applicationId = +searchParams.get('app');
-    const releaseId = +searchParams.get('release');
-    instanceModel.fetchApplication(applicationId, releaseId);
+    // const applicationId = +searchParams.get('app');
+    // const releaseId = +searchParams.get('release');
+    instanceModel.fetchApplication(appId, releaseId);
   }, []);
 
   const fetchPluginFinish = (config: RuntimeHostConfig) => {
     initView();
     workbenchModel.processConfig(config);
 
-    const instanceId = +searchParams.get('page');
     if (instanceId) {
       instanceModel.fetchRootInstance(instanceId);
     } else if (workbenchModel.application.release.instanceList.length) {
