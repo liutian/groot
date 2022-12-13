@@ -1,10 +1,11 @@
-import PluginView from '@components/PluginView';
-import WorkbenchModel from '@model/WorkbenchModel';
-import { WorkbenchEvent } from '@util/common';
-import { useModel } from '@util/robot';
 import { Button } from 'antd';
 import React, { useEffect } from 'react';
 import { ReactNode, useState } from 'react';
+
+import PluginView from '@components/PluginView';
+import WorkbenchModel from '@model/WorkbenchModel';
+import { useModel } from '@util/robot';
+
 import styles from './index.module.less';
 
 const SideBar: React.FC = () => {

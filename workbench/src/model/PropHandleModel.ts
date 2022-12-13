@@ -1,6 +1,6 @@
 import { ComponentInstance, ComponentValueItemType, ComponentValueType, DragAddComponentEventDataType, PostMessageType, PropBlock, PropGroup, PropItem, PropItemType, PropValue, PropValueType, ValueStruct } from "@grootio/common";
 import { metadataFactory, propTreeFactory } from "@grootio/core";
-import { WorkbenchEvent } from "@util/common";
+
 import PropPersistModel from "./PropPersistModel";
 import WorkbenchModel from "./WorkbenchModel";
 

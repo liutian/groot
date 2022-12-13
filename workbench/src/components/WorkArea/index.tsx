@@ -1,6 +1,7 @@
+import { useEffect, useRef } from "react";
+
 import WorkbenchModel from "@model/WorkbenchModel";
 import { useModel } from "@util/robot";
-import { useEffect, useRef } from "react";
 
 import styles from './index.module.less';
 import Viewport from "./Viewport";

@@ -1,16 +1,16 @@
-import { Tabs, Typography } from "antd";
+import { PropGroup, PropGroupStructType } from "@grootio/common";
 import { PlusOutlined } from '@ant-design/icons';
+import { Tabs, Typography } from "antd";
 
 import { useModel } from '@util/robot';
-import PropGroupPane from "../PropGroupPane";
-import { autoIncrementForName } from "@util/utils";
-import PropBlockPane from "../PropBlockPane";
-import PropGroupToolBar from "../PropGroupToolBar";
 import WorkbenchModel from "@model/WorkbenchModel";
 import PropHandleModel from "@model/PropHandleModel";
 import PropPersistModel from "@model/PropPersistModel";
-import { PropGroup, PropGroupStructType } from "@grootio/common";
+import { autoIncrementForName } from "@util/utils";
 
+import PropGroupPane from "../PropGroupPane";
+import PropBlockPane from "../PropBlockPane";
+import PropGroupToolBar from "../PropGroupToolBar";
 import styles from './index.module.less';
 
 function PropPane() {

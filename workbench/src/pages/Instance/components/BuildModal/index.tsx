@@ -1,6 +1,8 @@
+import { Button, Modal } from "antd";
+
 import { ModalStatus } from "@util/common";
 import { useModel } from "@util/robot";
-import { Button, Modal } from "antd"
+
 import EditorModel from "pages/Instance/InstanceModel";
 
 const BuildModal: React.FC = () => {

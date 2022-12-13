@@ -1,10 +1,11 @@
 import { CloseOutlined, DragOutlined, FullscreenExitOutlined, FullscreenOutlined, LineOutlined } from '@ant-design/icons';
 import { Button, Tabs, Typography } from 'antd';
 import { HTMLAttributes, ReactNode, useEffect, useRef } from 'react';
+
 import WorkbenchModel from '@model/WorkbenchModel';
+import { useModel } from '@util/robot';
 
 import styles from './index.module.less';
-import { useModel } from '@util/robot';
 import MouseFollow from 'components/MouseFollow';
 
 const tabBarStyles = {

@@ -1,7 +1,8 @@
 import { BranchesOutlined } from "@ant-design/icons";
+import { Dropdown } from "antd";
+
 import WorkbenchModel from "@model/WorkbenchModel";
 import { useModel } from "@util/robot";
-import { Dropdown, Menu } from "antd";
 import InstanceModel from "pages/Instance/InstanceModel";
 
 const Release: React.FC = () => {

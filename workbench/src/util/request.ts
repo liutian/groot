@@ -1,6 +1,7 @@
-import axios from './base-request';
-import type { APIStore } from '../api/API.store';
 import { requestFnType } from '@grootio/common';
+
+import axios from './base-request';
+import type { APIStore } from 'api/API.store';
 
 
 /**

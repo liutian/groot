@@ -2,6 +2,8 @@ import { useRef } from "react";
 
 import { useModel } from "@util/robot";
 import WorkbenchModel from "@model/WorkbenchModel";
+import PropHandleModel from "@model/PropHandleModel";
+
 import MouseFollow from "components/MouseFollow";
 import styles from './index.module.less';
 import PropFooter from "./PropFooter";
@@ -10,8 +12,6 @@ import PropGroupSetting from "./PropGroupSetting";
 import PropItemSetting from "./PropItemSetting";
 import PropBlockSetting from "./PropBlockSetting";
 import SubPropPane from "./SubPropPane";
-import PropHandleModel from "@model/PropHandleModel";
-import { WorkbenchEvent } from "@util/common";
 
 
 const PropSetter: React.FC = () => {

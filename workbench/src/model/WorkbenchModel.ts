@@ -1,7 +1,8 @@
 import { Application, ApplicationData, Component, ComponentInstance, ComponentVersion, IframeControlType, Organization, PropBlock, PropGroup, PropItem, RemotePlugin, RuntimeHostConfig, RuntimePluginConfig, RuntimeSidebarViewType, ViewportMode, WorkbenchModelType, } from "@grootio/common";
+import { ReactNode } from "react";
+
 import { iframeDebuggerConfig, IframeManagerInstance, launchIframeManager } from "@model/iframeManager";
 import { needRewrite } from "@util/common";
-import { ReactNode } from "react";
 import PropHandleModel from "./PropHandleModel";
 
 /**

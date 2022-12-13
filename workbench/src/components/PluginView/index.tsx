@@ -1,6 +1,7 @@
-import { PluginViewComponent, RemotePlugin } from "@grootio/common";
-import { loadRemoteModule } from "@util/fetch-remote-module";
 import React, { useEffect, useState } from "react";
+import { PluginViewComponent, RemotePlugin } from "@grootio/common";
+
+import { loadRemoteModule } from "@util/fetch-remote-module";
 import request from "@util/request";
 import { APIPath } from "api/API.path";
 import { useModel } from "@util/robot";

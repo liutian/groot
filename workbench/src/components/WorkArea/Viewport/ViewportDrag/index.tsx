@@ -1,6 +1,6 @@
+import { DragLineInfo, PostMessageType } from "@grootio/common";
 import { useEffect, useRef } from "react";
 
-import { DragLineInfo, PostMessageType } from "@grootio/common";
 import WorkbenchModel from "@model/WorkbenchModel";
 import { WorkbenchEvent } from "@util/common";
 import { useModel } from "@util/robot";

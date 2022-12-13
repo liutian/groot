@@ -1,7 +1,8 @@
-import { BellOutlined, BlockOutlined, BranchesOutlined, CommentOutlined, NumberOutlined, PlusOutlined } from '@ant-design/icons';
-import { useModel } from '@util/robot';
+import { BellOutlined, BlockOutlined, CommentOutlined, NumberOutlined } from '@ant-design/icons';
 import { Typography } from 'antd';
 import { HTMLAttributes, useEffect, useRef } from 'react';
+
+import { useModel } from '@util/robot';
 import styles from './index.module.less';
 
 import WorkbenchModel from '@model/WorkbenchModel';

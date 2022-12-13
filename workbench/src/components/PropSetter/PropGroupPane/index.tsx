@@ -1,15 +1,16 @@
-import { useModel } from "@util/robot";
 import { Button, Collapse, Space, Typography } from "antd";
-import { CaretRightOutlined, DeleteOutlined, EditOutlined, PlusOutlined, VerticalAlignBottomOutlined, VerticalAlignTopOutlined } from "@ant-design/icons";
-import PropBlockPane from "../PropBlockPane";
-import WorkbenchModel from "@model/WorkbenchModel";
-
-import styles from './index.module.less';
-import { useState } from "react";
-import PropPersistModel from "@model/PropPersistModel";
 import { PropBlock, PropBlockStructType, PropGroup } from "@grootio/common";
+import { CaretRightOutlined, DeleteOutlined, EditOutlined, PlusOutlined, VerticalAlignBottomOutlined, VerticalAlignTopOutlined } from "@ant-design/icons";
+import { useState } from "react";
+
+import WorkbenchModel from "@model/WorkbenchModel";
+import { useModel } from "@util/robot";
+import styles from './index.module.less';
+import PropPersistModel from "@model/PropPersistModel";
 import PropBlockListStructPane from "@components/PropSetter/PropBlockListStructPane";
 import { stringify } from "@util/utils";
+
+import PropBlockPane from "../PropBlockPane";
 
 type PropsType = {
   group: PropGroup,

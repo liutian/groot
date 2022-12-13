@@ -1,7 +1,7 @@
-import { useModel } from "@util/robot";
 import { Form, Input, Modal, Radio } from "antd";
 import React, { useEffect, useRef } from "react";
 
+import { useModel } from "@util/robot";
 import { propKeyRule } from "@util/utils";
 import PropPersistModel from "@model/PropPersistModel";
 

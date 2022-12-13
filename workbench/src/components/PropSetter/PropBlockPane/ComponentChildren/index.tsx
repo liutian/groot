@@ -1,7 +1,8 @@
+import { List } from "antd";
 import { PostMessageType, RuntimeComponentValueType } from "@grootio/common";
+
 import WorkbenchModel from "@model/WorkbenchModel";
 import { useModel } from "@util/robot";
-import { List } from "antd";
 
 const ComponentChildren: React.FC<{ value?: RuntimeComponentValueType }> = ({ value }) => {
   const [workbenchModel] = useModel(WorkbenchModel);

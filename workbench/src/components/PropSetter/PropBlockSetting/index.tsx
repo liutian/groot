@@ -1,8 +1,9 @@
 import { PropBlockStructType } from "@grootio/common";
-import PropPersistModel from "@model/PropPersistModel";
-import { useModel } from "@util/robot";
 import { Form, Input, Modal, Radio, Switch } from "antd";
 import React, { useEffect, useRef } from "react";
+
+import PropPersistModel from "@model/PropPersistModel";
+import { useModel } from "@util/robot";
 
 const PropBlockSetting: React.FC = () => {
   const [propPersistModel, updateAction] = useModel(PropPersistModel);

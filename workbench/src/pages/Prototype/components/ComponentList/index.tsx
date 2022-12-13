@@ -1,10 +1,12 @@
 import { PlusOutlined } from "@ant-design/icons";
 import { ComponentParserType } from "@grootio/common";
+import { Button, Menu, } from "antd";
+
 import WorkbenchModel from "@model/WorkbenchModel";
 import { ModalStatus } from "@util/common";
 import { useModel, } from "@util/robot";
-import { Button, Menu, } from "antd";
 import PrototypeModel from "pages/Prototype/PrototypeModel";
+
 import styles from './index.module.less';
 
 const ComponentList: React.FC = () => {

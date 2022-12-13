@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { Form, Input, Modal, Select, Switch } from "antd";
+import { Component, ComponentInstance } from "@grootio/common";
 
 import { ModalStatus } from "@util/common";
 import { useModel } from "@util/robot";
 import { APIPath } from "api/API.path";
 import request from "@util/request";
 import EditorModel from "pages/Instance/InstanceModel";
-import { Component, ComponentInstance } from "@grootio/common";
 
 const InstanceAddModal: React.FC = () => {
   const [editorModel, updateAction] = useModel(EditorModel);

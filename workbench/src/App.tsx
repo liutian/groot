@@ -1,11 +1,11 @@
 import { useRoutes } from 'react-router-dom';
 import zhCN from 'antd/es/locale/zh_CN';
+import { ConfigProvider } from 'antd';
+import moment from 'moment';
 
 
 import Instance from 'pages/Instance';
-import Prototype from './pages/Prototype';
-import { ConfigProvider } from 'antd';
-import moment from 'moment';
+import Prototype from 'pages/Prototype';
 
 moment.locale('zh-cn');
 

@@ -1,10 +1,11 @@
 import { LeftOutlined } from '@ant-design/icons';
 import { PropItem, PropItemType } from '@grootio/common';
-import PropHandleModel from '@model/PropHandleModel';
-import { useModel } from '@util/robot';
 import { Button } from 'antd';
-import BlockListStructPrefs from '@components/PropSetter/BlockListStructPrefs';
 import { useRef } from 'react';
+
+import BlockListStructPrefs from '@components/PropSetter/BlockListStructPrefs';
+import { useModel } from '@util/robot';
+import PropHandleModel from '@model/PropHandleModel';
 
 import PropBlockPane from '../PropBlockPane';
 import PropGroupPane from '../PropGroupPane';

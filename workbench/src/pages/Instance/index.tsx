@@ -3,11 +3,16 @@ import { useEffect, useState, } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Breadcrumb, Button } from "antd";
 
+import { PostMessageType, RuntimeHostConfig } from "@grootio/common";
+
 import { useRegisterModel } from "@util/robot";
+import { ModalStatus } from "@util/common";
 import WorkbenchModel from "@model/WorkbenchModel";
 import PropPersistModel from "@model/PropPersistModel";
 import PropHandleModel from "@model/PropHandleModel";
 import Workbench from "@components/Workbench";
+import ConfigLoader from "@components/ConfigLoader";
+import Loading from "@components/Loading";
 import InstanceModel from "./InstanceModel";
 import InstanceAddModal from "./components/InstanceAddModal";
 import ReleaseAddModal from "./components/ReleaseAddModal";
@@ -15,10 +20,6 @@ import BuildModal from "./components/BuildModal";
 import DeployModal from "./components/DeployModal";
 import { DragComponentList } from "./components/DragComponentList";
 import Release from "./components/Release";
-import { ModalStatus, WorkbenchEvent } from "@util/common";
-import { PostMessageType, RuntimeHostConfig } from "@grootio/common";
-import ConfigLoader from "@components/ConfigLoader";
-import Loading from "@components/Loading";
 import InstanceList from "./components/InstanceList";
 
 const Instance: React.FC = () => {

@@ -1,12 +1,12 @@
+import { RuntimeHostConfig, IframeControlType, iframeNamePrefix, PostMessageType, HostConfig } from "@grootio/common";
 import { useEffect, useRef } from "react";
 
-import { RuntimeHostConfig, IframeControlType, iframeNamePrefix, PostMessageType, HostConfig } from "@grootio/common";
 import WorkbenchModel from "@model/WorkbenchModel";
 import { useModel } from "@util/robot";
-
-import styles from './index.module.less';
 import Loading from "@components/Loading";
 import request from "@util/request";
+
+import styles from './index.module.less';
 import { APIPath } from "api/API.path";
 
 type PropType = {

@@ -1,5 +1,6 @@
 import { PlusOutlined } from "@ant-design/icons";
 import { Button, Menu } from "antd";
+import { useState } from "react";
 
 import WorkbenchModel from "@model/WorkbenchModel";
 import { ModalStatus } from "@util/common";
@@ -7,8 +8,6 @@ import { useModel } from "@util/robot";
 import EditorModel from "pages/Instance/InstanceModel";
 
 import styles from './index.module.less';
-import { ComponentParserType } from "@grootio/common";
-import { useState } from "react";
 
 const InstanceList: React.FC = () => {
   const [editorModel, editorUpdateAction] = useModel(EditorModel);

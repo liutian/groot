@@ -1,13 +1,14 @@
+import { DatePicker, Form, Input, InputNumber, Select, Space, Switch, Table, TimePicker, Tooltip, Typography } from "antd";
 import { DeleteOutlined, DragOutlined, QuestionCircleOutlined, SettingOutlined } from "@ant-design/icons";
 import { PropBlock, PropBlockStructType, PropItem, PropItemType, PropValue, PropValueType } from "@grootio/common";
 import { parsePropItemValue } from "@grootio/core";
+import { useState } from "react";
+
 import PropHandleModel from "@model/PropHandleModel";
 import PropPersistModel from "@model/PropPersistModel";
 import WorkbenchModel from "@model/WorkbenchModel";
 import { useModel } from "@util/robot";
 import { parseOptions } from "@util/utils";
-import { DatePicker, Form, Input, InputNumber, Select, Space, Switch, Table, TimePicker, Tooltip, Typography } from "antd";
-import { useState } from "react";
 
 import styles from './index.module.less';
 

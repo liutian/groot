@@ -1,8 +1,9 @@
+import { Form, Input, Modal, Select } from "antd";
 import { Release } from "@grootio/common";
+
 import WorkbenchModel from "@model/WorkbenchModel";
 import { ModalStatus } from "@util/common";
 import { useModel } from "@util/robot";
-import { Form, Input, Modal, Select } from "antd";
 import EditorModel from "pages/Instance/InstanceModel";
 
 const ReleaseAddModal: React.FC = () => {
