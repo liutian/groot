@@ -4,7 +4,8 @@
   "description": "",
   "scripts": {
     "start": "webpack serve --port 9000 --open --env APP_ENV=dev",
-    "build": "webpack --env prod"
+    "build": "webpack --env prod",
+    "analyzer": "webpack --env prod analyzer "
   },
   "author": "",
   "license": "ISC",
@@ -38,6 +39,7 @@
     "monaco-editor-webpack-plugin": "7.0.1",
     "react-dom": "18.2.0",
     "react-router-dom": "6.4.3",
+    "webpack-bundle-analyzer": "4.7.0",
     "zone.js": "0.12.0"
   }
 }
