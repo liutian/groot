@@ -72,10 +72,7 @@ const commonConfig = (env, args) => {
     plugins: [
       new CopyPlugin({
         patterns: [
-          {
-            context: 'src/groot-plugin',
-            from: 'assets/**/*.*',
-          }
+          { context: 'public/', from: '**/*.*' }
         ],
       }),
 
@@ -84,11 +81,10 @@ const commonConfig = (env, args) => {
       }),
 
       new ModuleFederationPlugin({
-        name: 'approve',
-        filename: 'groot-plugin/index.js',
+        name: 'grootWorkbench',
+        filename: 'workbench/index.js',
         exposes: {
-          'ComponentList': './src/groot-plugin/sidebar-view/ComponentList',
-          'FormulaPropItem': './src/groot-plugin/prop-setting-view/FormulaPropItem'
+          Instance: './src/pages/Instance',
         },
         shared: {
           react: {
@@ -111,6 +107,14 @@ const commonConfig = (env, args) => {
             singleton: true,
             requiredVersion: '^4.7.0'
           },
+          'zone.js': {
+            singleton: true,
+            requiredVersion: '^0.12.0'
+          },
+          axios: {
+            singleton: true,
+            requiredVersion: '^1.2.0'
+          }
         },
       })
     ]
@@ -135,7 +139,7 @@ const prodConfig = (env, args) => {
     mode: 'production',
     output: {
       filename: '[name].[contenthash].bundle.js',
-      path: path.resolve(__dirname, './groot-plugin-dist'),
+      path: path.resolve(__dirname, '../groot-workbench-dist'),
       clean: true,
     },
     bail: true,

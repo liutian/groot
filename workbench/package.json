@@ -5,6 +5,8 @@
   "scripts": {
     "start": "webpack serve --port 9000 --open --env APP_ENV=dev",
     "build": "webpack --env prod",
+    "workbench-start": "webpack serve --port 10004 --config config/webpack.federation.js",
+    "workbench-build": "webpack --config config/webpack.federation.js --env prod",
     "analyzer": "webpack --env prod analyzer "
   },
   "author": "",
