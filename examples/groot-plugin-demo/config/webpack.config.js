@@ -72,10 +72,7 @@ const commonConfig = (env, args) => {
     plugins: [
       new CopyPlugin({
         patterns: [
-          {
-            context: 'src/groot-plugin',
-            from: 'assets/**/*.*',
-          }
+          { context: 'public/', from: '**/*.*' }
         ],
       }),
 
@@ -87,8 +84,8 @@ const commonConfig = (env, args) => {
         name: 'approve',
         filename: 'groot-plugin/index.js',
         exposes: {
-          'ComponentList': './src/groot-plugin/sidebar-view/ComponentList',
-          'FormulaPropItem': './src/groot-plugin/prop-setting-view/FormulaPropItem'
+          'ComponentList': './src/sidebar-view/ComponentList',
+          'FormulaPropItem': './src/prop-setting-view/FormulaPropItem'
         },
         shared: {
           react: {
@@ -135,7 +132,7 @@ const prodConfig = (env, args) => {
     mode: 'production',
     output: {
       filename: '[name].[contenthash].bundle.js',
-      path: path.resolve(__dirname, './groot-plugin-dist'),
+      path: path.resolve(__dirname, '../groot-plugin-dist'),
       clean: true,
     },
     bail: true,
