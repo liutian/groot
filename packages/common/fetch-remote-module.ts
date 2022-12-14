@@ -54,3 +54,5 @@ function onScriptLoad(remotePackage: string, shareScope: string, resolve: Functi
     }
   }
 }
+
+declare const __webpack_share_scopes__: any;
