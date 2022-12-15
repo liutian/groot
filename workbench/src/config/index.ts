@@ -4,4 +4,6 @@ export const authTokenKey = 'ticket';
 
 export const successCode = 200;
 
-export let baseUrl = '';
+export let config = {
+  baseUrl: ''
+}

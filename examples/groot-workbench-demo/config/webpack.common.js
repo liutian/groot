@@ -5,6 +5,7 @@ const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const ReactRefreshTypeScript = require('react-refresh-typescript');
+const { ModuleFederationPlugin } = require('webpack').container;
 
 module.exports = (env, args) => {
 	return {
@@ -118,6 +119,47 @@ module.exports = (env, args) => {
 				patterns: [
 					{ from: 'public/**/*.*' }
 				],
+			}),
+
+			new ModuleFederationPlugin({
+				name: 'groot-workbench-demo',
+				shared: {
+					react: {
+						eager: true,
+						singleton: true,
+						requiredVersion: '^18.2.0'
+					},
+					'react-dom': {
+						eager: true,
+						singleton: true,
+						requiredVersion: '^18.2.0'
+					},
+					'react/jsx-runtime': {
+						eager: true,
+						singleton: true,
+						requiredVersion: '^18.2.0'
+					},
+					antd: {
+						eager: true,
+						singleton: true,
+						requiredVersion: '^4.21.3'
+					},
+					'@ant-design/icons': {
+						singleton: true,
+						eager: true,
+						requiredVersion: '^4.7.0'
+					},
+					'zone.js': {
+						singleton: true,
+						eager: true,
+						requiredVersion: '^0.12.0'
+					},
+					axios: {
+						singleton: true,
+						eager: true,
+						requiredVersion: '^1.2.0'
+					}
+				},
 			})
 		]
 	}

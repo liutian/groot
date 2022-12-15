@@ -2,7 +2,7 @@ import { AppstoreOutlined, PlusOutlined, SendOutlined, UnorderedListOutlined } f
 import { useEffect, useState, } from "react";
 import { Breadcrumb, Button } from "antd";
 
-import { PostMessageType, RuntimeHostConfig } from "@grootio/common";
+import { PostMessageType, RuntimeHostConfig, WorkbenchInstanceComponentType } from "@grootio/common";
 
 import { useRegisterModel } from "@util/robot";
 import { ModalStatus } from "@util/common";
@@ -20,14 +20,12 @@ import DeployModal from "./components/DeployModal";
 import { DragComponentList } from "./components/DragComponentList";
 import Release from "./components/Release";
 import InstanceList from "./components/InstanceList";
+import { config } from "config";
 
-type PropsType = {
-  appId: number,
-  releaseId?: number,
-  instanceId?: number
-}
+import styles from './index.module.less';
 
-const Instance: React.FC<PropsType> = ({ appId, releaseId, instanceId }) => {
+
+const Instance: WorkbenchInstanceComponentType = ({ appId, releaseId, instanceId, monacoConfig }) => {
   const [instanceModel, instanceModelAction] = useRegisterModel(InstanceModel);
   const [workbenchModel] = useRegisterModel(WorkbenchModel);
   const [propHandleModel] = useRegisterModel(PropHandleModel);
@@ -38,6 +36,10 @@ const Instance: React.FC<PropsType> = ({ appId, releaseId, instanceId }) => {
     propHandleModel.inject(workbenchModel, propPersistModel);
     workbenchModel.inject(propHandleModel);
     instanceModel.inject(workbenchModel);
+
+    if (monacoConfig) {
+      config.baseUrl = monacoConfig.baseUrl;
+    }
   });
 
   useEffect(() => {
@@ -132,13 +134,13 @@ const Instance: React.FC<PropsType> = ({ appId, releaseId, instanceId }) => {
   } else if (instanceModel.loadStatus === 'fetch-plugin') {
     return <ConfigLoader finish={fetchPluginFinish} />
   } else {
-    return (<>
+    return (<div className={styles.container}>
       <Workbench />
       <InstanceAddModal />
       <ReleaseAddModal />
       <BuildModal />
       <DeployModal />
-    </>);
+    </div>);
   }
 }
 

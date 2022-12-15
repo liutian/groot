@@ -1,8 +1,8 @@
-import { baseUrl } from 'config/index';
+import { config } from 'config';
 
 let loaderPromise: Promise<any>;
 
-export const monacoLoader = (path = `${baseUrl}/monaco-editor/vs`) => {
+export const monacoLoader = (path = `${config.baseUrl}/monaco-editor/vs`) => {
   return loaderPromise || (loaderPromise = new Promise((resolve) => {
     const scriptEle = document.createElement('script');
 

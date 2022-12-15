@@ -1,0 +1,32 @@
+.container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  nav {
+    text-align: center;
+    font-size: 18px;
+    font-weight: 900;
+    cursor: pointer;
+    border-bottom: solid 1px #ddd;
+    height: 50px;
+    line-height: 50px;
+  }
+
+  main {
+    flex-grow: 1;
+  }
+}
+
+.tabItem {
+  height: 100%;
+  display: inline-block;
+  padding: 0 20px;
+  border-bottom: solid 4px transparent;
+
+  &.active {
+    border-bottom-color: rgb(158, 158, 255);
+  }
+}

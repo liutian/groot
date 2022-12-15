@@ -1,14 +1,10 @@
 import Demo from "pages/Demo";
-import Page1 from "pages/Page1";
 import Home from "pages/Home";
 
 const routes = [
   {
     path: '/',
     element: <Home />,
-  }, {
-    path: '/page1',
-    element: <Page1 />,
   },
   // {
   //   path: '/admin',
