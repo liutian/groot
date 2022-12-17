@@ -255,4 +255,11 @@ export default class WorkbenchModel extends EventTarget implements WorkbenchMode
     this.propSettingView.push(...this.originPluginConfig.propSettingView);
   }
 
+  public toggleWorkAreaMask(show: boolean) {
+    if (show) {
+      this.workAreaMaskEle.classList.add('show');
+    } else {
+      this.workAreaMaskEle.classList.remove('show');
+    }
+  }
 }
