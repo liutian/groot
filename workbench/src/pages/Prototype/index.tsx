@@ -15,6 +15,7 @@ import ComponentVersionAddModal from "./components/ComponentVersionAddModal";
 import { ModalStatus } from "@util/common";
 import Loading from "@components/Loading";
 import ConfigLoader from "@components/ConfigLoader";
+import styles from './index.module.less';
 
 
 type PropsType = {
@@ -116,11 +117,11 @@ const Prototype: React.FC<PropsType> = ({ orgId, componentId, versionId }) => {
   } else if (prototypeModel.loadStatus === 'fetch-pluginn') {
     return <ConfigLoader finish={fetchPluginFinish} />
   } else {
-    return (<>
+    return (<div className={styles.container}>
       <Workbench />
       <ComponentAddModal />
       <ComponentVersionAddModal />
-    </>);
+    </div>);
   }
 }
 

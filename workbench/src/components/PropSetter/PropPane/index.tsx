@@ -11,7 +11,6 @@ import { autoIncrementForName } from "@util/utils";
 import PropGroupPane from "../PropGroupPane";
 import PropBlockPane from "../PropBlockPane";
 import PropGroupToolBar from "../PropGroupToolBar";
-import styles from './index.module.less';
 
 function PropPane() {
   const [propHandleModel] = useModel(PropHandleModel);
@@ -48,7 +47,7 @@ function PropPane() {
           key={`block-${group.propBlockList[0].id}-${propHandleModel.forceUpdateFormKey}`} />;
       }
 
-      return { key: `${group.id}`, label: renderTabBarItem(group), className: styles.content, children: content };
+      return { key: `${group.id}`, label: renderTabBarItem(group), children: content };
     })
 
     if (workbenchModel.prototypeMode) {
