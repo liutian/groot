@@ -18,7 +18,7 @@ const Workbench: React.FC<{ config: RemotePlugin, instanceId: number }> = ({ con
   return <>{
     !!Component ? (
       <React.Suspense fallback="loading plugin" >
-        <Component appId={1} releaseId={1} instanceId={instanceId} monacoConfig={{ baseUrl: 'http://localhost:10004' }} />
+        <Component appId={1} releaseId={1} instanceId={instanceId} monacoConfig={{ baseUrl: 'http://groot-local.com:13000' }} />
       </React.Suspense >
     ) : null
   }</>

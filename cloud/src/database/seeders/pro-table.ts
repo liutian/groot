@@ -167,7 +167,7 @@ export const create = async (em: EntityManager, org: Organization, release: Rele
     order: 2000,
     defaultValue: `
     _exportFn = async function requestData(params, sort, filter) {
-      const res = await fetch('http://127.0.0.1:3000/workbench/demo');
+      const res = await fetch('http://groot-local.com:10000/workbench/demo');
       const result = await res.json();
       return { data: result.data, success: true };
     }
@@ -201,7 +201,7 @@ export const create = async (em: EntityManager, org: Organization, release: Rele
     type: PropValueType.Instance,
     value: `
     _exportFn = async function requestData(params, sort, filter) {
-      const res = await fetch('http://127.0.0.1:3000/workbench/demo');
+      const res = await fetch('http://groot-local.com:10000/workbench/demo');
       const result = await res.json();
       return { data: result.data, success: true };
     }

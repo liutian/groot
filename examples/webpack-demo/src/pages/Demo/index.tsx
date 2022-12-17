@@ -10,7 +10,7 @@ import { ViewportMode } from '@grootio/common';
 UIManager.init({
   appKey: 'demo',
   appEnv: 'dev',
-  serverUrl: 'http://127.0.0.1:3000',
+  serverUrl: 'http://groot-local.com:10000',
   debug: true,
   modules: {
     react,
@@ -41,7 +41,7 @@ UIManager.init({
         propSettingView: [{
           package: 'approve',
           title: '配置项',
-          url: 'http://localhost:10002/groot-plugin/index.js',
+          url: 'http://groot-local.com:12000/groot-plugin/index.js',
           module: 'FormulaPropItem'
         }]
       }

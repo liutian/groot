@@ -15,10 +15,10 @@ const Demo: React.FC = () => {
     </nav>
     <main>
       {step === 'page' && (
-        <Workbench instanceId={1} config={{ package: 'grootWorkbench', module: 'Instance', url: 'http://172.19.15.69:10004/workbench/index.js', title: '' }} />
+        <Workbench instanceId={1} config={{ package: 'grootWorkbench', module: 'Instance', url: 'http://groot-local.com:13000/workbench/index.js', title: '' }} />
       )}
       {step === 'approve' && (
-        <Workbench instanceId={2} config={{ package: 'grootWorkbench', module: 'Instance', url: 'http://172.19.15.69:10004/workbench/index.js', title: '' }} />
+        <Workbench instanceId={2} config={{ package: 'grootWorkbench', module: 'Instance', url: 'http://groot-local.com:13000/workbench/index.js', title: '' }} />
       )}
 
       {step === 'publish' && (<>

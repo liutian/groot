@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "",
   "scripts": {
-    "start": "webpack serve --port 10002 --config config/webpack.config.js ",
+    "start": "webpack serve --port 12000 --host groot-local.com  --config config/webpack.config.js ",
     "build": "webpack --config config/webpack.config.js --env prod"
   },
   "author": "",

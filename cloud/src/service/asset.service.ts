@@ -147,7 +147,7 @@ export class AssetService {
     const views = newAssetList.map((asset) => {
       return {
         key: asset.key,
-        metadataUrl: `http://127.0.0.1:3000/asset/instance/${asset.id}`
+        metadataUrl: `http://groot-local.com:10000/asset/instance/${asset.id}`
       }
     })
 

@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "",
   "scripts": {
-    "start": "webpack serve --port 10006 --open --env APP_ENV=dev",
+    "start": "webpack serve --port 14000 --host groot-local.com --open --env APP_ENV=dev",
     "build": "webpack --env prod",
     "analyzer": "webpack --env prod analyzer "
   },
