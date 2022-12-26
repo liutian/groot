@@ -1,17 +1,15 @@
 import { Button, Modal } from "antd";
 
 import { ModalStatus } from "@util/common";
-import { useModel } from "@util/robot";
 
 import EditorModel from "pages/Instance/InstanceModel";
+import { useModel } from "@grootio/common";
 
 const BuildModal: React.FC = () => {
-  const [editorModel, updateEditorModel] = useModel(EditorModel);
+  const editorModel = useModel(EditorModel);
 
   const onCancel = () => {
-    updateEditorModel(() => {
-      editorModel.assetBuildModalStatus = ModalStatus.None
-    })
+    editorModel.assetBuildModalStatus = ModalStatus.None
   }
 
   let actions = [
@@ -27,11 +25,9 @@ const BuildModal: React.FC = () => {
   } else if (editorModel.assetBuildStatus === 'buildOver') {
     actions = [
       <Button key="primary" onClick={() => {
-        updateEditorModel(() => {
-          editorModel.assetBuildModalStatus = ModalStatus.None;
-          editorModel.assetDeployModalStatus = ModalStatus.Init;
-          editorModel.assetBuildStatus = 'init';
-        })
+        editorModel.assetBuildModalStatus = ModalStatus.None;
+        editorModel.assetDeployModalStatus = ModalStatus.Init;
+        editorModel.assetBuildStatus = 'init';
       }} type="primary">前往部署</Button>,
       <Button key="cancel" onClick={onCancel}>取消</Button>,
     ]

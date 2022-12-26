@@ -1,11 +1,11 @@
 import { useEffect, useRef } from 'react';
 
 import WorkbenchModel from '@model/WorkbenchModel';
-import { useModel } from '@util/robot';
 
 import ViewportDrag from './ViewportDrag';
 import ViewportOutlineMarker from './ViewportOutlineMarker';
 import styles from './index.module.less';
+import { useModel } from '@grootio/common';
 
 const viewportMode = {
   h5: {
@@ -19,7 +19,7 @@ const viewportMode = {
 }
 
 const Viewport: React.FC = () => {
-  const [workbenchModel] = useModel(WorkbenchModel);
+  const workbenchModel = useModel(WorkbenchModel);
   const iframeRef = useRef<HTMLIFrameElement>({} as any);
 
   useEffect(() => {

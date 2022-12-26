@@ -1,11 +1,10 @@
 import { List } from "antd";
-import { PostMessageType, RuntimeComponentValueType } from "@grootio/common";
+import { PostMessageType, RuntimeComponentValueType, useModel } from "@grootio/common";
 
 import WorkbenchModel from "@model/WorkbenchModel";
-import { useModel } from "@util/robot";
 
 const ComponentChildren: React.FC<{ value?: RuntimeComponentValueType }> = ({ value }) => {
-  const [workbenchModel] = useModel(WorkbenchModel);
+  const workbenchModel = useModel(WorkbenchModel);
 
   return <List size="small" bordered dataSource={value?.list || []}
     renderItem={item => (

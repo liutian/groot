@@ -1,18 +1,17 @@
 import { Form, Input, Modal, Radio, Select, Space, Switch, Typography } from "antd";
 import React, { useEffect, useState } from "react";
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
-import { PropItem, PropItemType, PropItemTypeNameMap } from "@grootio/common";
+import { PropItem, PropItemType, PropItemTypeNameMap, useModel } from "@grootio/common";
 
-import { useModel } from "@util/robot";
 import PropPersistModel from "@model/PropPersistModel";
 import WorkbenchModel from "@model/WorkbenchModel";
 import { RemotePluginKeySep } from "@util/common";
 
 
 const PropItemSetting: React.FC = () => {
-  const [workbenchModel] = useModel(WorkbenchModel);
-  const [propPersistModel, propPersistAction] = useModel(PropPersistModel);
-  const [propItemTypeOptions] = useState(() => {
+  const workbenchModel = useModel(WorkbenchModel);
+  const propPersistModel = useModel(PropPersistModel);
+  const propItemTypeOptions = useState(() => {
     if (workbenchModel.propSettingView?.length) {
       return [
         ...PropItemTypeNameMap,
@@ -31,9 +30,7 @@ const PropItemSetting: React.FC = () => {
   }
 
   const handleCancel = () => {
-    propPersistAction(() => {
-      propPersistModel.currSettingPropItem = undefined;
-    })
+    propPersistModel.currSettingPropItem = undefined;
   }
 
   useEffect(() => {

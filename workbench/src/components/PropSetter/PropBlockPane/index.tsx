@@ -2,11 +2,10 @@ import { Button, Checkbox, Col, DatePicker, Form, Input, InputNumber, Radio, Row
 import { VerticalAlignTopOutlined, DeleteOutlined, VerticalAlignBottomOutlined, EditOutlined } from '@ant-design/icons';
 import { useState } from "react";
 
-import { useModel } from "@util/robot";
 import WorkbenchModel from "@model/WorkbenchModel";
 import PropPersistModel from "@model/PropPersistModel";
 import PropHandleModel from "@model/PropHandleModel";
-import { PropBlock, PropItem, PropItemType, PropValueType, ValueStruct } from "@grootio/common";
+import { PropBlock, PropItem, PropItemType, PropValueType, useModel, ValueStruct } from "@grootio/common";
 import { calcPropValueIdChain, parseOptions, stringify } from "@util/utils";
 import { parsePropItemValue } from "@grootio/core";
 import PluginView from "@components/PluginView";
@@ -24,9 +23,9 @@ type PropType = {
 }
 
 function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
-  const [propPersistModel, propPersistAction] = useModel(PropPersistModel);
-  const [propHandleModel] = useModel(PropHandleModel);
-  const [workbenchModel] = useModel(WorkbenchModel);
+  const propPersistModel = useModel(PropPersistModel);
+  const propHandleModel = useModel(PropHandleModel);
+  const workbenchModel = useModel(WorkbenchModel);
   const [form] = Form.useForm();
   const noSetting = !workbenchModel.prototypeMode || freezeSetting || block.group.parentItem?.noSetting;
 
@@ -57,12 +56,10 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
     if (noSetting) return null;
 
     const editPropItem = () => {
-      propPersistAction(() => {
-        propPersistModel.currSettingPropItem = JSON.parse(stringify(propItem));
-        if (propItem.optionList?.length) {
-          propPersistModel.currSettingPropItem.optionList = propItem.optionList.map(option => JSON.parse(stringify(option)));
-        }
-      })
+      propPersistModel.currSettingPropItem = JSON.parse(stringify(propItem));
+      if (propItem.optionList?.length) {
+        propPersistModel.currSettingPropItem.optionList = propItem.optionList.map(option => JSON.parse(stringify(option)));
+      }
     }
 
     return (<Space size="small">

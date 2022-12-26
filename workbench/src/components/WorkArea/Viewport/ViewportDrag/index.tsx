@@ -1,14 +1,13 @@
-import { DragLineInfo, PostMessageType } from "@grootio/common";
+import { DragLineInfo, PostMessageType, useModel } from "@grootio/common";
 import { useEffect, useRef } from "react";
 
 import WorkbenchModel from "@model/WorkbenchModel";
 import { WorkbenchEvent } from "@util/common";
-import { useModel } from "@util/robot";
 
 import styles from './index.module.less';
 
 const ViewportDrag: React.FC = () => {
-  const [workbenchModel] = useModel(WorkbenchModel);
+  const workbenchModel = useModel(WorkbenchModel);
   const dragLineRef = useRef<HTMLDivElement>();
   const dragSlotRef = useRef<HTMLDivElement>();
   const containerRef = useRef<HTMLDivElement>();

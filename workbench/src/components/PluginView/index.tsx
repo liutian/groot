@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { PluginViewComponent, RemotePlugin, loadRemoteModule } from "@grootio/common";
+import { PluginViewComponent, RemotePlugin, loadRemoteModule, useModel } from "@grootio/common";
 
 import request from "@util/request";
 import { APIPath } from "api/API.path";
-import { useModel } from "@util/robot";
 import WorkbenchModel from "@model/WorkbenchModel";
 
 const remoteModuleMap = new Map<string, RemotePlugin>();

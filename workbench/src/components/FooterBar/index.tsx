@@ -1,9 +1,9 @@
+import { useModel } from '@grootio/common';
 import WorkbenchModel from '@model/WorkbenchModel';
-import { useModel } from '@util/robot';
 import styles from './index.module.less';
 
 const FooterBar: React.FC = () => {
-  const [workbenchModel] = useModel(WorkbenchModel);
+  const workbenchModel = useModel(WorkbenchModel);
 
   return <>
     <div className={styles.title}>

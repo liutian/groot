@@ -1,19 +1,17 @@
 import { useEffect, useRef } from "react";
 
 import WorkbenchModel from "@model/WorkbenchModel";
-import { useModel } from "@util/robot";
 
 import styles from './index.module.less';
 import Viewport from "./Viewport";
+import { useModel } from "@grootio/common";
 
 const WorkArea: React.FC = () => {
-  const [workbenchModel, workbenchUpdateAction] = useModel(WorkbenchModel);
+  const workbenchModel = useModel(WorkbenchModel);
   const maskEleRef = useRef();
 
   useEffect(() => {
-    workbenchUpdateAction(() => {
-      workbenchModel.workAreaMaskEle = maskEleRef.current;
-    })
+    workbenchModel.workAreaMaskEle = maskEleRef.current;
   }, []);
 
   return <div className={styles.container}>

@@ -1,10 +1,9 @@
 import { LeftOutlined } from '@ant-design/icons';
-import { PropItem, PropItemType } from '@grootio/common';
+import { PropItem, PropItemType, useModel } from '@grootio/common';
 import { Button } from 'antd';
 import { useRef } from 'react';
 
 import BlockListStructPrefs from '@components/PropSetter/BlockListStructPrefs';
-import { useModel } from '@util/robot';
 import PropHandleModel from '@model/PropHandleModel';
 
 import PropBlockPane from '../PropBlockPane';
@@ -17,7 +16,7 @@ type PropsType = {
 }
 
 const SubPropPane: React.FC<PropsType> = ({ item: propItem }) => {
-  const [propHandleModel] = useModel(PropHandleModel);
+  const propHandleModel = useModel(PropHandleModel);
   const propGroup = propItem.childGroup;
   const containerRef = useRef<HTMLDivElement>({} as any);
 

@@ -1,14 +1,13 @@
-import { ComponentVersion } from "@grootio/common";
+import { ComponentVersion, useModel } from "@grootio/common";
 import { Form, Input, Modal, Select } from "antd";
 
 import WorkbenchModel from "@model/WorkbenchModel";
 import { ModalStatus } from "@util/common";
-import { useModel } from "@util/robot";
 import PrototypeModel from "pages/Prototype/PrototypeModel";
 
 const ComponentVersionAddModal: React.FC = () => {
-  const [prototypeModel, updateAction] = useModel(PrototypeModel);
-  const [workbenchModel] = useModel(WorkbenchModel);
+  const prototypeModel = useModel(PrototypeModel);
+  const workbenchModel = useModel(WorkbenchModel);
   const [form] = Form.useForm();
 
   const handleOk = async () => {
@@ -19,9 +18,7 @@ const ComponentVersionAddModal: React.FC = () => {
   }
 
   const handleCancel = () => {
-    updateAction(() => {
-      prototypeModel.componentVersionAddModalStatus = ModalStatus.None;
-    })
+    prototypeModel.componentVersionAddModalStatus = ModalStatus.None;
   }
 
   return <Modal open={prototypeModel.componentVersionAddModalStatus !== ModalStatus.None} mask={false} title="创建版本"

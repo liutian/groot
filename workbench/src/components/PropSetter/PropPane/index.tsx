@@ -1,8 +1,7 @@
-import { PropGroup, PropGroupStructType } from "@grootio/common";
+import { PropGroup, PropGroupStructType, useModel } from "@grootio/common";
 import { PlusOutlined } from '@ant-design/icons';
 import { Tabs, Typography } from "antd";
 
-import { useModel } from '@util/robot';
 import WorkbenchModel from "@model/WorkbenchModel";
 import PropHandleModel from "@model/PropHandleModel";
 import PropPersistModel from "@model/PropPersistModel";
@@ -13,9 +12,9 @@ import PropBlockPane from "../PropBlockPane";
 import PropGroupToolBar from "../PropGroupToolBar";
 
 function PropPane() {
-  const [propHandleModel] = useModel(PropHandleModel);
-  const [propPersistModel, propPersistAction] = useModel(PropPersistModel);
-  const [workbenchModel] = useModel(WorkbenchModel);
+  const propHandleModel = useModel(PropHandleModel);
+  const propPersistModel = useModel(PropPersistModel);
+  const workbenchModel = useModel(WorkbenchModel);
 
   const renderTabBarItem = (group: PropGroup) => {
     return <div>{group.name}<i className="highlight" hidden={!group.highlight} /></div>;
@@ -29,13 +28,11 @@ function PropPane() {
       return;
     }
 
-    propPersistAction(() => {
-      const nameSuffix = autoIncrementForName(propHandleModel.propTree.map(g => g.name));
-      // 显示分组弹框
-      propPersistModel.currSettingPropGroup = {
-        name: `配置组${nameSuffix}`,
-      } as PropGroup;
-    })
+    const nameSuffix = autoIncrementForName(propHandleModel.propTree.map(g => g.name));
+    // 显示分组弹框
+    propPersistModel.currSettingPropGroup = {
+      name: `配置组${nameSuffix}`,
+    } as PropGroup;
   }
 
   const createTabItems = () => {

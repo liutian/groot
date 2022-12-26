@@ -2,9 +2,8 @@ import { AppstoreOutlined, PlusOutlined, SendOutlined, UnorderedListOutlined } f
 import { useEffect, useState, } from "react";
 import { Breadcrumb, Button } from "antd";
 
-import { PostMessageType, RuntimeHostConfig, WorkbenchInstanceComponentType } from "@grootio/common";
+import { PostMessageType, RuntimeHostConfig, useRegisterModel, WorkbenchInstanceComponentType } from "@grootio/common";
 
-import { useRegisterModel } from "@util/robot";
 import { ModalStatus } from "@util/common";
 import WorkbenchModel from "@model/WorkbenchModel";
 import PropPersistModel from "@model/PropPersistModel";
@@ -26,10 +25,10 @@ import styles from './index.module.less';
 
 
 const Instance: WorkbenchInstanceComponentType = ({ appId, releaseId, instanceId, monacoConfig }) => {
-  const [instanceModel, instanceModelAction] = useRegisterModel(InstanceModel);
-  const [workbenchModel] = useRegisterModel(WorkbenchModel);
-  const [propHandleModel] = useRegisterModel(PropHandleModel);
-  const [propPersistModel] = useRegisterModel(PropPersistModel);
+  const instanceModel = useRegisterModel(InstanceModel);
+  const workbenchModel = useRegisterModel(WorkbenchModel);
+  const propHandleModel = useRegisterModel(PropHandleModel);
+  const propPersistModel = useRegisterModel(PropPersistModel);
 
   useState(() => {
     propPersistModel.inject(workbenchModel, propHandleModel);
@@ -79,9 +78,7 @@ const Instance: WorkbenchInstanceComponentType = ({ appId, releaseId, instanceId
 
     workbenchModel.renderFooterLeftActionItems.push(() => {
       return (<div onClick={() => {
-        instanceModelAction(() => {
-          instanceModel.releaseAddModalStatus = ModalStatus.Init;
-        })
+        instanceModel.releaseAddModalStatus = ModalStatus.Init;
       }}>
         <PlusOutlined />
       </div>)
@@ -90,9 +87,7 @@ const Instance: WorkbenchInstanceComponentType = ({ appId, releaseId, instanceId
     (Object.getPrototypeOf(workbenchModel) as WorkbenchModel).renderToolBarAction = () => {
       return (<>
         <Button type="link" title="部署" icon={<SendOutlined />} onClick={() => {
-          instanceModelAction(() => {
-            instanceModel.assetBuildModalStatus = ModalStatus.Init;
-          })
+          instanceModel.assetBuildModalStatus = ModalStatus.Init;
         }} />
       </>)
     }

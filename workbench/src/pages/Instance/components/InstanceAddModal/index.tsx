@@ -1,15 +1,14 @@
 import { useEffect, useState } from "react";
 import { Form, Input, Modal, Select, Switch } from "antd";
-import { Component, ComponentInstance } from "@grootio/common";
+import { Component, ComponentInstance, useModel } from "@grootio/common";
 
 import { ModalStatus } from "@util/common";
-import { useModel } from "@util/robot";
 import { APIPath } from "api/API.path";
 import request from "@util/request";
 import EditorModel from "pages/Instance/InstanceModel";
 
 const InstanceAddModal: React.FC = () => {
-  const [editorModel, updateAction] = useModel(EditorModel);
+  const editorModel = useModel(EditorModel);
   const [form] = Form.useForm();
   const [componentList, setComponentList] = useState<Component[]>([]);
 
@@ -29,9 +28,7 @@ const InstanceAddModal: React.FC = () => {
   }
 
   const handleCancel = () => {
-    updateAction(() => {
-      editorModel.instanceAddModalStatus = ModalStatus.None;
-    })
+    editorModel.instanceAddModalStatus = ModalStatus.None;
   }
 
   return <Modal open={editorModel.instanceAddModalStatus !== ModalStatus.None} mask={false} title="新增实例"

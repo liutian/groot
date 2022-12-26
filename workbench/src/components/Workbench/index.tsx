@@ -2,16 +2,16 @@
 import PropSetter from '@components/PropSetter';
 import WidgetWindow from '@components/WidgetWindow';
 import WorkbenchModel from '@model/WorkbenchModel';
-import { useModel } from '@util/robot';
 import SideBar from '@components/SideBar';
 import WorkArea from '@components/WorkArea';
 import FooterBar from '@components/FooterBar';
 import TopBar from '@components/TopBar';
 
 import styles from './index.module.less';
+import { useModel } from '@grootio/common';
 
 const Workbench: React.FC = () => {
-  const [workbenchModel] = useModel(WorkbenchModel);
+  const workbenchModel = useModel(WorkbenchModel);
 
   return (<div id={workbenchModel.containerId} className={`${styles.container} ${workbenchModel.prototypeMode ? styles.prototypeMode : ''}`} >
 

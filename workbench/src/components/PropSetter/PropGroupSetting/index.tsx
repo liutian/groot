@@ -1,12 +1,12 @@
 import { Form, Input, Modal, Radio } from "antd";
 import React, { useEffect, useRef } from "react";
 
-import { useModel } from "@util/robot";
 import { propKeyRule } from "@util/utils";
 import PropPersistModel from "@model/PropPersistModel";
+import { useModel } from "@grootio/common";
 
 const PropGroupSetting: React.FC = () => {
-  const [propPersistModel, propPersistAction] = useModel(PropPersistModel);
+  const propPersistModel = useModel(PropPersistModel);
   const [form] = Form.useForm();
   const inputRef = useRef<any>(null);
 
@@ -16,9 +16,7 @@ const PropGroupSetting: React.FC = () => {
   }
 
   const handleCancel = () => {
-    propPersistAction(() => {
-      propPersistModel.currSettingPropGroup = undefined;
-    })
+    propPersistModel.currSettingPropGroup = undefined;
   }
 
   useEffect(() => {

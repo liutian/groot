@@ -1,12 +1,11 @@
-import { PropBlockStructType } from "@grootio/common";
+import { PropBlockStructType, useModel } from "@grootio/common";
 import { Form, Input, Modal, Radio, Switch } from "antd";
 import React, { useEffect, useRef } from "react";
 
 import PropPersistModel from "@model/PropPersistModel";
-import { useModel } from "@util/robot";
 
 const PropBlockSetting: React.FC = () => {
-  const [propPersistModel, updateAction] = useModel(PropPersistModel);
+  const propPersistModel = useModel(PropPersistModel);
   const [form] = Form.useForm();
   const inputRef = useRef<any>(null);
 
@@ -16,9 +15,7 @@ const PropBlockSetting: React.FC = () => {
   }
 
   const handleCancel = () => {
-    updateAction(() => {
-      propPersistModel.currSettingPropBlock = undefined;
-    })
+    propPersistModel.currSettingPropBlock = undefined;
   }
 
   useEffect(() => {

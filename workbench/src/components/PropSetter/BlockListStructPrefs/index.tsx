@@ -1,9 +1,8 @@
 import { Button, Checkbox, Space } from "antd"
 import { useState } from "react"
-import { PropBlock, PropItem } from "@grootio/common";
+import { PropBlock, PropItem, useModel } from "@grootio/common";
 
 import PropPersistModel from "@model/PropPersistModel"
-import { useModel } from "@util/robot"
 
 import styles from './index.module.less';
 
@@ -12,7 +11,7 @@ type PropsType = {
 }
 const BlockListStructPrefs: React.FC<PropsType> = ({ block: propBlock }) => {
   const [, refresh] = useState(0);
-  const [propPersistModel] = useModel(PropPersistModel);
+  const propPersistModel = useModel(PropPersistModel);
 
   const [prefsBlock] = useState(() => {
     return propBlock.propItemList[0].childGroup.propBlockList;

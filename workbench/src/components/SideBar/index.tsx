@@ -4,13 +4,13 @@ import { ReactNode, useState } from 'react';
 
 import PluginView from '@components/PluginView';
 import WorkbenchModel from '@model/WorkbenchModel';
-import { useModel } from '@util/robot';
 
 import styles from './index.module.less';
+import { useModel } from '@grootio/common';
 
 const SideBar: React.FC = () => {
   const [openPanel, setOpenPanel] = useState(false);
-  const [workbenchModel] = useModel(WorkbenchModel);
+  const workbenchModel = useModel(WorkbenchModel);
   const [activeKey, setActiveKey] = useState('');
   const [activeComponent, setActiveComponent] = useState<ReactNode>();
 

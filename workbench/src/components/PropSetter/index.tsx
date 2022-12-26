@@ -1,6 +1,5 @@
 import { useRef } from "react";
 
-import { useModel } from "@util/robot";
 import WorkbenchModel from "@model/WorkbenchModel";
 import PropHandleModel from "@model/PropHandleModel";
 
@@ -12,11 +11,12 @@ import PropGroupSetting from "./PropGroupSetting";
 import PropItemSetting from "./PropItemSetting";
 import PropBlockSetting from "./PropBlockSetting";
 import SubPropPane from "./SubPropPane";
+import { useModel } from "@grootio/common";
 
 
 const PropSetter: React.FC = () => {
-  const [propHandleModel] = useModel(PropHandleModel);
-  const [workbenchModel] = useModel(WorkbenchModel);
+  const propHandleModel = useModel(PropHandleModel);
+  const workbenchModel = useModel(WorkbenchModel);
 
   const containerRef = useRef<HTMLDivElement>({} as any);
 

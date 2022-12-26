@@ -2,12 +2,12 @@ import { BranchesOutlined } from "@ant-design/icons";
 import { Dropdown } from "antd";
 
 import WorkbenchModel from "@model/WorkbenchModel";
-import { useModel } from "@util/robot";
 import InstanceModel from "pages/Instance/InstanceModel";
+import { useModel } from "@grootio/common";
 
 const Release: React.FC = () => {
-  const [instanceModel] = useModel(InstanceModel);
-  const [workbenchModel] = useModel(WorkbenchModel);
+  const instanceModel = useModel(InstanceModel);
+  const workbenchModel = useModel(WorkbenchModel);
 
   const releaseListMenu = workbenchModel.application.releaseList.map((release) => {
     return {

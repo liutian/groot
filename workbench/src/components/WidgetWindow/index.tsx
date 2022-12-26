@@ -3,10 +3,10 @@ import { Button, Tabs, Typography } from 'antd';
 import { HTMLAttributes, ReactNode, useEffect, useRef } from 'react';
 
 import WorkbenchModel from '@model/WorkbenchModel';
-import { useModel } from '@util/robot';
 
 import styles from './index.module.less';
 import MouseFollow from 'components/MouseFollow';
+import { useModel } from '@grootio/common';
 
 const tabBarStyles = {
   padding: '0 15px',
@@ -14,16 +14,16 @@ const tabBarStyles = {
 }
 
 const WidgetWindow: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
-  const [workbenchModel, updateAction] = useModel(WorkbenchModel);
+  const workbenchModel = useModel(WorkbenchModel);
   const containerRef = useRef<HTMLDivElement>({} as any);
 
   let middleBtn: ReactNode;
 
   if (workbenchModel.widgetWindowRect === 'full') {
-    middleBtn = <Button type="text" icon={<FullscreenExitOutlined />} onClick={() => updateAction(() => workbenchModel.widgetWindowRect = 'normal')} />;
+    middleBtn = <Button type="text" icon={<FullscreenExitOutlined />} onClick={() => workbenchModel.widgetWindowRect = 'normal'} />;
   } else if (workbenchModel.widgetWindowRect === 'normal') {
     middleBtn = <>
-      <Button type="text" icon={<FullscreenOutlined onClick={() => updateAction(() => workbenchModel.widgetWindowRect = 'full')} />} />
+      <Button type="text" icon={<FullscreenOutlined onClick={() => workbenchModel.widgetWindowRect = 'full'} />} />
       <MouseFollow
         start={() => {
           workbenchModel.toggleWorkAreaMask(true);
@@ -68,11 +68,11 @@ const WidgetWindow: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
     ]
     return <Tabs items={tabItems} tabBarStyle={tabBarStyles} tabBarExtraContent={
       <>
-        <Button type="text" icon={<LineOutlined />} onClick={() => updateAction(() => workbenchModel.widgetWindowRect = 'min')} />
+        <Button type="text" icon={<LineOutlined />} onClick={() => workbenchModel.widgetWindowRect = 'min'} />
 
         {middleBtn}
 
-        <Button type="text" icon={<CloseOutlined />} onClick={() => updateAction(() => workbenchModel.widgetWindowRect = 'none')} />
+        <Button type="text" icon={<CloseOutlined />} onClick={() => workbenchModel.widgetWindowRect = 'none'} />
       </>
     } />
   }
@@ -80,11 +80,11 @@ const WidgetWindow: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
   return <div {...props} ref={containerRef} className={`${styles.widgetWindow} ${typeof workbenchModel.widgetWindowRect === 'string' ? workbenchModel.widgetWindowRect : ''}`}>
     {
       workbenchModel.widgetWindowRect !== 'min' ? renderTabs() : <>
-        <Typography.Text ellipsis className={styles.minText} onClick={() => updateAction(() => workbenchModel.widgetWindowRect = 'normal')}>
+        <Typography.Text ellipsis className={styles.minText} onClick={() => workbenchModel.widgetWindowRect = 'normal'}>
           组件源码
         </Typography.Text>
-        <Button className={styles.actionItem} type="text" icon={<FullscreenOutlined />} onClick={() => updateAction(() => workbenchModel.widgetWindowRect = 'normal')} />
-        <Button className={styles.actionItem} type="text" icon={<CloseOutlined />} onClick={() => updateAction(() => workbenchModel.widgetWindowRect = 'none')} />
+        <Button className={styles.actionItem} type="text" icon={<FullscreenOutlined />} onClick={() => workbenchModel.widgetWindowRect = 'normal'} />
+        <Button className={styles.actionItem} type="text" icon={<CloseOutlined />} onClick={() => workbenchModel.widgetWindowRect = 'none'} />
       </>
     }
   </div>

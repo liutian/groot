@@ -1,14 +1,13 @@
 import { Form, Input, Modal, Select } from "antd";
-import { Release } from "@grootio/common";
+import { Release, useModel } from "@grootio/common";
 
 import WorkbenchModel from "@model/WorkbenchModel";
 import { ModalStatus } from "@util/common";
-import { useModel } from "@util/robot";
 import EditorModel from "pages/Instance/InstanceModel";
 
 const ReleaseAddModal: React.FC = () => {
-  const [editorModel, updateAction] = useModel(EditorModel);
-  const [workbenchModel] = useModel(WorkbenchModel);
+  const editorModel = useModel(EditorModel);
+  const workbenchModel = useModel(WorkbenchModel);
   const [form] = Form.useForm();
 
   const handleOk = async () => {
@@ -19,9 +18,7 @@ const ReleaseAddModal: React.FC = () => {
   }
 
   const handleCancel = () => {
-    updateAction(() => {
-      editorModel.releaseAddModalStatus = ModalStatus.None;
-    })
+    editorModel.releaseAddModalStatus = ModalStatus.None;
   }
 
   return <Modal open={editorModel.releaseAddModalStatus !== ModalStatus.None} mask={false} title="新增迭代"

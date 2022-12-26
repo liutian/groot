@@ -1,13 +1,12 @@
 import { Form, Modal, Radio } from "antd";
-import { EnvType } from "@grootio/common";
+import { EnvType, useModel } from "@grootio/common";
 import { useEffect } from "react";
 
 import { ModalStatus } from "@util/common";
-import { useModel } from "@util/robot";
 import EditorModel from "pages/Instance/InstanceModel";
 
 const DeployModal: React.FC = () => {
-  const [editorModel] = useModel(EditorModel);
+  const editorModel = useModel(EditorModel);
   const [form] = Form.useForm();
 
   useEffect(() => {

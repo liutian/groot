@@ -1,12 +1,11 @@
-import { Component, ComponentParserType } from "@grootio/common";
+import { Component, ComponentParserType, useModel } from "@grootio/common";
 import { Form, Input, Modal } from "antd";
 
 import { ModalStatus } from "@util/common";
-import { useModel } from "@util/robot";
 import PrototypeModel from "pages/Prototype/PrototypeModel";
 
 const ComponentAddModal: React.FC = () => {
-  const [prototypeModel, updateAction] = useModel(PrototypeModel);
+  const prototypeModel = useModel(PrototypeModel);
   const [form] = Form.useForm();
 
   const handleOk = async () => {
@@ -17,9 +16,7 @@ const ComponentAddModal: React.FC = () => {
   }
 
   const handleCancel = () => {
-    updateAction(() => {
-      prototypeModel.componentAddModalStatus = ModalStatus.None;
-    })
+    prototypeModel.componentAddModalStatus = ModalStatus.None;
   }
 
   return <Modal open={prototypeModel.componentAddModalStatus !== ModalStatus.None} mask={false} title="创建组件"

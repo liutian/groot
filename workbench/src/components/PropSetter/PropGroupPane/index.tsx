@@ -1,10 +1,8 @@
 import { Button, Collapse, Space, Typography } from "antd";
-import { PropBlock, PropBlockStructType, PropGroup } from "@grootio/common";
+import { PropBlock, PropBlockStructType, PropGroup, useModel } from "@grootio/common";
 import { CaretRightOutlined, DeleteOutlined, EditOutlined, PlusOutlined, VerticalAlignBottomOutlined, VerticalAlignTopOutlined } from "@ant-design/icons";
-import { useState } from "react";
 
 import WorkbenchModel from "@model/WorkbenchModel";
-import { useModel } from "@util/robot";
 import styles from './index.module.less';
 import PropPersistModel from "@model/PropPersistModel";
 import PropBlockListStructPane from "@components/PropSetter/PropBlockListStructPane";
@@ -17,25 +15,20 @@ type PropsType = {
 }
 
 const PropGroupPane: React.FC<PropsType> = ({ group }) => {
-  const [propPersistModel, propPersistAction] = useModel(PropPersistModel);
-  const [workbenchModel, workbenchAction] = useModel(WorkbenchModel);
-  const [, refresh] = useState(0);
+  const propPersistModel = useModel(PropPersistModel);
+  const workbenchModel = useModel(WorkbenchModel);
   const noSetting = !workbenchModel.prototypeMode || group.parentItem?.noSetting;
 
   const editBlock = (block: PropBlock) => {
-    propPersistAction(() => {
-      propPersistModel.currSettingPropBlock = JSON.parse(stringify(block));
-    })
+    propPersistModel.currSettingPropBlock = JSON.parse(stringify(block));
   }
 
   const onChangeCollapse = (key: string | string[]) => {
-    workbenchAction(() => {
-      if (Array.isArray(key)) {
-        group.expandBlockIdList = key.map(k => +k);
-      } else {
-        group.expandBlockIdList = [+key];
-      }
-    })
+    if (Array.isArray(key)) {
+      group.expandBlockIdList = key.map(k => +k);
+    } else {
+      group.expandBlockIdList = [+key];
+    }
   }
 
   const renderBlockSetting = (block: PropBlock, blockIndex: number) => {

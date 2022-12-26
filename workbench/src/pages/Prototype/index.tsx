@@ -1,9 +1,8 @@
 import { AppstoreOutlined, BranchesOutlined, PlusOutlined, SendOutlined } from "@ant-design/icons";
 import { Breadcrumb, Button, Dropdown, Modal } from "antd";
 import { useEffect, useState, } from "react";
-import { RuntimeHostConfig } from "@grootio/common";
+import { RuntimeHostConfig, useRegisterModel } from "@grootio/common";
 
-import { useRegisterModel } from "@util/robot";
 import WorkbenchModel from "@model/WorkbenchModel";
 import PropPersistModel from "@model/PropPersistModel";
 import PropHandleModel from "@model/PropHandleModel";
@@ -25,10 +24,10 @@ type PropsType = {
 }
 
 const Prototype: React.FC<PropsType> = ({ orgId, componentId, versionId }) => {
-  const [prototypeModel, prototypeUpdateAction] = useRegisterModel(PrototypeModel);
-  const [workbenchModel] = useRegisterModel(WorkbenchModel);
-  const [propHandleModel] = useRegisterModel(PropHandleModel);
-  const [propPersistModel] = useRegisterModel(PropPersistModel);
+  const prototypeModel = useRegisterModel(PrototypeModel);
+  const workbenchModel = useRegisterModel(WorkbenchModel);
+  const propHandleModel = useRegisterModel(PropHandleModel);
+  const propPersistModel = useRegisterModel(PropPersistModel);
 
   useState(() => {
     propPersistModel.inject(workbenchModel, propHandleModel);
@@ -84,7 +83,7 @@ const Prototype: React.FC<PropsType> = ({ orgId, componentId, versionId }) => {
     });
 
     workbenchModel.renderFooterLeftActionItems.push(() => {
-      return (<div onClick={() => prototypeUpdateAction(() => prototypeModel.componentVersionAddModalStatus = ModalStatus.Init)}>
+      return (<div onClick={() => prototypeModel.componentVersionAddModalStatus = ModalStatus.Init}>
         <PlusOutlined />
       </div>)
     });

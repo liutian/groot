@@ -1,17 +1,16 @@
 import { PlusOutlined } from "@ant-design/icons";
-import { ComponentParserType } from "@grootio/common";
+import { ComponentParserType, useModel } from "@grootio/common";
 import { Button, Menu, } from "antd";
 
 import WorkbenchModel from "@model/WorkbenchModel";
 import { ModalStatus } from "@util/common";
-import { useModel, } from "@util/robot";
 import PrototypeModel from "pages/Prototype/PrototypeModel";
 
 import styles from './index.module.less';
 
 const ComponentList: React.FC = () => {
-  const [prototypeModel, prototypeUpdateAction] = useModel(PrototypeModel);
-  const [workbenchModel] = useModel(WorkbenchModel);
+  const prototypeModel = useModel(PrototypeModel);
+  const workbenchModel = useModel(WorkbenchModel);
 
   const componentList = workbenchModel.org.componentList.map((component) => {
     return {
@@ -28,7 +27,7 @@ const ComponentList: React.FC = () => {
   });
 
   const showComponentAdd = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
-    prototypeUpdateAction(() => prototypeModel.componentAddModalStatus = ModalStatus.Init);
+    prototypeModel.componentAddModalStatus = ModalStatus.Init
     e.stopPropagation();
   }
 

@@ -3,7 +3,7 @@ import { Button, Modal } from "antd";
 import { useState } from "react";
 
 const FormulaPropItem: PluginViewComponent = ({ useModel, WorkbenchModel }) => {
-  const [workbenchModel] = useModel(WorkbenchModel);
+  const workbenchModel = useModel(WorkbenchModel);
   const [open, setOpen] = useState(false);
   return <>
     公式编辑器: <Button onClick={() => {

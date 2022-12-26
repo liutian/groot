@@ -1,8 +1,7 @@
-import { RuntimeHostConfig, IframeControlType, iframeNamePrefix, PostMessageType, HostConfig } from "@grootio/common";
+import { RuntimeHostConfig, IframeControlType, iframeNamePrefix, PostMessageType, HostConfig, useModel } from "@grootio/common";
 import { useEffect, useRef } from "react";
 
 import WorkbenchModel from "@model/WorkbenchModel";
-import { useModel } from "@util/robot";
 import Loading from "@components/Loading";
 import request from "@util/request";
 
@@ -14,7 +13,7 @@ type PropType = {
 }
 
 const ConfigLoader: React.FC<PropType> = ({ finish }) => {
-  const [workbenchModel] = useModel(WorkbenchModel);
+  const workbenchModel = useModel(WorkbenchModel);
   const iframeEleRef = useRef<HTMLIFrameElement>();
 
   useEffect(() => {

@@ -1,16 +1,15 @@
 import { DeleteOutlined, UpOutlined } from '@ant-design/icons';
-import { MarkerInfo, PostMessageType } from '@grootio/common';
+import { MarkerInfo, PostMessageType, useModel } from '@grootio/common';
 import { useEffect, useRef } from 'react';
 
 import PropHandleModel from '@model/PropHandleModel';
 import WorkbenchModel from '@model/WorkbenchModel';
-import { useModel } from '@util/robot';
 
 import styles from './index.module.less';
 
 const ViewportOutlineMarker: React.FC = () => {
-  const [workbenchModel] = useModel(WorkbenchModel);
-  const [propHandleModel] = useModel(PropHandleModel);
+  const workbenchModel = useModel(WorkbenchModel);
+  const propHandleModel = useModel(PropHandleModel);
 
   const hoverRef = useRef<HTMLDivElement>();
   const selectedRef = useRef<HTMLDivElement>();

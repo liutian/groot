@@ -1,13 +1,12 @@
 import { DatePicker, Form, Input, InputNumber, Select, Space, Switch, Table, TimePicker, Tooltip, Typography } from "antd";
 import { DeleteOutlined, DragOutlined, QuestionCircleOutlined, SettingOutlined } from "@ant-design/icons";
-import { PropBlock, PropBlockStructType, PropItem, PropItemType, PropValue, PropValueType } from "@grootio/common";
+import { PropBlock, PropBlockStructType, PropItem, PropItemType, PropValue, PropValueType, useModel } from "@grootio/common";
 import { parsePropItemValue } from "@grootio/core";
 import { useState } from "react";
 
 import PropHandleModel from "@model/PropHandleModel";
 import PropPersistModel from "@model/PropPersistModel";
 import WorkbenchModel from "@model/WorkbenchModel";
-import { useModel } from "@util/robot";
 import { parseOptions } from "@util/utils";
 
 import styles from './index.module.less';
@@ -23,9 +22,9 @@ const PropBlockListStructPane: React.FC<PropsType> = ({ block: propBlock }) => {
   const dataSourceEditable = !!childPropItem.block.group.root || childPropItem.block.group.parentItem?.tempAbstractValueId;
   const dataSource = [];
 
-  const [propHandleModel] = useModel(PropHandleModel);
-  const [workbenchModel] = useModel(WorkbenchModel);
-  const [propPersistModel] = useModel(PropPersistModel);
+  const propHandleModel = useModel(PropHandleModel);
+  const workbenchModel = useModel(WorkbenchModel);
+  const propPersistModel = useModel(PropPersistModel);
   const [form] = Form.useForm();
 
   const [getInitValue] = useState(() => {

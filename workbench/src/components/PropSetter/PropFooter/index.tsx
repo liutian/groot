@@ -2,29 +2,25 @@ import { BellOutlined, BlockOutlined, CommentOutlined, NumberOutlined } from '@a
 import { Typography } from 'antd';
 import { HTMLAttributes, useEffect, useRef } from 'react';
 
-import { useModel } from '@util/robot';
 import styles from './index.module.less';
 
 import WorkbenchModel from '@model/WorkbenchModel';
+import { useModel } from '@grootio/common';
 
 const PropFooter: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
-  const [workbenchModel, workbenchUpdateAction] = useModel(WorkbenchModel);
+  const workbenchModel = useModel(WorkbenchModel);
   const propPathChainRef = useRef<HTMLElement>();
 
   useEffect(() => {
-    workbenchUpdateAction(() => {
-      workbenchModel.propPathChainEle = propPathChainRef.current;
-    }, false)
+    workbenchModel.propPathChainEle = propPathChainRef.current;
   }, [propPathChainRef.current])
 
-  const switchWidgetWidnwo = () => {
-    workbenchUpdateAction(() => {
-      if (workbenchModel.widgetWindowRect === 'none') {
-        workbenchModel.widgetWindowRect = 'normal';
-      } else {
-        workbenchModel.widgetWindowRect = 'none';
-      }
-    });
+  const switchWidgetWindow = () => {
+    if (workbenchModel.widgetWindowRect === 'none') {
+      workbenchModel.widgetWindowRect = 'normal';
+    } else {
+      workbenchModel.widgetWindowRect = 'none';
+    }
   }
 
   return <div {...props}>
@@ -42,7 +38,7 @@ const PropFooter: React.FC<HTMLAttributes<HTMLDivElement>> = (props) => {
       <span ref={propPathChainRef}></span>
     </Typography.Text>
     <div >
-      <div className={styles.actionItem} onClick={switchWidgetWidnwo}>
+      <div className={styles.actionItem} onClick={switchWidgetWindow}>
         <BlockOutlined title="窗口" />
       </div>
       <div className={styles.actionItem}>
