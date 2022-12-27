@@ -163,10 +163,10 @@ export const isBaseType = (value: any) => {
 }
 
 
-if (window.XMLHttpRequest) {
-  const originXHR = window.XMLHttpRequest;
+if (globalThis.XMLHttpRequest) {
+  const originXHR = globalThis.XMLHttpRequest;
 
-  (window as any).XMLHttpRequest = function () {
+  (globalThis as any).XMLHttpRequest = function () {
     let currModelKey
     const xhr = new originXHR();
 
@@ -202,10 +202,10 @@ if (window.XMLHttpRequest) {
   }
 }
 
-if (window.fetch) {
-  const originFetch = window.fetch;
+if (globalThis.fetch) {
+  const originFetch = globalThis.fetch;
 
-  (window as any).fetch = function (...args) {
+  (globalThis as any).fetch = function (...args) {
     const currModelKey = activeModelKey;
     return new Promise((resolve, reject) => {
       originFetch.apply(null, args as any).then((res) => {
