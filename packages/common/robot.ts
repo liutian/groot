@@ -2,7 +2,7 @@ import { ModelClass, UseModelFnType } from "@grootio/common";
 import { useEffect, useState } from "react";
 
 const store = new Map<string, ModelContainer>();
-let activeModelKey: string[] = [];
+let activeModelKey = '';
 const ArrayPatchMethods = ['push', 'pop', 'shift', 'unshift', 'splice', 'sort', 'reverse'];
 /**
  * 该状态管理库目的：
@@ -84,10 +84,11 @@ function wrapper(modelKey: string, target: any): any {
     get(oTarget, sKey, receiver) {
       const value = Reflect.get(oTarget, sKey, receiver);
 
+      const typeStr = Object.prototype.toString.apply(value);
       // 基本数据类型直接放行
       if (isBaseType(value)) {
         return value;
-      } else if (Object.prototype.toString.apply(value) !== '[object Function]') {
+      } else if (typeStr !== '[object Function]' && typeStr !== '[object AsyncFunction]') {
         // React.Element不做任何处理
         if (value.$$typeof) {
           return value;
@@ -117,16 +118,8 @@ function wrapper(modelKey: string, target: any): any {
         }
 
         launchTimeout(modelKey);
-        const insert = !activeModelKey.length || activeModelKey[activeModelKey.length - 1] !== modelKey;
-        if (insert) {
-          activeModelKey.push(modelKey);
-        }
+        activeModelKey = modelKey;
         const result = Reflect.apply(value, oTarget, args);
-        if (insert) {
-          setTimeout(() => {
-            activeModelKey.pop();
-          })
-        }
         return result
       }
     },
@@ -181,7 +174,7 @@ if (window.XMLHttpRequest) {
       if (Object.prototype.toString.call(xhr[attr]) === '[object Function]') {
         this[attr] = function (...args) {
           if (attr === 'send') {
-            currModelKey = activeModelKey[activeModelKey.length - 1];
+            currModelKey = activeModelKey;
           }
           return xhr[attr].apply(xhr, args);
         }
@@ -195,7 +188,6 @@ if (window.XMLHttpRequest) {
               xhr[attr] = function (...args) {
                 if (currModelKey) {
                   launchTimeout(currModelKey);
-                  currModelKey = null;
                 }
                 return newValue.apply(xhr, args);
               }
@@ -209,4 +201,26 @@ if (window.XMLHttpRequest) {
     }
   }
 }
+
+if (window.fetch) {
+  const originFetch = window.fetch;
+
+  (window as any).fetch = function (...args) {
+    const currModelKey = activeModelKey;
+    return new Promise((resolve, reject) => {
+      originFetch.apply(null, args as any).then((res) => {
+        if (currModelKey) {
+          launchTimeout(currModelKey);
+        }
+        resolve(res);
+      }, (error) => {
+        if (currModelKey) {
+          launchTimeout(currModelKey);
+        }
+        reject(error);
+      })
+    })
+  }
+}
+
 
