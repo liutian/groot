@@ -140,7 +140,7 @@ function launchTimeout(modelKey) {
     window.clearTimeout(modelContainer.timeout);
   }
 
-  modelContainer.timeout = window.setTimeout(() => {
+  modelContainer.timeout = globalThis['originTimeout'](() => {
     delete modelContainer.timeout;
     console.log(`robot trigger ${modelKey}`)
     modelContainer.rootTrigger!((tick: number) => {
@@ -164,11 +164,13 @@ export const isBaseType = (value: any) => {
 
 
 if (globalThis.XMLHttpRequest) {
-  const originXHR = globalThis.XMLHttpRequest;
+  if (!globalThis['originXHR']) {
+    globalThis['originXHR'] = globalThis.XMLHttpRequest;
+  }
 
   (globalThis as any).XMLHttpRequest = function () {
     let currModelKey
-    const xhr = new originXHR();
+    const xhr = new globalThis['originXHR']();
 
     for (let attr in xhr) {
       if (Object.prototype.toString.call(xhr[attr]) === '[object Function]') {
@@ -202,13 +204,16 @@ if (globalThis.XMLHttpRequest) {
   }
 }
 
+
 if (globalThis.fetch) {
-  const originFetch = globalThis.fetch;
+  if (!globalThis['originFetch']) {
+    globalThis['originFetch'] = globalThis.fetch;
+  }
 
   (globalThis as any).fetch = function (...args) {
     const currModelKey = activeModelKey;
     return new Promise((resolve, reject) => {
-      originFetch.apply(null, args as any).then((res) => {
+      globalThis['originFetch'].apply(null, args as any).then((res) => {
         if (currModelKey) {
           launchTimeout(currModelKey);
         }
@@ -223,4 +228,24 @@ if (globalThis.fetch) {
   }
 }
 
+if (window.setTimeout) {
+  if (!globalThis['originTimeout']) {
+    globalThis['originTimeout'] = window.setTimeout;
+  }
 
+  // function _setTimeout(...args) {
+  //   const currModelKey = activeModelKey;
+  //   const fn = args[0];
+  //   args[0] = function (...params) {
+  //     if (currModelKey) {
+  //       activeModelKey = null;
+  //       launchTimeout(currModelKey);
+  //     }
+  //     fn.apply(null, params)
+  //   }
+  //   return globalThis['originTimeout'].apply(null, args);
+  // }
+
+  // (window as any).setTimeout = _setTimeout;
+
+}
