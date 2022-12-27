@@ -149,11 +149,6 @@ module.exports = (env, args) => {
 						eager: true,
 						requiredVersion: '^4.7.0'
 					},
-					'zone.js': {
-						singleton: true,
-						eager: true,
-						requiredVersion: '^0.12.0'
-					},
 					axios: {
 						singleton: true,
 						eager: true,

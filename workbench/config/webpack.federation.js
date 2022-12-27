@@ -107,10 +107,6 @@ const commonConfig = (env, args) => {
             singleton: true,
             requiredVersion: '^4.7.0'
           },
-          'zone.js': {
-            singleton: true,
-            requiredVersion: '^0.12.0'
-          },
           axios: {
             singleton: true,
             requiredVersion: '^1.2.0'
