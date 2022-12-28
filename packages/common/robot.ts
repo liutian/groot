@@ -137,7 +137,7 @@ function wrapper(modelKey: string, target: any): any {
 function launchTimeout(modelKey) {
   const modelContainer = store.get(modelKey)!;
   if (modelContainer.timeout) {
-    window.clearTimeout(modelContainer.timeout);
+    globalThis.clearTimeout(modelContainer.timeout);
   }
 
   modelContainer.timeout = globalThis['originTimeout'](() => {
@@ -228,10 +228,11 @@ if (globalThis.fetch) {
   }
 }
 
-if (window.setTimeout) {
+if (globalThis.setTimeout) {
   if (!globalThis['originTimeout']) {
-    globalThis['originTimeout'] = window.setTimeout;
+    globalThis['originTimeout'] = globalThis.setTimeout;
   }
+
 
   // function _setTimeout(...args) {
   //   const currModelKey = activeModelKey;
