@@ -11,7 +11,7 @@ import { RemotePluginKeySep } from "@util/common";
 const PropItemSetting: React.FC = () => {
   const workbenchModel = useModel(WorkbenchModel);
   const propPersistModel = useModel(PropPersistModel);
-  const propItemTypeOptions = useState(() => {
+  const [propItemTypeOptions] = useState(() => {
     if (workbenchModel.propSettingView?.length) {
       return [
         ...PropItemTypeNameMap,

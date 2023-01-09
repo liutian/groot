@@ -44,7 +44,7 @@ const MultiDetailManager: React.FC<PropsType> = ({ children, _groot, value = [],
       })
     }
     <div>
-      <Button onClick={add} type="primary" disabled={_groot.appControlMode} style={{ width: '100%' }}>add</Button>
+      <Button onClick={add} type="primary" disabled={_groot.appControlMode} style={{ width: '100%' }}>添加</Button>
     </div>
   </>)
 }
