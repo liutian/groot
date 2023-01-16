@@ -241,3 +241,10 @@ export type RuntimeSidebarViewType = {
   view: RemotePlugin
 })
 
+export enum StateType {
+  Str = 'string',
+  Bool = 'boolean',
+  Num = 'number',
+  Obj = 'object',
+  Arr = 'array'
+}

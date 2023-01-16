@@ -15,6 +15,7 @@ import { ComponentVersionService } from 'service/component-version.service';
 import { ComponentInstanceService } from 'service/component-instance.service';
 import { ReleaseService } from 'service/release.service';
 import { AssetService } from 'service/asset.service';
+import { StateService } from 'service/state.service';
 import { AssetController } from 'asset.controller';
 @Module({
   imports: [
@@ -33,7 +34,8 @@ import { AssetController } from 'asset.controller';
     ComponentVersionService,
     ComponentInstanceService,
     ReleaseService,
-    AssetService
+    AssetService,
+    StateService
   ],
 })
 export class AppModule { }

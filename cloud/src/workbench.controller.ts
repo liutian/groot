@@ -19,7 +19,9 @@ import { ReleaseService } from 'service/release.service';
 import { Release } from 'entities/Release';
 import { StandardResultInterceptor } from 'config/standard-result.interceptor';
 import { AssetService } from 'service/asset.service';
+import { StateService } from 'service/state.service';
 import { EnvType } from '@grootio/common';
+import { State } from 'entities/State';
 
 @UseInterceptors(StandardResultInterceptor)
 @Controller('/workbench')
@@ -35,7 +37,8 @@ export class WorkbenchController {
     private readonly componentVersionService: ComponentVersionService,
     private readonly componentInstanceService: ComponentInstanceService,
     private readonly releaseService: ReleaseService,
-    private readonly assetService: AssetService
+    private readonly assetService: AssetService,
+    private readonly stateService: StateService
   ) { }
 
   @Post('/component/add')
@@ -196,6 +199,21 @@ export class WorkbenchController {
   @Get('/component-instance/remove/:instanceId')
   async componentInstanceRemove(@Param('instanceId') instanceId: number) {
     return await this.componentInstanceService.remove(instanceId);
+  }
+
+  @Post('/state/add')
+  async stateAdd(@Body() rawState: State) {
+    return await this.stateService.add(rawState);
+  }
+
+  @Get('/state/remove/:stateId')
+  async stateRemove(@Param('stateId') stateId: number) {
+    return await this.stateService.remove(stateId);
+  }
+
+  @Post('/state/update')
+  async stateUpdate(@Body() rawState: State) {
+    return await this.stateService.update(rawState);
   }
 
   @Get('/demo')

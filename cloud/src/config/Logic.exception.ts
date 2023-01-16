@@ -20,7 +20,7 @@ export class LogicException extends HttpException {
 
   static assertNotFound(entity: any, name: string, id?: number | string) {
     if (!entity) {
-      let condition = ' where ';
+      let condition = '';
       if (id === undefined) {
         condition = '';
       } else if (typeof id === 'number') {
@@ -35,6 +35,16 @@ export class LogicException extends HttpException {
   static assertParamEmpty(entity: any, name: string) {
     if (entity === undefined) {
       throw new LogicException(`参数 ${name} 不能为空`, LogicExceptionCode.ParamEmpty);
+    }
+  }
+
+  static assertEnum(enumType: any, name: string, value: any) {
+    if (value === undefined) {
+      throw new LogicException(`参数 ${name} 不能为空`, LogicExceptionCode.ParamEmpty);
+    }
+
+    if (!Object.values(enumType).includes(value)) {
+      throw new LogicException(`参数 ${name} 枚举值错误`, LogicExceptionCode.ParamError);
     }
   }
 }
