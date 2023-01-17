@@ -1,4 +1,4 @@
-import { Application, ApplicationData, Component, ComponentInstance, ComponentVersion, IframeControlType, Organization, PropBlock, PropGroup, PropItem, RemotePlugin, RuntimeHostConfig, RuntimePluginConfig, RuntimeSidebarViewType, ViewportMode, WorkbenchModelType, } from "@grootio/common";
+import { Application, ApplicationData, Component, ComponentInstance, ComponentVersion, IframeControlType, Organization, PropBlock, PropGroup, PropItem, RemotePlugin, RuntimeHostConfig, RuntimePluginConfig, RuntimeSidebarViewType, State, ViewportMode, WorkbenchModelType, } from "@grootio/common";
 import { ReactNode } from "react";
 
 import { iframeDebuggerConfig, IframeManagerInstance, launchIframeManager } from "@model/iframeManager";
@@ -21,6 +21,7 @@ export default class WorkbenchModel extends EventTarget implements WorkbenchMode
   public application: Application;
   public componentInstance: ComponentInstance;
   public instanceList: ComponentInstance[] = [];
+  public stateList: State[] = [];
 
   /**
    * viewport之上的遮罩层用于组件拖拽定位和侧边栏宽度缩放
@@ -123,6 +124,7 @@ export default class WorkbenchModel extends EventTarget implements WorkbenchMode
     this.component = rootInstance.component;
     this.componentVersion = rootInstance.componentVersion;
     this.instanceList = [rootInstance, ...childrenInstance];
+    this.stateList = rootInstance.stateList;
 
     const { groupList, blockList, itemList, valueList } = rootInstance;
     const propTree = this.propHandle.buildPropTree(groupList, blockList, itemList, valueList);

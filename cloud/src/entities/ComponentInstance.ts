@@ -9,6 +9,7 @@ import { PropGroup } from "./PropGroup";
 import { PropItem } from "./PropItem";
 import { PropValue } from "./PropValue";
 import { Release } from "./Release";
+import { State } from "./State";
 
 @Entity()
 export class ComponentInstance extends BaseEntity {
@@ -77,4 +78,7 @@ export class ComponentInstance extends BaseEntity {
 
   @Property({ persist: false })
   wrapper?: string;
+
+  @Property({ persist: false })
+  stateList?: State[];
 }

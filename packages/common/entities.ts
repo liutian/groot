@@ -68,6 +68,7 @@ export type ComponentInstance = {
   blockList: PropBlock[],
   itemList: PropItem[],
   valueList: PropValue[],
+  stateList: State[],
 
   // ************************** 分割线已下是界面属性 **************************
   propTree: PropGroup[],
@@ -81,6 +82,10 @@ export type Release = {
 export type PropValue = {
 
 } & Omit<import("../../cloud/src/entities/PropValue").PropValue, ''>;
+
+export type State = {
+
+} & Omit<import("../../cloud/src/entities/State").State, ''>;
 
 export type Component = {
   componentVersion: ComponentVersion,
