@@ -1,5 +1,5 @@
 import { StateType } from '@grootio/common';
-import { RequestContext } from '@mikro-orm/core';
+import { FilterQuery, RequestContext } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { LogicException, LogicExceptionCode } from 'config/logic.exception';
 import { ComponentInstance } from 'entities/ComponentInstance';
@@ -25,11 +25,17 @@ export class StateService {
       LogicException.assertNotFound(instance, 'ComponentInstance', `id = ${rawState.instanceId} and releaseId = ${release.id}`);
     }
 
-    const stateUnique = await em.count(State, {
+    const query: FilterQuery<State> = {
       name: rawState.name,
       release,
-      componentInstance: instance
-    });
+    }
+    if (rawState.instanceId) {
+      query.$or = [
+        { componentInstance: instance },
+        { componentInstance: null }
+      ]
+    }
+    const stateUnique = await em.count(State, query);
     if (stateUnique > 0) {
       throw new LogicException('名称重复', LogicExceptionCode.NotUnique);
     }
@@ -59,11 +65,18 @@ export class StateService {
     LogicException.assertNotFound(state, 'State', rawState.id);
 
     if (!!rawState.name && rawState.name !== state.name) {
-      const stateUnique = await em.count(State, {
+      const query: FilterQuery<State> = {
         name: rawState.name,
         release: state.release,
-        componentInstance: state.componentInstance
-      });
+      }
+      if (rawState.instanceId) {
+        query.$or = [
+          { componentInstance: state.componentInstance },
+          { componentInstance: null }
+        ]
+      }
+      const stateUnique = await em.count(State, query);
+
       if (stateUnique > 0) {
         throw new LogicException('名称重复', LogicExceptionCode.NotUnique);
       }
