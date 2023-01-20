@@ -3,26 +3,26 @@ import { Release, useModel } from "@grootio/common";
 
 import WorkbenchModel from "@model/WorkbenchModel";
 import { ModalStatus } from "@util/common";
-import EditorModel from "pages/Instance/InstanceModel";
+import InstanceModel from "pages/Instance/InstanceModel";
 
 const ReleaseAddModal: React.FC = () => {
-  const editorModel = useModel(EditorModel);
+  const instanceModel = useModel(InstanceModel);
   const workbenchModel = useModel(WorkbenchModel);
   const [form] = Form.useForm();
 
   const handleOk = async () => {
     const formData = await form.validateFields();
-    editorModel.addRelease(formData as Release).then(() => {
+    instanceModel.addRelease(formData as Release).then(() => {
       form.resetFields();
     })
   }
 
   const handleCancel = () => {
-    editorModel.releaseAddModalStatus = ModalStatus.None;
+    instanceModel.releaseAddModalStatus = ModalStatus.None;
   }
 
-  return <Modal open={editorModel.releaseAddModalStatus !== ModalStatus.None} mask={false} title="新增迭代"
-    confirmLoading={editorModel.releaseAddModalStatus === ModalStatus.Submit}
+  return <Modal open={instanceModel.releaseAddModalStatus !== ModalStatus.None} mask={false} title="新增迭代"
+    confirmLoading={instanceModel.releaseAddModalStatus === ModalStatus.Submit}
     onOk={handleOk} onCancel={handleCancel} okText="新增">
     <Form form={form} colon={false} labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
       <Form.Item label="名称" name="name" rules={[{ required: true }]}>

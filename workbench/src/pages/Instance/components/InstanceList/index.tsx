@@ -4,13 +4,13 @@ import { useState } from "react";
 
 import WorkbenchModel from "@model/WorkbenchModel";
 import { ModalStatus } from "@util/common";
-import EditorModel from "pages/Instance/InstanceModel";
+import InstanceModel from "pages/Instance/InstanceModel";
 
 import styles from './index.module.less';
 import { useModel } from "@grootio/common";
 
 const InstanceList: React.FC = () => {
-  const editorModel = useModel(EditorModel);
+  const instanceModel = useModel(InstanceModel);
   const workbenchModel = useModel(WorkbenchModel);
   const [openKeys, setOpenKeys] = useState(['entry', 'no-entry']);
 
@@ -25,7 +25,7 @@ const InstanceList: React.FC = () => {
           return;
         }
 
-        editorModel.fetchRootInstance(componentInstance.id);
+        instanceModel.fetchRootInstance(componentInstance.id);
       }
     };
 
@@ -37,8 +37,8 @@ const InstanceList: React.FC = () => {
   });
 
   const showInstanceAdd = (e: React.MouseEvent<HTMLElement, MouseEvent>, entry: boolean) => {
-    editorModel.instanceAddModalStatus = ModalStatus.Init;
-    editorModel.instanceAddEntry = entry;
+    instanceModel.instanceAddModalStatus = ModalStatus.Init;
+    instanceModel.instanceAddEntry = entry;
     e.stopPropagation();
   }
 

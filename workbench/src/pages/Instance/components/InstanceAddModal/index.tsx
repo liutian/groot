@@ -5,34 +5,34 @@ import { Component, ComponentInstance, useModel } from "@grootio/common";
 import { ModalStatus } from "@util/common";
 import { APIPath } from "api/API.path";
 import request from "@util/request";
-import EditorModel from "pages/Instance/InstanceModel";
+import InstanceModel from "pages/Instance/InstanceModel";
 
 const InstanceAddModal: React.FC = () => {
-  const editorModel = useModel(EditorModel);
+  const instanceModel = useModel(InstanceModel);
   const [form] = Form.useForm();
   const [componentList, setComponentList] = useState<Component[]>([]);
 
   useEffect(() => {
-    if (editorModel.instanceAddModalStatus === ModalStatus.Init) {
+    if (instanceModel.instanceAddModalStatus === ModalStatus.Init) {
       request(APIPath.component_list).then(({ data }) => {
         setComponentList(data);
       })
     }
-  }, [editorModel.instanceAddModalStatus]);
+  }, [instanceModel.instanceAddModalStatus]);
 
   const handleOk = async () => {
     const formData = await form.validateFields();
-    editorModel.addRootInstance(formData as ComponentInstance).then(() => {
+    instanceModel.addRootInstance(formData as ComponentInstance).then(() => {
       form.resetFields();
     })
   }
 
   const handleCancel = () => {
-    editorModel.instanceAddModalStatus = ModalStatus.None;
+    instanceModel.instanceAddModalStatus = ModalStatus.None;
   }
 
-  return <Modal open={editorModel.instanceAddModalStatus !== ModalStatus.None} mask={false} title="新增实例"
-    confirmLoading={editorModel.instanceAddModalStatus === ModalStatus.Submit}
+  return <Modal open={instanceModel.instanceAddModalStatus !== ModalStatus.None} mask={false} title="新增实例"
+    confirmLoading={instanceModel.instanceAddModalStatus === ModalStatus.Submit}
     onOk={handleOk} onCancel={handleCancel} okText="新增">
     <Form form={form} colon={false} labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
       <Form.Item label="名称" name="name" rules={[{ required: true }]}>
