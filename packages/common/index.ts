@@ -6,8 +6,10 @@ export * from './internal';
 export * from './plugin';
 export * from './fetch-remote-module';
 export { useRegisterModel, useModel, registerModel } from './robot';
-
-
+export * from './request-factory';
+export * from './api/API.common';
+export * from './api/API.path';
+export * from './api/API.store';
 
 
 export type WorkbenchInstanceComponentType = React.FC<{

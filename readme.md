@@ -14,7 +14,7 @@
 - 本地开发应用启动列表，深度定制化
   - `cloud` 服务器：groot-local.com:10000
   - `examples/webpack-demo` demo项目：groot-local.com:11000
-  - `examples/groot-plugin-demo` 插件项目模块联邦：groot-local.com:12000
+  - `packages/plugin` 插件项目模块联邦：groot-local.com:12000
   - `workbench` 工作台模块联邦：groot-local.com:13000
   - `examples/groot-workbench-demo` 工作台宿主项目：groot-local.com:14000
 

@@ -81,11 +81,10 @@ const commonConfig = (env, args) => {
       }),
 
       new ModuleFederationPlugin({
-        name: 'approve',
+        name: 'groot',
         filename: 'groot-plugin/index.js',
         exposes: {
-          'ComponentList': './src/sidebar-view/ComponentList',
-          'FormulaPropItem': './src/prop-setting-view/FormulaPropItem'
+          'StateList': './src/sidebar-view/StateList'
         },
         shared: {
           react: {
@@ -108,6 +107,10 @@ const commonConfig = (env, args) => {
             singleton: true,
             requiredVersion: '^4.7.0'
           },
+          axios: {
+            singleton: true,
+            requiredVersion: '^4.24.3'
+          }
         },
       })
     ]

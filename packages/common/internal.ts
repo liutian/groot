@@ -62,6 +62,7 @@ export enum PostMessageType {
   OuterSetApplication = 'outer_set_application',
   InnerApplicationnReady = 'inner_applicationn_ready',
   InnerFetchView = 'inner_fetch_view',
+  OuterUpdateState = 'outer_update_state',
   OuterUpdateComponent = 'outer_update_component',
   OuterRefreshView = 'outer_refresh_view',
 
@@ -154,8 +155,8 @@ export const PropItemTypeNameMap = [
   { name: '组件', key: PropItemType.Component },
 ];
 
-export type requestFnType<Store extends Record<string, any[]>> =
-  <T extends keyof Store, P extends Store[T][0], R extends Promise<Store[T][1]>>(
+export type RequestFnType<Store extends Record<string, any[]>> =
+  <T extends keyof Store & string, P extends Store[T][0], R extends Promise<Store[T][1]>>(
     path: T,
     params?: P,
     config?: any,

@@ -1,4 +1,6 @@
-import { Component, ComponentInstance, ComponentVersion } from "./entities";
+import { APIStore } from "./api/API.store";
+import { Component, ComponentInstance, ComponentVersion, State } from "./entities";
+import { RequestFnType } from "./internal";
 
 export type ModelClass<T> = (new () => T) & { modelName: string };
 
@@ -11,9 +13,16 @@ export class WorkbenchModelType extends EventTarget {
   componentInstance: ComponentInstance;
   instanceList: ComponentInstance[] = [];
   componentVersion: ComponentVersion;
+  stateList: State[]
+}
+
+export class InstanceModelType {
+
 }
 
 export type PluginViewComponent = React.FC<{
   useModel: UseModelFnType,
-  WorkbenchModel: ((new () => WorkbenchModelType) & { modelName: string })
+  request: RequestFnType<APIStore>,
+  WorkbenchModel: ((new () => WorkbenchModelType) & { modelName: string }),
+  InstanceModel: ((new () => InstanceModelType) & { modelName: string })
 }>;

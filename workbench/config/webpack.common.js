@@ -152,6 +152,11 @@ module.exports = (env, args) => {
 						singleton: true,
 						eager: true,
 						requiredVersion: '^4.7.0'
+					},
+					axios: {
+						singleton: true,
+						eager: true,
+						requiredVersion: '^4.24.3'
 					}
 				},
 			})

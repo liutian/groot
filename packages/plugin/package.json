@@ -1,5 +1,5 @@
 {
-  "name": "groot-plugin-demo",
+  "name": "@grootio/plugin",
   "version": "0.0.1",
   "description": "",
   "scripts": {
@@ -11,7 +11,6 @@
   "devDependencies": {
     "@types/react": "18.0.25",
     "@types/react-dom": "18.0.9",
-    "@types/react-router-dom": "5.3.3",
     "copy-webpack-plugin": "11.0.0",
     "css-loader": "6.7.2",
     "css-minimizer-webpack-plugin": "4.2.2",
@@ -29,7 +28,6 @@
     "@ant-design/icons": "4.8.0",
     "antd": "4.24.3",
     "react": "18.2.0",
-    "react-dom": "18.2.0",
-    "react-router-dom": "6.4.3"
+    "react-dom": "18.2.0"
   }
 }

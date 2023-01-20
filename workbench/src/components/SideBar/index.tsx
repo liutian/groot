@@ -1,5 +1,5 @@
 import { Button } from 'antd';
-import React, { useEffect } from 'react';
+import React, { ReactElement, useEffect } from 'react';
 import { ReactNode, useState } from 'react';
 
 import PluginView from '@components/PluginView';
@@ -7,6 +7,7 @@ import WorkbenchModel from '@model/WorkbenchModel';
 
 import styles from './index.module.less';
 import { useModel } from '@grootio/common';
+import { CodeOutlined } from '@ant-design/icons';
 
 const SideBar: React.FC = () => {
   const [openPanel, setOpenPanel] = useState(false);
@@ -48,7 +49,7 @@ const SideBar: React.FC = () => {
         workbenchModel.sidebarView.map((item) => {
           return (<Button key={item.key} className={styles.menuItem}
             onClick={() => menuOnClick(item.key)} type={activeKey === item.key ? 'link' : 'text'}>
-            {item.icon}
+            {iconBuilder(item.icon)}
           </Button>)
         })
       }
@@ -65,5 +66,15 @@ const SideBar: React.FC = () => {
   </div>
 }
 
+const menuIconMap = {
+  CodeOutlined: <CodeOutlined />
+}
+function iconBuilder(icon: string | ReactElement) {
+  if (typeof icon === 'string') {
+    return menuIconMap[icon];
+  } else {
+    return icon;
+  }
+}
 
 export default SideBar;
