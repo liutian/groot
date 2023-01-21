@@ -110,6 +110,10 @@ const commonConfig = (env, args) => {
           axios: {
             singleton: true,
             requiredVersion: '^1.2.0'
+          },
+          '@grootio/common': {
+            singleton: true,
+            requiredVersion: '^0.0.1'
           }
         },
       })

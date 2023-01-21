@@ -157,6 +157,11 @@ module.exports = (env, args) => {
 						singleton: true,
 						eager: true,
 						requiredVersion: '^4.24.3'
+					},
+					'@grootio/common': {
+						singleton: true,
+						eager: true,
+						requiredVersion: '^0.0.1'
 					}
 				},
 			})
