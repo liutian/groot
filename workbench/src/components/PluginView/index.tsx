@@ -38,7 +38,7 @@ const PluginView: React.FC<{ config: RemotePlugin | string }> = ({ config }) => 
   return <>{
     !!Component ? (
       <React.Suspense fallback="loading plugin" >
-        <Component useModel={useModel} WorkbenchModel={WorkbenchModel} />
+        <Component useModel={useModel} request={request} WorkbenchModel={WorkbenchModel} />
       </React.Suspense >
     ) : null
   }</>

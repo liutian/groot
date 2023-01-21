@@ -1,6 +1,5 @@
-import { Component, ComponentVersion } from "@grootio/common";
+import { Component, ComponentVersion, ModalStatus } from "@grootio/common";
 
-import { ModalStatus } from "@util/common";
 import { APIPath } from "api/API.path";
 import request from "@util/request";
 import WorkbenchModel from "@model/WorkbenchModel";

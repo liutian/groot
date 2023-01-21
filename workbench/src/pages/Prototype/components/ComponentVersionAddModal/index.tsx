@@ -1,8 +1,7 @@
-import { ComponentVersion, useModel } from "@grootio/common";
+import { ComponentVersion, ModalStatus, useModel } from "@grootio/common";
 import { Form, Input, Modal, Select } from "antd";
 
 import WorkbenchModel from "@model/WorkbenchModel";
-import { ModalStatus } from "@util/common";
 import PrototypeModel from "pages/Prototype/PrototypeModel";
 
 const ComponentVersionAddModal: React.FC = () => {

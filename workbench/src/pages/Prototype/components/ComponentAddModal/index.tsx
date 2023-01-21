@@ -1,7 +1,6 @@
-import { Component, ComponentParserType, useModel } from "@grootio/common";
+import { Component, ComponentParserType, ModalStatus, useModel } from "@grootio/common";
 import { Form, Input, Modal } from "antd";
 
-import { ModalStatus } from "@util/common";
 import PrototypeModel from "pages/Prototype/PrototypeModel";
 
 const ComponentAddModal: React.FC = () => {

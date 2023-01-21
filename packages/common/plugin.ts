@@ -16,13 +16,15 @@ export class WorkbenchModelType extends EventTarget {
   stateList: State[]
 }
 
-export class InstanceModelType {
-
-}
 
 export type PluginViewComponent = React.FC<{
   useModel: UseModelFnType,
   request: RequestFnType<APIStore>,
   WorkbenchModel: ((new () => WorkbenchModelType) & { modelName: string }),
-  InstanceModel: ((new () => InstanceModelType) & { modelName: string })
 }>;
+
+export enum ModalStatus {
+  None = 'none',
+  Init = 'init',
+  Submit = 'submit'
+}

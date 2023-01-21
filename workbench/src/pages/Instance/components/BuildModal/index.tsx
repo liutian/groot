@@ -1,9 +1,7 @@
 import { Button, Modal } from "antd";
 
-import { ModalStatus } from "@util/common";
-
 import InstanceModel from "pages/Instance/InstanceModel";
-import { useModel } from "@grootio/common";
+import { ModalStatus, useModel } from "@grootio/common";
 
 const BuildModal: React.FC = () => {
   const instanceModel = useModel(InstanceModel);

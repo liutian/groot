@@ -1,9 +1,8 @@
 import { PlusOutlined } from "@ant-design/icons";
-import { ComponentParserType, useModel } from "@grootio/common";
+import { ComponentParserType, ModalStatus, useModel } from "@grootio/common";
 import { Button, Menu, } from "antd";
 
 import WorkbenchModel from "@model/WorkbenchModel";
-import { ModalStatus } from "@util/common";
 import PrototypeModel from "pages/Prototype/PrototypeModel";
 
 import styles from './index.module.less';

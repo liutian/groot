@@ -1,7 +1,7 @@
 import { AppstoreOutlined, BranchesOutlined, PlusOutlined, SendOutlined } from "@ant-design/icons";
 import { Breadcrumb, Button, Dropdown, Modal } from "antd";
 import { useEffect, useState, } from "react";
-import { RuntimeHostConfig, useRegisterModel } from "@grootio/common";
+import { ModalStatus, RuntimeHostConfig, useRegisterModel } from "@grootio/common";
 
 import WorkbenchModel from "@model/WorkbenchModel";
 import PropPersistModel from "@model/PropPersistModel";
@@ -11,7 +11,6 @@ import Workbench from "@components/Workbench";
 import ComponentList from "./components/ComponentList";
 import ComponentAddModal from "./components/ComponentAddModal";
 import ComponentVersionAddModal from "./components/ComponentVersionAddModal";
-import { ModalStatus } from "@util/common";
 import Loading from "@components/Loading";
 import ConfigLoader from "@components/ConfigLoader";
 import styles from './index.module.less';
