@@ -1,26 +1,24 @@
-import { APIStore } from "./api/API.store";
 import { Component, ComponentInstance, ComponentVersion, State } from "./entities";
-import { RequestFnType } from "./internal";
+import { StateType } from "./internal";
 
 export type ModelClass<T> = (new () => T) & { modelName: string };
 
 export type UseModelFnType = <T>(model: ModelClass<T>, isRoot?: boolean) => T;
 
+// 公开WorkbenchModel类型必须单独定义，不能直接通过ts import(...) ，该语法会导致ts深入解析 workbench项目中 WorkbenchModel 其他依赖项导致重复甚至循环解析
 export class WorkbenchModelType extends EventTarget {
-  static modelName: string;
+  static readonly modelName = 'groot_workbench';
   prototypeMode: boolean;
   component: Component;
   componentInstance: ComponentInstance;
   instanceList: ComponentInstance[] = [];
   componentVersion: ComponentVersion;
-  stateList: State[]
+  globalStateList: State[];
+  pageStateList: State[]
 }
 
 
 export type PluginViewComponent = React.FC<{
-  useModel: UseModelFnType,
-  request: RequestFnType<APIStore>,
-  WorkbenchModel: ((new () => WorkbenchModelType) & { modelName: string }),
 }>;
 
 export enum ModalStatus {
@@ -28,3 +26,11 @@ export enum ModalStatus {
   Init = 'init',
   Submit = 'submit'
 }
+
+export const StateTypeMap = [
+  { name: '字符串', key: StateType.Str },
+  { name: '数字', key: StateType.Num },
+  { name: '布尔', key: StateType.Bool },
+  { name: '对象', key: StateType.Obj },
+  { name: '数组', key: StateType.Arr },
+];

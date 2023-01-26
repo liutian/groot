@@ -81,8 +81,8 @@ const commonConfig = (env, args) => {
       }),
 
       new ModuleFederationPlugin({
-        name: 'groot',
-        filename: 'groot-plugin/index.js',
+        name: 'GrootCorePlugin',
+        filename: 'groot-core-plugin/index.js',
         exposes: {
           'StateList': './src/sidebar-view/StateList'
         },

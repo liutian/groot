@@ -9,7 +9,7 @@ import PropHandleModel from "./PropHandleModel";
  * 管理编辑器整体UI状态
  */
 export default class WorkbenchModel extends EventTarget implements WorkbenchModelType {
-  static modelName = 'workbench';
+  static modelName = 'groot_workbench';
 
   /**
    * 是否是组件原型设计模式
@@ -21,7 +21,8 @@ export default class WorkbenchModel extends EventTarget implements WorkbenchMode
   public application: Application;
   public componentInstance: ComponentInstance;
   public instanceList: ComponentInstance[] = [];
-  public stateList: State[] = [];
+  public globalStateList: State[] = [];
+  public pageStateList: State[] = [];
 
   /**
    * viewport之上的遮罩层用于组件拖拽定位和侧边栏宽度缩放
@@ -124,7 +125,8 @@ export default class WorkbenchModel extends EventTarget implements WorkbenchMode
     this.component = rootInstance.component;
     this.componentVersion = rootInstance.componentVersion;
     this.instanceList = [rootInstance, ...childrenInstance];
-    this.stateList = rootInstance.stateList;
+    this.globalStateList = rootInstance.stateList.filter(item => !item.instanceId);
+    this.pageStateList = rootInstance.stateList.filter(item => !!item.instanceId);
 
     const { groupList, blockList, itemList, valueList } = rootInstance;
     const propTree = this.propHandle.buildPropTree(groupList, blockList, itemList, valueList);
@@ -254,7 +256,7 @@ export default class WorkbenchModel extends EventTarget implements WorkbenchMode
     this.sidebarView.push(...incrementSidebarView);
     this.sidebarView.sort((a, b) => a.order - b.order);
 
-    this.propSettingView.push(...this.originPluginConfig.propSettingView);
+    this.propSettingView.push(...(this.originPluginConfig.propSettingView || []));
   }
 
   public toggleWorkAreaMask(show: boolean) {
