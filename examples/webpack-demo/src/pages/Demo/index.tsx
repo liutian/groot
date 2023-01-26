@@ -38,11 +38,22 @@ UIManager.init({
     viewportMode: ViewportMode.H5,
     plugin: (controlType) => {
       return {
-        propSettingView: [{
-          package: 'approve',
-          title: '配置项',
-          url: 'http://groot-local.com:12000/groot-plugin/index.js',
-          module: 'FormulaPropItem'
+        // propSettingView: [{
+        //   package: 'approve',
+        //   title: '配置项',
+        //   url: 'http://groot-local.com:12000/groot-core-plugin/index.js',
+        //   module: 'FormulaPropItem'
+        // }],
+        sidebarView: [{
+          key: 'state-list',
+          title: 'state列表',
+          icon: 'CodeOutlined',
+          view: {
+            package: 'GrootCorePlugin',
+            title: 'state列表',
+            url: 'http://groot-local.com:12000/groot-core-plugin/index.js',
+            module: 'StateList'
+          }
         }]
       }
     }

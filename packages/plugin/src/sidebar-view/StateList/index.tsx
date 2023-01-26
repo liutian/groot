@@ -1,49 +1,63 @@
-import { Button, Menu } from "antd";
+import { Popover, Typography } from "antd";
 import { useState } from "react";
-import { PluginViewComponent, useModel } from "@grootio/common";
-import { PlusOutlined } from "@ant-design/icons";
+import { EditOutlined, PlusOutlined } from "@ant-design/icons";
+import { PluginViewComponent, useModel, useRegisterModel, WorkbenchModelType } from "@grootio/common";
+
 import styles from './index.module.less';
+import StateModel from "./StateModel";
+import StateForm from "./StateForm";
 
-const StateList: PluginViewComponent = ({ useModel, WorkbenchModel }) => {
-  const workbenchModel = useModel(WorkbenchModel);
-  const [openKeys, setOpenKeys] = useState(['global', 'page']);
+const StateList: PluginViewComponent = () => {
+  const stateModel = useRegisterModel(StateModel);
+  const workbenchModel = useModel(WorkbenchModelType);
 
-  let globalStateList = [];
-  let pageStateList = [];
-  workbenchModel.stateList.forEach((data) => {
-    const state = {
-      label: data.name,
-      key: data.id,
-    };
-
-    if (!data.componentInstance) {
-      globalStateList.push(state)
-    } else {
-      pageStateList.push(state);
-    }
+  useState(() => {
+    stateModel.inject(workbenchModel);
   });
 
-  const showInstanceAdd = (e: React.MouseEvent<HTMLElement, MouseEvent>, entry: boolean) => {
-
-    e.stopPropagation();
-  }
-
-  const componentTypes = [
-    { label: '全局', key: 'global', children: globalStateList },
-    { label: '页面', key: 'page', children: pageStateList },
-  ]
-
-  const renderActions = (menuInfo: any) => {
-    return <>
-      <Button icon={<PlusOutlined />} type="link" onClick={(e) => {
-        showInstanceAdd(e, menuInfo.eventKey === 'global');
-      }} />
-    </>
-  }
-
-  return <Menu mode="inline" onOpenChange={(openKeys) => setOpenKeys(openKeys)}
-    openKeys={openKeys} className={styles.menuContainer} expandIcon={renderActions}
-    selectedKeys={[`${workbenchModel.componentInstance?.id}`]} items={componentTypes} />
+  return <div className={styles.container}>
+    {
+      [
+        {
+          title: '全局',
+          key: 'global',
+          list: workbenchModel.globalStateList
+        }, {
+          title: '页面',
+          key: 'page',
+          list: workbenchModel.pageStateList
+        }
+      ].map((data) => {
+        return <div className={styles.groupContainer} key={data.key}>
+          <div className={styles.groupBar}>
+            <div className={styles.groupTitle}>{data.title}</div>
+            <Popover overlayClassName={styles.popoverOverlay} content={<StateForm />} trigger={['click']} placement="rightTop"
+              open={stateModel.formVisible && !stateModel.currState && (data.key === 'global' ? stateModel.isGlobalState : !stateModel.isGlobalState)} >
+              <Typography.Link className={styles.groupAction} disabled={stateModel.formVisible} onClick={() => {
+                stateModel.showForm(data.key === 'global');
+              }} >
+                <PlusOutlined />
+              </Typography.Link>
+            </Popover>
+          </div>
+          <div className={styles.itemContainer}>
+            {data.list.map(item => {
+              return <div className={styles.item} key={item.id}>
+                <div className={styles.itemTitle}>{item.name}</div>
+                <Popover overlayClassName={styles.popoverOverlay} content={<StateForm />} trigger={['click']} open={stateModel.formVisible && stateModel.currState?.id === item.id} placement="rightTop">
+                  <Typography.Link className={styles.itemAction} disabled={stateModel.formVisible} onClick={() => {
+                    stateModel.showForm(!item.instanceId, item)
+                  }} >
+                    <EditOutlined />
+                  </Typography.Link>
+                </Popover>
+              </div>
+            })}
+          </div>
+        </div>
+      })
+    }
+  </div>
 
 }
 
