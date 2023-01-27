@@ -58,6 +58,13 @@ export class DatabaseSeeder extends Seeder {
     });
     await em.persistAndFlush(org);
 
+    const plugin2 = em.create(Plugin, {
+      name: 'groot-core',
+      url: 'http://groot-local.com:12000/groot-core-plugin/index.js'
+    });
+    org.pluginList.add(plugin2);
+    await em.persistAndFlush(org);
+
     await proTableCreate(em, org, release);
 
     await btnCreate(em, org, release);
