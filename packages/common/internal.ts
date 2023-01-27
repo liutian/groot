@@ -83,57 +83,62 @@ export enum PostMessageType {
 export const iframeNamePrefix = 'groot_';
 
 export enum PropItemType {
-  Text = 'text',
-  Textarea = 'textarea',
-  Number = 'number',
-  Slider = 'slider',
-  ButtonGroup = 'button_group',
-  Switch = 'switch',
-  Select = 'select',
-  Radio = 'radio',
-  Checkbox = 'checkbox',
-  DatePicker = 'date_picker',
-  TimePicker = 'time_picker',
-  Hierarchy = 'hierarchy',
-  Flat = 'flat',
-  Json = 'json',
-  Function = 'function',
-  Component = 'component',
-  Extension = 'extension'
+  Text = 1,
+  Textarea = 2,
+  Number = 3,
+  Slider = 4,
+  ButtonGroup = 5,
+  Switch = 6,
+  Select = 7,
+  Radio = 8,
+  Checkbox = 9,
+  DatePicker = 10,
+  TimePicker = 11,
+  Hierarchy = 12,
+  Flat = 13,
+  Json = 14,
+  Function = 15,
+  Component = 16,
+  Extension = 17
 }
 
 export enum PropBlockLayout {
-  Horizontal = 'horizontal',
-  Vertical = 'vertical'
+  Horizontal = 1,
+  Vertical = 2
+}
+
+export const PropBlockLayoutKeyMap = {
+  [PropBlockLayout.Horizontal]: 'horizontal',
+  [PropBlockLayout.Vertical]: 'vertical',
 }
 
 export enum PropGroupStructType {
-  Flat = 'flat',
-  Default = 'default'
+  Flat = 1,
+  Default = 2
 }
 
 export enum PropBlockStructType {
-  List = 'list',
-  Default = 'default'
+  List = 1,
+  Default = 2
 }
 
 export enum PropValueType {
-  Instance = 'instance',
-  Prototype = 'prototype',
+  Instance = 1,
+  Prototype = 2,
 }
 
 export enum EnvType {
-  Dev = 'dev',
-  Qa = 'qa',
-  Pl = 'pl',
-  Ol = 'online'
+  Dev = 1,
+  Qa = 2,
+  Pl = 3,
+  Ol = 4
 }
 
 
 export enum DeployStatusType {
-  Approval = 'approval',
-  Online = 'online',
-  Archive = 'archive'
+  Approval = 1,
+  Online = 2,
+  Archive = 3
 }
 
 export const PropItemTypeNameMap = [
@@ -193,16 +198,16 @@ export type DragAddComponentEventDataType = {
 }
 
 export enum ComponentParserType {
-  ReactComponent = 'react_component',
-  VueComponent = 'vue_component',
-  Http = 'http',
-  DataSource = 'data_source',
+  ReactComponent = 1,
+  VueComponent = 2,
+  Http = 3,
+  DataSource = 4,
 }
 
 
 export enum ValueStruct {
-  Common = 'common',
-  ChildComponentList = 'child_component_list'
+  Common = 1,
+  ChildComponentList = 2
 }
 
 export type MarkerInfo = {
@@ -243,9 +248,10 @@ export type RuntimeSidebarViewType = {
 })
 
 export enum StateType {
-  Str = 'string',
-  Bool = 'boolean',
-  Num = 'number',
-  Obj = 'object',
-  Arr = 'array'
+  Str = 1,
+  Bool = 2,
+  Num = 3,
+  Obj = 4,
+  Arr = 5
 }
+

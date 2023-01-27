@@ -37,7 +37,7 @@ export class Component extends BaseEntity {
   @ManyToOne({ serializer: value => value?.id, serializedName: 'orgId' })
   org: Organization;
 
-  @Enum()
+  @Property({ type: 'tinyint' })
   parserType: ComponentParserType = ComponentParserType.ReactComponent;
 
   //************************已下是接口入参或者查询返回需要定义的属性************************

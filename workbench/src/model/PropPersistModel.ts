@@ -1,4 +1,4 @@
-import { ComponentInstance, PropBlock, PropGroup, PropItem, PropValue, PropValueType, RuntimeComponentValueType, ValueStruct } from "@grootio/common";
+import { ComponentInstance, PropBlock, PropGroup, PropItem, PropItemType, PropValue, PropValueType, RuntimeComponentValueType, ValueStruct } from "@grootio/common";
 import { stringifyPropItemValue } from "@grootio/core";
 
 import { assignBaseType, autoIncrementForName, calcPropValueIdChain, stringifyOptions } from "@util/utils";
@@ -283,7 +283,7 @@ export default class PropPersistModel {
     const propSuffix = autoIncrementForName(block.propItemList.map(item => item.propKey));
 
     this.currSettingPropItem = {
-      type: 'text',
+      type: PropItemType.Text,
       label: `配置项${nameSuffix}`,
       propKey: `prop${propSuffix}`,
       blockId: block.id,

@@ -40,7 +40,7 @@ const ComponentList: React.FC = () => {
     </>
   }
 
-  return <Menu mode="inline" openKeys={[ComponentParserType.ReactComponent]} className={styles.menuContainer} expandIcon={renderActions()} selectedKeys={[`${workbenchModel.component?.id}`]} items={componentTypes} />
+  return <Menu mode="inline" openKeys={[ComponentParserType.ReactComponent.toString()]} className={styles.menuContainer} expandIcon={renderActions()} selectedKeys={[`${workbenchModel.component?.id}`]} items={componentTypes} />
 }
 
 export default ComponentList;

@@ -28,7 +28,7 @@ export class PropGroup extends BaseEntity {
    * Flat 没有配置块这一层，直接展示配置项
    * Default 直接下级为配置块，配置块直接下级为配置项
    */
-  @Enum()
+  @Property({ type: 'tinyint' })
   struct: PropGroupStructType = PropGroupStructType.Default;
 
   @Property({ columnType: 'double' })

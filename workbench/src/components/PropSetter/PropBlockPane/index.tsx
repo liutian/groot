@@ -5,7 +5,7 @@ import { useState } from "react";
 import WorkbenchModel from "@model/WorkbenchModel";
 import PropPersistModel from "@model/PropPersistModel";
 import PropHandleModel from "@model/PropHandleModel";
-import { PropBlock, PropItem, PropItemType, PropValueType, useModel, ValueStruct } from "@grootio/common";
+import { PropBlock, PropBlockLayout, PropBlockLayoutKeyMap, PropItem, PropItemType, PropValueType, useModel, ValueStruct } from "@grootio/common";
 import { calcPropValueIdChain, parseOptions, stringify } from "@util/utils";
 import { parsePropItemValue } from "@grootio/core";
 import PluginView from "@components/PluginView";
@@ -104,7 +104,7 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
 
   const renderItemLabel = (propItem: PropItem, itemIndex: number) => {
 
-    if (block.layout === 'horizontal') {
+    if (block.layout === PropBlockLayout.Horizontal) {
       return <>
         {propItem.label}
         <i className="highlight" hidden={!propItem.highlight} />
@@ -198,27 +198,28 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
     : `releaseId:${workbenchModel.application?.release.id}|instanceId:${workbenchModel.componentInstance?.id}`;
 
   return <div className={noWrapMode ? styles.containerWrap : ''}>
-    <Form form={form} key={formKey} layout={block.layout} labelAlign="left" colon={false} className={styles.propForm}
+    <Form form={form} key={formKey} layout={PropBlockLayoutKeyMap[block.layout] as any} labelAlign="left" colon={false} className={styles.propForm}
       onValuesChange={(changedValues) => { updateValue(changedValues); }}>
       <Row gutter={6}>
         {
           block.propItemList.map((item, index) => {
-            return <Col span={block.layout === 'vertical' ? item.span : 24} key={item.id}
+            return <Col span={block.layout === PropBlockLayout.Vertical ? item.span : 24} key={item.id}
               onMouseEnter={() => {
                 workbenchModel.setPropPathChain(item.id);
               }}
               onMouseLeave={() => {
                 workbenchModel.setPropPathChain();
               }}>
-              <div className={`${styles.propItemContainer} ${noSetting || block.layout === 'vertical' ? '' : styles.hasAction}`}>
+              <div className={`${styles.propItemContainer} ${noSetting || block.layout === PropBlockLayout.Vertical
+                ? '' : styles.hasAction}`}>
                 <div className="content">
                   <Form.Item
                     className={styles.propItem} label={renderItemLabel(item, index)} name={item.propKey} preserve={false}
-                    valuePropName={item.type === 'switch' ? 'checked' : 'value'} initialValue={getInitValue(item)}>
+                    valuePropName={item.type === PropItemType.Switch ? 'checked' : 'value'} initialValue={getInitValue(item)}>
                     {renderFormItem(item)}
                   </Form.Item>
                 </div>
-                <div className="action">{block.layout === 'horizontal' && renderItemSetting(item, index)}</div>
+                <div className="action">{block.layout === PropBlockLayout.Horizontal && renderItemSetting(item, index)}</div>
               </div>
             </Col>
           })

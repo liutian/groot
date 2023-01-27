@@ -27,10 +27,10 @@ export class PropBlock extends BaseEntity {
   @ManyToOne({ serializer: value => value?.id, serializedName: 'componentVersionId' })
   componentVersion: ComponentVersion;
 
-  @Enum()
+  @Property({ type: 'tinyint' })
   layout: PropBlockLayout = PropBlockLayout.Horizontal;
 
-  @Enum()
+  @Property({ type: 'tinyint' })
   struct: PropBlockStructType = PropBlockStructType.Default;
 
   @Property({ columnType: 'double' })

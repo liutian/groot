@@ -19,10 +19,10 @@ export class Deploy extends BaseEntity {
   @ManyToOne()
   asset: ReleaseAsset;
 
-  @Enum()
+  @Property({ type: 'tinyint' })
   env: EnvType;
 
-  @Enum()
+  @Property({ type: 'tinyint' })
   status: DeployStatusType;
 
   @ManyToOne()

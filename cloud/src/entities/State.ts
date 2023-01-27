@@ -14,7 +14,7 @@ export class State extends BaseEntity {
   @ManyToOne({ serializer: value => value?.id, serializedName: 'instanceId' })
   componentInstance?: ComponentInstance;
 
-  @Enum()
+  @Enum({ type: 'tinyint' })
   type: StateType = StateType.Str;
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'releaseId' })

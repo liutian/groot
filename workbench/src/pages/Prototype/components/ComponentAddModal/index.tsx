@@ -26,10 +26,6 @@ const ComponentAddModal: React.FC = () => {
         <Input />
       </Form.Item>
 
-      <Form.Item label="解析器" name="parserType" rules={[{ required: true }]} initialValue={ComponentParserType.ReactComponent}>
-        <Input disabled />
-      </Form.Item>
-
       <Form.Item label="组件名称" name="componentName" rules={[{ required: true }]}>
         <Input />
       </Form.Item>

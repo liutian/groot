@@ -10,7 +10,7 @@ import { PropItem } from "./PropItem";
 @Entity()
 export class PropValue extends BaseEntity {
 
-  @Enum()
+  @Property({ type: 'tinyint' })
   type: PropValueType;
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'propItemId' })
@@ -34,7 +34,7 @@ export class PropValue extends BaseEntity {
   @Property({ columnType: 'double' })
   order?: number;
 
-  @Enum()
+  @Property({ type: 'tinyint' })
   valueStruct: ValueStruct = ValueStruct.Common;
 
   //************************已下是接口入参或者查询返回需要定义的属性************************

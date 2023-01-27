@@ -72,7 +72,7 @@ export class PropValueService {
       propValue.value = rawPropValue.value;
       await em.flush();
       return null;
-    } else if (rawPropValue.type === 'instance') {
+    } else if (rawPropValue.type === PropValueType.Instance) {
       LogicException.assertParamEmpty(rawPropValue.propItemId, 'propItemId');
       LogicException.assertParamEmpty(rawPropValue.componentId, 'componentId');
       LogicException.assertParamEmpty(rawPropValue.componentVersionId, 'componentVersionId');

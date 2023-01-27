@@ -13,7 +13,7 @@ export class PropItem extends BaseEntity {
   @Property({ length: 20 })
   label: string;
 
-  @Enum()
+  @Property({ type: 'tinyint' })
   type: PropItemType;
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'groupId' })
