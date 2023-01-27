@@ -8,10 +8,10 @@ import { Release } from "./Release";
 @Entity()
 export class Bundle extends BaseEntity {
 
-  @Property()
+  @Property({ length: 20 })
   appName: string;
 
-  @Property()
+  @Property({ length: 20 })
   appKey: string;
 
   @ManyToOne()
@@ -26,6 +26,6 @@ export class Bundle extends BaseEntity {
   @OneToMany(() => InstanceAsset, asset => asset.bundle)
   oldAssetList = new Collection<InstanceAsset>(this);
 
-  @Property({ length: 2000 })
+  @Property({ length: 100 })
   remark?: string;
 }

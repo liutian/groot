@@ -25,6 +25,7 @@ export default {
   },
 
   // developer
-  debug: isDevMode()
+  debug: isDevMode(),
+  charset: 'utf8mb4'
 } as MikroOrmModuleSyncOptions;
 

@@ -10,7 +10,7 @@ import { PropGroup } from "./PropGroup";
 @Entity()
 export class PropItem extends BaseEntity {
 
-  @Property({ length: 50 })
+  @Property({ length: 20 })
   label: string;
 
   @Enum()
@@ -58,7 +58,7 @@ export class PropItem extends BaseEntity {
   @OneToOne({ serializer: value => value?.id, serializedName: 'childGroupId' })
   childGroup?: PropGroup;
 
-  @Property({ length: 50 })
+  @Property({ length: 20 })
   propKey?: string;
 
   /**
@@ -70,7 +70,7 @@ export class PropItem extends BaseEntity {
   /**
    * 类型为多选，单选，下拉框时所对应选项列表，json化存储
    */
-  @Property({ length: 10000 })
+  @Property({ length: 200 })
   valueOptions?: string;
 
   //************************已下是接口入参或者查询返回需要定义的属性************************
@@ -78,7 +78,7 @@ export class PropItem extends BaseEntity {
   @Property({ persist: false })
   blockId?: number;
 
-  @Property({ length: 50 })
+  @Property({ persist: false })
   subType?: string;
 }
 

@@ -6,7 +6,7 @@ import { Component } from "./Component";
 @Entity()
 export class Organization extends BaseEntity {
 
-  @Property({ length: 50 })
+  @Property({ length: 20 })
   name: string;
 
   // 调试各种功能的演练场接受外部窗口传来调试参数

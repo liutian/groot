@@ -7,7 +7,7 @@ import { ComponentInstance } from "./ComponentInstance";
 @Entity()
 export class InstanceAsset extends BaseEntity {
 
-  @Property({ type: 'text' })
+  @Property({ type: 'text', lazy: true })
   content: string;
 
   @ManyToOne()
@@ -16,6 +16,6 @@ export class InstanceAsset extends BaseEntity {
   @ManyToOne()
   bundle: Bundle;
 
-  @Property()
+  @Property({ length: 20 })
   key: string;
 }

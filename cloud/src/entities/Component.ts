@@ -13,19 +13,19 @@ import { Organization } from "./Organization";
 @Entity()
 export class Component extends BaseEntity {
 
-  @Property({ length: 50 })
+  @Property({ length: 20 })
   name: string;
 
   /**
    * 组件注册时的包名
    */
-  @Property({ length: 50 })
+  @Property({ length: 30 })
   packageName: string;
 
   /**
    * 组件注册时的组件名
    */
-  @Property({ length: 50 })
+  @Property({ length: 20 })
   componentName: string;
 
   /**

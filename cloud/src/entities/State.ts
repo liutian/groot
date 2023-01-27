@@ -5,10 +5,10 @@ import { ComponentInstance } from "./ComponentInstance";
 
 @Entity()
 export class State extends BaseEntity {
-  @Property({ length: 50 })
+  @Property({ length: 20 })
   name: string;
 
-  @Property({ length: 15000 })
+  @Property({ length: 200 })
   value?: string;
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'instanceId' })

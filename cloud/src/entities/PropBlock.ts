@@ -9,7 +9,7 @@ import { PropGroup } from "./PropGroup";
 @Entity()
 export class PropBlock extends BaseEntity {
 
-  @Property({ length: 50 })
+  @Property({ length: 20 })
   name: string;
 
   /**
@@ -36,13 +36,13 @@ export class PropBlock extends BaseEntity {
   @Property({ columnType: 'double' })
   order: number;
 
-  @Property({ length: 1000 })
+  @Property({ length: 500 })
   listStructData?: string;
 
   /**
    * 组件属性，其下配置项默认继承该属性
    */
-  @Property({ length: 50 })
+  @Property({ length: 20 })
   propKey?: string;
 
   //************************已下是接口入参或者查询返回需要定义的属性************************

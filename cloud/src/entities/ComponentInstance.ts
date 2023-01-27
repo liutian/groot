@@ -14,7 +14,7 @@ import { State } from "./State";
 @Entity()
 export class ComponentInstance extends BaseEntity {
 
-  @Property({ length: 50 })
+  @Property({ length: 20 })
   name: string;
 
   @ManyToOne()
@@ -38,7 +38,7 @@ export class ComponentInstance extends BaseEntity {
   @ManyToOne({ serializer: value => value?.id, serializedName: 'parentId' })
   parent?: ComponentInstance;
 
-  @Property({ length: 100 })
+  @Property({ length: 20 })
   key?: string;
 
   @Enum()

@@ -22,7 +22,7 @@ export class Deploy extends BaseEntity {
   @Enum()
   env: EnvType;
 
-  @Property()
+  @Enum()
   status: DeployStatusType;
 
   @ManyToOne()

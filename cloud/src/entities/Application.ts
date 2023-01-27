@@ -7,10 +7,10 @@ import { Release } from "./Release";
 @Entity()
 export class Application extends BaseEntity {
 
-  @Property({ length: 50 })
+  @Property({ length: 20 })
   name: string;
 
-  @Property({ length: 50 })
+  @Property({ length: 20 })
   key: string;
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'projectId' })

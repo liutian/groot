@@ -1,5 +1,5 @@
 import { PropGroupStructType } from "@grootio/common";
-import { Entity, ManyToOne, Property } from "@mikro-orm/core";
+import { Entity, Enum, ManyToOne, Property } from "@mikro-orm/core";
 
 import { BaseEntity } from "./BaseEntity";
 import { Component } from "./Component";
@@ -9,7 +9,7 @@ import { PropItem } from "./PropItem";
 @Entity()
 export class PropGroup extends BaseEntity {
 
-  @Property({ length: 50 })
+  @Property({ length: 20 })
   name: string;
 
   /**
@@ -28,7 +28,7 @@ export class PropGroup extends BaseEntity {
    * Flat 没有配置块这一层，直接展示配置项
    * Default 直接下级为配置块，配置块直接下级为配置项
    */
-  @Property()
+  @Enum()
   struct: PropGroupStructType = PropGroupStructType.Default;
 
   @Property({ columnType: 'double' })
@@ -37,7 +37,7 @@ export class PropGroup extends BaseEntity {
   /**
    * 其下配置块默认继承该属性
    */
-  @Property({ length: 50 })
+  @Property({ length: 20 })
   propKey?: string;
 
   /**

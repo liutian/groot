@@ -7,7 +7,7 @@ import { Release } from "./Release";
 @Entity()
 export class ReleaseAsset extends BaseEntity {
 
-  @Property({ type: 'text' })
+  @Property({ type: 'text', lazy: true })
   content: string;
 
   @ManyToOne()

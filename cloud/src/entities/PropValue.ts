@@ -10,7 +10,7 @@ import { PropItem } from "./PropItem";
 @Entity()
 export class PropValue extends BaseEntity {
 
-  @Property()
+  @Enum()
   type: PropValueType;
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'propItemId' })
@@ -25,13 +25,13 @@ export class PropValue extends BaseEntity {
   @ManyToOne({ serializer: value => value?.id, serializedName: 'instanceId' })
   componentInstance?: ComponentInstance;
 
-  @Property({ length: 15000 })
+  @Property({ length: 1000 })
   value?: string;
 
-  @Property({ length: 1000 })
+  @Property({ length: 100 })
   abstractValueIdChain?: string;
 
-  @Property()
+  @Property({ columnType: 'double' })
   order?: number;
 
   @Enum()
