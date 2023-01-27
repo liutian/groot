@@ -14,7 +14,7 @@ export class ApplicationService {
     const em = RequestContext.getEntityManager();
 
     LogicException.assertParamEmpty(applicationId, 'applicationId');
-    const application = await em.findOne(Application, applicationId);
+    const application = await em.findOne(Application, applicationId, { populate: ['extensionList'] });
     LogicException.assertNotFound(application, 'application', applicationId);
 
     // 默认返回dev环境

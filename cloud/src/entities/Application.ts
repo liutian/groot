@@ -1,6 +1,7 @@
-import { Entity, ManyToOne, Property } from "@mikro-orm/core";
+import { Collection, Entity, ManyToMany, ManyToOne, Property } from "@mikro-orm/core";
 
 import { BaseEntity } from "./BaseEntity";
+import { Extension } from "./Extension";
 import { Project } from "./Project";
 import { Release } from "./Release";
 
@@ -36,6 +37,12 @@ export class Application extends BaseEntity {
   @ManyToOne({ serializer: value => value?.id, serializedName: 'onlineReleaseId' })
   onlineRelease: Release = { id: 0 } as any;
 
+  @ManyToMany()
+  extensionList = new Collection<Extension>(this);
+
+  @Property({ length: 100 })
+  debugBaseUrl: string;
+
   //************************已下是接口入参或者查询返回需要定义的属性************************
 
   @Property({ persist: false })
@@ -56,6 +63,4 @@ export class Application extends BaseEntity {
   @Property({ persist: false })
   onlineReleaseId: number;
 
-  @Property({ length: 100 })
-  debugBaseUrl: string;
 }
