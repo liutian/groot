@@ -167,7 +167,7 @@ export class ComponentInstanceService {
       populate: ['componentVersion', 'component']
     });
     LogicException.assertNotFound(rootInstance, 'Instance', instanceId);
-    if (rootInstance.root) {
+    if (!rootInstance.root.isEmpty()) {
       throw new LogicException(`当前组件不是入口组件`, LogicExceptionCode.UnExpect);
     }
 

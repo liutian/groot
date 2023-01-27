@@ -27,5 +27,5 @@ export class Bundle extends BaseEntity {
   oldAssetList = new Collection<InstanceAsset>(this);
 
   @Property({ length: 100 })
-  remark?: string;
+  remark = '';
 }

@@ -23,16 +23,16 @@ export class PropValue extends BaseEntity {
   componentVersion: ComponentVersion;
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'instanceId' })
-  componentInstance?: ComponentInstance;
+  componentInstance: ComponentInstance = { id: 0 } as any;
 
   @Property({ length: 1000 })
-  value?: string;
+  value = '';
 
   @Property({ length: 100 })
-  abstractValueIdChain?: string;
+  abstractValueIdChain = '';
 
   @Property({ columnType: 'double' })
-  order?: number;
+  order = 0;
 
   @Property({ type: 'tinyint' })
   valueStruct: ValueStruct = ValueStruct.Common;

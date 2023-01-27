@@ -37,13 +37,13 @@ export class PropBlock extends BaseEntity {
   order: number;
 
   @Property({ length: 500 })
-  listStructData?: string;
+  listStructData = '';
 
   /**
    * 组件属性，其下配置项默认继承该属性
    */
   @Property({ length: 20 })
-  propKey?: string;
+  propKey = '';
 
   //************************已下是接口入参或者查询返回需要定义的属性************************
 

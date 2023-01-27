@@ -50,28 +50,28 @@ export class PropItem extends BaseEntity {
    * 组件实例在升级组件版本时可以尽量保留propValue
    */
   @Property()
-  versionTraceId?: number;
+  versionTraceId = 0;
 
   /**
    * 类型为Hierarchy Item时，所属下级配置组
    */
-  @OneToOne({ serializer: value => value?.id, serializedName: 'childGroupId' })
-  childGroup?: PropGroup;
+  @ManyToOne({ serializer: value => value?.id, serializedName: 'childGroupId' })
+  childGroup: PropGroup = { id: 0 } as any;
 
   @Property({ length: 20 })
-  propKey?: string;
+  propKey = '';
 
   /**
    * 配置项默认值，json化存储
    */
   @Property({ length: 1000 })
-  defaultValue?: string;
+  defaultValue = '';
 
   /**
    * 类型为多选，单选，下拉框时所对应选项列表，json化存储
    */
   @Property({ length: 200 })
-  valueOptions?: string;
+  valueOptions = '';
 
   //************************已下是接口入参或者查询返回需要定义的属性************************
 

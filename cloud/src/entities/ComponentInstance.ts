@@ -33,13 +33,13 @@ export class ComponentInstance extends BaseEntity {
   trackId: number;
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'rootId' })
-  root?: ComponentInstance;
+  root: ComponentInstance = { id: 0 } as any;
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'parentId' })
-  parent?: ComponentInstance;
+  parent: ComponentInstance = { id: 0 } as any;
 
   @Property({ length: 20 })
-  key?: string;
+  key = '';
 
   @Enum()
   parserType: ComponentParserType = ComponentParserType.ReactComponent;

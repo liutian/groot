@@ -38,13 +38,13 @@ export class PropGroup extends BaseEntity {
    * 其下配置块默认继承该属性
    */
   @Property({ length: 20 })
-  propKey?: string;
+  propKey = '';
 
   /**
    * 关联配置项，层级结构时需要通过该值查找上级配置项
    */
   @ManyToOne({ serializer: value => value?.id, serializedName: 'parentItemId' })
-  parentItem?: PropItem;
+  parentItem: PropItem = { id: 0 } as any;
 
   //************************已下是接口入参或者查询返回需要定义的属性************************
 

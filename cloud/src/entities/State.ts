@@ -9,10 +9,10 @@ export class State extends BaseEntity {
   name: string;
 
   @Property({ length: 200 })
-  value?: string;
+  value = '';
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'instanceId' })
-  componentInstance?: ComponentInstance;
+  componentInstance: ComponentInstance = { id: 0 } as any;
 
   @Enum({ type: 'tinyint' })
   type: StateType = StateType.Str;
