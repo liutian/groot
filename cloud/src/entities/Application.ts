@@ -1,7 +1,7 @@
 import { Collection, Entity, ManyToMany, ManyToOne, Property } from "@mikro-orm/core";
 
 import { BaseEntity } from "./BaseEntity";
-import { Extension } from "./Extension";
+import { Plugin } from "./Plugin";
 import { Project } from "./Project";
 import { Release } from "./Release";
 
@@ -38,7 +38,7 @@ export class Application extends BaseEntity {
   onlineRelease: Release = { id: 0 } as any;
 
   @ManyToMany()
-  extensionList = new Collection<Extension>(this);
+  pluginList = new Collection<Plugin>(this);
 
   @Property({ length: 100 })
   debugBaseUrl: string;

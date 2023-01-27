@@ -4,7 +4,7 @@ import { Application } from '../../entities/Application';
 import { Release } from '../../entities/Release';
 import { Organization } from '../../entities/Organization';
 import { Project } from '../../entities/Project';
-import { Extension } from '../../entities/Extension';
+import { Plugin } from '../../entities/Plugin';
 
 import { create as btnCreate } from './button';
 import { create as profileCreate } from './profile';
@@ -43,12 +43,12 @@ export class DatabaseSeeder extends Seeder {
     application.onlineRelease = release;
     await em.persistAndFlush(release);
 
-    const extension = em.create(Extension, {
+    const plugin = em.create(Plugin, {
       name: 'groot-core',
       url: 'http://groot-local.com:12000/groot-core-plugin/index.js'
     });
-    application.extensionList.add(extension);
-    await em.persistAndFlush(extension);
+    application.pluginList.add(plugin);
+    await em.persistAndFlush(plugin);
 
     // 创建组织
     const org = em.create(Organization, {
