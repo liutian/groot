@@ -31,7 +31,7 @@ export class StateService {
     if (rawState.instanceId) {
       query.$or = [
         { componentInstance: instance },
-        { componentInstance: null }
+        { componentInstance: { id: 0 } }
       ]
     }
     const stateUnique = await em.count(State, query);
@@ -71,7 +71,7 @@ export class StateService {
       if (rawState.instanceId) {
         query.$or = [
           { componentInstance: state.componentInstance },
-          { componentInstance: null }
+          { componentInstance: { id: 0 } }
         ]
       }
       const stateUnique = await em.count(State, query);
@@ -84,6 +84,8 @@ export class StateService {
     pick(rawState, ['name', 'value', 'type'], state);
 
     await em.flush();
+
+    return state;
   }
 }
 

@@ -174,7 +174,7 @@ export class ComponentInstanceService {
     rootInstance.blockList = await em.find(PropBlock, { component: rootInstance.component, componentVersion: rootInstance.componentVersion });
     rootInstance.itemList = await em.find(PropItem, { component: rootInstance.component, componentVersion: rootInstance.componentVersion });
     rootInstance.valueList = await em.find(PropValue, { componentInstance: rootInstance });
-    rootInstance.stateList = await em.find(State, { release: rootInstance.release, $or: [{ componentInstance: rootInstance }, { componentInstance: null }] });
+    rootInstance.stateList = await em.find(State, { release: rootInstance.release, $or: [{ componentInstance: rootInstance }, { componentInstance: { id: 0 } }] });
 
     const instanceList = await em.find(ComponentInstance, { root: instanceId }, {
       populate: ['component', 'componentVersion'],

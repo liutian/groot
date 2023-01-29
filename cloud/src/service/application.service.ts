@@ -21,7 +21,7 @@ export class ApplicationService {
     const release = await em.findOne(Release, releaseId || application.devRelease.id);
     LogicException.assertNotFound(release, 'release');
 
-    release.instanceList = await em.find(ComponentInstance, { release, root: null });
+    release.instanceList = await em.find(ComponentInstance, { release, root: { id: 0 } });
     application.releaseList = await em.find(Release, { application: applicationId });
     application.release = wrap(release).toObject() as any;
 
