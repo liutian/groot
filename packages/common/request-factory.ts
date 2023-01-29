@@ -32,7 +32,7 @@ export const requestFactory = <T extends Record<string, any[]>>(config: ConfigTy
   }
 
   request.clone = function (logger?: (type: 'request' | 'response', ...args: any[]) => void) {
-    return (path, data, { _noMessage }: { _noMessage: boolean }) => {
+    return (path, data, { _noMessage }: { _noMessage?: boolean } = {}) => {
       return request(path, data, {
         _noMessage,
         transformRequest: [(data, headers) => {
@@ -127,7 +127,7 @@ function axiosWrapper(config: ConfigType) {
       // 如果data不是对象，返回失败
       if (!(response.data instanceof Object)) {
         config.alertError('服务异常');
-        return Promise.reject(response);
+        return Promise.reject('服务异常');
       }
 
       const res = response.data;
@@ -147,7 +147,7 @@ function axiosWrapper(config: ConfigType) {
         if (config.reLogin) {
           return config.reLogin()
         } else {
-          return Promise.reject(response);
+          return Promise.reject(new Error('会话无效'));
         }
       }
 
@@ -158,7 +158,7 @@ function axiosWrapper(config: ConfigType) {
         config.alertError(res.message);
       }
 
-      return Promise.reject(response);
+      return Promise.reject(new Error('服务器错误'));
     },
     (error) => {
       // Network Error的提示

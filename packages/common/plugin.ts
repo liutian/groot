@@ -1,4 +1,5 @@
 import { ReactElement } from "react";
+import { APIStore } from "./api/API.store";
 import { Application, ComponentInstance, State } from "./entities";
 import { RequestFnType, ViewportMode } from "./internal";
 
@@ -29,7 +30,7 @@ export enum ModalStatus {
 export type MainType = (context: PluginContext, config: HostConfig) => HostConfig;
 
 export type PluginContext = {
-  request: RequestFnType<any>,
+  request: RequestFnType<APIStore>,
   workbenchModel: WorkbenchModelType
 }
 
