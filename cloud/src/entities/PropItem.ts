@@ -62,7 +62,8 @@ export class PropItem extends BaseEntity {
   propKey = '';
 
   /**
-   * 配置项默认值，json化存储
+   * 配置项默认值，json化存储 
+   * @todo 考虑去json，改为结构化
    */
   @Property({ length: 1000 })
   defaultValue = '';

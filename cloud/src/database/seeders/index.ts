@@ -44,8 +44,8 @@ export class DatabaseSeeder extends Seeder {
     await em.persistAndFlush(release);
 
     const plugin = em.create(Plugin, {
-      name: 'groot-core',
-      url: 'http://groot-local.com:12000/groot-core-plugin/index.js'
+      name: '@groot/core-plugin',
+      url: 'http://groot-local.com:12000/index.js'
     });
     application.pluginList.add(plugin);
     await em.persistAndFlush(plugin);
@@ -60,7 +60,7 @@ export class DatabaseSeeder extends Seeder {
 
     const plugin2 = em.create(Plugin, {
       name: 'groot-core',
-      url: 'http://groot-local.com:12000/groot-core-plugin/index.js'
+      url: 'http://groot-local.com:12000/index.js'
     });
     org.pluginList.add(plugin2);
     await em.persistAndFlush(org);

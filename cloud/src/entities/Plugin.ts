@@ -1,6 +1,7 @@
-import { Entity, Property } from "@mikro-orm/core";
+import { Entity, ManyToOne, Property } from "@mikro-orm/core";
 
 import { BaseEntity } from "./BaseEntity";
+import { Organization } from "./Organization";
 
 @Entity()
 export class Plugin extends BaseEntity {
@@ -11,4 +12,6 @@ export class Plugin extends BaseEntity {
   @Property({ length: 100 })
   url: string;
 
+  @ManyToOne({ serializer: value => value?.id, serializedName: 'orgId' })
+  org: Organization;
 }

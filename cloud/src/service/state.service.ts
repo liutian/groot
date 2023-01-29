@@ -1,10 +1,9 @@
-import { StateType } from '@grootio/common';
+import { pick, StateType } from '@grootio/common';
 import { FilterQuery, RequestContext } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { LogicException, LogicExceptionCode } from 'config/logic.exception';
 import { ComponentInstance } from 'entities/ComponentInstance';
 import { State } from 'entities/State';
-import { pick } from 'util/common';
 
 
 @Injectable()

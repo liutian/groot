@@ -10,6 +10,7 @@ export * from './request-factory';
 export * from './api/API.common';
 export * from './api/API.path';
 export * from './api/API.store';
+export * from './util';
 
 
 export type WorkbenchInstanceComponentType = React.FC<{

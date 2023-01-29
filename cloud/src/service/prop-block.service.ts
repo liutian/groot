@@ -1,4 +1,4 @@
-import { PropBlockStructType, PropItemType } from '@grootio/common';
+import { pick, PropBlockStructType, PropItemType } from '@grootio/common';
 import { EntityManager, RequestContext } from '@mikro-orm/core';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 
@@ -7,7 +7,6 @@ import { PropBlock } from 'entities/PropBlock';
 import { PropGroup } from 'entities/PropGroup';
 import { PropItem } from 'entities/PropItem';
 import { PropValue } from 'entities/PropValue';
-import { pick } from 'util/common';
 import { CommonService } from './common.service';
 import { PropItemService } from './prop-item.service';
 

@@ -1,4 +1,4 @@
-import { ComponentValueType, PropValueType, ValueStruct } from '@grootio/common';
+import { ComponentValueType, pick, PropValueType, ValueStruct } from '@grootio/common';
 import { EntityManager, RequestContext } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 
@@ -11,7 +11,6 @@ import { PropItem } from 'entities/PropItem';
 import { PropValue } from 'entities/PropValue';
 import { Release } from 'entities/Release';
 import { State } from 'entities/State';
-import { pick } from 'util/common';
 
 @Injectable()
 export class ComponentInstanceService {

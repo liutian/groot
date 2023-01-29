@@ -8,7 +8,7 @@ export class State extends BaseEntity {
   @Property({ length: 20 })
   name: string;
 
-  @Property({ length: 200 })
+  @Property({ length: 100 })
   value = '';
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'instanceId' })

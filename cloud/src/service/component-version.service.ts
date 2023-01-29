@@ -1,6 +1,6 @@
 import { RequestContext } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
-import { PropValueType } from '@grootio/common';
+import { pick, PropValueType } from '@grootio/common';
 
 import { LogicException, LogicExceptionCode } from 'config/logic.exception';
 import { ComponentVersion } from 'entities/ComponentVersion';
@@ -11,7 +11,6 @@ import { PropValue } from 'entities/PropValue';
 import { PropBlockService } from './prop-block.service';
 import { PropGroupService } from './prop-group.service';
 import { PropItemService } from './prop-item.service';
-import { pick } from 'util/common';
 import { Component } from 'entities/Component';
 
 const tempIdData = {

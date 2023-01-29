@@ -36,6 +36,7 @@ export class PropBlock extends BaseEntity {
   @Property({ columnType: 'double' })
   order: number;
 
+  // @todo 考虑去json，改为结构化
   @Property({ length: 500 })
   listStructData = '';
 

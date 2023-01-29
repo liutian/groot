@@ -1,4 +1,4 @@
-import { PropValueType } from '@grootio/common';
+import { pick, PropValueType } from '@grootio/common';
 import { RequestContext, wrap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 
@@ -10,7 +10,6 @@ import { PropGroup } from 'entities/PropGroup';
 import { PropItem } from 'entities/PropItem';
 import { PropValue } from 'entities/PropValue';
 import { Organization } from 'entities/Organization';
-import { pick } from 'util/common';
 
 
 @Injectable()

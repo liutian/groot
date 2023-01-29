@@ -1,10 +1,9 @@
 import { RequestContext } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
-import { ComponentValueType, PropValueType, ValueStruct } from '@grootio/common';
+import { ComponentValueType, pick, PropValueType, ValueStruct } from '@grootio/common';
 
 import { LogicException, LogicExceptionCode } from 'config/logic.exception';
 import { Release } from 'entities/Release';
-import { pick } from 'util/common';
 import { ComponentInstanceService } from './component-instance.service';
 import { PropValueService } from './prop-value.service';
 import { ComponentInstance } from 'entities/ComponentInstance';
