@@ -1,5 +1,4 @@
-import { Application, Component, ComponentInstance, ComponentVersion, Deploy, Organization, PropBlock, PropGroup, PropItem, PropValue, Release } from '../entities';
-import { RemotePlugin } from '../plugin';
+import { State, Application, Component, ComponentInstance, ComponentVersion, Deploy, Organization, PropBlock, PropGroup, PropItem, PropValue, Release } from '../entities';
 import { API } from './API.common';
 import type { APIPath } from './API.path';
 
@@ -62,6 +61,10 @@ export type APIStore = {
   [APIPath.value_abstractType_remove_propValueId]: [{ propValueId: number }],
   [APIPath.value_update]: [PropValue, API.Response<PropValue>],
   [APIPath.componentInstance_remove_instanceId]: [{ instanceId: number }],
+
+  [APIPath.state_add]: [State, API.Response<State>],
+  [APIPath.state_remove_stateId]: [{ stateId: number }],
+  [APIPath.state_update]: [State, API.Response<State>]
 };
 
 

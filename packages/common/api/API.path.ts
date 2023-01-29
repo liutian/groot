@@ -34,7 +34,7 @@ export enum APIPath {
   value_update = 'POST value/update',
   move_position = 'POST move/position',
 
-  state_add = 'POST /state/add',
-  state_remove_stateId = '/state/remove/:stateId',
-  state_update = '/state/update'
+  state_add = 'POST state/add',
+  state_remove_stateId = 'state/remove/:stateId',
+  state_update = 'POST state/update'
 }
