@@ -13,7 +13,7 @@ const StateForm: React.FC = () => {
   useEffect(() => {
     form.setFieldsValue({
       ...(stateModel.currState ? stateModel.currState : {}),
-      releaseId: workbenchModel.componentInstance.releaseId,
+      releaseId: workbenchModel.application.release.id,
     });
     if (!stateModel.isGlobalState) {
       form.setFieldValue('instanceId', workbenchModel.componentInstance.id);
@@ -22,7 +22,7 @@ const StateForm: React.FC = () => {
 
   return < >
 
-    <Form layout="vertical" form={form} colon={false} >
+    <Form layout="vertical" form={form} colon={false} disabled={stateModel.currState.isRuntime}>
       <Form.Item label="名称" name="name" rules={[{ required: true }]}>
         <Input />
       </Form.Item>
@@ -38,11 +38,11 @@ const StateForm: React.FC = () => {
 
     <div style={{ display: 'flex' }}>
       <div style={{ flexGrow: 1 }}>
-        <Button danger>删除</Button>
+        <Button danger disabled={stateModel.currState.isRuntime}>删除</Button>
       </div>
       <Space>
         <Button onClick={() => stateModel.hideForm()}>取消</Button>
-        <Button type="primary">提交</Button>
+        <Button type="primary" disabled={stateModel.currState.isRuntime}>提交</Button>
       </Space>
     </div>
   </ >
