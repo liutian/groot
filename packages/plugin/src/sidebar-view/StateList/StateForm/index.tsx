@@ -22,7 +22,7 @@ const StateForm: React.FC = () => {
 
   return < >
 
-    <Form layout="vertical" form={form} colon={false} disabled={stateModel.currState.isRuntime}>
+    <Form layout="vertical" form={form} colon={false} disabled={stateModel.currState?.isRuntime}>
       <Form.Item label="名称" name="name" rules={[{ required: true }]}>
         <Input />
       </Form.Item>
@@ -38,11 +38,11 @@ const StateForm: React.FC = () => {
 
     <div style={{ display: 'flex' }}>
       <div style={{ flexGrow: 1 }}>
-        <Button danger disabled={stateModel.currState.isRuntime}>删除</Button>
+        <Button danger disabled={stateModel.currState?.isRuntime}>删除</Button>
       </div>
       <Space>
         <Button onClick={() => stateModel.hideForm()}>取消</Button>
-        <Button type="primary" disabled={stateModel.currState.isRuntime}>提交</Button>
+        <Button type="primary" disabled={stateModel.currState?.isRuntime}>提交</Button>
       </Space>
     </div>
   </ >

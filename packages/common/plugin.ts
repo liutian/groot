@@ -57,7 +57,7 @@ export type SidebarViewType = {
   view: ReactElement
 } | {
   icon: string,
-  view: RemotePlugin | string
+  view: RemotePlugin
 })
 
 export type RemotePlugin = {

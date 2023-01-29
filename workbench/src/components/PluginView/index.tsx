@@ -1,12 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { PluginViewComponent, RemotePlugin, loadRemoteModule } from "@grootio/common";
 
-import request from "@util/request";
-import { APIPath } from "api/API.path";
 
-const remoteModuleMap = new Map<string, RemotePlugin>();
-
-const PluginView: React.FC<{ config: RemotePlugin | string }> = ({ config }) => {
+const PluginView: React.FC<{ config: RemotePlugin }> = ({ config }) => {
   const [Component, setComponent] = useState<PluginViewComponent>();
 
   useEffect(() => {
@@ -14,24 +10,7 @@ const PluginView: React.FC<{ config: RemotePlugin | string }> = ({ config }) => 
       return;
     }
 
-    let promise;
-    if (typeof config === 'string') {
-      if (remoteModuleMap.has(config)) {
-        const data = remoteModuleMap.get(config);
-        promise = Promise.resolve(data);
-      } else {
-        promise = request(APIPath.remote_module_list, { keys: [config] }).then(([data]) => {
-          remoteModuleMap.set(config, data);
-          return data;
-        })
-      }
-    } else {
-      promise = Promise.resolve(config);
-    }
-
-    promise.then((config) => {
-      setComponent(React.lazy(loadRemoteModule(config.package, config.module, config.url)));
-    })
+    setComponent(React.lazy(loadRemoteModule(config.package, config.module, config.url)));
   }, [config]);
 
   return <>{

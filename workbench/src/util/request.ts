@@ -3,8 +3,9 @@ import { message } from 'antd';
 import { APIStore, requestFactory } from '@grootio/common';
 
 import { authTokenKey, serverPath, successCode } from 'config';
+import { LocalAPIStore } from 'api/API.store';
 
-const request = requestFactory<APIStore>({
+const request = requestFactory<APIStore & LocalAPIStore>({
   authTokenKey,
   serverPath,
   successCode,
