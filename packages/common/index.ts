@@ -11,6 +11,7 @@ export * from './api/API.common';
 export * from './api/API.path';
 export * from './api/API.store';
 export * from './util';
+export * from './data';
 
 
 export type WorkbenchInstanceComponentType = React.FC<{

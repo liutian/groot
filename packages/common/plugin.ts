@@ -1,5 +1,6 @@
-import { Component, ComponentInstance, ComponentVersion, State } from "./entities";
-import { StateType } from "./internal";
+import { ReactElement } from "react";
+import { Application, ComponentInstance, State } from "./entities";
+import { RequestFnType, ViewportMode } from "./internal";
 
 export type ModelClass<T> = (new () => T) & { modelName: string };
 
@@ -9,10 +10,8 @@ export type UseModelFnType = <T>(model: ModelClass<T>, isRoot?: boolean) => T;
 export class WorkbenchModelType extends EventTarget {
   static readonly modelName = 'groot_workbench';
   prototypeMode: boolean;
-  component: Component;
+  application: Application;
   componentInstance: ComponentInstance;
-  instanceList: ComponentInstance[] = [];
-  componentVersion: ComponentVersion;
   globalStateList: State[];
   pageStateList: State[]
 }
@@ -27,10 +26,44 @@ export enum ModalStatus {
   Submit = 'submit'
 }
 
-export const StateTypeMap = [
-  { name: '字符串', key: StateType.Str },
-  { name: '数字', key: StateType.Num },
-  { name: '布尔', key: StateType.Bool },
-  { name: '对象', key: StateType.Obj },
-  { name: '数组', key: StateType.Arr },
-];
+export type MainType = (context: PluginContext, config: HostConfig) => HostConfig;
+
+export type PluginContext = {
+  request: RequestFnType<any>,
+  workbenchModel: WorkbenchModelType
+}
+
+export enum WorkbenchEvent {
+  LaunchFinish = 'launch_finish',
+
+  DragComponentStart = 'drag_component_start',
+  DragComponentEnd = 'drag_component_end',
+}
+
+export type HostConfig = {
+  viewportMode?: ViewportMode,
+  contributes: {
+    sidebarView?: SidebarViewType[],
+    propSettingView?: RemotePlugin[]
+  }
+}
+
+export type SidebarViewType = {
+  key: string,
+  title: string,
+  order?: number,
+} & ({
+  icon: ReactElement,
+  view: ReactElement
+} | {
+  icon: string,
+  view: RemotePlugin | string
+})
+
+export type RemotePlugin = {
+  key?: string,
+  package: string,
+  title: string,
+  url: string,
+  module: string
+}

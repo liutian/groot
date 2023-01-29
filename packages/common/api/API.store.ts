@@ -1,5 +1,5 @@
 import { Application, Component, ComponentInstance, ComponentVersion, Deploy, Organization, PropBlock, PropGroup, PropItem, PropValue, Release } from '../entities';
-import { RemotePlugin } from '../runtime';
+import { RemotePlugin } from '../plugin';
 import { API } from './API.common';
 import type { APIPath } from './API.path';
 

@@ -84,8 +84,8 @@ export type PropValue = {
 } & Omit<import("../../cloud/src/entities/PropValue").PropValue, ''>;
 
 export type State = {
-
-} & Omit<import("../../cloud/src/entities/State").State, ''>;
+  isRuntime?: boolean
+} & Omit<import("../../cloud/src/entities/State").State, 'componentInstance' | 'release'>;
 
 export type Component = {
   componentVersion: ComponentVersion,
@@ -100,12 +100,17 @@ export type Component = {
 } & Omit<import("../../cloud/src/entities/Component").Component, 'componentVersion' | 'groupList' | 'blockList' | 'itemList' | 'valueList' | 'versionList'>;
 
 export type Application = {
-  release: Release
+  release: Release,
+  pluginList: Plugin[]
 } & Omit<import("../../cloud/src/entities/Application").Application, ''>;
 
 export type Organization = {
-  componentList: Component[]
+  componentList: Component[],
+  pluginList: Plugin[]
 } & Omit<import("../../cloud/src/entities/Organization").Organization, ''>;
 
 export type Deploy = {
 } & Omit<import("../../cloud/src/entities/Deploy").Deploy, ''>;
+
+export type Plugin = {
+} & Omit<import("../../cloud/src/entities/Plugin").Plugin, ''>;
