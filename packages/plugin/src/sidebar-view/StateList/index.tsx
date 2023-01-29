@@ -45,7 +45,7 @@ const StateList: PluginViewComponent = () => {
               return <div className={styles.item} key={item.id}>
                 <div className={styles.itemTitle}>{item.name}</div>
                 <Popover overlayClassName={styles.popoverOverlay} content={<StateForm />} trigger={['click']} open={stateModel.formVisible && stateModel.currState?.id === item.id} placement="rightTop">
-                  <Typography.Link className={styles.itemAction} disabled={stateModel.formVisible} onClick={() => {
+                  <Typography.Link className={styles.itemAction} hidden={item.isRuntime} disabled={stateModel.formVisible} onClick={() => {
                     stateModel.showForm(!item.instanceId, item)
                   }} >
                     <EditOutlined />
