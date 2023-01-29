@@ -1,6 +1,5 @@
-import { Component, ComponentVersion, ModalStatus } from "@grootio/common";
+import { APIPath, Component, ComponentVersion, ModalStatus } from "@grootio/common";
 
-import { APIPath } from "api/API.path";
 import request from "@util/request";
 import WorkbenchModel from "@model/WorkbenchModel";
 
@@ -17,14 +16,14 @@ export default class PrototypeModel {
   }
 
   public switchComponent = (componentId: number, versionId: number) => {
-    return request(APIPath.componentPrototype_detail, { componentId, versionId }).then(({ data }) => {
+    return request(APIPath.componentPrototype_detail_componentId, { componentId, versionId }).then(({ data }) => {
       this.loadStatus = 'ok';
       this.workbench.startComponentPrototype(data);
     })
   }
 
   public fetchOrg = (orgId: number) => {
-    return request(APIPath.org_detail, { orgId }).then(({ data }) => {
+    return request(APIPath.org_detail_orgId, { orgId }).then(({ data }) => {
       this.workbench.launchPrototypeBox(data);
       this.loadStatus = 'fetch-pluginn';
     }).catch((e) => {

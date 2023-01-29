@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { Form, Input, Modal, Select, Switch } from "antd";
-import { Component, ComponentInstance, ModalStatus, useModel } from "@grootio/common";
+import { APIPath, Component, ComponentInstance, ModalStatus, useModel } from "@grootio/common";
 
-import { APIPath } from "api/API.path";
 import request from "@util/request";
 import InstanceModel from "pages/Instance/InstanceModel";
 

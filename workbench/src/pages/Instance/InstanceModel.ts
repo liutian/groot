@@ -1,6 +1,5 @@
-import { ComponentInstance, Deploy, EnvType, ModalStatus, Release } from "@grootio/common";
+import { APIPath, ComponentInstance, Deploy, EnvType, ModalStatus, Release } from "@grootio/common";
 
-import { APIPath } from "api/API.path";
 import request from "@util/request";
 import WorkbenchModel from "@model/WorkbenchModel";
 
@@ -26,7 +25,7 @@ export default class InstanceModel {
   }
 
   public fetchApplication = (applicationId: number, releaseId?: number) => {
-    return request(APIPath.application_detail, { applicationId, releaseId }).then(({ data }) => {
+    return request(APIPath.application_detail_applicationId, { applicationId, releaseId }).then(({ data }) => {
       this.workbench.launchInstanceBox(data);
       this.loadStatus = 'fetch-plugin';
     }).catch((e) => {
@@ -37,7 +36,7 @@ export default class InstanceModel {
 
   public fetchRootInstance = (rootInstanceId: number) => {
     this.currRootInstanceId = rootInstanceId;
-    return request(APIPath.componentInstance_rootDetail, { instanceId: rootInstanceId }).then(({ data: { children, root } }) => {
+    return request(APIPath.componentInstance_rootDetail_instanceId, { instanceId: rootInstanceId }).then(({ data: { children, root } }) => {
       this.loadStatus = 'ok';
 
       this.breadcrumbList.length = 0;
@@ -98,7 +97,7 @@ export default class InstanceModel {
   }
 
   public switchRelease = (releaseId: number) => {
-    request(APIPath.release_detail, { releaseId }).then(({ data }) => {
+    request(APIPath.release_detail_releaseId, { releaseId }).then(({ data }) => {
       this.workbench.application.release = data;
 
       const rootInstance = this.workbench.instanceList.find(item => item.id === this.currRootInstanceId);

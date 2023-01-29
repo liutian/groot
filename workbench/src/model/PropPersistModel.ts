@@ -1,8 +1,7 @@
-import { ComponentInstance, PropBlock, PropGroup, PropItem, PropItemType, PropValue, PropValueType, RuntimeComponentValueType, ValueStruct } from "@grootio/common";
+import { APIPath, ComponentInstance, PropBlock, PropGroup, PropItem, PropItemType, PropValue, PropValueType, RuntimeComponentValueType, ValueStruct } from "@grootio/common";
 import { stringifyPropItemValue } from "@grootio/core";
 
 import { assignBaseType, autoIncrementForName, calcPropValueIdChain, stringifyOptions } from "@util/utils";
-import { APIPath } from "api/API.path";
 import request from "@util/request";
 import PropHandleModel from "./PropHandleModel";
 import WorkbenchModel from "./WorkbenchModel";
@@ -242,7 +241,7 @@ export default class PropPersistModel {
   }
 
   public delGroup = (groupId: number) => {
-    request(APIPath.group_remove, { groupId }).then(() => {
+    request(APIPath.group_remove_groupId, { groupId }).then(() => {
       const index = this.propHandle.propTree.findIndex(g => g.id === groupId);
       this.propHandle.propTree.splice(index, 1);
 
@@ -254,7 +253,7 @@ export default class PropPersistModel {
   }
 
   public delBlock = (blockId: number, group: PropGroup) => {
-    request(APIPath.block_remove, { blockId }).then(() => {
+    request(APIPath.block_remove_blockId, { blockId }).then(() => {
       let blockIndex = group.propBlockList.findIndex(b => b.id === blockId);
       group.propBlockList.splice(blockIndex, 1);
       this.propHandle.refreshComponent();
@@ -262,7 +261,7 @@ export default class PropPersistModel {
   }
 
   public delItem = (itemId: number, block: PropBlock) => {
-    request(APIPath.item_remove, { itemId }).then(() => {
+    request(APIPath.item_remove_itemId, { itemId }).then(() => {
       let itemIndex = block.propItemList.findIndex(item => item.id === itemId);
       block.propItemList.splice(itemIndex, 1);
       this.propHandle.refreshComponent();
@@ -328,7 +327,7 @@ export default class PropPersistModel {
   }
 
   public removeBlockListStructChildItem = (propValueId: number, propItem: PropItem) => {
-    request(APIPath.value_abstractType_remove, { propValueId }).then(() => {
+    request(APIPath.value_abstractType_remove_propValueId, { propValueId }).then(() => {
       propItem.valueList = propItem.valueList.filter(v => v.id !== propValueId);
       this.propHandle.refreshComponent();
     })
@@ -393,7 +392,7 @@ export default class PropPersistModel {
   }
 
   public removeChildInstance(instanceId: number, itemId: number, abstractValueIdChain?: string) {
-    return request(APIPath.componentInstance_remove, { instanceId }).then(() => {
+    return request(APIPath.componentInstance_remove_instanceId, { instanceId }).then(() => {
       let propItem;
       for (let index = 0; index < this.workbench.instanceList.length; index++) {
         const instance = this.workbench.instanceList[index];

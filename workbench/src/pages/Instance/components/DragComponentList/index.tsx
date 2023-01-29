@@ -1,7 +1,6 @@
-import { Component } from "@grootio/common";
+import { APIPath, Component } from "@grootio/common";
 import { useEffect, useState } from "react";
 
-import { APIPath } from "api/API.path";
 import request from "@util/request";
 
 import { DragComponent } from "../DragComponent";
