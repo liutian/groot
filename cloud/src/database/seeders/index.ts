@@ -15,6 +15,14 @@ import { create as pageContainerCreate } from './groot-page-container';
 export class DatabaseSeeder extends Seeder {
 
   async run(em: EntityManager): Promise<void> {
+    // 创建组织
+    const org = em.create(Organization, {
+      name: '管理平台',
+      playgroundPath: '/groot/playground',
+      debugBaseUrl: 'http://groot-local.com:11000'
+    });
+    await em.persistAndFlush(org);
+
 
     // 创建项目
     const project = em.create(Project, {
@@ -45,25 +53,13 @@ export class DatabaseSeeder extends Seeder {
 
     const plugin = em.create(Plugin, {
       name: '@groot/core-plugin',
-      url: 'http://groot-local.com:12000/index.js'
+      key: '_groot_core_plugin',
+      url: 'http://groot-local.com:12000/index.js',
+      org
     });
     application.pluginList.add(plugin);
     await em.persistAndFlush(plugin);
 
-    // 创建组织
-    const org = em.create(Organization, {
-      name: '管理平台',
-      playgroundPath: '/groot/playground',
-      debugBaseUrl: 'http://groot-local.com:11000'
-    });
-    await em.persistAndFlush(org);
-
-    const plugin2 = em.create(Plugin, {
-      name: 'groot-core',
-      url: 'http://groot-local.com:12000/index.js'
-    });
-    org.pluginList.add(plugin2);
-    await em.persistAndFlush(org);
 
     await proTableCreate(em, org, release);
 

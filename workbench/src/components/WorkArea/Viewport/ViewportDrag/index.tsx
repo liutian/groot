@@ -1,8 +1,7 @@
-import { DragLineInfo, PostMessageType, useModel } from "@grootio/common";
+import { DragLineInfo, PostMessageType, useModel, WorkbenchEvent } from "@grootio/common";
 import { useEffect, useRef } from "react";
 
 import WorkbenchModel from "@model/WorkbenchModel";
-import { WorkbenchEvent } from "@util/common";
 
 import styles from './index.module.less';
 

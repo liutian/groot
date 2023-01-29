@@ -5,7 +5,6 @@ import { useLocation } from 'react-router';
 import react from 'react';
 import Profile from 'components/Profile';
 import { DateFormItem, EmailFormItem, FormContainer, InputFormItem, MultiDetailFormItem, PhoneFormItem, SelectFormItem } from 'components/FormComponent';
-import { ViewportMode } from '@grootio/common';
 
 UIManager.init({
   appKey: 'demo',
@@ -33,30 +32,6 @@ UIManager.init({
       EmailFormItem,
       MultiDetailFormItem
     },
-  },
-  hostConfig: {
-    viewportMode: ViewportMode.H5,
-    plugin: (controlType) => {
-      return {
-        // propSettingView: [{
-        //   package: 'approve',
-        //   title: '配置项',
-        //   url: 'http://groot-local.com:12000/groot-core-plugin/index.js',
-        //   module: 'FormulaPropItem'
-        // }],
-        sidebarView: [{
-          key: 'state-list',
-          title: 'state列表',
-          icon: 'CodeOutlined',
-          view: {
-            package: 'GrootCorePlugin',
-            title: 'state列表',
-            url: 'http://groot-local.com:12000/groot-core-plugin/index.js',
-            module: 'StateList'
-          }
-        }]
-      }
-    }
   }
 });
 

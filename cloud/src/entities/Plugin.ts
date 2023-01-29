@@ -9,6 +9,9 @@ export class Plugin extends BaseEntity {
   @Property({ length: 20 })
   name: string;
 
+  @Property({ length: 20 })
+  key: string;
+
   @Property({ length: 100 })
   url: string;
 

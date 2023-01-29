@@ -11,7 +11,7 @@ export const requestFactory = <T extends Record<string, any[]>>(config: ConfigTy
    * @param config axios其他配置项
    * @returns
    */
-  const request: RequestFnType<T> & { clone: () => RequestFnType<T> } = (path, data?, axiosConfig?) => {
+  const request: RequestFnType<T> & { clone: CloneType<T> } = (path, data?, axiosConfig?) => {
     let [method, url] = path.trim().split(/\s+/gim);
     // 默认get请求不需要加method
     if (!url) {
@@ -206,3 +206,5 @@ type ConfigType = {
   alertError: (content: string) => void,
   reLogin?: () => Promise<any>
 }
+
+type CloneType<T extends Record<string, any[]>> = (logger?: (type: 'request' | 'response', ...args: any[]) => void) => RequestFnType<T>;

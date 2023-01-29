@@ -1,9 +1,8 @@
 import { DropboxOutlined } from "@ant-design/icons";
-import { Component, useModel } from "@grootio/common";
+import { Component, useModel, WorkbenchEvent } from "@grootio/common";
 import { Button } from "antd";
 
 import WorkbenchModel from "@model/WorkbenchModel";
-import { WorkbenchEvent } from "@util/common";
 
 export const DragComponent: React.FC<{ component: Component }> = ({ component }) => {
   const workbenchModel = useModel(WorkbenchModel);
