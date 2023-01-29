@@ -108,7 +108,8 @@ function wrapper(modelKey: string, target: any): any {
               newArgs = args.map(item => wrapper(modelKey, item))
               break
             case 'splice':
-              newArgs = [args[0], args[1], args.slice(2).map(item => wrapper(modelKey, item))]
+              const deleteItems = args.slice(2).map(item => wrapper(modelKey, item));
+              newArgs = [args[0], args[1], ...deleteItems]
               break
           }
 
