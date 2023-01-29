@@ -1,74 +1,76 @@
-import { RuntimeHostConfig, IframeControlType, iframeNamePrefix, PostMessageType, HostConfig, useModel } from "@grootio/common";
-import { useEffect, useRef } from "react";
+import { HostConfig, useModel, loadRemoteModule, pick, MainType } from "@grootio/common";
+import { useEffect, useRef, useState } from "react";
 
 import WorkbenchModel from "@model/WorkbenchModel";
 import Loading from "@components/Loading";
+import styles from './index.module.less';
 import request from "@util/request";
 
-import styles from './index.module.less';
-import { APIPath } from "api/API.path";
-
 type PropType = {
-  finish: (config?: RuntimeHostConfig) => void,
+  finish: (config?: HostConfig) => void,
+  customPluginList?: string[]
 }
 
-const ConfigLoader: React.FC<PropType> = ({ finish }) => {
+const ConfigLoader: React.FC<PropType> = ({ finish, customPluginList }) => {
   const workbenchModel = useModel(WorkbenchModel);
   const iframeEleRef = useRef<HTMLIFrameElement>();
 
   useEffect(() => {
-    if (workbenchModel.prototypeMode) {
-      iframeEleRef.current.contentWindow.name = `${iframeNamePrefix}${IframeControlType.FetchPrototypeViewConfig}`;
-    } else {
-      iframeEleRef.current.contentWindow.name = `${iframeNamePrefix}${IframeControlType.FetchInstanceViewConfig}`;
-    }
-
-    window.self.addEventListener('message', onMessage);
-    iframeEleRef.current.src = workbenchModel.iframeBasePath;
-
-    function onMessage(event: MessageEvent) {
-      const messageData = event.data;
-      if (messageData.type === PostMessageType.InnerOutputConfig) {
-        const configData = messageData.data as HostConfig;
-        if (!configData || !configData.plugin) {
-          finish(configData as RuntimeHostConfig);
-          return;
-        }
-
-        const keys = [
-          ...(configData.plugin.sidebarView || []).filter(item => typeof item.view === 'string').map(item => (item.view as string)),
-          ...(configData.plugin.propSettingView || []).filter(item => typeof item === 'string').map(item => (item as string)),
-        ];
-
-        if (keys.length) {
-          request(APIPath.remote_module_list, { keys }).then((list) => {
-            configData.plugin.sidebarView = (configData.plugin.sidebarView || []).map(viewConfig => {
-              if (typeof viewConfig.view === 'string') {
-                viewConfig.view = list.find(item => item.key === viewConfig.view)
-              }
-
-              return viewConfig;
-            });
-            configData.plugin.propSettingView = (configData.plugin.propSettingView || []).map(viewConfig => {
-              if (typeof viewConfig === 'string') {
-                return list.find(item => item.key === viewConfig)
-              }
-
-              return viewConfig;
-            })
-
-            finish(configData as RuntimeHostConfig);
-          })
-        } else {
-          finish(configData as RuntimeHostConfig);
-        }
-
+    const config = {
+      contributes: {
+        sidebarView: [],
+        propSettingView: []
       }
+    } as HostConfig;
+
+    let pluginList: { key: string, url: string }[] = [];
+    if (customPluginList) {
+      pluginList = customPluginList.map(str => {
+        const [key, url] = str.split('@')
+        return { key, url }
+      });
+    } else {
+      pluginList = workbenchModel.prototypeMode ? workbenchModel.org.pluginList : workbenchModel.application.pluginList;
     }
 
-    return () => {
-      window.self.removeEventListener('message', onMessage);
-    }
+    Promise.all(pluginList.map(item => {
+      return loadRemoteModule(item.key, 'Main', item.url)();
+    }))
+      .then(
+        moduleList => moduleList.map(m => m.default),
+        (error) => {
+          console.error('加载插件失败');
+          return Promise.reject(error);
+        })
+      .then((mainList: MainType[]) => {
+
+        mainList.reduce((config, main, index) => {
+          const requestClone = request.clone((type) => {
+            if (type === 'request') {
+              console.log(`[${pluginList[index].key} request]`);
+            }
+          });
+
+          const newConfig = main({
+            request: requestClone,
+            workbenchModel
+          }, config);
+
+          if (newConfig === config) {
+            return config;
+          }
+
+          Object.assign(config, pick(newConfig, ['viewportMode']));
+          config.contributes.sidebarView.push(...(newConfig.contributes.sidebarView || []));
+          config.contributes.propSettingView.push(...(newConfig.contributes.propSettingView || []));
+          return config;
+        }, config);
+
+        return config;
+      }).then((config) => {
+        finish(config);
+      });
+
   }, []);
 
   // 如果对iframe节点进行移动追加到其他DOM会导致iframe重写刷新，所以只做一次行取配置的动作

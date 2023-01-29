@@ -1,4 +1,4 @@
-import { Application, ApplicationData, Component, ComponentInstance, ComponentVersion, IframeControlType, Organization, PropBlock, PropGroup, PropItem, RemotePlugin, RuntimeHostConfig, RuntimePluginConfig, RuntimeSidebarViewType, State, ViewportMode, WorkbenchModelType, } from "@grootio/common";
+import { Application, ApplicationData, Component, ComponentInstance, ComponentVersion, HostConfig, IframeControlType, Organization, PropBlock, PropGroup, PropItem, RemotePlugin, SidebarViewType, State, ViewportMode, WorkbenchEvent, WorkbenchModelType, } from "@grootio/common";
 import { ReactNode } from "react";
 
 import { iframeDebuggerConfig, IframeManagerInstance, launchIframeManager } from "@model/iframeManager";
@@ -59,11 +59,10 @@ export default class WorkbenchModel extends EventTarget implements WorkbenchMode
   public propHandle: PropHandleModel;
 
   public containerId = 'workbench';
-  public originPluginConfig: RuntimePluginConfig = {};
 
   public viewportMode: ViewportMode = ViewportMode.PC;
   public iframeEle: HTMLIFrameElement;
-  public sidebarView: RuntimeSidebarViewType[] = [];
+  public sidebarView: SidebarViewType[] = [];
   public propSettingView: RemotePlugin[] = [];
 
   public constructor() {
@@ -111,6 +110,7 @@ export default class WorkbenchModel extends EventTarget implements WorkbenchMode
     });
 
     window.history.pushState(null, '', `?org=${this.org.id}&version=${this.componentVersion.id}&component=${component.id}`);
+    this.dispatchEvent(new Event(WorkbenchEvent.LaunchFinish));
   }
 
   public launchInstanceBox(app: Application) {
@@ -139,7 +139,7 @@ export default class WorkbenchModel extends EventTarget implements WorkbenchMode
     });
 
     window.history.pushState(null, '', `?app=${this.application.id}&release=${this.application.release.id}&page=${rootInstance.id}`);
-
+    this.dispatchEvent(new Event(WorkbenchEvent.LaunchFinish));
   }
 
   public changeComponentInstance(instance: ComponentInstance) {
@@ -238,25 +238,13 @@ export default class WorkbenchModel extends EventTarget implements WorkbenchMode
     });
   }
 
-  public processConfig(config: RuntimeHostConfig) {
+  public parseConfig(config: HostConfig) {
     if (config.viewportMode) {
       this.viewportMode = config.viewportMode;
     }
-    Object.assign(this.originPluginConfig, config.plugin);
 
-    const incrementSidebarView = [];
-    this.originPluginConfig.sidebarView?.forEach((item) => {
-      const index = this.sidebarView.findIndex(i => i.key === item.key);
-      if (index !== -1) {
-        this.sidebarView[index] = item;
-      } else {
-        incrementSidebarView.push(item);
-      }
-    });
-    this.sidebarView.push(...incrementSidebarView);
-    this.sidebarView.sort((a, b) => a.order - b.order);
-
-    this.propSettingView.push(...(this.originPluginConfig.propSettingView || []));
+    this.sidebarView.push(...(config.contributes.sidebarView || []));
+    this.propSettingView.push(...(config.contributes.propSettingView || []));
   }
 
   public toggleWorkAreaMask(show: boolean) {

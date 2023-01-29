@@ -1,7 +1,7 @@
-import { ApplicationData, HostConfig, IframeControlType, IframeDebuggerConfig, PostMessageType, UIManagerConfig } from '@grootio/common';
+import { ApplicationData, IframeDebuggerConfig, PostMessageType, UIManagerConfig } from '@grootio/common';
 
 import { resetWatch, outerSelected, updateActiveRect, respondDragOver, respondDragEnter, respondDragLeave, respondDragDrop } from './monitor';
-import { appControlMode, appControlType, globalConfig, groot, setConfig } from './config';
+import { appControlMode, globalConfig, groot, setConfig } from './config';
 import { View } from './View';
 
 export enum ApplicationStatus {
@@ -36,49 +36,17 @@ const allViewMap = new Map<string, View>();
 export function bootstrap(customConfig: UIManagerConfig, defaultConfig: UIManagerConfig): ApplicationInstance {
   setConfig(customConfig, defaultConfig);
 
-  if (appControlType === IframeControlType.FetchInstanceViewConfig || appControlType === IframeControlType.FetchPrototypeViewConfig) {
-    outputConfig();
-  } else {
-    if (appControlMode) {
-      window.parent.postMessage(PostMessageType.InnerReady, '*');
-      window.addEventListener('message', onMessage);
-    }
+  if (appControlMode) {
+    window.parent.postMessage(PostMessageType.InnerReady, '*');
+    window.addEventListener('message', onMessage);
+  }
 
-    // 立即加载应用信息
-    if (globalConfig.lazyLoadApplication === false) {
-      loadApplication();
-    }
+  // 立即加载应用信息
+  if (globalConfig.lazyLoadApplication === false) {
+    loadApplication();
   }
 
   return instance;
-}
-
-function outputConfig() {
-  const hostConfig = globalConfig.hostConfig || {};
-  let promise;
-
-  if (hostConfig.plugin instanceof Function) {
-    const configOrPromise = hostConfig.plugin(appControlType);
-    if (configOrPromise instanceof Promise) {
-      promise = configOrPromise;
-    } else {
-      promise = Promise.resolve(configOrPromise);
-    }
-  } else {
-    promise = Promise.resolve();
-  }
-
-  promise.then((plugin) => {
-    window.parent.postMessage({
-      type: PostMessageType.InnerOutputConfig,
-      data: {
-        ...hostConfig,
-        plugin
-      } as HostConfig
-    }, '*');
-  }).catch(() => {
-    throw new Error('get view config error');
-  })
 }
 
 function onMessage(event: any) {

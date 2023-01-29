@@ -1,7 +1,7 @@
 import { AppstoreOutlined, BranchesOutlined, PlusOutlined, SendOutlined } from "@ant-design/icons";
 import { Breadcrumb, Button, Dropdown, Modal } from "antd";
 import { useEffect, useState, } from "react";
-import { ModalStatus, RuntimeHostConfig, useRegisterModel } from "@grootio/common";
+import { HostConfig, ModalStatus, useRegisterModel } from "@grootio/common";
 
 import WorkbenchModel from "@model/WorkbenchModel";
 import PropPersistModel from "@model/PropPersistModel";
@@ -39,9 +39,9 @@ const Prototype: React.FC<PropsType> = ({ orgId, componentId, versionId }) => {
     prototypeModel.fetchOrg(orgId);
   }, []);
 
-  const fetchPluginFinish = (config: RuntimeHostConfig) => {
+  const fetchPluginFinish = (config: HostConfig) => {
     initView();
-    workbenchModel.processConfig(config);
+    workbenchModel.parseConfig(config);
 
     if (componentId) {
       prototypeModel.switchComponent(componentId, versionId);

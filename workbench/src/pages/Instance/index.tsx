@@ -2,7 +2,7 @@ import { AppstoreOutlined, PlusOutlined, SendOutlined, UnorderedListOutlined } f
 import { useEffect, useState, } from "react";
 import { Breadcrumb, Button } from "antd";
 
-import { ModalStatus, PostMessageType, RuntimeHostConfig, useRegisterModel, WorkbenchInstanceComponentType } from "@grootio/common";
+import { HostConfig, ModalStatus, PostMessageType, useRegisterModel, WorkbenchInstanceComponentType } from "@grootio/common";
 
 import WorkbenchModel from "@model/WorkbenchModel";
 import PropPersistModel from "@model/PropPersistModel";
@@ -46,9 +46,9 @@ const Instance: WorkbenchInstanceComponentType = ({ appId, releaseId, instanceId
     instanceModel.fetchApplication(appId, releaseId);
   }, []);
 
-  const fetchPluginFinish = (config: RuntimeHostConfig) => {
+  const fetchPluginFinish = (config: HostConfig) => {
     initView();
-    workbenchModel.processConfig(config);
+    workbenchModel.parseConfig(config);
 
     if (instanceId) {
       instanceModel.fetchRootInstance(instanceId);
