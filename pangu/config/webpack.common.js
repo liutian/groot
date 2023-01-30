@@ -97,17 +97,22 @@ module.exports = (env, args) => {
 					antd: {
 						eager: true,
 						singleton: true,
-						requiredVersion: '^4.21.3'
+						requiredVersion: '^5.1.6'
 					},
 					'@ant-design/icons': {
 						singleton: true,
 						eager: true,
-						requiredVersion: '^4.7.0'
+						requiredVersion: '^5.0.1'
 					},
 					axios: {
 						singleton: true,
 						eager: true,
-						requiredVersion: '^1.2.0'
+						requiredVersion: '^1.2.6'
+					},
+					dayjs: {
+						singleton: true,
+						eager: true,
+						requiredVersion: '^1.11.7'
 					},
 					'@grootio/common': {
 						singleton: true,
