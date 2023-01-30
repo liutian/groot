@@ -1,4 +1,3 @@
-const path = require('path');
 const webpack = require('webpack');
 const CopyPlugin = require("copy-webpack-plugin");
 const { ModuleFederationPlugin } = require('webpack').container;
@@ -7,18 +6,10 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = (env, args) => {
 	return {
 		entry: './src/index.tsx',
-		output: {
-			filename: '[name].js',
-			path: path.resolve(__dirname, '../dist'),
-			clean: true,
-		},
 		resolve: {
 			extensions: ['.tsx', '.ts', '.js'],
 		},
 		optimization: {
-			runtimeChunk: {
-				name: (entrypoint) => `runtimechunk~${entrypoint.name}`,
-			},
 			splitChunks: {
 				chunks: 'all',
 				cacheGroups: {
@@ -26,12 +17,7 @@ module.exports = (env, args) => {
 						name: 'vendor',
 						test: /[\\/]node_modules[\\/]/,
 						priority: -10,
-					},
-					common: {
-						name: 'common',
-						minChunks: 2,
-						priority: -20,
-					},
+					}
 				},
 			}
 		},
@@ -121,7 +107,7 @@ module.exports = (env, args) => {
 					axios: {
 						singleton: true,
 						eager: true,
-						requiredVersion: '^4.24.3'
+						requiredVersion: '^1.2.0'
 					},
 					'@grootio/common': {
 						singleton: true,

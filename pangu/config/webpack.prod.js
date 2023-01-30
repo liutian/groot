@@ -1,5 +1,5 @@
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-
+const path = require('path');
 
 module.exports = (env, args) => {
 	const plugins = [];
@@ -14,6 +14,8 @@ module.exports = (env, args) => {
 		devtool: 'hidden-source-map',
 		output: {
 			filename: '[name].[contenthash].bundle.js',
+			path: path.resolve(__dirname, '../dist'),
+			clean: true
 		},
 		plugins
 	}
