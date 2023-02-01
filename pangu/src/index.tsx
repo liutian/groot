@@ -1,21 +1,23 @@
-import { loadRemoteModule } from "@grootio/common"
+import './lib-bundle';
 
-import * as antd from 'antd';
-import * as axios from 'axios';
-import * as reactRouterDom from 'react-router-dom';
-import * as Icons from '@ant-design/icons';
-import * as grootCommon from '@grootio/common';
-import * as reactDom from 'react-dom/client';
-import * as dayjs from 'dayjs';
+import { loadRemoteModule } from '@grootio/common';
+import { PanguConfig } from '../pangu';
+import bootstrap from './bootstrap';
 
+const panguConfig = process.env.panguConfig as any as PanguConfig;
 
-console.log('pangu', [antd, axios, reactDom, reactRouterDom, Icons, grootCommon, dayjs, <></>].length)
+const appName = window.location.pathname.split('/')[0];
+const appConfig = panguConfig.appConfig[appName];
 
-loadRemoteModule('grootStudio', 'Main', 'http://groot-local.com:13000/studio/index.js')().then((module) => {
-  module.default({
-    rootId: process.env.ROOT_ID,
-    appEnv: process.env.APP_ENV
-  });
-})
+if (appConfig.bootstrap === false) {
+  loadRemoteModule(appConfig.packageName, 'Main', appConfig.packageUrl).then((module) => {
+    module.default({
+      appEnv: process.env.APP_ENV
+    });
+  })
+} else {
+  bootstrap();
+}
+
 
 

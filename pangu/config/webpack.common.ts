@@ -1,9 +1,11 @@
-const webpack = require('webpack');
-const CopyPlugin = require("copy-webpack-plugin");
-const { ModuleFederationPlugin } = require('webpack').container;
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+import webpack from 'webpack';
+import CopyPlugin from 'copy-webpack-plugin';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+import { PanguConfig } from '../pangu';
 
-module.exports = (env, args) => {
+const { ModuleFederationPlugin } = webpack.container;
+
+const config = (env, args, panguConfig: PanguConfig) => {
 	return {
 		entry: './src/index.tsx',
 		resolve: {
@@ -11,7 +13,7 @@ module.exports = (env, args) => {
 		},
 		optimization: {
 			/**
-			 * @todo 可定制部分，如果处于加载性能考虑可以调整公共库打包逻辑
+			 * src/index.tsx 必须强制引用所有公共依赖，然后必须强制将npm依赖单独打包，否则构建出来的只会有一个js文件
 			 */
 			splitChunks: {
 				chunks: 'all',
@@ -46,10 +48,8 @@ module.exports = (env, args) => {
 				// hash: true,
 				publicPath: '/',
 				templateParameters: {
-					/**
-					 * @todo 可定制部分
-					 */
-					rootId: env.ROOT_ID
+					rootId: panguConfig.rootId,
+					APP_ENV: env.APP_ENV,
 				},
 				minify: env.prod ? {
 					removeComments: true,
@@ -67,7 +67,7 @@ module.exports = (env, args) => {
 
 			new webpack.DefinePlugin({
 				'process.env.APP_ENV': JSON.stringify(env.APP_ENV),
-				'process.env.ROOT_ID': JSON.stringify(env.ROOT_ID)
+				'process.env.panguConfig': JSON.stringify(panguConfig)
 			}),
 
 			new CopyPlugin({
@@ -78,52 +78,10 @@ module.exports = (env, args) => {
 
 			new ModuleFederationPlugin({
 				name: 'pangu',
-				shared: {
-					/**
-					 * @todo 可定制部分
-					 */
-					react: {
-						eager: true,
-						singleton: true,
-						requiredVersion: '^18.2.0'
-					},
-					'react-dom': {
-						eager: true,
-						singleton: true,
-						requiredVersion: '^18.2.0'
-					},
-					'react/jsx-runtime': {
-						eager: true,
-						singleton: true,
-						requiredVersion: '^18.2.0'
-					},
-					antd: {
-						eager: true,
-						singleton: true,
-						requiredVersion: '^5.1.6'
-					},
-					'@ant-design/icons': {
-						singleton: true,
-						eager: true,
-						requiredVersion: '^5.0.1'
-					},
-					axios: {
-						singleton: true,
-						eager: true,
-						requiredVersion: '^1.2.6'
-					},
-					dayjs: {
-						singleton: true,
-						eager: true,
-						requiredVersion: '^1.11.7'
-					},
-					'@grootio/common': {
-						singleton: true,
-						eager: true,
-						requiredVersion: '^0.0.1'
-					}
-				}
+				shared: panguConfig.shared
 			})
 		]
-	}
+	} as webpack.Configuration;
 }
+
+export default config;
