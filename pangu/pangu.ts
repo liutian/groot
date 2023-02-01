@@ -38,6 +38,11 @@ const config = (): PanguConfig => {
         eager: true,
         requiredVersion: '^1.11.7'
       },
+      'react-router-dom': {
+        singleton: true,
+        eager: true,
+        requiredVersion: '^6.8.0'
+      },
       '@grootio/common': {
         singleton: true,
         eager: true,
@@ -45,7 +50,7 @@ const config = (): PanguConfig => {
       }
     },
     appConfig: {
-      '': {
+      studio: {
         bootstrap: true,
         packageName: 'grootStudio',
         packageUrl: 'http://groot-local.com:13000/studio/index.js'

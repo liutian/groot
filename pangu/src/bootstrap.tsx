@@ -3,7 +3,7 @@ import dayjs from 'dayjs';
 import 'dayjs/locale/zh-cn';
 import zhCN from 'antd/locale/zh_CN';
 import { ConfigProvider } from 'antd';
-import { BrowserRouter, useRoutes } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import React from 'react';
 
 import { PanguConfig } from '../pangu';
@@ -15,42 +15,31 @@ const bootstrap = () => {
   dayjs.locale('zh-cn');
 
   ReactDOM.createRoot(document.getElementById(panguConfig.rootId) as HTMLElement).render(
-    <BrowserRouter>
-      <App />
-    </BrowserRouter >
+    <RouterProvider router={router} />
   );
 }
 
-const routes = Object.keys(panguConfig.appConfig).map((appName) => {
+const router = createBrowserRouter(Object.keys(panguConfig.appConfig).map((appName) => {
   const appConfig = panguConfig.appConfig[appName];
   const Component = React.lazy(() => {
     return loadRemoteModule(appConfig.packageName, 'Main', appConfig.packageUrl)
   });
 
-  const element = <React.Suspense  >
-    <Component appEnv={process.env.APP_ENV} />
-  </React.Suspense >
+  const element = <ConfigProvider locale={zhCN}>
+    <React.Suspense  >
+      <Component appEnv={process.env.APP_ENV} />
+    </React.Suspense >
+  </ConfigProvider>
 
   return {
-    path: appName,
+    path: `/${appName}/*`,
     element
   }
-})
+}).concat({
+  path: '*',
+  element: <NoMatch />
+}))
 
-const App = () => {
-
-  const element = useRoutes([
-    ...routes,
-    , {
-      path: '*',
-      element: <NoMatch />
-    }
-  ]);
-
-  return <ConfigProvider locale={zhCN}>
-    {element}
-  </ConfigProvider>
-}
 
 function NoMatch() {
   return (<>not found</>)

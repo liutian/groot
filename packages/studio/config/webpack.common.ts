@@ -102,6 +102,10 @@ const config = (env, args) => {
 						singleton: true,
 						requiredVersion: '^1.11.7'
 					},
+					'react-router-dom': {
+						singleton: true,
+						requiredVersion: '^6.8.0'
+					},
 					'@grootio/common': {
 						singleton: true,
 						requiredVersion: '^0.0.1'

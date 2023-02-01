@@ -1,30 +1,16 @@
 import { ConfigProvider } from "antd";
-import { Route, useRoutes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import Studio from "Studio";
 
 const App: React.FC = () => {
 
-  const element = useRoutes([
-    {
-      path: '/prototype',
-      element: <Studio />,
-    }, {
-      path: '/instance',
-      element: <Studio />,
-    }, {
-      path: '*',
-      element: <NoMatch />
-    }
-  ]);
-
   return <ConfigProvider >
-    <Route path="/prototype" element={<Studio />} />
-    <Route path="/instance" element={<Studio />} />
+    <Routes>
+      <Route path="prototype" element={<Studio />} />
+      <Route path="instance" element={<Studio />} />
+    </Routes>
   </ConfigProvider>
 }
 
-function NoMatch() {
-  return (<>not found</>)
-}
 
 export default App;
