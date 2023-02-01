@@ -10,7 +10,7 @@ const PluginView: React.FC<{ config: RemotePlugin }> = ({ config }) => {
       return;
     }
 
-    setComponent(React.lazy(loadRemoteModule(config.package, config.module, config.url)));
+    setComponent(React.lazy(() => loadRemoteModule(config.package, config.module, config.url)));
   }, [config]);
 
   return <>{

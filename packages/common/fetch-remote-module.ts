@@ -1,13 +1,11 @@
 
 export const loadRemoteModule = (remotePackage: string, remoteModule: string, remoteUrl: string, sharedScope = 'default') => {
-  return () => {
-    return getOrLoadModule(remotePackage, remoteUrl, sharedScope).then((container: any) => {
-      return container.get(remoteModule).then((factory) => {
-        const Module = factory();
-        return Module;
-      })
+  return getOrLoadModule(remotePackage, remoteUrl, sharedScope).then((container: any) => {
+    return container.get(remoteModule).then((factory) => {
+      const Module = factory();
+      return Module;
     })
-  };
+  })
 };
 
 function getOrLoadModule(remotePackage: string, remoteUrl: string, shareScope: string,) {
