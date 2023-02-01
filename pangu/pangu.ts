@@ -21,7 +21,7 @@ const config = (): PanguConfig => {
       antd: {
         eager: true,
         singleton: true,
-        requiredVersion: '^5.1.6'
+        requiredVersion: '^5.1.7'
       },
       '@ant-design/icons': {
         singleton: true,
@@ -31,7 +31,7 @@ const config = (): PanguConfig => {
       axios: {
         singleton: true,
         eager: true,
-        requiredVersion: '^1.2.6'
+        requiredVersion: '^1.3.0'
       },
       dayjs: {
         singleton: true,

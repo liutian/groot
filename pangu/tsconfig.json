@@ -1,12 +1,10 @@
 {
   "extends": "../base.tsconfig.json",
   "compilerOptions": {
-    "resolveJsonModule": true,
     "baseUrl": "./src",
     "outDir": "dist",
     "jsx": "react-jsx",
-    "sourceMap": true,
-    "experimentalDecorators": true,
+    "sourceMap": true
   },
   "include": [
     "./src",

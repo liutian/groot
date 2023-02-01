@@ -1,8 +1,9 @@
-const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-const path = require('path');
+import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
+import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
+import path from 'path';
+import webpack from 'webpack';
 
-module.exports = (env, args) => {
+const config = (env, args) => {
 	const plugins = [];
 
 	if (env.analyzer) {
@@ -24,5 +25,7 @@ module.exports = (env, args) => {
 			],
 		},
 		plugins
-	}
+	} as webpack.Configuration;
 }
+
+export default config;

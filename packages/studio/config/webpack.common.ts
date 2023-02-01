@@ -1,8 +1,10 @@
-const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
-const CopyPlugin = require("copy-webpack-plugin");
-const { ModuleFederationPlugin } = require('webpack').container;
+import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
+import webpack from 'webpack';
+import CopyPlugin from 'copy-webpack-plugin';
 
-module.exports = (env, args) => {
+const { ModuleFederationPlugin } = webpack.container;
+
+const config = (env, args) => {
 
 	return {
 		output: {
@@ -54,6 +56,10 @@ module.exports = (env, args) => {
 			],
 		},
 		plugins: [
+			new webpack.DefinePlugin({
+				'process.env.APP_ENV': JSON.stringify(env.APP_ENV),
+			}),
+
 			new CopyPlugin({
 				patterns: [
 					{ context: 'public/', from: '**/*.*' }
@@ -65,6 +71,7 @@ module.exports = (env, args) => {
 				filename: 'studio/index.js',
 				exposes: {
 					Main: './src',
+					Studio: './src/Studio'
 				},
 				shared: {
 					react: {
@@ -81,7 +88,7 @@ module.exports = (env, args) => {
 					},
 					antd: {
 						singleton: true,
-						requiredVersion: '^5.1.6',
+						requiredVersion: '^5.1.7',
 					},
 					'@ant-design/icons': {
 						singleton: true,
@@ -89,7 +96,7 @@ module.exports = (env, args) => {
 					},
 					axios: {
 						singleton: true,
-						requiredVersion: '^1.2.6'
+						requiredVersion: '^1.3.0'
 					},
 					dayjs: {
 						singleton: true,
@@ -102,5 +109,7 @@ module.exports = (env, args) => {
 				},
 			})
 		]
-	}
+	} as webpack.Configuration;
 }
+
+export default config;

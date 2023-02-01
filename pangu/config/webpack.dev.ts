@@ -14,6 +14,10 @@ const config = (env, args, panguConfig: PanguConfig) => {
 
       }),
     ],
+    devServer: {
+      historyApiFallback: true,
+      hot: false
+    },
   } as webpack.Configuration;
 }
 

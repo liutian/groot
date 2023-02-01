@@ -1,6 +1,7 @@
-const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
+import webpack from 'webpack';
 
-module.exports = (env, args) => {
+const config = (env, args) => {
   return {
     mode: "development",
     devtool: 'source-map',
@@ -8,6 +9,7 @@ module.exports = (env, args) => {
       type: 'filesystem',
     },
     devServer: {
+      historyApiFallback: true,
       headers: {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
@@ -20,5 +22,7 @@ module.exports = (env, args) => {
 
       }),
     ],
-  }
+  } as webpack.Configuration;
 }
+
+export default config;
