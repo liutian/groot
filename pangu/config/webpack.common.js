@@ -10,6 +10,9 @@ module.exports = (env, args) => {
 			extensions: ['.tsx', '.ts', '.js'],
 		},
 		optimization: {
+			/**
+			 * @todo 可定制部分，如果处于加载性能考虑可以调整公共库打包逻辑
+			 */
 			splitChunks: {
 				chunks: 'all',
 				cacheGroups: {
@@ -39,7 +42,7 @@ module.exports = (env, args) => {
 		},
 		plugins: [
 			new HtmlWebpackPlugin({
-				// 源码为修改需要紧急中止客户端缓存时使用
+				// 源码修改需要紧急中止客户端缓存时使用
 				// hash: true,
 				publicPath: '/',
 				templateParameters: {
