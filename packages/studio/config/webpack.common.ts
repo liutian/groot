@@ -19,6 +19,24 @@ const config = (env, args) => {
 				})
 			]
 		},
+		optimization: {
+			// splitChunks: {
+			// 	chunks: 'all',
+			// 	cacheGroups: {
+			// 		vendor: {
+			// 			name: 'vendor',
+			// 			test: 排出共享模块之外的npm包,
+			// 			priority: -10,
+			// 		},
+			// 		common: {
+			// 			name: 'common',
+			// 			test: 排出共享模块之外的npm包,
+			// 			minChunks: 2,
+			// 			priority: -20,
+			// 		},
+			// 	},
+			// }
+		},
 		module: {
 			rules: [
 				{
@@ -36,6 +54,14 @@ const config = (env, args) => {
 				{
 					test: /\.less$/i,
 					use: [
+						{
+							loader: 'style-loader',
+							options: {
+								attributes: {
+									id: 'groot-studio'
+								}
+							}
+						},
 						{
 							loader: 'css-loader',
 							options: {

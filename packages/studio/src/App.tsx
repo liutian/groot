@@ -1,15 +1,15 @@
-import { ConfigProvider } from "antd";
-import { Route, Routes } from "react-router-dom";
 import Studio from "Studio";
+import type { StudioParams } from "typings";
 
-const App: React.FC = () => {
+type PropsType = {
+  account: any,
 
-  return <ConfigProvider >
-    <Routes>
-      <Route path="prototype" element={<Studio />} />
-      <Route path="instance" element={<Studio />} />
-    </Routes>
-  </ConfigProvider>
+  params: StudioParams
+}
+
+const App: React.FC<PropsType> = ({ params }) => {
+
+  return <Studio {...params} />
 }
 
 

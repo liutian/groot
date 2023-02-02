@@ -27,7 +27,7 @@ const router = createBrowserRouter(Object.keys(panguConfig.appConfig).map((appNa
 
   const element = <ConfigProvider locale={zhCN}>
     <React.Suspense  >
-      <Component appEnv={process.env.APP_ENV} />
+      <Component appEnv={process.env.APP_ENV} appName={appName} rootId={panguConfig.rootId} />
     </React.Suspense >
   </ConfigProvider>
 
