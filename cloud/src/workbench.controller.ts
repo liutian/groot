@@ -225,4 +225,9 @@ export class WorkbenchController {
       { id: 4, name: '小六', age: 30, address: '美国纽约' },
     ]
   }
+
+  @Get('/account')
+  async account() {
+    return {}
+  }
 }
