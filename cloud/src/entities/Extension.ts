@@ -6,10 +6,10 @@ import { Organization } from "./Organization";
 @Entity()
 export class Extension extends BaseEntity {
 
-  @Property({ length: 20 })
+  @Property({ length: 30 })
   name: string;
 
-  @Property({ length: 20 })
+  @Property({ length: 30 })
   key: string;
 
   @Property({ length: 100 })
