@@ -5,11 +5,11 @@ import { useSearchParams } from "react-router-dom";
 
 import { LocalAPIPath } from "./api/API.path";
 import App from "./App";
-import type { StudioParams } from "./typings";
 import request from "./util/request";
 
 // import 'antd/dist/reset.css';
 import './index.less'
+import { StudioParams } from "@grootio/common";
 
 type PropsType = {
   appEnv: string,

@@ -1,5 +1,5 @@
 import { PropBlockLayout, PropBlockStructType } from "@grootio/common";
-import { Entity, Enum, ManyToOne, Property } from "@mikro-orm/core";
+import { Entity, ManyToOne, Property } from "@mikro-orm/core";
 
 import { BaseEntity } from "./BaseEntity";
 import { Component } from "./Component";

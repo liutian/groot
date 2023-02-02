@@ -1,5 +1,5 @@
 import { ComponentParserType } from "@grootio/common";
-import { Entity, Enum, ManyToOne, OneToOne, Property } from "@mikro-orm/core";
+import { Entity, ManyToOne, OneToOne, Property } from "@mikro-orm/core";
 
 import { BaseEntity } from "./BaseEntity";
 import { ComponentVersion } from "./ComponentVersion";

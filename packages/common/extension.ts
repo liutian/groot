@@ -18,7 +18,7 @@ export class WorkbenchModelType extends EventTarget {
 }
 
 
-export type PluginViewComponent = React.FC<{
+export type ExtensionViewComponent = React.FC<{
 }>;
 
 export enum ModalStatus {
@@ -27,9 +27,9 @@ export enum ModalStatus {
   Submit = 'submit'
 }
 
-export type MainType = (context: PluginContext, config: HostConfig) => HostConfig;
+export type MainType = (context: ExtensionContext, config: HostConfig) => HostConfig;
 
-export type PluginContext = {
+export type ExtensionContext = {
   request: RequestFnType<APIStore>,
   studioModel: any,
   workbenchModel?: WorkbenchModelType
@@ -50,7 +50,7 @@ export type HostConfig = {
   viewportMode?: ViewportMode,
   contributes: {
     sidebarView?: SidebarViewType[],
-    propSettingView?: RemotePlugin[]
+    propSettingView?: RemoteExtension[]
   }
 }
 
@@ -63,10 +63,10 @@ export type SidebarViewType = {
   view: ReactElement
 } | {
   icon: string,
-  view: RemotePlugin
+  view: RemoteExtension
 })
 
-export type RemotePlugin = {
+export type RemoteExtension = {
   key?: string,
   package: string,
   title: string,

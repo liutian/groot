@@ -2,7 +2,7 @@ import { Collection, Entity, ManyToMany, Property } from "@mikro-orm/core";
 
 import { BaseEntity } from "./BaseEntity";
 import { Component } from "./Component";
-import { Plugin } from "./Plugin";
+import { Extension } from "./Extension";
 @Entity()
 export class Organization extends BaseEntity {
 
@@ -17,7 +17,7 @@ export class Organization extends BaseEntity {
   debugBaseUrl: string;
 
   @ManyToMany()
-  pluginList = new Collection<Plugin>(this);
+  extensionList = new Collection<Extension>(this);
 
   //************************已下是接口入参或者查询返回需要定义的属性************************
 

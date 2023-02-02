@@ -4,7 +4,7 @@ import { BaseEntity } from "./BaseEntity";
 import { Organization } from "./Organization";
 
 @Entity()
-export class Plugin extends BaseEntity {
+export class Extension extends BaseEntity {
 
   @Property({ length: 20 })
   name: string;

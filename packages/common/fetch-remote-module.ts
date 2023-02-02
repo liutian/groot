@@ -12,7 +12,7 @@ function getOrLoadModule(remotePackage: string, remoteUrl: string, shareScope: s
 
   return new Promise((resolve, reject) => {
     if (!window[remotePackage]) {
-      let scriptEle = document.querySelector(`[data-groot-plugin="${remotePackage}"]`) as HTMLScriptElement;
+      let scriptEle = document.querySelector(`[data-groot-extension="${remotePackage}"]`) as HTMLScriptElement;
 
       if (scriptEle) {
         scriptEle.onload = onScriptLoad(remotePackage, shareScope, resolve, reject, scriptEle.onload);
@@ -20,7 +20,7 @@ function getOrLoadModule(remotePackage: string, remoteUrl: string, shareScope: s
       } else {
         scriptEle = document.createElement('script');
         scriptEle.type = 'text/javascript';
-        scriptEle.setAttribute('data-groot-plugin', `${remotePackage}`);
+        scriptEle.setAttribute('data-groot-extension', `${remotePackage}`);
         scriptEle.async = true;
         scriptEle.onerror = reject;
         scriptEle.onload = onScriptLoad(remotePackage, shareScope, resolve, reject);

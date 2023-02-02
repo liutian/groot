@@ -1,13 +1,13 @@
 import { Entity, ManyToOne, Property } from "@mikro-orm/core";
 
 import { BaseEntity } from "./BaseEntity";
-import { Plugin } from "./Plugin";
+import { Extension } from "./Extension";
 
 @Entity()
-export class PluginInstance extends BaseEntity {
+export class ExtensionInstance extends BaseEntity {
 
-  @ManyToOne({ serializer: value => value?.id, serializedName: 'pluginId' })
-  plugin: Plugin;
+  @ManyToOne({ serializer: value => value?.id, serializedName: 'extensionId' })
+  extension: Extension;
 
   // @todo 考虑去json，改为结构化
   @Property({ length: 1000 })

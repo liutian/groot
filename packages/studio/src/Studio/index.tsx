@@ -1,6 +1,5 @@
-import { useRegisterModel } from '@grootio/common';
+import { StudioParams, useRegisterModel } from '@grootio/common';
 import { useEffect } from 'react';
-import { StudioParams } from 'typings';
 import StudioModel from './StudioModel';
 import Workbench from './Workbench';
 
@@ -15,12 +14,12 @@ const Studio: React.FC<StudioParams> = (params) => {
   useEffect(() => {
     studioModel.prototypeMode = params.prototypeMode;
     if (params.prototypeMode) {
-      studioModel.fetchApplication(params.appId, params.releaseId).then(() => {
-        studioModel.loadPlugin();
+      studioModel.fetchSolution(params.solutionId).then(() => {
+        studioModel.loadExtension();
       })
     } else {
-      studioModel.fetchSolution(params.solutionId).then(() => {
-        studioModel.loadPlugin();
+      studioModel.fetchApplication(params.appId, params.releaseId).then(() => {
+        studioModel.loadExtension();
       })
     }
   }, []);
@@ -29,8 +28,8 @@ const Studio: React.FC<StudioParams> = (params) => {
     return <>load data ...</>
   } else if (studioModel.loadStatus === 'notfound') {
     return <>notfound component</>
-  } else if (studioModel.loadStatus === 'fetch-plugin') {
-    return <>load plugin ...</>
+  } else if (studioModel.loadStatus === 'fetch-extension') {
+    return <>load extension ...</>
   } else {
     return <Workbench />
   }

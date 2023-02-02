@@ -101,16 +101,16 @@ export type Component = {
 
 export type Application = {
   release: Release,
-  pluginList: Plugin[]
+  extensionList: Extension[]
 } & Omit<import("../../cloud/src/entities/Application").Application, ''>;
 
 export type Organization = {
   componentList: Component[],
-  pluginList: Plugin[]
+  extensionList: Extension[]
 } & Omit<import("../../cloud/src/entities/Organization").Organization, ''>;
 
 export type Deploy = {
 } & Omit<import("../../cloud/src/entities/Deploy").Deploy, ''>;
 
-export type Plugin = {
-} & Omit<import("../../cloud/src/entities/Plugin").Plugin, ''>;
+export type Extension = {
+} & Omit<import("../../cloud/src/entities/Extension").Extension, ''>;

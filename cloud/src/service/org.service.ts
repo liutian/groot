@@ -12,7 +12,7 @@ export class OrgService {
     const em = RequestContext.getEntityManager();
 
     LogicException.assertParamEmpty(orgId, 'orgId');
-    const org = await em.findOne(Organization, orgId, { populate: ['pluginList'] });
+    const org = await em.findOne(Organization, orgId, { populate: ['extensionList'] });
     LogicException.assertNotFound(org, 'Organization', orgId);
 
     org.componentList = await em.find(Component, { org: orgId });

@@ -4,7 +4,7 @@ import { Application } from '../../entities/Application';
 import { Release } from '../../entities/Release';
 import { Organization } from '../../entities/Organization';
 import { Project } from '../../entities/Project';
-import { Plugin } from '../../entities/Plugin';
+import { Extension } from '../../entities/Extension';
 
 import { create as btnCreate } from './button';
 import { create as profileCreate } from './profile';
@@ -51,14 +51,14 @@ export class DatabaseSeeder extends Seeder {
     application.onlineRelease = release;
     await em.persistAndFlush(release);
 
-    const plugin = em.create(Plugin, {
-      name: '@groot/core-plugin',
-      key: '_groot_core_plugin',
+    const extension = em.create(Extension, {
+      name: '@groot/core-extension',
+      key: '_groot_core_extension',
       url: 'http://groot-local.com:12000/index.js',
       org
     });
-    application.pluginList.add(plugin);
-    await em.persistAndFlush(plugin);
+    application.extensionList.add(extension);
+    await em.persistAndFlush(extension);
 
 
     await proTableCreate(em, org, release);

@@ -107,3 +107,12 @@ export enum ViewportMode {
   PC = 'pc',
   H5 = 'h5'
 }
+
+export type StudioParams = {
+  solutionId: number,
+  appId: number,
+  releaseId: number,
+  componentId: number,
+  instanceId: number,
+  prototypeMode: boolean
+}
