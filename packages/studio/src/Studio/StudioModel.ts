@@ -34,11 +34,11 @@ export default class StudioModel extends EventTarget {
     })
   }
 
-  public loadExtension() {
-    const customExtensionList = (localStorage.getItem('groot_extension') || '').split(',')
+  public loadExtension = () => {
+    const localCustomExtension = localStorage.getItem('groot_extension');
 
-    if (customExtensionList.length) {
-      this.extensionList = customExtensionList.map(str => {
+    if (localCustomExtension) {
+      this.extensionList = localCustomExtension.split(',').map(str => {
         const [key, url] = str.split('@')
         return { key, url }
       });
@@ -57,7 +57,6 @@ export default class StudioModel extends EventTarget {
         })
       .then((mainList: MainType[]) => {
         this.initConfig(mainList);
-        this.loadStatus = 'ok';
       })
   }
 

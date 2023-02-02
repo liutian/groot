@@ -15,11 +15,17 @@ const Studio: React.FC<StudioParams> = (params) => {
     studioModel.prototypeMode = params.prototypeMode;
     if (params.prototypeMode) {
       studioModel.fetchSolution(params.solutionId).then(() => {
-        studioModel.loadExtension();
+        studioModel.loadExtension().then(() => {
+          // todo 研究promise自动刷新视图
+          studioModel.loadStatus = 'ok';
+        })
       })
     } else {
       studioModel.fetchApplication(params.appId, params.releaseId).then(() => {
-        studioModel.loadExtension();
+        studioModel.loadExtension().then(() => {
+          // todo 研究promise自动刷新视图
+          studioModel.loadStatus = 'ok';
+        })
       })
     }
   }, []);

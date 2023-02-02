@@ -54,7 +54,7 @@ export class DatabaseSeeder extends Seeder {
     const extension = em.create(Extension, {
       name: '@groot/core-extension',
       key: '_groot_core_extension',
-      url: 'http://groot-local.com:12000/index.js',
+      url: 'http://groot-local.com:12000/groot-core-extension/index.js',
       org
     });
     application.extensionList.add(extension);
