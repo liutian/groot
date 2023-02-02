@@ -9,6 +9,7 @@ export type APIStore = {
   [APIPath.system_dict]: [null, API.Response<Record<string, API.SystemDict[]>>];
 
   [APIPath.application_detail_applicationId]: [{ applicationId: number, releaseId?: number }, API.Response<Application>];
+  [APIPath.solution_detail_solutionId]: [{ solutionId: number }, API.Response<any>]
   [APIPath.move_position]: [{ originId: number, targetId: number, type: 'group' | 'block' | 'item' }];
   [APIPath.componentInstance_addChild]: [ComponentInstance, API.Response<ComponentInstance>];
   [APIPath.component_list]: [null, API.Response<Component[]>];

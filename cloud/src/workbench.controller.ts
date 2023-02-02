@@ -230,4 +230,9 @@ export class WorkbenchController {
   async account() {
     return {}
   }
+
+  @Get('/solution/detail/:solutionId')
+  async solutionDetail() {
+    return {}
+  }
 }

@@ -5,6 +5,7 @@ export enum APIPath {
 
   application_detail_applicationId = 'application/detail/:applicationId?releaseId=:releaseId',
   org_detail_orgId = 'org/detail/:orgId',
+  solution_detail_solutionId = 'solution/detail/:solutionId',
   componentInstance_addChild = 'POST component-instance/add-child',
   componentInstance_remove_instanceId = 'component-instance/remove/:instanceId',
   componentPrototype_detail_componentId = 'component-prototype/detail/:componentId?versionId=:versionId',

@@ -31,7 +31,8 @@ export type MainType = (context: PluginContext, config: HostConfig) => HostConfi
 
 export type PluginContext = {
   request: RequestFnType<APIStore>,
-  workbenchModel: WorkbenchModelType
+  studioModel: any,
+  workbenchModel?: WorkbenchModelType
 }
 
 export enum WorkbenchEvent {
@@ -39,6 +40,10 @@ export enum WorkbenchEvent {
 
   DragComponentStart = 'drag_component_start',
   DragComponentEnd = 'drag_component_end',
+}
+
+export enum StudioEvent {
+  LaunchFinish = 'launch_finish',
 }
 
 export type HostConfig = {

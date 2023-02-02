@@ -1,14 +1,15 @@
 
 import { ConfigProvider } from "antd";
-import { LocalAPIPath } from "api/API.path";
-import App from "App";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import type { StudioParams } from "typings";
-import request from "util/request";
+
+import { LocalAPIPath } from "./api/API.path";
+import App from "./App";
+import type { StudioParams } from "./typings";
+import request from "./util/request";
 
 // import 'antd/dist/reset.css';
-import './index.less';
+import './index.less'
 
 type PropsType = {
   appEnv: string,
@@ -20,31 +21,35 @@ type PropsType = {
   }
 }
 
-const Main: React.FC<PropsType> = ({ groot }) => {
+const appName = 'studio';
+
+// 1.获取运行时必要参数，2.加载账户信息包括组织架构
+const Main: React.FC<PropsType> = (props) => {
   const [account, setAccount] = useState<any>();
   const [searchParams] = useSearchParams();
 
   const [params] = useState(() => {
-    if (groot) {
-      return groot.params;
+    if (props.groot) {
+      return props.groot.params;
     } else {
       return {
         solutionId: +searchParams.get('solutionId'),
         appId: +searchParams.get('appId'),
         componentId: +searchParams.get('componentId'),
         instanceId: +searchParams.get('instanceId'),
+        releaseId: +searchParams.get('releaseId'),
         prototypeMode: !!searchParams.get('prototypeMode')
       }
     }
   })
   useState(() => {
-    document.body.classList.add('studio');
+    document.body.classList.add(appName);
     document.head.title = 'groot';
   });
 
   useEffect(() => {
     return () => {
-      document.body.classList.remove('studio');
+      document.body.classList.remove(appName);
       document.head.title = '';
       document.head.querySelector('groot-studio')?.remove();
     }
