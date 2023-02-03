@@ -4,7 +4,7 @@ import 'dayjs/locale/zh-cn';
 import zhCN from 'antd/locale/zh_CN';
 import { ConfigProvider } from 'antd';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { PanguConfig } from '../pangu';
 import { loadRemoteModule } from '@grootio/common';
@@ -31,9 +31,25 @@ const router = createBrowserRouter(Object.keys(panguConfig.appConfig).map((appNa
     </React.Suspense >
   </ConfigProvider>
 
+  const Wrapper = () => {
+    useState(() => {
+      document.body.classList.add(appName);
+      document.documentElement.classList.add(appName);
+    })
+
+    useEffect(() => {
+      return () => {
+        document.body.classList.remove(appName);
+        document.documentElement.classList.remove(appName);
+      }
+    }, [])
+
+    return element
+  }
+
   return {
     path: `/${appName}/*`,
-    element
+    element: <Wrapper />
   }
 }).concat({
   path: '*',

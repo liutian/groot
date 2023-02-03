@@ -43,13 +43,11 @@ const Main: React.FC<PropsType> = (props) => {
     }
   })
   useState(() => {
-    document.body.classList.add(appName);
     document.head.title = 'groot';
   });
 
   useEffect(() => {
     return () => {
-      document.body.classList.remove(appName);
       document.head.title = '';
       document.head.querySelector('groot-studio')?.remove();
     }
