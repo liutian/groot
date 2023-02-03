@@ -1,6 +1,39 @@
 .container {
-  position: relative;
-  width: 100%;
+  display: grid;
   height: 100%;
-  overflow: auto;
+  overflow: hidden;
+}
+
+.toolBar {
+  grid-area: toolBar;
+  background-color: rgba(255, 0, 0, 0.561);
+}
+
+.activityBar {
+  grid-area: activityBar;
+  background-color: rgb(127, 127, 127);
+}
+
+.primarySidebar {
+  grid-area: primarySidebar;
+  background-color: rgb(220, 220, 220);
+}
+
+.secondarySidebar {
+  grid-area: secondarySidebar;
+  background-color: rgba(255, 166, 0, 0.552);
+}
+
+.editor {
+  grid-area: editor
+}
+
+.panel {
+  grid-area: panel;
+  background-color: rgba(0, 128, 0, 0.552);
+}
+
+.statusBar {
+  grid-area: statusBar;
+  background-color: rgba(7, 7, 255, 0.422);
 }
