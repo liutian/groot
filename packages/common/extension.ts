@@ -27,12 +27,19 @@ export enum ModalStatus {
   Submit = 'submit'
 }
 
-export type MainType = (context: ExtensionContext, config: HostConfig) => HostConfig;
+export type MainType = (context: ExtensionContext) => ExtensionConfig;
 
 export type ExtensionContext = {
   request: RequestFnType<APIStore>,
   studioModel: any,
   workbenchModel?: WorkbenchModelType
+}
+
+export type ExtensionRuntime = {
+  key: string,
+  url: string,
+  main: MainType,
+  config: ExtensionConfig
 }
 
 export enum WorkbenchEvent {
@@ -47,10 +54,12 @@ export enum StudioEvent {
 }
 
 export type HostConfig = {
-  viewportMode?: ViewportMode,
-  contributes: {
-    sidebarView?: SidebarViewType[],
-    propSettingView?: RemoteExtension[]
+}
+
+export type ExtensionConfig = {
+  contributes?: {
+    // sidebarView?: SidebarViewType[],
+    // propSettingView?: RemoteExtension[]
   }
 }
 

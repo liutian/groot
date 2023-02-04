@@ -1,4 +1,4 @@
-import { APIPath, Application, HostConfig, loadRemoteModule, MainType, pick } from "@grootio/common";
+import { APIPath, Application, ExtensionRuntime, HostConfig, loadRemoteModule, MainType } from "@grootio/common";
 import request from "../util/request";
 import WorkbenchModel from "./Workbench/WorkbenchModel";
 
@@ -11,7 +11,7 @@ export default class StudioModel extends EventTarget {
   prototypeMode: boolean;
   solution: any;
   application: Application;
-  extensionList: { key: string, url: string, main?: MainType }[] = [];
+  extensionList: ExtensionRuntime[] = [];
   config: HostConfig;
 
   public fetchSolution = (solutionId: number) => {
@@ -37,16 +37,17 @@ export default class StudioModel extends EventTarget {
   public loadExtension = () => {
     const localCustomExtension = localStorage.getItem('groot_extension');
 
+    let remoteExtensions: { key: string, url: string }[] = [];
     if (localCustomExtension) {
-      this.extensionList = localCustomExtension.split(',').map(str => {
+      remoteExtensions = localCustomExtension.split(',').map(str => {
         const [key, url] = str.split('@')
         return { key, url }
       });
     } else {
-      this.extensionList = this.prototypeMode ? this.solution.extensionList : this.application.extensionList;
+      remoteExtensions = this.prototypeMode ? this.solution.extensionList : this.application.extensionList;
     }
 
-    return Promise.all(this.extensionList.map(item => {
+    return Promise.all(remoteExtensions.map(item => {
       return loadRemoteModule(item.key, 'Main', item.url);
     }))
       .then(
@@ -56,38 +57,32 @@ export default class StudioModel extends EventTarget {
           return Promise.reject(error);
         })
       .then((mainList: MainType[]) => {
-        this.initConfig(mainList);
+        const extensionConfigList = this.parseExtensionConfig(mainList);
+        this.extensionList = remoteExtensions.map(({ key, url }, index) => {
+          return {
+            key,
+            url,
+            main: mainList[index],
+            config: extensionConfigList[index]
+          }
+        })
       })
   }
 
-  private initConfig(mainList: MainType[]) {
-    this.config = {
-      contributes: {
-        sidebarView: [],
-        propSettingView: []
-      }
-    };
-
-    mainList.reduce((config, main, index) => {
+  private parseExtensionConfig(mainList: MainType[]) {
+    return mainList.map((main, index) => {
       const requestClone = request.clone((type) => {
         if (type === 'request') {
           console.log(`[${this.extensionList[index].key} request]`);
         }
       });
 
-      const newConfig = main({
+      const extensionConfig = main({
         request: requestClone,
         studioModel: this
-      }, config);
+      });
 
-      if (newConfig === config) {
-        return config;
-      }
-
-      Object.assign(config, pick(newConfig, ['viewportMode']));
-      config.contributes.sidebarView.push(...(newConfig.contributes.sidebarView || []));
-      config.contributes.propSettingView.push(...(newConfig.contributes.propSettingView || []));
-      return config;
-    }, this.config);
+      return extensionConfig;
+    });
   }
 }
