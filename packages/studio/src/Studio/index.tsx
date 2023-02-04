@@ -1,6 +1,7 @@
-import { GridLayout, StudioMode, StudioParams, useRegisterModel } from '@grootio/common';
+import { APIPath, GridLayout, StudioMode, StudioParams } from '@grootio/common';
 import { useEffect, useState } from 'react';
-import StudioModel from './StudioModel';
+import request from 'util/request';
+import { execExtension, loadExtension } from './groot';
 import Workbench from './Workbench';
 
 /**
@@ -10,36 +11,72 @@ import Workbench from './Workbench';
  * 4.启动插件入口
  **/
 const Studio: React.FC<StudioParams & { account: any }> = (params) => {
-  const studioModel = useRegisterModel(StudioModel);
+  const [loadStatus, setLoadStatus] = useState<'doing' | 'no-application' | 'no-solution' | 'no-instance' | 'fetch-extension' | 'notfound' | 'ok'>('doing');
   const [layout, setLayout] = useState<GridLayout>();
 
   useEffect(() => {
-    studioModel.studioMode = params.studioMode;
-    studioModel.account = params.account;
-    let fetchPromise;
+    let fetchDataPromise;
     if (params.studioMode == StudioMode.Prototype) {
-      fetchPromise = studioModel.fetchSolution(params.solutionId)
+      fetchDataPromise = fetchSolution(params.solutionId)
     } else {
-      fetchPromise = studioModel.fetchApplication(params.appId, params.releaseId)
+      fetchDataPromise = fetchApplication(params.appId, params.releaseId)
     }
 
-    fetchPromise.then(() => {
-      studioModel.loadStatus = 'fetch-extension';
+    fetchDataPromise.then((data) => {
+      setLoadStatus('fetch-extension');
       // todo 研究promise自动刷新视图
-      studioModel.fetchExtension().then((result) => {
-        studioModel.loadStatus = 'ok';
+      fetchExtension(data).then((remoteExtensionList) => {
+        setLoadStatus('ok');
         const layout = new GridLayout();
         setLayout(layout);
-        studioModel.initExtension(result, layout)
+
+        execExtension(remoteExtensionList, {
+          mode: params.studioMode,
+          application: params.studioMode === StudioMode.Instance ? data : null,
+          solution: params.studioMode === StudioMode.Prototype ? data : null,
+          account: params.account,
+        }, layout)
       })
     })
   }, []);
 
-  if (studioModel.loadStatus === 'doing') {
+  const fetchSolution = (solutionId: number) => {
+    return request(APIPath.solution_detail_solutionId, { solutionId }).then(({ data }) => {
+      return data;
+    }).catch((e) => {
+      setLoadStatus('no-solution');
+      return Promise.reject(e);
+    })
+  }
+
+  const fetchApplication = (applicationId: number, releaseId?: number) => {
+    return request(APIPath.application_detail_applicationId, { applicationId, releaseId }).then(({ data }) => {
+      return data;
+    }).catch((e) => {
+      setLoadStatus('no-application');
+      return Promise.reject(e);
+    })
+  }
+
+  const fetchExtension = (data) => {
+    const localCustomExtension = localStorage.getItem('groot_extension');
+
+    if (localCustomExtension) {
+      let remoteExtensionList = localCustomExtension.split(',').map(str => {
+        const [key, url] = str.split('@')
+        return { key, url }
+      });
+      return loadExtension(remoteExtensionList)
+    } else {
+      return loadExtension(data.extensionList)
+    }
+  }
+
+  if (loadStatus === 'doing') {
     return <>load data ...</>
-  } else if (studioModel.loadStatus === 'notfound') {
+  } else if (loadStatus === 'notfound') {
     return <>notfound component</>
-  } else if (studioModel.loadStatus === 'fetch-extension') {
+  } else if (loadStatus === 'fetch-extension') {
     return <>load extension ...</>
   } else {
     return <Workbench layout={layout} />

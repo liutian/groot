@@ -39,8 +39,9 @@ export type GrootContext = {
   params: GrootContextParams,
   commands: {
     registerCommand: GrootContextRegisterCommand;
-    executeCommand: GrootContextExecuteCommand
-  }
+    executeCommand: GrootContextExecuteCommand,
+  },
+  layout: GridLayout
 }
 
 export type GrootContextParams = {
@@ -48,7 +49,6 @@ export type GrootContextParams = {
   account: any,
   application: Application,
   solution: any,
-  layout: GridLayout
 }
 
 export type GrootContextRegisterCommand = <CT extends Record<string, [any[], any]>>(command: keyof CT & string, callback: (...args: CT[keyof CT & string][0]) => CT[keyof CT & string][1], thisArg?: any) => Function

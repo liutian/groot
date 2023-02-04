@@ -1,4 +1,4 @@
-import { ExtensionRuntime, GrootContextExecuteCommand, GrootContextParams, GrootContextRegisterCommand, loadRemoteModule, MainType } from "@grootio/common"
+import { ExtensionRuntime, GridLayout, GrootContextExecuteCommand, GrootContextParams, GrootContextRegisterCommand, loadRemoteModule, MainType } from "@grootio/common"
 import request from "util/request";
 
 const commandMap = new Map<string, { thisArg?: any, callback: Function, provider: string }>();
@@ -22,9 +22,9 @@ export const loadExtension = (remoteExtensionList: { key: string, url: string }[
     })
 }
 
-export const execExtension = (remoteExtensionList: { key: string, url: string, main: MainType }[], params: GrootContextParams) => {
+export const execExtension = (remoteExtensionList: { key: string, url: string, main: MainType }[], params: GrootContextParams, layout: GridLayout) => {
   const mainList = remoteExtensionList.map(({ main }) => main);
-  const extensionConfigList = parseExtensionConfig(mainList, params);
+  const extensionConfigList = parseExtensionConfig(mainList, params, layout);
   remoteExtensionList.forEach(({ key, url }, index) => {
     extensionList.push({
       key,
@@ -36,7 +36,7 @@ export const execExtension = (remoteExtensionList: { key: string, url: string, m
   return extensionList;
 }
 
-const parseExtensionConfig = (mainList: MainType[], params: GrootContextParams) => {
+const parseExtensionConfig = (mainList: MainType[], params: GrootContextParams, layout: GridLayout) => {
   const configList = mainList.map((main, index) => {
     const requestClone = request.clone((type) => {
       if (type === 'request') {
@@ -48,6 +48,7 @@ const parseExtensionConfig = (mainList: MainType[], params: GrootContextParams) 
       request: requestClone,
       groot: {
         params,
+        layout,
         commands: {
           registerCommand: (command, callback, thisArg) => {
             const disposable = registerCommand(command, callback, thisArg);
