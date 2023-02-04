@@ -12,6 +12,7 @@ export default class StudioModel extends EventTarget {
   studioMode: StudioMode;
   solution: any;
   application: Application;
+  account: any;
 
   config: HostConfig;
 
@@ -48,6 +49,11 @@ export default class StudioModel extends EventTarget {
       remoteExtensionList = this.studioMode === StudioMode.Prototype ? this.solution.extensionList : this.application.extensionList;
     }
 
-    return loadExtension(remoteExtensionList, this.studioMode)
+    return loadExtension(remoteExtensionList, {
+      mode: this.studioMode,
+      application: this.application,
+      solution: this.solution,
+      account: this.account
+    })
   }
 }

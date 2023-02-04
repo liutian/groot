@@ -1,13 +1,13 @@
-import { ExtensionRuntime, GrootContextExecuteCommand, GrootContextRegisterCommand, loadRemoteModule, MainType, StudioMode } from "@grootio/common"
+import { ExtensionRuntime, GrootContextExecuteCommand, GrootContextParams, GrootContextRegisterCommand, loadRemoteModule, MainType } from "@grootio/common"
 import request from "util/request";
 
 const commandMap = new Map<string, { thisArg?: any, callback: Function, provider: string }>();
 const extensionList: ExtensionRuntime[] = [];
 let commandReady = false;
-let studioMode: StudioMode;
+let contextParams: GrootContextParams;
 
-export const loadExtension = (remoteExtensionList: { key: string, url: string }[], mode: StudioMode) => {
-  studioMode = mode;
+export const loadExtension = (remoteExtensionList: { key: string, url: string }[], params: GrootContextParams) => {
+  contextParams = params;
   return Promise.all(remoteExtensionList.map(item => {
     return loadRemoteModule(item.key, 'Main', item.url);
   }))
@@ -42,6 +42,7 @@ const parseExtensionConfig = (mainList: MainType[]) => {
     const extensionConfig = main({
       request: requestClone,
       groot: {
+        params: contextParams,
         commands: {
           registerCommand: (command, callback, thisArg) => {
             const disposable = registerCommand(command, callback, thisArg);

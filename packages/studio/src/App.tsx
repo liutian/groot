@@ -1,16 +1,20 @@
 import { StudioParams } from "@grootio/common";
-import Studio from "./Studio";
+import { LocalAPIPath } from "api/API.path";
+import { useEffect, useState } from "react";
+import Studio from "Studio";
+import request from "util/request";
 
-type PropsType = {
-  account: any,
+// 处理布局和路由，加载账户信息包括组织架构
+const App: React.FC<StudioParams> = (props) => {
+  const [account, setAccount] = useState<any>();
 
-  params: StudioParams
-}
+  useEffect(() => {
+    request(LocalAPIPath.account).then(() => {
+      setAccount({});
+    })
+  }, []);
 
-// 处理布局和路由
-const App: React.FC<PropsType> = ({ params }) => {
-
-  return <Studio {...params} />
+  return <>{account ? <Studio {...props} account={account} /> : null}</>
 }
 
 

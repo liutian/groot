@@ -3,9 +3,7 @@ import { ConfigProvider } from "antd";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
-import { LocalAPIPath } from "./api/API.path";
 import App from "./App";
-import request from "./util/request";
 
 // import 'antd/dist/reset.css';
 import './index.less'
@@ -21,9 +19,8 @@ type PropsType = {
   }
 }
 
-// 1.获取运行时必要参数，2.加载账户信息包括组织架构
+// 获取运行时必要参数，
 const Main: React.FC<PropsType> = (props) => {
-  const [account, setAccount] = useState<any>();
   const [searchParams] = useSearchParams();
 
   const [params] = useState(() => {
@@ -51,14 +48,8 @@ const Main: React.FC<PropsType> = (props) => {
     }
   }, [])
 
-  useEffect(() => {
-    request(LocalAPIPath.account).then(() => {
-      setAccount({});
-    })
-  }, []);
-
   return <ConfigProvider>
-    {account ? <App account={account} params={params} /> : null}
+    {params ? <App {...params} /> : <>必须提供参数信息</>}
   </ConfigProvider>
 }
 

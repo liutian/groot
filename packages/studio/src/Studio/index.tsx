@@ -8,11 +8,12 @@ import Workbench from './Workbench';
  * 2.加载插件
  * 3.启动工作台
  **/
-const Studio: React.FC<StudioParams> = (params) => {
+const Studio: React.FC<StudioParams & { account: any }> = (params) => {
   const studioModel = useRegisterModel(StudioModel);
 
   useEffect(() => {
     studioModel.studioMode = params.studioMode;
+    studioModel.account = params.account;
     if (params.studioMode == StudioMode.Prototype) {
       studioModel.fetchSolution(params.solutionId).then(() => {
         studioModel.initExtension().then(() => {
