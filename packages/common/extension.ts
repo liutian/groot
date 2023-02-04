@@ -29,10 +29,21 @@ export enum ModalStatus {
 
 export type MainType = (context: ExtensionContext) => ExtensionConfig;
 
+export type GrootContext = {
+  commands: {
+    registerCommand: GrootContextRegisterCommand;
+    executeCommand: GrootContextExecuteCommand
+  }
+}
+
+export type GrootContextRegisterCommand = <CT extends Record<string, [any[], any]>>(command: keyof CT & string, callback: (...args: CT[keyof CT & string][0]) => CT[keyof CT & string][1], thisArg?: any) => Function
+export type GrootContextExecuteCommand = <CT extends Record<string, [any[], any]>>(command: keyof CT & string, ...args: CT[keyof CT & string][0]) => CT[keyof CT & string][1];
+
 export type ExtensionContext = {
   request: RequestFnType<APIStore>,
   studioModel: any,
-  workbenchModel?: WorkbenchModelType
+  workbenchModel?: WorkbenchModelType,
+  groot: GrootContext
 }
 
 export type ExtensionRuntime = {

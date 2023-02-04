@@ -1,5 +1,6 @@
 import { APIPath, Application, ExtensionRuntime, HostConfig, loadRemoteModule, MainType } from "@grootio/common";
 import request from "../util/request";
+import { executeCommand, registerCommand } from "./groot";
 import WorkbenchModel from "./Workbench/WorkbenchModel";
 
 export default class StudioModel extends EventTarget {
@@ -79,7 +80,17 @@ export default class StudioModel extends EventTarget {
 
       const extensionConfig = main({
         request: requestClone,
-        studioModel: this
+        studioModel: this,
+        groot: {
+          commands: {
+            registerCommand: (command, callback, thisArg) => {
+              return registerCommand(command, callback, thisArg);
+            },
+            executeCommand: (command, ...args) => {
+              return executeCommand(command, ...args);
+            }
+          }
+        }
       });
 
       return extensionConfig;
