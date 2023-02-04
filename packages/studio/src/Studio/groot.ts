@@ -4,10 +4,8 @@ import request from "util/request";
 const commandMap = new Map<string, { thisArg?: any, callback: Function, provider: string }>();
 const extensionList: ExtensionRuntime[] = [];
 let commandReady = false;
-let contextParams: GrootContextParams;
 
-export const loadExtension = (remoteExtensionList: { key: string, url: string }[], params: GrootContextParams) => {
-  contextParams = params;
+export const loadExtension = (remoteExtensionList: { key: string, url: string }[]) => {
   return Promise.all(remoteExtensionList.map(item => {
     return loadRemoteModule(item.key, 'Main', item.url);
   }))
@@ -18,20 +16,27 @@ export const loadExtension = (remoteExtensionList: { key: string, url: string }[
         return Promise.reject(error);
       })
     .then((mainList: MainType[]) => {
-      const extensionConfigList = parseExtensionConfig(mainList);
-      remoteExtensionList.forEach(({ key, url }, index) => {
-        extensionList.push({
-          key,
-          url,
-          main: mainList[index],
-          config: extensionConfigList[index]
-        })
+      return remoteExtensionList.map(({ key, url }, index) => {
+        return { key, url, main: mainList[index] }
       })
-      return extensionList;
     })
 }
 
-const parseExtensionConfig = (mainList: MainType[]) => {
+export const execExtension = (remoteExtensionList: { key: string, url: string, main: MainType }[], params: GrootContextParams) => {
+  const mainList = remoteExtensionList.map(({ main }) => main);
+  const extensionConfigList = parseExtensionConfig(mainList, params);
+  remoteExtensionList.forEach(({ key, url }, index) => {
+    extensionList.push({
+      key,
+      url,
+      main: mainList[index],
+      config: extensionConfigList[index]
+    })
+  })
+  return extensionList;
+}
+
+const parseExtensionConfig = (mainList: MainType[], params: GrootContextParams) => {
   const configList = mainList.map((main, index) => {
     const requestClone = request.clone((type) => {
       if (type === 'request') {
@@ -42,7 +47,7 @@ const parseExtensionConfig = (mainList: MainType[]) => {
     const extensionConfig = main({
       request: requestClone,
       groot: {
-        params: contextParams,
+        params,
         commands: {
           registerCommand: (command, callback, thisArg) => {
             const disposable = registerCommand(command, callback, thisArg);

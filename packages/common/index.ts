@@ -12,6 +12,7 @@ export * from './api/API.path';
 export * from './api/API.store';
 export * from './util';
 export * from './data';
+export * from './GridLayout';
 
 
 export type WorkbenchInstanceComponentType = React.FC<{

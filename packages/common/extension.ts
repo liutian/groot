@@ -1,6 +1,7 @@
 import { ReactElement } from "react";
 import { APIStore } from "./api/API.store";
 import { Application, ComponentInstance, State } from "./entities";
+import { GridLayout } from "./GridLayout";
 import { RequestFnType } from "./internal";
 
 export enum StudioMode {
@@ -46,7 +47,8 @@ export type GrootContextParams = {
   mode: StudioMode,
   account: any,
   application: Application,
-  solution: any
+  solution: any,
+  layout: GridLayout
 }
 
 export type GrootContextRegisterCommand = <CT extends Record<string, [any[], any]>>(command: keyof CT & string, callback: (...args: CT[keyof CT & string][0]) => CT[keyof CT & string][1], thisArg?: any) => Function
@@ -72,9 +74,7 @@ export enum WorkbenchEvent {
   DragComponentEnd = 'drag_component_end',
 }
 
-export enum StudioEvent {
-  LaunchFinish = 'launch_finish',
-}
+
 
 export type HostConfig = {
 }

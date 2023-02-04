@@ -13,7 +13,7 @@ export type LayoutSetting = {
   toolBarLayout: 'left' | 'right' | 'center' | 'stretch'
 }
 
-export default class GridLayout {
+export class GridLayout {
   public toolBarHeight = '40px'
   public panelHeight = '40px'
   public statusBarHeight = '30px'
