@@ -13,7 +13,7 @@ export type LayoutSetting = {
   toolBarLayout: 'left' | 'right' | 'center' | 'stretch'
 }
 
-export class GridLayout {
+export class GridLayout extends EventTarget {
   public toolBarHeight = '40px'
   public panelHeight = '40px'
   public statusBarHeight = '30px'
@@ -45,6 +45,7 @@ export class GridLayout {
   private columns = [this.activityBarWidth, this.primarySidebarWidth, '1fr', this.secondarySidebarWidth];
 
   constructor() {
+    super();
     this.calcLayoutStyle();
   }
 
@@ -59,6 +60,16 @@ export class GridLayout {
     }
 
     this.calcLayoutStyle();
+    this.dispatchEvent(new Event('change'));
+  }
+
+  public watch(callback: () => void) {
+    this.addEventListener('change', callback);
+
+    return () => {
+      this.removeEventListener('change', callback);
+    }
+
   }
 
   private calcLayoutStyle() {

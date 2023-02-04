@@ -2,8 +2,15 @@
 import styles from './index.module.less';
 import { Button } from "antd";
 import { GridLayout } from '@grootio/common';
+import { useEffect, useReducer } from 'react';
 
 const Workbench: React.FC<{ layout: GridLayout }> = ({ layout }) => {
+  const [, refresh] = useReducer((tick) => ++tick, 1);
+  useEffect(() => {
+    return layout.watch(() => {
+      refresh();
+    });
+  }, []);
 
   return <div className={styles.container} style={layout.styles}>
     <div className={styles.toolBar}>toolBar</div>
