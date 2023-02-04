@@ -1,6 +1,6 @@
 import { APIPath, Application, ExtensionRuntime, HostConfig, loadRemoteModule, MainType } from "@grootio/common";
 import request from "../util/request";
-import { executeCommand, registerCommand } from "./groot";
+import { commandRegisterReady, executeCommand, registerCommand } from "./groot";
 import WorkbenchModel from "./Workbench/WorkbenchModel";
 
 export default class StudioModel extends EventTarget {
@@ -71,7 +71,7 @@ export default class StudioModel extends EventTarget {
   }
 
   private parseExtensionConfig(mainList: MainType[]) {
-    return mainList.map((main, index) => {
+    const configList = mainList.map((main, index) => {
       const requestClone = request.clone((type) => {
         if (type === 'request') {
           console.log(`[${this.extensionList[index].key} request]`);
@@ -95,5 +95,8 @@ export default class StudioModel extends EventTarget {
 
       return extensionConfig;
     });
+
+    commandRegisterReady();
+    return configList;
   }
 }

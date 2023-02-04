@@ -2,7 +2,15 @@ import { GrootContextExecuteCommand, GrootContextRegisterCommand } from "@grooti
 
 const commandMap = new Map<string | symbol, { thisArg?: any, callback: Function }>();
 
+let commandReady = false;
+export const commandRegisterReady = () => {
+  commandReady = true;
+}
+
 export const registerCommand: GrootContextRegisterCommand = (command, callback, thisArg?) => {
+  if (commandReady) {
+    throw new Error('命令系统已准备完成，不可再次注册命令');
+  }
   if (commandMap.has(command)) {
     console.warn(`命令:${String(command)} 已经存在`);
   }
