@@ -1,7 +1,12 @@
 import { ReactElement } from "react";
 import { APIStore } from "./api/API.store";
 import { Application, ComponentInstance, State } from "./entities";
-import { RequestFnType, ViewportMode } from "./internal";
+import { RequestFnType } from "./internal";
+
+export enum StudioMode {
+  Prototype = 'prototype',
+  Instance = 'instance'
+}
 
 export type ModelClass<T> = (new () => T) & { modelName: string };
 
@@ -41,7 +46,6 @@ export type GrootContextExecuteCommand = <CT extends Record<string, [any[], any]
 
 export type ExtensionContext = {
   request: RequestFnType<APIStore>,
-  studioModel: any,
   workbenchModel?: WorkbenchModelType,
   groot: GrootContext
 }

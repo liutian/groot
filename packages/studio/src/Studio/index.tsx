@@ -1,4 +1,4 @@
-import { StudioParams, useRegisterModel } from '@grootio/common';
+import { StudioMode, StudioParams, useRegisterModel } from '@grootio/common';
 import { useEffect } from 'react';
 import StudioModel from './StudioModel';
 import Workbench from './Workbench';
@@ -12,17 +12,17 @@ const Studio: React.FC<StudioParams> = (params) => {
   const studioModel = useRegisterModel(StudioModel);
 
   useEffect(() => {
-    studioModel.prototypeMode = params.prototypeMode;
-    if (params.prototypeMode) {
+    studioModel.studioMode = params.studioMode;
+    if (params.studioMode == StudioMode.Prototype) {
       studioModel.fetchSolution(params.solutionId).then(() => {
-        studioModel.loadExtension().then(() => {
+        studioModel.initExtension().then(() => {
           // todo 研究promise自动刷新视图
           studioModel.loadStatus = 'ok';
         })
       })
     } else {
       studioModel.fetchApplication(params.appId, params.releaseId).then(() => {
-        studioModel.loadExtension().then(() => {
+        studioModel.initExtension().then(() => {
           // todo 研究promise自动刷新视图
           studioModel.loadStatus = 'ok';
         })

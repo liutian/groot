@@ -9,7 +9,7 @@ import request from "./util/request";
 
 // import 'antd/dist/reset.css';
 import './index.less'
-import { StudioParams } from "@grootio/common";
+import { StudioMode, StudioParams } from "@grootio/common";
 
 type PropsType = {
   appEnv: string,
@@ -20,8 +20,6 @@ type PropsType = {
     params: StudioParams
   }
 }
-
-const appName = 'studio';
 
 // 1.获取运行时必要参数，2.加载账户信息包括组织架构
 const Main: React.FC<PropsType> = (props) => {
@@ -38,7 +36,7 @@ const Main: React.FC<PropsType> = (props) => {
         componentId: +searchParams.get('componentId'),
         instanceId: +searchParams.get('instanceId'),
         releaseId: +searchParams.get('releaseId'),
-        prototypeMode: !!searchParams.get('prototypeMode')
+        studioMode: searchParams.get('studioMode') as StudioMode
       }
     }
   })

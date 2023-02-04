@@ -1,6 +1,6 @@
-import { APIPath, Application, ExtensionRuntime, HostConfig, loadRemoteModule, MainType } from "@grootio/common";
+import { APIPath, Application, HostConfig, StudioMode } from "@grootio/common";
 import request from "../util/request";
-import { commandRegisterReady, executeCommand, registerCommand } from "./groot";
+import { loadExtension } from "./groot";
 import WorkbenchModel from "./Workbench/WorkbenchModel";
 
 export default class StudioModel extends EventTarget {
@@ -9,10 +9,10 @@ export default class StudioModel extends EventTarget {
   loadStatus: 'doing' | 'no-application' | 'no-solution' | 'no-instance' | 'fetch-extension' | 'notfound' | 'ok' = 'doing';
   workbenchModel?: WorkbenchModel;
 
-  prototypeMode: boolean;
+  studioMode: StudioMode;
   solution: any;
   application: Application;
-  extensionList: ExtensionRuntime[] = [];
+
   config: HostConfig;
 
   public fetchSolution = (solutionId: number) => {
@@ -35,68 +35,19 @@ export default class StudioModel extends EventTarget {
     })
   }
 
-  public loadExtension = () => {
+  public initExtension = () => {
     const localCustomExtension = localStorage.getItem('groot_extension');
 
-    let remoteExtensions: { key: string, url: string }[] = [];
+    let remoteExtensionList: { key: string, url: string }[] = [];
     if (localCustomExtension) {
-      remoteExtensions = localCustomExtension.split(',').map(str => {
+      remoteExtensionList = localCustomExtension.split(',').map(str => {
         const [key, url] = str.split('@')
         return { key, url }
       });
     } else {
-      remoteExtensions = this.prototypeMode ? this.solution.extensionList : this.application.extensionList;
+      remoteExtensionList = this.studioMode === StudioMode.Prototype ? this.solution.extensionList : this.application.extensionList;
     }
 
-    return Promise.all(remoteExtensions.map(item => {
-      return loadRemoteModule(item.key, 'Main', item.url);
-    }))
-      .then(
-        moduleList => moduleList.map(m => m.default),
-        (error) => {
-          console.error('加载插件失败');
-          return Promise.reject(error);
-        })
-      .then((mainList: MainType[]) => {
-        const extensionConfigList = this.parseExtensionConfig(mainList);
-        this.extensionList = remoteExtensions.map(({ key, url }, index) => {
-          return {
-            key,
-            url,
-            main: mainList[index],
-            config: extensionConfigList[index]
-          }
-        })
-      })
-  }
-
-  private parseExtensionConfig(mainList: MainType[]) {
-    const configList = mainList.map((main, index) => {
-      const requestClone = request.clone((type) => {
-        if (type === 'request') {
-          console.log(`[${this.extensionList[index].key} request]`);
-        }
-      });
-
-      const extensionConfig = main({
-        request: requestClone,
-        studioModel: this,
-        groot: {
-          commands: {
-            registerCommand: (command, callback, thisArg) => {
-              return registerCommand(command, callback, thisArg);
-            },
-            executeCommand: (command, ...args) => {
-              return executeCommand(command, ...args);
-            }
-          }
-        }
-      });
-
-      return extensionConfig;
-    });
-
-    commandRegisterReady();
-    return configList;
+    return loadExtension(remoteExtensionList, this.studioMode)
   }
 }

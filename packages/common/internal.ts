@@ -1,5 +1,6 @@
 import { UIManagerConfig } from "./runtime";
 import { PropMetadataType } from './data';
+import { StudioMode } from "./extension";
 
 export type IframeDebuggerConfig = {
   runtimeConfig?: Partial<UIManagerConfig>,
@@ -114,5 +115,5 @@ export type StudioParams = {
   releaseId: number,
   componentId: number,
   instanceId: number,
-  prototypeMode: boolean
+  studioMode: StudioMode
 }
