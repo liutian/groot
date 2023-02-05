@@ -1,4 +1,4 @@
-import { ReactElement } from "react";
+import React, { ReactElement } from "react";
 import { APIStore } from "./api/API.store";
 import { Application, ComponentInstance, State } from "./entities";
 import { GridLayout } from "./GridLayout";
@@ -38,10 +38,16 @@ export type MainType = (context: ExtensionContext) => ExtensionConfig;
 export type GrootContext = {
   params: GrootContextParams,
   commands: {
-    registerCommand: GrootContextRegisterCommand;
+    registerCommand: GrootContextRegisterCommand,
     executeCommand: GrootContextExecuteCommand,
   },
-  layout: GridLayout
+  states: {
+    registerState: GrootContextRegisterState,
+    getState: GrootContextGetState,
+    setState: GrootContextSetState
+  },
+  layout: GridLayout,
+  onReady: (listener: EventListener) => void;
 }
 
 export type GrootContextParams = {
@@ -51,10 +57,22 @@ export type GrootContextParams = {
   solution: any,
 }
 
-export type GrootContextRegisterCommand = <CT extends Record<string, [any[], any]>>(command: keyof CT & string, callback: (...args: CT[keyof CT & string][0]) => CT[keyof CT & string][1], thisArg?: any) => Function
+export type GrootContextRegisterCommand = <CT extends Record<string, [any[], any]>>(command: keyof CT & string, callback: (originCallback: any, ...args: CT[keyof CT & string][0]) => CT[keyof CT & string][1], thisArg?: any) => Function
 export type GrootContextExecuteCommand = <CT extends Record<string, [any[], any]>>(command: keyof CT & string, ...args: CT[keyof CT & string][0]) => CT[keyof CT & string][1];
 
+
+
+export type GrootContextRegisterState = <ST extends Record<string, any>> (name: keyof ST & string, eventTarget?: EventTarget, defaultValue?: ST[keyof ST & string]) => void;
+export type GrootContextGetState = <ST extends Record<string, any>>(name: keyof ST & string) => ST[keyof ST & string];
+export type GrootContextSetState = <ST extends Record<string, any>>(name: keyof ST & string, value: ST[keyof ST & string], dispatch?: boolean) => void;
+
+
+
+export type GrootContextUseStateByName = <ST extends Record<string, any>>(name: keyof ST & string) => ST[keyof ST & string];
+
 export type ExtensionContext = {
+  extName: string,
+  extUrl: string,
   request: RequestFnType<APIStore>,
   workbenchModel?: WorkbenchModelType,
   groot: GrootContext
@@ -104,4 +122,13 @@ export type RemoteExtension = {
   title: string,
   url: string,
   module: string
+}
+
+
+export type GrootCommandType = {
+  'groot.workbench.render.activityBar': [[], ReactElement<any, any> | null]
+}
+
+export type GrootStateType = {
+
 }

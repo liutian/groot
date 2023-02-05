@@ -42,3 +42,10 @@ type GetKeyType<T, K> = K extends keyof T ? ConvertArray<T[K]> : never;
 type ConvertArray<T> = T extends Array<infer U> ? ConvertArray<U> : T;
 
 type WrapMinus<T> = T extends string ? `-${T}` : never;
+
+
+const typeList = ['Number', 'String', 'Null', 'Undefined', 'Boolean', 'Symbol', 'BigInt'];
+export const isBaseType = (value: any) => {
+  const typeStr = Object.prototype.toString.apply(value);
+  return typeList.some(type => typeStr.includes(type));
+}

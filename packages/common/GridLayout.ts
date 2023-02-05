@@ -15,10 +15,10 @@ export type LayoutSetting = {
 
 export class GridLayout extends EventTarget {
   public toolBarHeight = '40px'
-  public panelHeight = '40px'
-  public statusBarHeight = '30px'
-  public activityBarWidth = '60px'
-  public primarySidebarWidth = '250px'
+  public panelHeight = '80px'
+  public statusBarHeight = '22px'
+  public activityBarWidth = '50px'
+  public primarySidebarWidth = '170px'
   public secondarySidebarWidth = '250px'
 
   public styles = { gridTemplateColumns: '', gridTemplateRows: '', gridTemplateAreas: '' }

@@ -1,9 +1,14 @@
-import { ExtensionRuntime, GridLayout, GrootContextExecuteCommand, GrootContextParams, GrootContextRegisterCommand, loadRemoteModule, MainType } from "@grootio/common"
+import { ExtensionRuntime, GridLayout, GrootContextExecuteCommand, GrootContextGetState, GrootContextParams, GrootContextRegisterCommand, GrootContextRegisterState, GrootContextSetState, GrootContextUseStateByName, isBaseType, loadRemoteModule, MainType, wrapperState } from "@grootio/common"
+import { useReducer, useState } from "react";
 import request from "util/request";
 
+let registorReady = false;
 const commandMap = new Map<string, { thisArg?: any, callback: Function, provider: string }>();
 const extensionList: ExtensionRuntime[] = [];
-let commandReady = false;
+const stateMap = new Map<string, { value: any, provider: string, eventTarget: EventTarget }>();
+let tempProvider = ''
+let refreshView: Function;
+const contextEventTarget = new EventTarget();
 
 export const loadExtension = (remoteExtensionList: { key: string, url: string }[]) => {
   return Promise.all(remoteExtensionList.map(item => {
@@ -22,55 +27,59 @@ export const loadExtension = (remoteExtensionList: { key: string, url: string }[
     })
 }
 
-export const execExtension = (remoteExtensionList: { key: string, url: string, main: MainType }[], params: GrootContextParams, layout: GridLayout) => {
-  const mainList = remoteExtensionList.map(({ main }) => main);
-  const extensionConfigList = parseExtensionConfig(mainList, params, layout);
-  remoteExtensionList.forEach(({ key, url }, index) => {
-    extensionList.push({
-      key,
-      url,
-      main: mainList[index],
-      config: extensionConfigList[index]
-    })
-  })
-  return extensionList;
-}
-
-const parseExtensionConfig = (mainList: MainType[], params: GrootContextParams, layout: GridLayout) => {
-  const configList = mainList.map((main, index) => {
+export const execExtension = (remoteExtensionList: { key: string, url: string, main: MainType }[], params: GrootContextParams, layout: GridLayout, refresh: Function) => {
+  refreshView = refresh;
+  const configList = remoteExtensionList.map(({ main, key, url }, index) => {
     const requestClone = request.clone((type) => {
       if (type === 'request') {
         console.log(`[${extensionList[index].key} request]`);
       }
     });
 
+    tempProvider = key;
     const extensionConfig = main({
+      extName: key,
+      extUrl: url,
       request: requestClone,
       groot: {
         params,
         layout,
+        states: {
+          registerState,
+          setState,
+          getState
+        },
         commands: {
-          registerCommand: (command, callback, thisArg) => {
-            const disposable = registerCommand(command, callback, thisArg);
-            commandMap.get(command).provider = command;
-            return disposable;
-          },
-          executeCommand: (command, ...args) => {
-            return executeCommand(command, ...args);
-          }
+          registerCommand,
+          executeCommand
+        },
+        onReady: function (listener) {
+          contextEventTarget.addEventListener('ready', listener);
         }
       }
     });
+    tempProvider = undefined;
 
     return extensionConfig;
   });
 
-  commandReady = true;
-  return configList;
+  registorReady = true;
+  contextEventTarget.dispatchEvent(new Event('ready'));
+
+  remoteExtensionList.forEach(({ key, url }, index) => {
+    extensionList.push({
+      key,
+      url,
+      main: remoteExtensionList[index].main,
+      config: configList[index]
+    })
+  })
+  return extensionList;
 }
 
+
 const registerCommand: GrootContextRegisterCommand = (command, callback, thisArg?) => {
-  if (commandReady) {
+  if (registorReady) {
     throw new Error('命令系统已准备完成，不可再次注册命令');
   }
   if (commandMap.has(command)) {
@@ -79,7 +88,7 @@ const registerCommand: GrootContextRegisterCommand = (command, callback, thisArg
   commandMap.set(command, {
     callback,
     thisArg,
-    provider: ''
+    provider: tempProvider
   });
   return () => {
     if (commandMap.has(command) && commandMap.get(command).callback !== callback) {
@@ -89,10 +98,84 @@ const registerCommand: GrootContextRegisterCommand = (command, callback, thisArg
   }
 }
 
-const executeCommand: GrootContextExecuteCommand = (command, ...args) => {
+export const executeCommand: GrootContextExecuteCommand = (command, ...args) => {
   if (!commandMap.has(command)) {
     throw new Error(`命令:${String(command)} 未找到`)
   }
   const { callback, thisArg } = commandMap.get(command);
   return callback.apply(thisArg, args);
+}
+
+
+const registerState: GrootContextRegisterState = (name, eventTarget = new EventTarget(), defaultValue) => {
+  if (registorReady) {
+    throw new Error('状态系统已准备完成，不可再次注册状态');
+  }
+  if (stateMap.has(name)) {
+    console.warn(`状态:${name} 已存在`)
+  }
+
+  if (isBaseType(defaultValue) && defaultValue !== undefined) {
+    stateMap.set(name, {
+      value: wrapperState(defaultValue, () => {
+        eventTarget.dispatchEvent(new Event('change'))
+      }),
+      provider: tempProvider,
+      eventTarget
+    });
+  } else {
+    stateMap.set(name, {
+      value: undefined,
+      provider: tempProvider,
+      eventTarget
+    })
+  }
+}
+
+const getState: GrootContextGetState = (name) => {
+  if (!stateMap.get(name)) {
+    console.warn(`状态:${name} 未找到`)
+  }
+
+  const stateObj = stateMap.get(name);
+  return stateObj.value;
+}
+
+const setState: GrootContextSetState = (name, newValue, dispatch) => {
+  if (!stateMap.get(name)) {
+    new Error(`状态:${name} 未找到`)
+  }
+
+  const stateObj = stateMap.get(name);
+  if (newValue !== stateObj.value) {
+    if (isBaseType(newValue) && newValue !== undefined) {
+      stateObj.value = newValue;
+    } else {
+      stateObj.value = wrapperState(newValue, () => {
+        stateObj.eventTarget.dispatchEvent(new Event('change'))
+      })
+    }
+
+    if (dispatch !== false) {
+      stateObj.eventTarget.dispatchEvent(new Event('change'));
+    }
+  }
+}
+
+export const useStateByName: GrootContextUseStateByName = (name) => {
+  if (!stateMap.has(name)) {
+    throw new Error(`状态未准备就绪`)
+  }
+
+  const stateObj = stateMap.get(name);
+
+  const [, refresh] = useReducer((tick) => ++tick, 0);
+
+  useState(() => {
+    stateObj.eventTarget.addEventListener('change', () => {
+      refresh();
+    })
+  })
+
+  return stateObj.value
 }

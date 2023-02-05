@@ -1,8 +1,9 @@
 
 import styles from './index.module.less';
 import { Button } from "antd";
-import { GridLayout } from '@grootio/common';
+import { GridLayout, GrootCommandType } from '@grootio/common';
 import { useEffect, useReducer } from 'react';
+import { executeCommand } from 'Studio/groot';
 
 const Workbench: React.FC<{ layout: GridLayout }> = ({ layout }) => {
   const [, refresh] = useReducer((tick) => ++tick, 1);
@@ -14,7 +15,9 @@ const Workbench: React.FC<{ layout: GridLayout }> = ({ layout }) => {
 
   return <div className={styles.container} style={layout.styles}>
     <div className={styles.toolBar}>toolBar</div>
-    <div className={styles.activityBar}>activityBar</div>
+    <div className={styles.activityBar}>
+      {executeCommand<GrootCommandType>('groot.workbench.render.activityBar')}
+    </div>
     <div className={styles.primarySidebar}>primarySidebar</div>
     <div className={styles.secondarySidebar}>secondarySidebar</div>
     <div className={styles.editor}>
