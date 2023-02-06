@@ -4,7 +4,8 @@ import { isBaseType } from './util';
 const ArrayPatchMethods = ['push', 'pop', 'shift', 'unshift', 'splice', 'sort', 'reverse'];
 
 export function wrapperState(target: any, listener: Function) {
-  if (isBaseType(target)) {
+  const targetTypeStr = Object.prototype.toString.apply(target);
+  if (isBaseType(target) || targetTypeStr === '[object Function]' || targetTypeStr === '[object AsyncFunction]' || target.$$typeof) {
     return target;
   }
 
