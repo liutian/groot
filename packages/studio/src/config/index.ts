@@ -5,3 +5,5 @@ export const authTokenKey = 'ticket';
 export const successCode = 200;
 
 export const baseUrl = ''
+
+export const localExtension = 'groot_extension'

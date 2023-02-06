@@ -13,7 +13,7 @@ const config = (env, args, panguConfig: PanguConfig) => {
 		},
 		optimization: {
 			/**
-			 * src/index.tsx 必须强制引用所有公共依赖，然后必须强制将npm依赖单独打包，否则构建出来的只会有一个js文件
+			 * src/index.tsx 必须强制引用所有公共依赖，然后必须强制将npm依赖单独打包，否则依赖包文件无法生成
 			 */
 			splitChunks: {
 				chunks: 'all',

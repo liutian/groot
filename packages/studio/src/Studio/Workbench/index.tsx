@@ -1,26 +1,35 @@
 
 import styles from './index.module.less';
 import { Button } from "antd";
-import { GridLayout, GrootCommandType } from '@grootio/common';
+import { GridLayout, GrootCommandType, GrootStateType } from '@grootio/common';
 import { useEffect, useReducer } from 'react';
-import { executeCommand } from 'Studio/groot';
+import { executeCommand, useStateByName } from 'Studio/groot';
 
 const Workbench: React.FC<{ layout: GridLayout }> = ({ layout }) => {
   const [, refresh] = useReducer((tick) => ++tick, 1);
+  const containerStyle = useStateByName<GrootStateType>('groot.workbench.style.container') || {};
+  const toolBarStyle = useStateByName<GrootStateType>('groot.workbench.style.toolBar') || {};
+  const activityBarStyle = useStateByName<GrootStateType>('groot.workbench.style.activityBar') || {};
+  const primarySidebarStyle = useStateByName<GrootStateType>('groot.workbench.style.primarySidebar') || {};
+  const secondarySidebarStyle = useStateByName<GrootStateType>('groot.workbench.style.secondarySidebar') || {};
+  const editorStyle = useStateByName<GrootStateType>('groot.workbench.style.editor') || {};
+  const panelStyle = useStateByName<GrootStateType>('groot.workbench.style.panel') || {};
+  const statusBarStyle = useStateByName<GrootStateType>('groot.workbench.style.statusBar') || {};
+
   useEffect(() => {
     return layout.watch(() => {
       refresh();
     });
   }, []);
 
-  return <div className={styles.container} style={layout.styles}>
-    <div className={styles.toolBar}>toolBar</div>
-    <div className={styles.activityBar}>
+  return <div className={styles.container} style={{ ...containerStyle, ...layout.styles }}>
+    <div className={styles.toolBar} style={toolBarStyle}></div>
+    <div className={styles.activityBar} style={activityBarStyle}>
       {executeCommand<GrootCommandType>('groot.workbench.render.activityBar')}
     </div>
-    <div className={styles.primarySidebar}>primarySidebar</div>
-    <div className={styles.secondarySidebar}>secondarySidebar</div>
-    <div className={styles.editor}>
+    <div className={styles.primarySidebar} style={primarySidebarStyle}></div>
+    <div className={styles.secondarySidebar} style={secondarySidebarStyle}></div>
+    <div className={styles.editor} style={editorStyle}>
       <Button onClick={() => layout.design('visible', 'activityBar', !layout.layoutSetting.activityBar)}>活动栏</Button>
       <Button onClick={() => layout.design('visible', 'primarySidebar', !layout.layoutSetting.primarySidebar)}>主侧栏</Button>
       <Button onClick={() => layout.design('visible', 'secondarySidebar', !layout.layoutSetting.secondarySidebar)}>辅助侧边栏</Button>
@@ -48,8 +57,8 @@ const Workbench: React.FC<{ layout: GridLayout }> = ({ layout }) => {
       <Button onClick={() => layout.design('panel', 'stretch', null)}>面板两端</Button>
 
     </div>
-    <div className={styles.panel}>panel</div>
-    <div className={styles.statusBar}>statusBar</div>
+    <div className={styles.panel} style={panelStyle}></div>
+    <div className={styles.statusBar} style={statusBarStyle}></div>
   </div>
 }
 

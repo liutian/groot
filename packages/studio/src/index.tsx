@@ -1,5 +1,4 @@
 
-import { ConfigProvider } from "antd";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
@@ -37,20 +36,26 @@ const Main: React.FC<PropsType> = (props) => {
       }
     }
   })
-  useState(() => {
-    document.head.title = 'groot';
-  });
+
+
+  if (!props.groot) {
+    useState(() => {
+      document.head.title = 'groot';
+      return () => {
+        document.head.title = '';
+      }
+    });
+  }
 
   useEffect(() => {
     return () => {
-      document.head.title = '';
-      document.head.querySelector('groot-studio')?.remove();
+      document.head.querySelector('#groot-studio')?.remove();
     }
   }, [])
 
-  return <ConfigProvider>
+  return <>
     {params ? <App {...params} /> : <>必须提供参数信息</>}
-  </ConfigProvider>
+  </>
 }
 
 

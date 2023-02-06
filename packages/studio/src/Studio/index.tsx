@@ -1,5 +1,6 @@
 import { APIPath, GridLayout, StudioMode, StudioParams } from '@grootio/common';
-import { useEffect, useReducer, useState } from 'react';
+import { localExtension } from 'config';
+import { useEffect, useState } from 'react';
 import request from 'util/request';
 import { execExtension, loadExtension } from './groot';
 import Workbench from './Workbench';
@@ -13,7 +14,6 @@ import Workbench from './Workbench';
 const Studio: React.FC<StudioParams & { account: any }> = (params) => {
   const [loadStatus, setLoadStatus] = useState<'doing' | 'no-application' | 'no-solution' | 'no-instance' | 'fetch-extension' | 'notfound' | 'ok'>('doing');
   const [layout, setLayout] = useState<GridLayout>();
-  const [, refresh] = useReducer((tick) => ++tick, 1);
 
   useEffect(() => {
     let fetchDataPromise;
@@ -36,7 +36,7 @@ const Studio: React.FC<StudioParams & { account: any }> = (params) => {
           application: params.studioMode === StudioMode.Instance ? data : null,
           solution: params.studioMode === StudioMode.Prototype ? data : null,
           account: params.account,
-        }, layout, refresh)
+        }, layout)
       })
     })
   }, []);
@@ -60,12 +60,12 @@ const Studio: React.FC<StudioParams & { account: any }> = (params) => {
   }
 
   const fetchExtension = (data) => {
-    const localCustomExtension = localStorage.getItem('groot_extension');
+    const localCustomExtension = localStorage.getItem(localExtension);
 
     if (localCustomExtension) {
       let remoteExtensionList = localCustomExtension.split(',').map(str => {
-        const [key, url] = str.split('@')
-        return { key, url }
+        const [packageName, packageUrl] = str.split('@')
+        return { packageName, packageUrl, main: null, config: null }
       });
       return loadExtension(remoteExtensionList)
     } else {

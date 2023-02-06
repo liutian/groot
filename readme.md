@@ -10,12 +10,10 @@
 
 ### 贡献代码
 - `react` `typescript` 为项目公共依赖库，在根目录默认安装，根目录 `base.tsconfig.json` 作为各个项目通用ts配置
-- 如果需要本地调试 `examples/webpack-demo` 首先删除改项目下的 `node_modules/react`，防止运行时有两套react
 - 本地开发应用启动列表，深度定制化
   - `cloud` 服务器：groot-local.com:10000
   - `examples/webpack-demo` demo项目：groot-local.com:11000
-  - `packages/plugin` 插件项目模块联邦：groot-local.com:12000
-  - `workbench` 工作台模块联邦：groot-local.com:13000
-  - `examples/groot-workbench-demo` 工作台宿主项目：groot-local.com:14000
-
-- `workbench` 独立工作台项目：groot-local.com:15000
+  - `packages/pangu` 微模块系统基座项目：groot-local.com:15000
+  - `packages/studio` 微模块系统主项目：groot-local.com:13000
+  - `packages/extension` 微模块系统子项目：groot-local.com:12000
+  - `examples/groot-studio-demo` 工作台宿主项目：groot-local.com:14000

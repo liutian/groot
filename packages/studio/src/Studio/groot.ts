@@ -4,15 +4,14 @@ import request from "util/request";
 
 let registorReady = false;
 const commandMap = new Map<string, { thisArg?: any, callback: Function, provider: string }>();
-const extensionList: ExtensionRuntime[] = [];
+let extensionList: ExtensionRuntime[] = [];
 const stateMap = new Map<string, { value: any, provider: string, eventTarget: EventTarget }>();
 let tempProvider = ''
-let refreshView: Function;
 const contextEventTarget = new EventTarget();
 
-export const loadExtension = (remoteExtensionList: { key: string, url: string }[]) => {
+export const loadExtension = (remoteExtensionList: ExtensionRuntime[]) => {
   return Promise.all(remoteExtensionList.map(item => {
-    return loadRemoteModule(item.key, 'Main', item.url);
+    return loadRemoteModule(item.packageName, 'Main', item.packageUrl);
   }))
     .then(
       moduleList => moduleList.map(m => m.default),
@@ -21,25 +20,24 @@ export const loadExtension = (remoteExtensionList: { key: string, url: string }[
         return Promise.reject(error);
       })
     .then((mainList: MainType[]) => {
-      return remoteExtensionList.map(({ key, url }, index) => {
-        return { key, url, main: mainList[index] }
+      return remoteExtensionList.map(({ packageName, packageUrl }, index) => {
+        return { packageName, packageUrl, main: mainList[index], config: null }
       })
     })
 }
 
-export const execExtension = (remoteExtensionList: { key: string, url: string, main: MainType }[], params: GrootContextParams, layout: GridLayout, refresh: Function) => {
-  refreshView = refresh;
-  const configList = remoteExtensionList.map(({ main, key, url }, index) => {
+export const execExtension = (remoteExtensionList: ExtensionRuntime[], params: GrootContextParams, layout: GridLayout) => {
+  const configList = remoteExtensionList.map(({ main, packageName, packageUrl }, index) => {
     const requestClone = request.clone((type) => {
       if (type === 'request') {
-        console.log(`[${extensionList[index].key} request]`);
+        console.log(`[${extensionList[index].packageName} request]`);
       }
     });
 
-    tempProvider = key;
+    tempProvider = packageName;
     const extensionConfig = main({
-      extName: key,
-      extUrl: url,
+      extName: packageName,
+      extUrl: packageUrl,
       request: requestClone,
       groot: {
         params,
@@ -66,15 +64,14 @@ export const execExtension = (remoteExtensionList: { key: string, url: string, m
   registorReady = true;
   contextEventTarget.dispatchEvent(new Event('ready'));
 
-  remoteExtensionList.forEach(({ key, url }, index) => {
-    extensionList.push({
-      key,
-      url,
+  extensionList = remoteExtensionList.map(({ packageName, packageUrl }, index) => {
+    return {
+      packageName,
+      packageUrl,
       main: remoteExtensionList[index].main,
       config: configList[index]
-    })
+    }
   })
-  return extensionList;
 }
 
 
@@ -99,6 +96,9 @@ const registerCommand: GrootContextRegisterCommand = (command, callback, thisArg
 }
 
 export const executeCommand: GrootContextExecuteCommand = (command, ...args) => {
+  if (!registorReady) {
+    throw new Error(`命令系统未准备就绪`)
+  }
   if (!commandMap.has(command)) {
     throw new Error(`命令:${String(command)} 未找到`)
   }
@@ -142,6 +142,9 @@ const getState: GrootContextGetState = (name) => {
 }
 
 const setState: GrootContextSetState = (name, newValue, dispatch) => {
+  if (!registorReady) {
+    throw new Error(`状态系统未准备就绪`)
+  }
   if (!stateMap.get(name)) {
     new Error(`状态:${name} 未找到`)
   }

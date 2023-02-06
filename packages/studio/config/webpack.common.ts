@@ -93,8 +93,8 @@ const config = (env, args) => {
 			}),
 
 			new ModuleFederationPlugin({
-				name: 'grootStudio',
-				filename: 'studio/index.js',
+				name: 'groot_studio',
+				filename: 'groot-studio/index.js',
 				exposes: {
 					Main: './src',
 					Studio: './src/Studio'

@@ -52,8 +52,8 @@ const config = (): PanguConfig => {
     appConfig: {
       studio: {
         bootstrap: true,
-        packageName: 'grootStudio',
-        packageUrl: 'http://groot-local.com:13000/studio/index.js'
+        packageName: 'groot_studio',
+        packageUrl: 'http://groot-local.com:13000/groot-studio/index.js'
       }
     }
   }

@@ -1,6 +1,6 @@
 import React, { ReactElement } from "react";
 import { APIStore } from "./api/API.store";
-import { Application, ComponentInstance, State } from "./entities";
+import { Application } from "./entities";
 import { GridLayout } from "./GridLayout";
 import { RequestFnType } from "./internal";
 
@@ -14,18 +14,6 @@ export type ModelClass<T> = (new () => T) & { modelName: string };
 export type UseModelFnType = <T>(model: ModelClass<T>, isRoot?: boolean) => T;
 
 // 公开WorkbenchModel类型必须单独定义，不能直接通过ts import(...) ，该语法会导致ts深入解析 workbench项目中 WorkbenchModel 其他依赖项导致重复甚至循环解析
-export class WorkbenchModelType extends EventTarget {
-  static readonly modelName = 'groot_workbench';
-  prototypeMode: boolean;
-  application: Application;
-  componentInstance: ComponentInstance;
-  globalStateList: State[];
-  pageStateList: State[]
-}
-
-
-export type ExtensionViewComponent = React.FC<{
-}>;
 
 export enum ModalStatus {
   None = 'none',
@@ -74,47 +62,22 @@ export type ExtensionContext = {
   extName: string,
   extUrl: string,
   request: RequestFnType<APIStore>,
-  workbenchModel?: WorkbenchModelType,
   groot: GrootContext
 }
 
 export type ExtensionRuntime = {
-  key: string,
-  url: string,
+  packageName: string,
+  packageUrl: string,
   main: MainType,
   config: ExtensionConfig
 }
-
-export enum WorkbenchEvent {
-  LaunchFinish = 'launch_finish',
-
-  DragComponentStart = 'drag_component_start',
-  DragComponentEnd = 'drag_component_end',
-}
-
 
 
 export type HostConfig = {
 }
 
 export type ExtensionConfig = {
-  contributes?: {
-    // sidebarView?: SidebarViewType[],
-    // propSettingView?: RemoteExtension[]
-  }
 }
-
-export type SidebarViewType = {
-  key: string,
-  title: string,
-  order?: number,
-} & ({
-  icon: ReactElement,
-  view: ReactElement
-} | {
-  icon: string,
-  view: RemoteExtension
-})
 
 export type RemoteExtension = {
   key?: string,
@@ -126,9 +89,16 @@ export type RemoteExtension = {
 
 
 export type GrootCommandType = {
-  'groot.workbench.render.activityBar': [[], ReactElement<any, any> | null]
+  'groot.workbench.render.activityBar': [[], ReactElement<any, any> | null],
 }
 
 export type GrootStateType = {
-
+  'groot.workbench.style.container': React.CSSProperties,
+  'groot.workbench.style.toolBar': React.CSSProperties,
+  'groot.workbench.style.activityBar': React.CSSProperties,
+  'groot.workbench.style.primarySidebar': React.CSSProperties,
+  'groot.workbench.style.secondarySidebar': React.CSSProperties,
+  'groot.workbench.style.editor': React.CSSProperties,
+  'groot.workbench.style.panel': React.CSSProperties,
+  'groot.workbench.style.statusBar': React.CSSProperties,
 }
