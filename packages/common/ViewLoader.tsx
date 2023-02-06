@@ -4,7 +4,7 @@ import { loadRemoteModule } from "@grootio/common";
 type PropsType = {
   packageName: string,
   module: string,
-  url: string,
+  packageUrl: string,
   fallback?: React.ReactNode
 }
 export const ViewLoader: React.FC<PropsType> = (config) => {
@@ -15,7 +15,7 @@ export const ViewLoader: React.FC<PropsType> = (config) => {
       return;
     }
 
-    setComponent(React.lazy(() => loadRemoteModule(config.packageName, config.module, config.url)));
+    setComponent(React.lazy(() => loadRemoteModule(config.packageName, config.module, config.packageUrl)));
   }, [config]);
 
   return <>{

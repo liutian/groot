@@ -20,14 +20,14 @@ export const loadExtension = (remoteExtensionList: ExtensionRuntime[]) => {
         return Promise.reject(error);
       })
     .then((mainList: MainType[]) => {
-      return remoteExtensionList.map(({ packageName, packageUrl }, index) => {
-        return { packageName, packageUrl, main: mainList[index], config: null }
+      return remoteExtensionList.map(({ packageName, packageUrl, name }, index) => {
+        return { packageName, packageUrl, main: mainList[index], config: null, name }
       })
     })
 }
 
 export const execExtension = (remoteExtensionList: ExtensionRuntime[], params: GrootContextParams, layout: GridLayout) => {
-  const configList = remoteExtensionList.map(({ main, packageName, packageUrl }, index) => {
+  const configList = remoteExtensionList.map(({ name, main, packageName, packageUrl }, index) => {
     const requestClone = request.clone((type) => {
       if (type === 'request') {
         console.log(`[${extensionList[index].packageName} request]`);
@@ -36,8 +36,9 @@ export const execExtension = (remoteExtensionList: ExtensionRuntime[], params: G
 
     tempProvider = packageName;
     const extensionConfig = main({
-      extName: packageName,
-      extUrl: packageUrl,
+      extName: name,
+      extPackageName: packageName,
+      extPackageUrl: packageUrl,
       request: requestClone,
       groot: {
         params,
@@ -64,8 +65,9 @@ export const execExtension = (remoteExtensionList: ExtensionRuntime[], params: G
   registorReady = true;
   contextEventTarget.dispatchEvent(new Event('ready'));
 
-  extensionList = remoteExtensionList.map(({ packageName, packageUrl }, index) => {
+  extensionList = remoteExtensionList.map(({ name, packageName, packageUrl }, index) => {
     return {
+      name,
       packageName,
       packageUrl,
       main: remoteExtensionList[index].main,

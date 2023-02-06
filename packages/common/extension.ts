@@ -60,12 +60,14 @@ export type GrootContextUseStateByName = <ST extends Record<string, any>>(name: 
 
 export type ExtensionContext = {
   extName: string,
-  extUrl: string,
+  extPackageName: string,
+  extPackageUrl: string,
   request: RequestFnType<APIStore>,
   groot: GrootContext
 }
 
 export type ExtensionRuntime = {
+  name: string,
   packageName: string,
   packageUrl: string,
   main: MainType,
@@ -89,16 +91,16 @@ export type RemoteExtension = {
 
 
 export type GrootCommandType = {
-  'groot.workbench.render.activityBar': [[], ReactElement<any, any> | null],
+  'groot.command.workbench.render.activityBar': [[], ReactElement<any, any> | null],
 }
 
 export type GrootStateType = {
-  'groot.workbench.style.container': React.CSSProperties,
-  'groot.workbench.style.toolBar': React.CSSProperties,
-  'groot.workbench.style.activityBar': React.CSSProperties,
-  'groot.workbench.style.primarySidebar': React.CSSProperties,
-  'groot.workbench.style.secondarySidebar': React.CSSProperties,
-  'groot.workbench.style.editor': React.CSSProperties,
-  'groot.workbench.style.panel': React.CSSProperties,
-  'groot.workbench.style.statusBar': React.CSSProperties,
+  'groot.state.workbench.style.container': React.CSSProperties,
+  'groot.state.workbench.style.toolBar': React.CSSProperties,
+  'groot.state.workbench.style.activityBar': React.CSSProperties,
+  'groot.state.workbench.style.primarySidebar': React.CSSProperties,
+  'groot.state.workbench.style.secondarySidebar': React.CSSProperties,
+  'groot.state.workbench.style.editor': React.CSSProperties,
+  'groot.state.workbench.style.panel': React.CSSProperties,
+  'groot.state.workbench.style.statusBar': React.CSSProperties,
 }

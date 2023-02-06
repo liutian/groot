@@ -1,13 +1,12 @@
 
 import { GrootCommandType, MainType, ViewLoader } from '@grootio/common';
-import { CommandType, StateType } from 'type';
 
 import './index.less'
 
-const Main: MainType = ({ extName, extUrl, groot }) => {
+const Main: MainType = ({ extPackageName, extPackageUrl, groot }) => {
 
-  groot.commands.registerCommand<GrootCommandType>('groot.workbench.render.activityBar', () => {
-    return <ViewLoader packageName={extName} module="ActivityBar" url={extUrl} />
+  groot.commands.registerCommand<GrootCommandType>('groot.command.workbench.render.activityBar', () => {
+    return <ViewLoader packageName={extPackageName} module="ActivityBar" packageUrl={extPackageUrl} />
   });
 
   groot.onReady(() => {

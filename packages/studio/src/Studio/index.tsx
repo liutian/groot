@@ -64,8 +64,9 @@ const Studio: React.FC<StudioParams & { account: any }> = (params) => {
 
     if (localCustomExtension) {
       let remoteExtensionList = localCustomExtension.split(',').map(str => {
-        const [packageName, packageUrl] = str.split('@')
-        return { packageName, packageUrl, main: null, config: null }
+        const [prefix, packageUrl] = str.split('@');
+        const [name, packageName = name] = prefix.split('#');
+        return { packageName, packageUrl, main: null, config: null, name }
       });
       return loadExtension(remoteExtensionList)
     } else {
