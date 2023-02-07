@@ -42,7 +42,7 @@ export const registerModel = <T>(modelClass: ModelClass<T>): () => void => {
 
   store.set(modelClass.modelName, {
     proxy: wrapperState(new modelClass(), () => {
-      launchTimeout(modelClass.modelName)
+      launchDelay(modelClass.modelName)
     }),
   });
 
@@ -73,7 +73,7 @@ export const useModel: UseModelFnType = <T>(modelClass: ModelClass<T>, isRoot = 
 }
 
 
-function launchTimeout(modelKey) {
+function launchDelay(modelKey) {
   const modelContainer = store.get(modelKey);
   if (modelContainer.timeout) {
     window.clearTimeout(modelContainer.timeout);

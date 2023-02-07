@@ -1,11 +1,11 @@
-import { ExtensionRuntime, GridLayout, GrootContextExecuteCommand, GrootContextGetState, GrootContextParams, GrootContextRegisterCommand, GrootContextRegisterState, GrootContextSetState, GrootContextUseStateByName, isBaseType, loadRemoteModule, MainType, wrapperState } from "@grootio/common"
+import { ExtensionRuntime, GridLayout, GrootContextExecuteCommand, GrootContextGetState, GrootContextParams, GrootContextRegisterCommand, GrootContextRegisterState, GrootContextRegisterStateMulti, GrootContextRemoveState, GrootContextSetState, GrootContextUseStateByName, isBaseType, loadRemoteModule, MainType, wrapperState } from "@grootio/common"
 import { useReducer, useState } from "react";
 import request from "util/request";
 
 let registorReady = false;
 const commandMap = new Map<string, { thisArg?: any, callback: Function, provider: string }>();
 let extensionList: ExtensionRuntime[] = [];
-const stateMap = new Map<string, { value: any, provider: string, eventTarget: EventTarget }>();
+const stateMap = new Map<string, { value: any, provider: string, eventTarget: EventTarget, multi?: boolean }>();
 let tempProvider = ''
 const contextEventTarget = new EventTarget();
 
@@ -43,15 +43,18 @@ export const execExtension = (remoteExtensionList: ExtensionRuntime[], params: G
       groot: {
         params,
         layout,
-        states: {
+        state: {
           registerState,
           setState,
-          getState
+          getState,
+          registerStateMulti,
+          removeState
         },
-        commands: {
+        command: {
           registerCommand,
           executeCommand
         },
+        useStateByName,
         onReady: function (listener) {
           contextEventTarget.addEventListener('ready', listener);
         }
@@ -108,8 +111,12 @@ export const executeCommand: GrootContextExecuteCommand = (command, ...args) => 
   return callback.apply(thisArg, args);
 }
 
+const registerStateMulti: GrootContextRegisterStateMulti = (name, defaultValue = [], eventTarget = new EventTarget()) => {
+  (defaultValue as any).__groot_multi = true;
+  registerState(name, defaultValue, eventTarget);
+}
 
-const registerState: GrootContextRegisterState = (name, eventTarget = new EventTarget(), defaultValue) => {
+const registerState: GrootContextRegisterState = (name, defaultValue, eventTarget = new EventTarget()) => {
   if (registorReady) {
     throw new Error('状态系统已准备完成，不可再次注册状态');
   }
@@ -117,20 +124,22 @@ const registerState: GrootContextRegisterState = (name, eventTarget = new EventT
     console.warn(`状态:${name} 已存在`)
   }
 
-  if (isBaseType(defaultValue) && defaultValue !== undefined) {
+  if ((defaultValue as any).__groot_multi) {
+    stateMap.set(name, {
+      value: defaultValue,
+      provider: tempProvider,
+      eventTarget,
+      multi: true
+    })
+  } else {
     stateMap.set(name, {
       value: wrapperState(defaultValue, () => {
         eventTarget.dispatchEvent(new Event('change'))
       }),
       provider: tempProvider,
-      eventTarget
+      eventTarget,
+      multi: false
     });
-  } else {
-    stateMap.set(name, {
-      value: undefined,
-      provider: tempProvider,
-      eventTarget
-    })
   }
 }
 
@@ -148,28 +157,89 @@ const setState: GrootContextSetState = (name, newValue, dispatch) => {
     throw new Error(`状态系统未准备就绪`)
   }
   if (!stateMap.get(name)) {
-    new Error(`状态:${name} 未找到`)
+    throw new Error(`状态:${name} 未找到`)
   }
 
   const stateObj = stateMap.get(name);
-  if (newValue !== stateObj.value) {
-    if (isBaseType(newValue) && newValue !== undefined) {
-      stateObj.value = newValue;
-    } else {
-      stateObj.value = wrapperState(newValue, () => {
-        stateObj.eventTarget.dispatchEvent(new Event('change'))
-      })
+  if (stateObj.multi) {
+    const index = (stateObj.value as { id: string }[]).findIndex(item => item.id === newValue.id);
+    if (index === -1) {
+      stateObj.value.push(
+        wrapperState(newValue, () => {
+          stateObj.eventTarget.dispatchEvent(new Event('change'))
+        })
+      )
+      if (dispatch !== false) {
+        stateObj.eventTarget.dispatchEvent(new Event('change'));
+      }
+      return true;
+    } else if (stateObj.value[index] !== newValue) {
+      (stateObj.value as any[]).splice(index, 1, newValue);
+      if (dispatch !== false) {
+        stateObj.eventTarget.dispatchEvent(new Event('change'));
+      }
+      return true;
     }
 
-    if (dispatch !== false) {
-      stateObj.eventTarget.dispatchEvent(new Event('change'));
+  } else {
+    if (newValue !== stateObj.value) {
+      if (isBaseType(newValue)) {
+        stateObj.value = newValue;
+      } else {
+        stateObj.value = wrapperState(newValue, () => {
+          stateObj.eventTarget.dispatchEvent(new Event('change'))
+        })
+      }
+
+      if (dispatch !== false) {
+        stateObj.eventTarget.dispatchEvent(new Event('change'));
+      }
+
+      return true
     }
   }
+
+  return false;
 }
 
-export const useStateByName: GrootContextUseStateByName = (name) => {
-  if (!stateMap.has(name)) {
-    throw new Error(`状态未准备就绪`)
+const removeState: GrootContextRemoveState = (name, id, dispatch) => {
+  if (!registorReady) {
+    throw new Error(`状态系统未准备就绪`)
+  }
+  if (!stateMap.get(name)) {
+    throw new Error(`状态:${name} 未找到`)
+  }
+
+  const stateObj = stateMap.get(name);
+  if (stateObj.multi) {
+    const index = (stateObj.value as { id: string }[]).findIndex(item => item.id === id);
+    if (index !== -1) {
+      (stateObj.value as { id: string }[]).splice(index, 1);
+
+      if (dispatch !== false) {
+        stateObj.eventTarget.dispatchEvent(new Event('change'));
+      }
+
+      return true;
+    }
+  } else {
+    throw new Error(`状态: ${name} 不是数组`)
+  }
+
+  return false;
+}
+
+export const useStateByName: GrootContextUseStateByName = (name, defaultValue) => {
+  if (!registorReady) {
+    const message = `状态系统未准备就绪`
+    console.error(message)
+    throw new Error(message)
+  }
+  if (!stateMap.get(name) && (defaultValue === undefined)) {
+    const message = `状态:${name} 未找到`;
+    console.error(message)
+    throw new Error(message)
+
   }
 
   const stateObj = stateMap.get(name);
@@ -177,10 +247,10 @@ export const useStateByName: GrootContextUseStateByName = (name) => {
   const [, refresh] = useReducer((tick) => ++tick, 0);
 
   useState(() => {
-    stateObj.eventTarget.addEventListener('change', () => {
+    stateObj?.eventTarget.addEventListener('change', () => {
       refresh();
     })
   })
 
-  return stateObj.value
+  return stateObj?.value || defaultValue
 }

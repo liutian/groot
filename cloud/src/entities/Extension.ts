@@ -10,10 +10,10 @@ export class Extension extends BaseEntity {
   name: string;
 
   @Property({ length: 30 })
-  key: string;
+  packageName: string;
 
   @Property({ length: 100 })
-  url: string;
+  packageUrl: string;
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'orgId' })
   org: Organization;

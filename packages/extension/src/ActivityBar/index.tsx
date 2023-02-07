@@ -1,18 +1,11 @@
-import { useRegisterModel } from "@grootio/common";
-import { useState } from "react";
-import { ActivityBarModel } from "./ActivityBarModel";
+import { GrootStateType } from "@grootio/common";
+import { groot } from "index";
 
 const ActivityBar: React.FC = () => {
-  const model = useRegisterModel(ActivityBarModel);
-  const [list] = useState(['dffdfdfd'])
+  // const views = groot.useStateByName<GrootStateType>('groot.state.ui.views', []);
 
   return <>
-    <button onClick={() => model.say()}>say</button>
-    {model.word}
-    {model.list.map((item, index) => {
-      return <div key={index}>{item}</div>
-    })}
-    {model.demo.text}
+    {/* {views.map((item) => <item.view key={item.id} />)} */}
   </>
 }
 
