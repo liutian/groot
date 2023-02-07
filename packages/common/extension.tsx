@@ -59,7 +59,15 @@ export type GrootContextRegisterState<ST extends Record<string, [any, boolean]>>
 export type GrootContextGetState<ST extends Record<string, [any, boolean]>> = <K extends keyof ST & string, T extends ST[K][0], B extends ST[K][1], O extends { id: string | number } & T, R extends (B extends true ? (T extends BaseType ? T : O)[] : T) >(name: K) => R;
 export type GrootContextSetState<ST extends Record<string, [any, boolean]>> = <K extends keyof ST & string, T extends ST[K][0], B extends ST[K][1], O extends { id: string | number } & T, V extends (B extends true ? (T extends BaseType ? { index: number, value: T } : O) : T) >(name: K, value?: V, dispatch?: boolean) => boolean;
 
-export type GrootContextUseStateByName<ST extends Record<string, [any, boolean]>> = <K extends keyof ST & string, T extends ST[K][0], B extends ST[K][1], O extends { id: string | number } & T, N extends (B extends true ? (T extends BaseType ? { index: number, value: T } : O) : T), R extends (B extends true ? (T extends BaseType ? T : O)[] : T), D extends R>(name: K, defaultValue?: D) => [R, (N) => void];
+export type GrootContextUseStateByName<ST extends Record<string, [any, boolean]>> = <
+  K extends keyof ST & string,
+  T extends ST[K][0],
+  B extends ST[K][1],
+  O extends { id: string | number } & T,
+  N extends (B extends true ? (T extends BaseType ? { index: number, value: T } : O) : T),
+  R extends (B extends true ? (T extends BaseType ? T : O)[] : T),
+  D extends R
+>(name: K, defaultValue?: D) => [R, (newValue: N) => void];
 
 export type ExtensionContext = {
   extName: string,
