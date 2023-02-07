@@ -1,5 +1,6 @@
-import { ModelClass, UseModelFnType, wrapperState } from "@grootio/common";
 import { useEffect, useReducer, useState } from "react";
+import { ModelClass, UseModelFnType } from "./extension";
+import { wrapperState } from "./reactive";
 
 const store = new Map<string, ModelContainer>();
 /**

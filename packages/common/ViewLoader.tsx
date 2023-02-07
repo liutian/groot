@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { loadRemoteModule } from "@grootio/common";
+import { loadRemoteModule } from "./fetch-remote-module";
 
 type PropsType = {
   packageName: string,

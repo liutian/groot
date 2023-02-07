@@ -16,12 +16,3 @@ export * from './reactive';
 export * from './ViewLoader';
 export * from './robot2';
 
-
-export type WorkbenchInstanceComponentType = React.FC<{
-  appId: number,
-  releaseId?: number,
-  instanceId?: number,
-  monacoConfig?: {
-    baseUrl: string
-  }
-}>;
