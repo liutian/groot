@@ -3,18 +3,22 @@ import styles from './index.module.less';
 import { Button } from "antd";
 import { GridLayout, GrootCommandType, GrootStateType } from '@grootio/common';
 import { useEffect, useReducer } from 'react';
-import { executeCommand, useStateByName } from 'Studio/groot';
+import { commandManager, stateManager } from 'Studio/groot';
+
+
 
 const Workbench: React.FC<{ layout: GridLayout }> = ({ layout }) => {
   const [, refresh] = useReducer((tick) => ++tick, 1);
-  const containerStyle = useStateByName<GrootStateType>('groot.state.workbench.style.container', {});
-  const toolBarStyle = useStateByName<GrootStateType>('groot.state.workbench.style.toolBar', {});
-  const activityBarStyle = useStateByName<GrootStateType>('groot.state.workbench.style.activityBar', {});
-  const primarySidebarStyle = useStateByName<GrootStateType>('groot.state.workbench.style.primarySidebar', {});
-  const secondarySidebarStyle = useStateByName<GrootStateType>('groot.state.workbench.style.secondarySidebar', {});
-  const editorStyle = useStateByName<GrootStateType>('groot.state.workbench.style.editor', {});
-  const panelStyle = useStateByName<GrootStateType>('groot.state.workbench.style.panel', {});
-  const statusBarStyle = useStateByName<GrootStateType>('groot.state.workbench.style.statusBar', {});
+  const { useStateByName } = stateManager<GrootStateType>();
+  const { executeCommand } = commandManager<GrootCommandType>();
+  const containerStyle = useStateByName('groot.state.workbench.style.container', {});
+  const toolBarStyle = useStateByName('groot.state.workbench.style.toolBar', {});
+  const activityBarStyle = useStateByName('groot.state.workbench.style.activityBar', {});
+  const primarySidebarStyle = useStateByName('groot.state.workbench.style.primarySidebar', {});
+  const secondarySidebarStyle = useStateByName('groot.state.workbench.style.secondarySidebar', {});
+  const editorStyle = useStateByName('groot.state.workbench.style.editor', {});
+  const panelStyle = useStateByName('groot.state.workbench.style.panel', {});
+  const statusBarStyle = useStateByName('groot.state.workbench.style.statusBar', {});
 
   useEffect(() => {
     return layout.watch(() => {
@@ -25,7 +29,7 @@ const Workbench: React.FC<{ layout: GridLayout }> = ({ layout }) => {
   return <div className={styles.container} style={{ ...containerStyle, ...layout.styles }}>
     <div className={styles.toolBar} style={toolBarStyle}></div>
     <div className={styles.activityBar} style={activityBarStyle}>
-      {executeCommand<GrootCommandType>('groot.command.workbench.render.activityBar')}
+      {executeCommand('groot.command.workbench.render.activityBar')}
     </div>
     <div className={styles.primarySidebar} style={primarySidebarStyle}></div>
     <div className={styles.secondarySidebar} style={secondarySidebarStyle}></div>

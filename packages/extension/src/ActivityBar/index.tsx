@@ -2,10 +2,10 @@ import { GrootStateType } from "@grootio/common";
 import { groot } from "index";
 
 const ActivityBar: React.FC = () => {
-  // const views = groot.useStateByName<GrootStateType>('groot.state.ui.views', []);
+  const views = groot.stateManager<GrootStateType>().useStateByName('groot.state.ui.views', []);
 
   return <>
-    {/* {views.map((item) => <item.view key={item.id} />)} */}
+    {views.map((item) => <item.value.view key={item.id} />)}
   </>
 }
 

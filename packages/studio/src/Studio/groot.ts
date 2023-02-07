@@ -1,11 +1,11 @@
-import { ExtensionRuntime, GridLayout, GrootContextExecuteCommand, GrootContextGetState, GrootContextParams, GrootContextRegisterCommand, GrootContextRegisterState, GrootContextRegisterStateMulti, GrootContextRemoveState, GrootContextSetState, GrootContextUseStateByName, isBaseType, loadRemoteModule, MainType, wrapperState } from "@grootio/common"
-import { useReducer, useState } from "react";
+import { CommandManagerType, ExtensionRuntime, GridLayout, GrootContextExecuteCommand, GrootContextGetState, GrootContextParams, GrootContextRegisterCommand, GrootContextRegisterState, GrootContextSetState, GrootContextUseStateByName, isBaseType, loadRemoteModule, MainType, StateManagerType, wrapperState } from "@grootio/common"
+import { useEffect, useReducer } from "react";
 import request from "util/request";
 
 let registorReady = false;
 const commandMap = new Map<string, { thisArg?: any, callback: Function, provider: string }>();
 let extensionList: ExtensionRuntime[] = [];
-const stateMap = new Map<string, { value: any, provider: string, eventTarget: EventTarget, multi?: boolean }>();
+const stateMap = new Map<string, { value: any, provider: string, eventTarget: EventTarget }>();
 let tempProvider = ''
 const contextEventTarget = new EventTarget();
 
@@ -43,18 +43,8 @@ export const execExtension = (remoteExtensionList: ExtensionRuntime[], params: G
       groot: {
         params,
         layout,
-        state: {
-          registerState,
-          setState,
-          getState,
-          registerStateMulti,
-          removeState
-        },
-        command: {
-          registerCommand,
-          executeCommand
-        },
-        useStateByName,
+        stateManager,
+        commandManager,
         onReady: function (listener) {
           contextEventTarget.addEventListener('ready', listener);
         }
@@ -80,7 +70,7 @@ export const execExtension = (remoteExtensionList: ExtensionRuntime[], params: G
 }
 
 
-const registerCommand: GrootContextRegisterCommand = (command, callback, thisArg?) => {
+const registerCommand: GrootContextRegisterCommand<Record<string, [any[], any]>> = (command, callback, thisArg?) => {
   if (registorReady) {
     throw new Error('命令系统已准备完成，不可再次注册命令');
   }
@@ -100,7 +90,7 @@ const registerCommand: GrootContextRegisterCommand = (command, callback, thisArg
   }
 }
 
-export const executeCommand: GrootContextExecuteCommand = (command, ...args) => {
+export const executeCommand: GrootContextExecuteCommand<Record<string, [any[], any]>> = (command, ...args) => {
   if (!registorReady) {
     throw new Error(`命令系统未准备就绪`)
   }
@@ -111,48 +101,56 @@ export const executeCommand: GrootContextExecuteCommand = (command, ...args) => 
   return callback.apply(thisArg, args);
 }
 
-const registerStateMulti: GrootContextRegisterStateMulti = (name, defaultValue = [], eventTarget = new EventTarget()) => {
-  (defaultValue as any).__groot_multi = true;
-  registerState(name, defaultValue, eventTarget);
-}
 
-const registerState: GrootContextRegisterState = (name, defaultValue, eventTarget = new EventTarget()) => {
+const registerState: GrootContextRegisterState<Record<string, [any, boolean]>> = (name, defaultValue, eventTarget = new EventTarget()) => {
   if (registorReady) {
     throw new Error('状态系统已准备完成，不可再次注册状态');
   }
-  if (stateMap.has(name)) {
-    console.warn(`状态:${name} 已存在`)
+
+  if (Array.isArray(defaultValue)) {
+    for (const item of defaultValue as { id: string, value: any }[]) {
+      if (!item.id || item.value === undefined || item.value === null) {
+        throw new Error('列表状态不允许id和value为空')
+      }
+    }
   }
 
-  if ((defaultValue as any).__groot_multi) {
-    stateMap.set(name, {
-      value: defaultValue,
-      provider: tempProvider,
-      eventTarget,
-      multi: true
+  let stateValue;
+  if (Array.isArray(defaultValue)) {
+    stateValue = defaultValue.map(item => {
+      return wrapperState(item, () => {
+        eventTarget.dispatchEvent(new Event('change'))
+      })
     })
   } else {
-    stateMap.set(name, {
-      value: wrapperState(defaultValue, () => {
-        eventTarget.dispatchEvent(new Event('change'))
-      }),
-      provider: tempProvider,
-      eventTarget,
-      multi: false
-    });
+    stateValue = wrapperState(defaultValue, () => {
+      eventTarget.dispatchEvent(new Event('change'))
+    })
   }
+  stateMap.set(name, {
+    value: stateValue,
+    provider: tempProvider,
+    eventTarget,
+  });
+
+  if (stateMap.has(name)) {
+    console.warn(`状态:${name} 已被覆盖`);
+    return true;
+  }
+
+  return false;
 }
 
-const getState: GrootContextGetState = (name) => {
+const getState: GrootContextGetState<Record<string, [any, boolean]>> = (name) => {
   if (!stateMap.get(name)) {
     console.warn(`状态:${name} 未找到`)
   }
 
-  const stateObj = stateMap.get(name);
-  return stateObj.value;
+  const stateData = stateMap.get(name);
+  return stateData.value;
 }
 
-const setState: GrootContextSetState = (name, newValue, dispatch) => {
+const setState: GrootContextSetState<Record<string, [any, boolean]>> = (name, newValue, dispatch = true) => {
   if (!registorReady) {
     throw new Error(`状态系统未准备就绪`)
   }
@@ -160,39 +158,60 @@ const setState: GrootContextSetState = (name, newValue, dispatch) => {
     throw new Error(`状态:${name} 未找到`)
   }
 
-  const stateObj = stateMap.get(name);
-  if (stateObj.multi) {
-    const index = (stateObj.value as { id: string }[]).findIndex(item => item.id === newValue.id);
-    if (index === -1) {
-      stateObj.value.push(
-        wrapperState(newValue, () => {
-          stateObj.eventTarget.dispatchEvent(new Event('change'))
-        })
-      )
-      if (dispatch !== false) {
-        stateObj.eventTarget.dispatchEvent(new Event('change'));
-      }
-      return true;
-    } else if (stateObj.value[index] !== newValue) {
-      (stateObj.value as any[]).splice(index, 1, newValue);
-      if (dispatch !== false) {
-        stateObj.eventTarget.dispatchEvent(new Event('change'));
+  const stateData = stateMap.get(name);
+  if (Array.isArray(stateData.value)) {
+    if (!newValue) {
+      stateData.value = [];
+      if (dispatch) {
+        stateData.eventTarget.dispatchEvent(new Event('change'));
       }
       return true;
     }
 
+    if (!newValue.id) {
+      throw new Error(`状态:${name} 值id缺失`);
+    }
+
+    const index = (stateData.value as { id: string }[]).findIndex(item => item.id === newValue.id);
+    if (newValue.value !== undefined || newValue.value !== null || !Number.isNaN(newValue.value)) {
+      if (index === -1) {
+        stateData.value.push(
+          wrapperState(newValue, () => {
+            stateData.eventTarget.dispatchEvent(new Event('change'))
+          })
+        )
+        if (dispatch) {
+          stateData.eventTarget.dispatchEvent(new Event('change'));
+        }
+        return true;
+      } else if (stateData.value[index].value !== newValue.value) {
+        stateData.value[index].value = wrapperState(newValue, () => {
+          stateData.eventTarget.dispatchEvent(new Event('change'))
+        })
+        if (dispatch) {
+          stateData.eventTarget.dispatchEvent(new Event('change'));
+        }
+        return true;
+      }
+    } else if (index !== -1) {
+      stateData.value.splice(index, 1);
+      if (dispatch) {
+        stateData.eventTarget.dispatchEvent(new Event('change'));
+      }
+      return true;
+    }
   } else {
-    if (newValue !== stateObj.value) {
+    if (newValue !== stateData.value) {
       if (isBaseType(newValue)) {
-        stateObj.value = newValue;
+        stateData.value = newValue;
       } else {
-        stateObj.value = wrapperState(newValue, () => {
-          stateObj.eventTarget.dispatchEvent(new Event('change'))
+        stateData.value = wrapperState(newValue, () => {
+          stateData.eventTarget.dispatchEvent(new Event('change'))
         })
       }
 
       if (dispatch !== false) {
-        stateObj.eventTarget.dispatchEvent(new Event('change'));
+        stateData.eventTarget.dispatchEvent(new Event('change'));
       }
 
       return true
@@ -202,34 +221,7 @@ const setState: GrootContextSetState = (name, newValue, dispatch) => {
   return false;
 }
 
-const removeState: GrootContextRemoveState = (name, id, dispatch) => {
-  if (!registorReady) {
-    throw new Error(`状态系统未准备就绪`)
-  }
-  if (!stateMap.get(name)) {
-    throw new Error(`状态:${name} 未找到`)
-  }
-
-  const stateObj = stateMap.get(name);
-  if (stateObj.multi) {
-    const index = (stateObj.value as { id: string }[]).findIndex(item => item.id === id);
-    if (index !== -1) {
-      (stateObj.value as { id: string }[]).splice(index, 1);
-
-      if (dispatch !== false) {
-        stateObj.eventTarget.dispatchEvent(new Event('change'));
-      }
-
-      return true;
-    }
-  } else {
-    throw new Error(`状态: ${name} 不是数组`)
-  }
-
-  return false;
-}
-
-export const useStateByName: GrootContextUseStateByName = (name, defaultValue) => {
+export const useStateByName: GrootContextUseStateByName<Record<string, [any, boolean]>> = (name, defaultValue) => {
   if (!registorReady) {
     const message = `状态系统未准备就绪`
     console.error(message)
@@ -239,18 +231,34 @@ export const useStateByName: GrootContextUseStateByName = (name, defaultValue) =
     const message = `状态:${name} 未找到`;
     console.error(message)
     throw new Error(message)
-
   }
 
   const stateObj = stateMap.get(name);
 
   const [, refresh] = useReducer((tick) => ++tick, 0);
 
-  useState(() => {
+  useEffect(() => {
     stateObj?.eventTarget.addEventListener('change', () => {
       refresh();
     })
-  })
+  }, [])
 
   return stateObj?.value || defaultValue
+}
+
+
+export const stateManager: StateManagerType = () => {
+  return {
+    registerState,
+    setState,
+    getState,
+    useStateByName
+  }
+}
+
+export const commandManager: CommandManagerType = () => {
+  return {
+    registerCommand,
+    executeCommand
+  }
 }

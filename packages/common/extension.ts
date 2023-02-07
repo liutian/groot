@@ -25,20 +25,22 @@ export type MainType = (context: ExtensionContext) => ExtensionConfig;
 
 export type GrootContext = {
   params: GrootContextParams,
-  command: {
-    registerCommand: GrootContextRegisterCommand,
-    executeCommand: GrootContextExecuteCommand,
-  },
-  state: {
-    registerState: GrootContextRegisterState,
-    registerStateMulti: GrootContextRegisterStateMulti,
-    getState: GrootContextGetState,
-    setState: GrootContextSetState,
-    removeState: GrootContextRemoveState
-  },
+  commandManager: CommandManagerType,
+  stateManager: StateManagerType,
   layout: GridLayout,
   onReady: (listener: EventListener) => void;
-  useStateByName: GrootContextUseStateByName
+}
+
+export type CommandManagerType = <CT extends Record<string, [any[], any]>>() => {
+  registerCommand: GrootContextRegisterCommand<CT>,
+  executeCommand: GrootContextExecuteCommand<CT>,
+}
+
+export type StateManagerType = <ST extends { [key: string]: [any, boolean] } >() => {
+  registerState: GrootContextRegisterState<ST>,
+  getState: GrootContextGetState<ST>,
+  setState: GrootContextSetState<ST>,
+  useStateByName: GrootContextUseStateByName<ST>
 }
 
 export type GrootContextParams = {
@@ -48,20 +50,16 @@ export type GrootContextParams = {
   solution: any,
 }
 
-export type GrootContextRegisterCommand = <CT extends Record<string, [any[], any]>>(command: keyof CT & string, callback: (originCallback: any, ...args: CT[keyof CT & string][0]) => CT[keyof CT & string][1], thisArg?: any) => Function
-export type GrootContextExecuteCommand = <CT extends Record<string, [any[], any]>>(command: keyof CT & string, ...args: CT[keyof CT & string][0]) => CT[keyof CT & string][1];
+export type GrootContextRegisterCommand<CT extends Record<string, [any[], any]>> = <K extends keyof CT & string, AR extends CT[K][0], R extends CT[K][1]>(commandName: K, command: (originCommand: Function, ...args: AR) => R, thisArg?: any) => Function
+export type GrootContextExecuteCommand<CT extends Record<string, [any[], any]>> = <K extends keyof CT & string, AR extends CT[K][0], R extends CT[K][1]>(commandName: K, ...args: AR) => R;
 
 
 
-export type GrootContextRegisterState = <ST extends Record<string, [any, false]>> (name: keyof ST & string, defaultValue?: ST[keyof ST & string][0], eventTarget?: EventTarget) => void;
-export type GrootContextRegisterStateMulti = <ST extends Record<string, [{ id: string }, true]>> (name: keyof ST & string, defaultValue?: ST[keyof ST & string][0][], eventTarget?: EventTarget) => void;
-export type GrootContextGetState = <ST extends Record<string, [any, boolean]>>(name: keyof ST & string) => ST[keyof ST & string][1] extends true ? ST[keyof ST & string][0][] : ST[keyof ST & string][0];
-export type GrootContextSetState = <ST extends Record<string, [{ id: string }, true] | [{ id: string }, false]>>(name: keyof ST & string, value: ST[keyof ST & string][0], dispatch?: boolean) => boolean;
-export type GrootContextRemoveState = <ST extends Record<string, [{ id: string }, true]>>(name: keyof ST & string, id: string, dispatch?: boolean) => boolean;
+export type GrootContextRegisterState<ST extends Record<string, [any, boolean]>> = <K extends keyof ST & string, T extends ST[K][0], B extends ST[K][1], D extends (B extends true ? { id: string, value: T }[] : T) > (name: K, defaultValue: D, eventTarget?: EventTarget) => boolean;
+export type GrootContextGetState<ST extends Record<string, [any, boolean]>> = <K extends keyof ST & string, T extends ST[K][0], B extends ST[K][1], R extends (B extends true ? { id: string, value: T }[] : T) >(name: K) => R;
+export type GrootContextSetState<ST extends Record<string, [any, boolean]>> = <K extends keyof ST & string, T extends ST[K][0], B extends ST[K][1], V extends (B extends true ? { id: string, value?: T } : T) >(name: K, value?: V, dispatch?: boolean) => boolean;
 
-
-
-export type GrootContextUseStateByName = <ST extends Record<string, [any, boolean]>>(name: keyof ST & string, defaultValue?: any) => ST[keyof ST & string][1] extends true ? ST[keyof ST & string][0][] : ST[keyof ST & string][0];
+export type GrootContextUseStateByName<ST extends Record<string, [any, boolean]>> = <K extends keyof ST & string, T extends ST[K][0], B extends ST[K][1], R extends (B extends true ? { id: string, value: T }[] : T), D extends R>(name: K, defaultValue?: D) => R;
 
 export type ExtensionContext = {
   extName: string,
@@ -118,6 +116,6 @@ export type ViewType = {
   id: string,
   icon: string | ReactElement,
   name: React.FC | string,
-  view?: React.FC,
-  toolbar?: React.FC
+  view: React.FC,
+  toolbar: React.FC
 }
