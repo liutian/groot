@@ -102,20 +102,24 @@ export const executeCommand: GrootContextExecuteCommand<Record<string, [any[], a
 }
 
 
-const registerState: GrootContextRegisterState<Record<string, [any, boolean]>> = (name, defaultValue, eventTarget = new EventTarget()) => {
+const registerState: GrootContextRegisterState<Record<string, [any, boolean]>> = (name, defaultValue, onChange) => {
   if (registorReady) {
     throw new Error('状态系统已准备完成，不可再次注册状态');
   }
 
   if (Array.isArray(defaultValue)) {
-    for (const item of defaultValue as { id: string, value: any }[]) {
-      if (!item.id || item.value === undefined || item.value === null) {
-        throw new Error('列表状态不允许id和value为空')
+    for (const item of defaultValue as any[]) {
+      if (!isBaseType(item) && item.id === undefined) {
+        throw new Error('状态列表属性 id为空')
       }
     }
   }
 
   let stateValue;
+  const eventTarget = new EventTarget();
+  eventTarget.addEventListener('change', () => {
+    onChange && onChange();
+  })
   if (Array.isArray(defaultValue)) {
     stateValue = defaultValue.map(item => {
       return wrapperState(item, () => {
@@ -166,6 +170,24 @@ const setState: GrootContextSetState<Record<string, [any, boolean]>> = (name, ne
         stateData.eventTarget.dispatchEvent(new Event('change'));
       }
       return true;
+    }
+
+    if (!isBaseType(newValue.id) && isBaseType(newValue.index)) {
+      if (newValue.value === undefined) {
+        stateData.value.splice(newValue.index, 1);
+        if (dispatch) {
+          stateData.eventTarget.dispatchEvent(new Event('change'));
+        }
+        return true;
+      } else if (newValue.index < stateData.value.length) {
+        stateData.value[newValue.index] = newValue.value;
+        if (dispatch) {
+          stateData.eventTarget.dispatchEvent(new Event('change'));
+        }
+        return true;
+      }
+
+      return false;
     }
 
     if (!newValue.id) {
@@ -243,7 +265,13 @@ export const useStateByName: GrootContextUseStateByName<Record<string, [any, boo
     })
   }, [])
 
-  return stateObj?.value || defaultValue
+
+  return [
+    stateObj?.value || defaultValue,
+    (newValue) => {
+      setState(name, newValue);
+    }
+  ]
 }
 
 

@@ -47,12 +47,14 @@ export function wrapperState(target: any, listener: Function) {
       }
     },
     set(oTarget, sKey, vValue) {
+      const result = Reflect.set(oTarget, sKey, vValue);
       listener();
-      return Reflect.set(oTarget, sKey, vValue);
+      return result;
     },
     deleteProperty(oTarget, sKey) {
+      const result = Reflect.deleteProperty(oTarget, sKey);
       listener();
-      return Reflect.deleteProperty(oTarget, sKey);
+      return result;
     },
   })
 }
