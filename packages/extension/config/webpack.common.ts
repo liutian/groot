@@ -97,7 +97,6 @@ const config = (env, args) => {
 				filename: 'groot-core-extension/index.js',
 				exposes: {
 					Main: './src',
-					ActivityBar: './src/ActivityBar'
 				},
 				shared: {
 					react: {

@@ -11,7 +11,7 @@ const Workbench: React.FC<{ layout: GridLayout }> = ({ layout }) => {
   const { useStateByName } = stateManager<GrootStateType>();
   const { executeCommand } = commandManager<GrootCommandType>();
   const [containerStyle] = useStateByName('groot.state.workbench.style.container', {});
-  const [toolBarStyle] = useStateByName('groot.state.workbench.style.toolBar', {});
+  const [bannerStyle] = useStateByName('groot.state.workbench.style.banner', {});
   const [activityBarStyle] = useStateByName('groot.state.workbench.style.activityBar', {});
   const [primarySidebarStyle] = useStateByName('groot.state.workbench.style.primarySidebar', {});
   const [secondarySidebarStyle] = useStateByName('groot.state.workbench.style.secondarySidebar', {});
@@ -26,8 +26,8 @@ const Workbench: React.FC<{ layout: GridLayout }> = ({ layout }) => {
   }, []);
 
   return <div className={styles.container} style={{ ...containerStyle, ...layout.styles }}>
-    <div className={styles.toolBar} style={toolBarStyle}>
-      {executeCommand('groot.command.workbench.render.toolBar')}
+    <div className={styles.banner} style={bannerStyle}>
+      {executeCommand('groot.command.workbench.render.banner')}
     </div>
     <div className={styles.activityBar} style={activityBarStyle}>
       {executeCommand('groot.command.workbench.render.activityBar')}

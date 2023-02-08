@@ -7,8 +7,8 @@ const ActivityBar: React.FC = () => {
   const { useStateByName } = groot.stateManager<GrootStateType>();
   const [viewKeys] = useStateByName('groot.state.workbench.activityBar.view', []);
   const [viewsContainers] = useStateByName('groot.state.ui.viewsContainers', []);
-  const [active, setActive] = useStateByName('groot.state.workbench.activityBar.active');
-  const [, setPrimarySidebarKey] = useStateByName('groot.state.workbench.primarySidebar.view');
+  const [active, setActive] = useStateByName('groot.state.workbench.activityBar.active', '');
+  const [, setPrimarySidebarKey] = useStateByName('groot.state.workbench.primarySidebar.view', '');
 
   const items = viewsContainers.filter(vc => {
     return viewKeys.includes(vc.id)

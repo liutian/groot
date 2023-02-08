@@ -233,6 +233,16 @@ export class WorkbenchController {
 
   @Get('/solution/detail/:solutionId')
   async solutionDetail() {
-    return {}
+    return {
+      extensionList: [
+        {
+          id: 1,
+          name: "@groot/core-extension",
+          orgId: 1,
+          packageName: "_groot_core_extension",
+          packageUrl: "http://groot-local.com:12000/groot-core-extension/index.js"
+        }
+      ]
+    }
   }
 }

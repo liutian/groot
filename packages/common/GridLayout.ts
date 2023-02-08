@@ -6,15 +6,15 @@ export type LayoutSetting = {
 
   activityBar: boolean,
   statusBar: boolean,
-  toolBar: boolean,
+  banner: boolean,
 
   primaryLayout: 'left' | 'right',
   panelLayout: 'left' | 'right' | 'center' | 'stretch',
-  toolBarLayout: 'left' | 'right' | 'center' | 'stretch'
+  bannerLayout: 'left' | 'right' | 'center' | 'stretch'
 }
 
 export class GridLayout extends EventTarget {
-  public toolBarHeight = '40px'
+  public bannerHeight = '40px'
   public panelHeight = '80px'
   public statusBarHeight = '22px'
   public activityBarWidth = '50px'
@@ -29,19 +29,19 @@ export class GridLayout extends EventTarget {
 
     activityBar: true,
     statusBar: true,
-    toolBar: true,
+    banner: true,
 
     primaryLayout: 'left',
     panelLayout: 'center',
-    toolBarLayout: 'center'
+    bannerLayout: 'center'
   }
   private areasMap = new Map<string, string>([
-    ['1*1', 'activityBar'], ['1*2', 'primarySidebar'], ['1*3', 'toolBar'], ['1*4', 'secondarySidebar'],
+    ['1*1', 'activityBar'], ['1*2', 'primarySidebar'], ['1*3', 'banner'], ['1*4', 'secondarySidebar'],
     ['2*1', 'activityBar'], ['2*2', 'primarySidebar'], ['2*3', 'editor'], ['2*4', 'secondarySidebar'],
     ['3*1', 'activityBar'], ['3*2', 'primarySidebar'], ['3*3', 'panel'], ['3*4', 'secondarySidebar'],
     ['4*1', 'statusBar'], ['4*2', 'statusBar'], ['4*3', 'statusBar'], ['4*4', 'statusBar'],
   ]);
-  private rows = [this.toolBarHeight, '1fr', this.panelHeight, this.statusBarHeight];
+  private rows = [this.bannerHeight, '1fr', this.panelHeight, this.statusBarHeight];
   private columns = [this.activityBarWidth, this.primarySidebarWidth, '1fr', this.secondarySidebarWidth];
 
   constructor() {
@@ -50,8 +50,8 @@ export class GridLayout extends EventTarget {
   }
 
   public design = <
-    T extends 'visible' | 'primary' | 'panel' | 'toolBar',
-    V extends (T extends 'visible' ? ('primarySidebar' | 'secondarySidebar' | 'panel' | 'activityBar' | 'statusBar' | 'toolBar') : (T extends 'primary' ? 'left' | 'right' : 'left' | 'right' | 'center' | 'stretch')),
+    T extends 'visible' | 'primary' | 'panel' | 'banner',
+    V extends (T extends 'visible' ? ('primarySidebar' | 'secondarySidebar' | 'panel' | 'activityBar' | 'statusBar' | 'banner') : (T extends 'primary' ? 'left' | 'right' : 'left' | 'right' | 'center' | 'stretch')),
     O extends (T extends 'visible' ? boolean : null)>(type: T, value: V, other: O) => {
     if (type === 'visible') {
       this.layoutSetting[value as any] = other;
@@ -85,8 +85,8 @@ export class GridLayout extends EventTarget {
       this.rows[2] = '0'
     }
 
-    if (this.layoutSetting.toolBar) {
-      this.rows[0] = this.toolBarHeight;
+    if (this.layoutSetting.banner) {
+      this.rows[0] = this.bannerHeight;
     } else {
       this.rows[0] = '0'
     }
@@ -120,26 +120,26 @@ export class GridLayout extends EventTarget {
     this.areasMap.set('2*3', 'editor');
     this.areasMap.set('2*4', 'secondarySidebar');
 
-    if (this.layoutSetting.toolBarLayout === 'left') {
-      this.areasMap.set('1*1', 'toolBar');
-      this.areasMap.set('1*2', 'toolBar');
-      this.areasMap.set('1*3', 'toolBar');
+    if (this.layoutSetting.bannerLayout === 'left') {
+      this.areasMap.set('1*1', 'banner');
+      this.areasMap.set('1*2', 'banner');
+      this.areasMap.set('1*3', 'banner');
       this.areasMap.set('1*4', 'secondarySidebar');
-    } else if (this.layoutSetting.toolBarLayout === 'right') {
+    } else if (this.layoutSetting.bannerLayout === 'right') {
       this.areasMap.set('1*1', 'activityBar');
       this.areasMap.set('1*2', 'primarySidebar');
-      this.areasMap.set('1*3', 'toolBar');
-      this.areasMap.set('1*4', 'toolBar');
-    } else if (this.layoutSetting.toolBarLayout === 'center') {
+      this.areasMap.set('1*3', 'banner');
+      this.areasMap.set('1*4', 'banner');
+    } else if (this.layoutSetting.bannerLayout === 'center') {
       this.areasMap.set('1*1', 'activityBar');
       this.areasMap.set('1*2', 'primarySidebar');
-      this.areasMap.set('1*3', 'toolBar');
+      this.areasMap.set('1*3', 'banner');
       this.areasMap.set('1*4', 'secondarySidebar');
-    } else if (this.layoutSetting.toolBarLayout === 'stretch') {
-      this.areasMap.set('1*1', 'toolBar');
-      this.areasMap.set('1*2', 'toolBar');
-      this.areasMap.set('1*3', 'toolBar');
-      this.areasMap.set('1*4', 'toolBar');
+    } else if (this.layoutSetting.bannerLayout === 'stretch') {
+      this.areasMap.set('1*1', 'banner');
+      this.areasMap.set('1*2', 'banner');
+      this.areasMap.set('1*3', 'banner');
+      this.areasMap.set('1*4', 'banner');
     }
 
     if (this.layoutSetting.panelLayout === 'left') {
@@ -191,26 +191,26 @@ export class GridLayout extends EventTarget {
     this.areasMap.set('2*3', 'primarySidebar');
     this.areasMap.set('2*4', 'activityBar');
 
-    if (this.layoutSetting.toolBarLayout === 'left') {
-      this.areasMap.set('1*1', 'toolBar');
-      this.areasMap.set('1*2', 'toolBar');
+    if (this.layoutSetting.bannerLayout === 'left') {
+      this.areasMap.set('1*1', 'banner');
+      this.areasMap.set('1*2', 'banner');
       this.areasMap.set('1*3', 'primarySidebar');
       this.areasMap.set('1*4', 'activityBar');
-    } else if (this.layoutSetting.toolBarLayout === 'right') {
+    } else if (this.layoutSetting.bannerLayout === 'right') {
       this.areasMap.set('1*1', 'secondarySidebar');
-      this.areasMap.set('1*2', 'toolBar');
-      this.areasMap.set('1*3', 'toolBar');
-      this.areasMap.set('1*4', 'toolBar');
-    } else if (this.layoutSetting.toolBarLayout === 'center') {
+      this.areasMap.set('1*2', 'banner');
+      this.areasMap.set('1*3', 'banner');
+      this.areasMap.set('1*4', 'banner');
+    } else if (this.layoutSetting.bannerLayout === 'center') {
       this.areasMap.set('1*1', 'secondarySidebar');
-      this.areasMap.set('1*2', 'toolBar');
+      this.areasMap.set('1*2', 'banner');
       this.areasMap.set('1*3', 'primarySidebar');
       this.areasMap.set('1*4', 'activityBar');
-    } else if (this.layoutSetting.toolBarLayout === 'stretch') {
-      this.areasMap.set('1*1', 'toolBar');
-      this.areasMap.set('1*2', 'toolBar');
-      this.areasMap.set('1*3', 'toolBar');
-      this.areasMap.set('1*4', 'toolBar');
+    } else if (this.layoutSetting.bannerLayout === 'stretch') {
+      this.areasMap.set('1*1', 'banner');
+      this.areasMap.set('1*2', 'banner');
+      this.areasMap.set('1*3', 'banner');
+      this.areasMap.set('1*4', 'banner');
     }
 
     if (this.layoutSetting.panelLayout === 'left') {

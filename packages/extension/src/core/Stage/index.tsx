@@ -1,13 +1,13 @@
 import { GrootStateType, viewRender } from "@grootio/common";
 import { groot } from "index";
 
-const PrimarySidebar = () => {
+const Stage = () => {
   const { useStateByName } = groot.stateManager<GrootStateType>();
-  const [viewsContainers] = useStateByName('groot.state.ui.viewsContainers', []);
-  const [viewKey] = useStateByName('groot.state.workbench.primarySidebar.view');
+  const [viewsContainers] = useStateByName('groot.state.ui.views', []);
+  const [viewKey] = useStateByName('groot.state.workbench.stage.view', '');
   const view = viewsContainers.find(item => item.id === viewKey)?.view
 
   return <>{viewRender(view)}</>
 }
 
-export default PrimarySidebar;
+export default Stage;

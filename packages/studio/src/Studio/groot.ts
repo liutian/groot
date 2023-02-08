@@ -249,7 +249,7 @@ export const useStateByName: GrootContextUseStateByName<Record<string, [any, boo
     console.error(message)
     throw new Error(message)
   }
-  if (!stateMap.get(name) && (defaultValue === undefined)) {
+  if (!stateMap.has(name) && (defaultValue === undefined)) {
     const message = `状态:${name} 未找到`;
     console.error(message)
     throw new Error(message)

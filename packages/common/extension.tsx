@@ -102,7 +102,7 @@ export type RemoteExtension = {
 
 
 export type GrootCommandType = {
-  'groot.command.workbench.render.toolBar': [[], ReactElement | null],
+  'groot.command.workbench.render.banner': [[], ReactElement | null],
   'groot.command.workbench.render.activityBar': [[], ReactElement | null],
   'groot.command.workbench.render.primarySidebar': [[], ReactElement | null],
   'groot.command.workbench.render.secondarySidebar': [[], ReactElement | null],
@@ -113,7 +113,7 @@ export type GrootCommandType = {
 
 export type GrootStateType = {
   'groot.state.workbench.style.container': [React.CSSProperties, false],
-  'groot.state.workbench.style.toolBar': [React.CSSProperties, false],
+  'groot.state.workbench.style.banner': [React.CSSProperties, false],
   'groot.state.workbench.style.activityBar': [React.CSSProperties, false],
   'groot.state.workbench.style.primarySidebar': [React.CSSProperties, false],
   'groot.state.workbench.style.secondarySidebar': [React.CSSProperties, false],
@@ -128,6 +128,10 @@ export type GrootStateType = {
   'groot.state.workbench.activityBar.active': [string, false],
 
   'groot.state.workbench.primarySidebar.view': [string, false],
+  'groot.state.workbench.secondarySidebar.view': [string, false],
+  'groot.state.workbench.stage.view': [string, false],
+  'groot.state.workbench.panel.view': [string, true],
+
 }
 
 type ViewRenderType = string | ReactElement | React.FC;
@@ -135,28 +139,21 @@ type ViewRenderType = string | ReactElement | React.FC;
 export type ViewsContainerType = {
   id: string,
   name: ViewRenderType,
-  icon: ViewRenderType,
-  view: ViewRenderType,
-  toolbar: ViewRenderType
+  icon?: ViewRenderType,
+  view?: ViewRenderType,
+  toolbar?: ViewRenderType
 };
 
 export type ViewType = {
   parent: string
 } & ViewsContainerType;
 
-export const viewRender = (view: ViewRenderType) => {
+export const viewRender = (view: ViewRenderType, id?: any) => {
   if (typeof view !== 'function') {
-    return <>{view}</>;
+    return <React.Fragment key={id || undefined}>{view}</React.Fragment>;
   }
   const View = view as React.FC;
-  return <View />
+  return <View key={id || undefined} />
 }
 
 
-export const viewRenderById = (id: string, view: ViewRenderType) => {
-  if (typeof view !== 'function') {
-    return <span key={id}>{view}</span>;
-  }
-  const View = view as React.FC;
-  return <View key={id} />
-}

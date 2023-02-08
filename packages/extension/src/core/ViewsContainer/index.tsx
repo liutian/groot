@@ -1,4 +1,4 @@
-import { GrootStateType, viewRender, viewRenderById, ViewsContainerType } from "@grootio/common";
+import { GrootStateType, viewRender, ViewsContainerType } from "@grootio/common";
 import { groot } from "index";
 
 const ViewsContainer: React.FC<{ context: ViewsContainerType }> = ({ context }) => {
@@ -7,7 +7,7 @@ const ViewsContainer: React.FC<{ context: ViewsContainerType }> = ({ context }) 
   const childrenView = viewList.filter(item => item.parent === context.id)
 
   return <>{
-    childrenView.map(item => viewRenderById(item.id, item.view))
+    childrenView.map(item => viewRender(item.view, item.id))
   }</>
 }
 
