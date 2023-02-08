@@ -7,6 +7,7 @@ import App from "./App";
 // import 'antd/dist/reset.css';
 import './index.less'
 import { StudioMode, StudioParams } from "@grootio/common";
+import { message } from "antd";
 
 type PropsType = {
   appEnv: string,
@@ -25,15 +26,38 @@ const Main: React.FC<PropsType> = (props) => {
   const [params] = useState(() => {
     if (props.groot) {
       return props.groot.params;
-    } else {
-      return {
-        solutionId: +searchParams.get('solutionId'),
-        appId: +searchParams.get('appId'),
-        componentId: +searchParams.get('componentId'),
-        instanceId: +searchParams.get('instanceId'),
-        releaseId: +searchParams.get('releaseId'),
-        studioMode: searchParams.get('studioMode') as StudioMode
+    }
+
+    const studioMode = searchParams.get('studioMode') as StudioMode || StudioMode.Instance;
+    const solutionId = +searchParams.get('solutionId')
+    const appId = +searchParams.get('appId')
+    const componentId = +searchParams.get('componentId')
+    const instanceId = +searchParams.get('instanceId')
+    const releaseId = +searchParams.get('releaseId')
+
+    if (studioMode === StudioMode.Instance) {
+      if (!appId) {
+        setTimeout(() => {
+          message.warning('参数appId为空');
+        })
+        return null;
       }
+    } else if (studioMode === StudioMode.Prototype) {
+      if (!solutionId) {
+        setTimeout(() => {
+          message.warning('参数solutionId为空');
+        })
+        return null;
+      }
+    }
+
+    return {
+      solutionId,
+      appId,
+      instanceId,
+      releaseId,
+      componentId,
+      studioMode: studioMode
     }
   })
 

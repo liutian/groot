@@ -36,7 +36,7 @@ export const startup = (context: ExtensionContext) => {
 
   if (context.groot.params.mode === StudioMode.Prototype) {
     prototypeBootstrap(context);
-  } else {
+  } else if (context.groot.params.mode === StudioMode.Instance) {
     instanceBootstrap(context);
   }
 }
