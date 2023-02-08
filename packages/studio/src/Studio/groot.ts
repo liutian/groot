@@ -8,6 +8,7 @@ let extensionList: ExtensionRuntime[] = [];
 const stateMap = new Map<string, { value: any, provider: string, eventTarget: EventTarget }>();
 let tempProvider = ''
 const contextEventTarget = new EventTarget();
+let extIdTick = 0;
 
 export const loadExtension = (remoteExtensionList: ExtensionRuntime[]) => {
   return Promise.all(remoteExtensionList.map(item => {
@@ -27,7 +28,8 @@ export const loadExtension = (remoteExtensionList: ExtensionRuntime[]) => {
 }
 
 export const execExtension = (remoteExtensionList: ExtensionRuntime[], params: GrootContextParams, layout: GridLayout) => {
-  const configList = remoteExtensionList.map(({ name, main, packageName, packageUrl }, index) => {
+  const configSchemaList = [];
+  remoteExtensionList.forEach(({ name, main, packageName, packageUrl, config }, index) => {
     const requestClone = request.clone((type) => {
       if (type === 'request') {
         console.log(`[${extensionList[index].packageName} request]`);
@@ -35,10 +37,11 @@ export const execExtension = (remoteExtensionList: ExtensionRuntime[], params: G
     });
 
     tempProvider = packageName;
-    const extensionConfig = main({
+    const configSchema = main({
       extName: name,
       extPackageName: packageName,
       extPackageUrl: packageUrl,
+      extConfig: config,
       request: requestClone,
       groot: {
         params,
@@ -52,21 +55,21 @@ export const execExtension = (remoteExtensionList: ExtensionRuntime[], params: G
     });
     tempProvider = undefined;
 
-    return extensionConfig;
-  });
-
-  registorReady = true;
-  contextEventTarget.dispatchEvent(new Event('ready'));
-
-  extensionList = remoteExtensionList.map(({ name, packageName, packageUrl }, index) => {
-    return {
+    extensionList.push(Object.assign({
       name,
       packageName,
       packageUrl,
-      main: remoteExtensionList[index].main,
-      config: configList[index]
-    }
-  })
+      main,
+      config
+    }, { id: ++extIdTick }))
+
+    configSchemaList.push({ ...configSchema, id: ++extIdTick });
+  });
+
+  registerState('groot.extension.config_schema', Object.freeze(configSchemaList));
+  registerState('groot.extension.data', Object.freeze(extensionList));
+  registorReady = true;
+  contextEventTarget.dispatchEvent(new Event('ready'));
 }
 
 

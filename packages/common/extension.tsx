@@ -21,7 +21,7 @@ export enum ModalStatus {
   Submit = 'submit'
 }
 
-export type MainType = (context: ExtensionContext) => ExtensionConfig;
+export type MainType = (context: ExtensionContext) => ExtensionConfigSchema;
 
 export type GrootContext = {
   params: GrootContextParams,
@@ -73,8 +73,9 @@ export type ExtensionContext = {
   extName: string,
   extPackageName: string,
   extPackageUrl: string,
+  extConfig: any,
   request: RequestFnType<APIStore>,
-  groot: GrootContext
+  groot: GrootContext,
 }
 
 export type ExtensionRuntime = {
@@ -82,14 +83,14 @@ export type ExtensionRuntime = {
   packageName: string,
   packageUrl: string,
   main: MainType,
-  config: ExtensionConfig
+  config: any
 }
 
 
 export type HostConfig = {
 }
 
-export type ExtensionConfig = {
+export type ExtensionConfigSchema = {
 }
 
 export type RemoteExtension = {
@@ -112,6 +113,8 @@ export type GrootCommandType = {
 }
 
 export type GrootStateType = {
+  'groot.extension.config_schema': [ExtensionConfigSchema, true],
+  'groot.extension.data': [any, true],
   'groot.state.workbench.style.container': [React.CSSProperties, false],
   'groot.state.workbench.style.banner': [React.CSSProperties, false],
   'groot.state.workbench.style.activityBar': [React.CSSProperties, false],
@@ -131,8 +134,9 @@ export type GrootStateType = {
   'groot.state.workbench.secondarySidebar.view': [string, false],
   'groot.state.workbench.stage.view': [string, false],
   'groot.state.workbench.panel.view': [string, true],
-
 }
+
+
 
 type ViewRenderType = string | ReactElement | React.FC;
 
