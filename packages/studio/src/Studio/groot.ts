@@ -1,11 +1,11 @@
-import { CommandManagerType, ExtensionRuntime, GridLayout, GrootContextExecuteCommand, GrootContextGetState, GrootContextParams, GrootContextRegisterCommand, GrootContextRegisterState, GrootContextSetState, GrootContextUseStateByName, isBaseType, loadRemoteModule, MainType, StateManagerType, wrapperState } from "@grootio/common"
+import { CommandManager, CommandObject, ExtensionRuntime, GridLayout, GrootContextExecuteCommand, GrootContextGetState, GrootContextParams, GrootContextRegisterCommand, GrootContextRegisterState, GrootContextSetState, GrootContextUseStateByName, isBaseType, loadRemoteModule, MainFunction, StateManager, StateObject, wrapperState } from "@grootio/common"
 import { useEffect, useReducer } from "react";
 import request from "util/request";
 
 let registorReady = false;
-const commandMap = new Map<string, { thisArg?: any, callback: Function, provider: string }>();
+const commandMap = new Map<string, CommandObject>();
 let extensionList: ExtensionRuntime[] = [];
-const stateMap = new Map<string, { value: any, provider: string, eventTarget: EventTarget }>();
+const stateMap = new Map<string, StateObject>();
 let tempProvider = ''
 const contextEventTarget = new EventTarget();
 let extIdTick = 0;
@@ -20,7 +20,7 @@ export const loadExtension = (remoteExtensionList: ExtensionRuntime[]) => {
         console.error('加载插件失败');
         return Promise.reject(error);
       })
-    .then((mainList: MainType[]) => {
+    .then((mainList: MainFunction[]) => {
       return remoteExtensionList.map(({ packageName, packageUrl, name }, index) => {
         return { packageName, packageUrl, main: mainList[index], config: null, name }
       })
@@ -66,7 +66,7 @@ export const execExtension = (remoteExtensionList: ExtensionRuntime[], params: G
     configSchemaList.push({ ...configSchema, id: ++extIdTick });
   });
 
-  registerState('groot.extension.config_schema', Object.freeze(configSchemaList));
+  registerState('groot.extension.configSchema', Object.freeze(configSchemaList));
   registerState('groot.extension.data', Object.freeze(extensionList));
   registorReady = true;
   contextEventTarget.dispatchEvent(new Event('ready'));
@@ -77,13 +77,16 @@ const registerCommand: GrootContextRegisterCommand<Record<string, [any[], any]>>
   if (registorReady) {
     throw new Error('命令系统已准备完成，不可再次注册命令');
   }
+  let originCommand;
   if (commandMap.has(command)) {
+    originCommand = commandMap.get(command);
     console.warn(`命令:${String(command)} 已经存在`);
   }
   commandMap.set(command, {
     callback,
     thisArg,
-    provider: tempProvider
+    provider: tempProvider,
+    origin: originCommand
   });
   return () => {
     if (commandMap.has(command) && commandMap.get(command).callback !== callback) {
@@ -100,8 +103,12 @@ export const executeCommand: GrootContextExecuteCommand<Record<string, [any[], a
   if (!commandMap.has(command)) {
     throw new Error(`命令:${String(command)} 未找到`)
   }
-  const { callback, thisArg } = commandMap.get(command);
-  return callback.apply(thisArg, args);
+  const commandData = commandMap.get(command);
+  const { callback, thisArg, origin } = commandData
+  const originCommand = origin || (() => undefined);
+  const result = callback.apply(thisArg, [originCommand, ...args]);
+  // todo hookName
+  return result;
 }
 
 
@@ -278,7 +285,7 @@ export const useStateByName: GrootContextUseStateByName<Record<string, [any, boo
 }
 
 
-export const stateManager: StateManagerType = () => {
+export const stateManager: StateManager = () => {
   return {
     registerState,
     setState,
@@ -287,7 +294,7 @@ export const stateManager: StateManagerType = () => {
   }
 }
 
-export const commandManager: CommandManagerType = () => {
+export const commandManager: CommandManager = () => {
   return {
     registerCommand,
     executeCommand

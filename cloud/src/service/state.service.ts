@@ -1,4 +1,4 @@
-import { pick, StateType } from '@grootio/common';
+import { pick, StateCategory } from '@grootio/common';
 import { FilterQuery, RequestContext } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { LogicException, LogicExceptionCode } from 'config/logic.exception';
@@ -14,7 +14,7 @@ export class StateService {
 
     LogicException.assertParamEmpty(rawState.name, 'name');
     LogicException.assertParamEmpty(rawState.releaseId, 'releaseId');
-    rawState.type && LogicException.assertEnum(StateType, 'type', rawState.type);
+    rawState.type && LogicException.assertEnum(StateCategory, 'type', rawState.type);
 
     const release = await em.findOne(ComponentInstance, rawState.releaseId);
     LogicException.assertNotFound(release, 'Release', rawState.releaseId);

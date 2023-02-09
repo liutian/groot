@@ -36,6 +36,9 @@ const Studio: React.FC<StudioParams & { account: any }> = (params) => {
           application: params.studioMode === StudioMode.Instance ? data : null,
           solution: params.studioMode === StudioMode.Prototype ? data : null,
           account: params.account,
+          releaseId: params.releaseId,
+          instanceId: params.instanceId,
+          componentId: params.componentId
         }, layout)
       })
     })

@@ -1,11 +1,12 @@
-import { GrootStateType, viewRender } from "@grootio/common";
+import { GrootStateDict, viewRender } from "@grootio/common";
 import { Tabs } from "antd";
-import { groot } from "index";
+import { getContext } from "context";
 
 const Panel = () => {
-  const { useStateByName } = groot.stateManager<GrootStateType>();
-  const [viewsContainers] = useStateByName('groot.state.ui.viewsContainers', []);
-  const [viewKeyList] = useStateByName('groot.state.workbench.panel.view', []);
+  const { groot } = getContext();
+  const { useStateByName } = groot.stateManager<GrootStateDict>();
+  const [viewsContainers] = useStateByName('gs.ui.viewsContainers', []);
+  const [viewKeyList] = useStateByName('gs.workbench.panel.view', []);
   const viewList = viewsContainers.filter(item => viewKeyList.includes(item.id));
 
   return <>

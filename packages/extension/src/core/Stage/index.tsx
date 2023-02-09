@@ -1,10 +1,11 @@
-import { GrootStateType, viewRender } from "@grootio/common";
-import { groot } from "index";
+import { GrootStateDict, viewRender } from "@grootio/common";
+import { getContext } from "context";
 
 const Stage = () => {
-  const { useStateByName } = groot.stateManager<GrootStateType>();
-  const [viewsContainers] = useStateByName('groot.state.ui.views', []);
-  const [viewKey] = useStateByName('groot.state.workbench.stage.view', '');
+  const { groot } = getContext();
+  const { useStateByName } = groot.stateManager<GrootStateDict>();
+  const [viewsContainers] = useStateByName('gs.ui.views', []);
+  const [viewKey] = useStateByName('gs.workbench.stage.view', '');
   const view = viewsContainers.find(item => item.id === viewKey)?.view
 
   return <>{viewRender(view)}</>

@@ -1,14 +1,16 @@
 import { AppstoreOutlined } from "@ant-design/icons";
-import { ExtensionContext, GrootStateType } from "@grootio/common";
+import { GrootStateDict } from "@grootio/common";
+import { getContext } from "context";
 import ViewsContainer from "core/ViewsContainer";
 import { PropSetter } from "share/PropSetter";
 import { WorkArea } from "share/WorkArea";
 import { Solution } from "./Solution";
 
-export const prototypeBootstrap = ({ groot }: ExtensionContext) => {
-  const { registerState } = groot.stateManager<GrootStateType>();
+export const prototypeBootstrap = () => {
+  const { groot } = getContext();
+  const { registerState } = groot.stateManager<GrootStateDict>();
 
-  registerState('groot.state.ui.viewsContainers', [
+  registerState('gs.ui.viewsContainers', [
     {
       id: 'solution',
       name: '组件',
@@ -33,7 +35,7 @@ export const prototypeBootstrap = ({ groot }: ExtensionContext) => {
     }
   ])
 
-  registerState('groot.state.ui.views', [
+  registerState('gs.ui.views', [
     {
       id: 'solutio',
       name: '组件',
@@ -53,11 +55,11 @@ export const prototypeBootstrap = ({ groot }: ExtensionContext) => {
   ])
 
 
-  registerState('groot.state.workbench.activityBar.view', ['solution'])
-  registerState('groot.state.workbench.activityBar.active', 'solution');
-  registerState('groot.state.workbench.primarySidebar.view', 'solution');
-  registerState('groot.state.workbench.secondarySidebar.view', 'propSetter');
-  registerState('groot.state.workbench.stage.view', 'workArea');
+  registerState('gs.workbench.activityBar.view', ['solution'])
+  registerState('gs.workbench.activityBar.active', 'solution');
+  registerState('gs.workbench.primarySidebar.view', 'solution');
+  registerState('gs.workbench.secondarySidebar.view', 'propSetter');
+  registerState('gs.workbench.stage.view', 'workArea');
 
   groot.layout.design('visible', 'secondarySidebar', true);
   groot.layout.design('visible', 'panel', false);

@@ -1,4 +1,5 @@
-import { ExtensionContext, GrootCommandType, StudioMode } from "@grootio/common";
+import { GrootCommandDict, StudioMode } from "@grootio/common";
+import { getContext } from "context";
 import { instanceBootstrap } from "instance";
 import { prototypeBootstrap } from "prototype";
 import ActivityBar from "./ActivityBar";
@@ -9,34 +10,35 @@ import SecondarySidebar from "./SecondarySidebar";
 import Stage from "./Stage";
 import StatusBar from "./StatusBar";
 
-export const startup = (context: ExtensionContext) => {
-  const { registerCommand } = context.groot.commandManager<GrootCommandType>();
+export const startup = () => {
+  const { groot } = getContext()
+  const { registerCommand } = groot.commandManager<GrootCommandDict>();
 
-  registerCommand('groot.command.workbench.render.banner', () => {
+  registerCommand('gc.workbench.render.banner', () => {
     return <Banner />
   });
-  registerCommand('groot.command.workbench.render.activityBar', () => {
+  registerCommand('gc.workbench.render.activityBar', () => {
     return <ActivityBar />
   });
-  registerCommand('groot.command.workbench.render.primarySidebar', () => {
+  registerCommand('gc.workbench.render.primarySidebar', () => {
     return <PrimarySidebar />
   });
-  registerCommand('groot.command.workbench.render.secondarySidebar', () => {
+  registerCommand('gc.workbench.render.secondarySidebar', () => {
     return <SecondarySidebar />
   });
-  registerCommand('groot.command.workbench.render.stage', () => {
+  registerCommand('gc.workbench.render.stage', () => {
     return <Stage />
   });
-  registerCommand('groot.command.workbench.render.panel', () => {
+  registerCommand('gc.workbench.render.panel', () => {
     return <Panel />
   });
-  registerCommand('groot.command.workbench.render.statusBar', () => {
+  registerCommand('gc.workbench.render.statusBar', () => {
     return <StatusBar />
   });
 
-  if (context.groot.params.mode === StudioMode.Prototype) {
-    prototypeBootstrap(context);
-  } else if (context.groot.params.mode === StudioMode.Instance) {
-    instanceBootstrap(context);
+  if (groot.params.mode === StudioMode.Prototype) {
+    prototypeBootstrap();
+  } else if (groot.params.mode === StudioMode.Instance) {
+    instanceBootstrap();
   }
 }

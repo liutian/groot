@@ -1,6 +1,6 @@
 import React, { ReactElement } from "react";
 import { APIStore } from "./api/API.store";
-import { Application } from "./entities";
+import { Application, Component, ComponentInstance, ComponentVersion } from "./entities";
 import { GridLayout } from "./GridLayout";
 import { RequestFnType } from "./internal";
 
@@ -21,22 +21,22 @@ export enum ModalStatus {
   Submit = 'submit'
 }
 
-export type MainType = (context: ExtensionContext) => ExtensionConfigSchema;
+export type MainFunction = (context: ExtensionContext) => ExtensionConfigSchema;
 
 export type GrootContext = {
   params: GrootContextParams,
-  commandManager: CommandManagerType,
-  stateManager: StateManagerType,
+  commandManager: CommandManager,
+  stateManager: StateManager,
   layout: GridLayout,
   onReady: (listener: EventListener) => void;
 }
 
-export type CommandManagerType = <CT extends Record<string, [any[], any]>>() => {
+export type CommandManager = <CT extends Record<string, [any[], any]>>() => {
   registerCommand: GrootContextRegisterCommand<CT>,
   executeCommand: GrootContextExecuteCommand<CT>,
 }
 
-export type StateManagerType = <ST extends { [key: string]: [any, boolean] } >() => {
+export type StateManager = <ST extends { [key: string]: [any, boolean] } >() => {
   registerState: GrootContextRegisterState<ST>,
   getState: GrootContextGetState<ST>,
   setState: GrootContextSetState<ST>,
@@ -48,24 +48,27 @@ export type GrootContextParams = {
   account: any,
   application: Application,
   solution: any,
+  instanceId?: number,
+  componentId?: number,
+  releaseId?: number
 }
 
 export type GrootContextRegisterCommand<CT extends Record<string, [any[], any]>> = <K extends keyof CT & string, AR extends CT[K][0], R extends CT[K][1]>(commandName: K, command: (originCommand: Function, ...args: AR) => R, thisArg?: any) => Function
 export type GrootContextExecuteCommand<CT extends Record<string, [any[], any]>> = <K extends keyof CT & string, AR extends CT[K][0], R extends CT[K][1]>(commandName: K, ...args: AR) => R;
 
 
-type BaseType = boolean | number | null | undefined | symbol | bigint | string;
-export type GrootContextRegisterState<ST extends Record<string, [any, boolean]>> = <K extends keyof ST & string, T extends ST[K][0], B extends ST[K][1], O extends { id: string | number } & T, D extends (B extends true ? (T extends BaseType ? T : O)[] : T) > (name: K, defaultValue: D, onChange?: () => void) => boolean;
-export type GrootContextGetState<ST extends Record<string, [any, boolean]>> = <K extends keyof ST & string, T extends ST[K][0], B extends ST[K][1], O extends { id: string | number } & T, R extends (B extends true ? (T extends BaseType ? T : O)[] : T) >(name: K) => R;
-export type GrootContextSetState<ST extends Record<string, [any, boolean]>> = <K extends keyof ST & string, T extends ST[K][0], B extends ST[K][1], O extends { id: string | number } & T, V extends (B extends true ? (T extends BaseType ? { index: number, value: T } : O) : T) >(name: K, value?: V, dispatch?: boolean) => boolean;
+type BaseDataType = boolean | number | null | undefined | symbol | bigint | string;
+export type GrootContextRegisterState<ST extends Record<string, [any, boolean]>> = <K extends keyof ST & string, T extends ST[K][0], B extends ST[K][1], O extends { id: string | number } & T, D extends (B extends true ? (T extends BaseDataType ? T : O)[] : T) > (name: K, defaultValue: D, onChange?: () => void) => boolean;
+export type GrootContextGetState<ST extends Record<string, [any, boolean]>> = <K extends keyof ST & string, T extends ST[K][0], B extends ST[K][1], O extends { id: string | number } & T, R extends (B extends true ? (T extends BaseDataType ? T : O)[] : T) >(name: K) => R;
+export type GrootContextSetState<ST extends Record<string, [any, boolean]>> = <K extends keyof ST & string, T extends ST[K][0], B extends ST[K][1], O extends { id: string | number } & T, V extends (B extends true ? (T extends BaseDataType ? { index: number, value: T } : O) : T) >(name: K, value?: V, dispatch?: boolean) => boolean;
 
 export type GrootContextUseStateByName<ST extends Record<string, [any, boolean]>> = <
   K extends keyof ST & string,
   T extends ST[K][0],
   B extends ST[K][1],
   O extends { id: string | number } & T,
-  N extends (B extends true ? (T extends BaseType ? { index: number, value: T } : O) : T),
-  R extends (B extends true ? (T extends BaseType ? T : O)[] : T),
+  N extends (B extends true ? (T extends BaseDataType ? { index: number, value: T } : O) : T),
+  R extends (B extends true ? (T extends BaseDataType ? T : O)[] : T),
   D extends R
 >(name: K, defaultValue?: D) => [R, (newValue: N) => void];
 
@@ -82,7 +85,7 @@ export type ExtensionRuntime = {
   name: string,
   packageName: string,
   packageUrl: string,
-  main: MainType,
+  main: MainFunction,
   config: any
 }
 
@@ -102,57 +105,67 @@ export type RemoteExtension = {
 }
 
 
-export type GrootCommandType = {
-  'groot.command.workbench.render.banner': [[], ReactElement | null],
-  'groot.command.workbench.render.activityBar': [[], ReactElement | null],
-  'groot.command.workbench.render.primarySidebar': [[], ReactElement | null],
-  'groot.command.workbench.render.secondarySidebar': [[], ReactElement | null],
-  'groot.command.workbench.render.stage': [[], ReactElement | null],
-  'groot.command.workbench.render.panel': [[], ReactElement | null],
-  'groot.command.workbench.render.statusBar': [[], ReactElement | null],
+export type GrootCommandDict = {
+  'gc.workbench.render.banner': [[], ReactElement | null],
+  'gc.workbench.render.activityBar': [[], ReactElement | null],
+  'gc.workbench.render.primarySidebar': [[], ReactElement | null],
+  'gc.workbench.render.secondarySidebar': [[], ReactElement | null],
+  'gc.workbench.render.stage': [[], ReactElement | null],
+  'gc.workbench.render.panel': [[], ReactElement | null],
+  'gc.workbench.render.statusBar': [[], ReactElement | null],
+
+  'gc.fetch.instance': [[number], void],
+  'gc.fetch.prototype': [[number], void]
 }
 
-export type GrootStateType = {
-  'groot.extension.config_schema': [ExtensionConfigSchema, true],
-  'groot.extension.data': [any, true],
-  'groot.state.workbench.style.container': [React.CSSProperties, false],
-  'groot.state.workbench.style.banner': [React.CSSProperties, false],
-  'groot.state.workbench.style.activityBar': [React.CSSProperties, false],
-  'groot.state.workbench.style.primarySidebar': [React.CSSProperties, false],
-  'groot.state.workbench.style.secondarySidebar': [React.CSSProperties, false],
-  'groot.state.workbench.style.stage': [React.CSSProperties, false],
-  'groot.state.workbench.style.panel': [React.CSSProperties, false],
-  'groot.state.workbench.style.statusBar': [React.CSSProperties, false],
+export type GrootStateDict = {
+  'gs.extension.configSchema': [ExtensionConfigSchema, true],
+  'gs.extension.data': [any, true],
+  'gs.ui.views': [ViewChildItem, true],
+  'gs.ui.viewsContainers': [ViewsContainer, true],
 
-  'groot.state.ui.views': [ViewType, true],
-  'groot.state.ui.viewsContainers': [ViewsContainerType, true],
+  'gs.workbench.style.container': [React.CSSProperties, false],
+  'gs.workbench.style.banner': [React.CSSProperties, false],
+  'gs.workbench.style.activityBar': [React.CSSProperties, false],
+  'gs.workbench.style.primarySidebar': [React.CSSProperties, false],
+  'gs.workbench.style.secondarySidebar': [React.CSSProperties, false],
+  'gs.workbench.style.stage': [React.CSSProperties, false],
+  'gs.workbench.style.panel': [React.CSSProperties, false],
+  'gs.workbench.style.statusBar': [React.CSSProperties, false],
 
-  'groot.state.workbench.activityBar.view': [string, true],
-  'groot.state.workbench.activityBar.active': [string, false],
+  'gs.workbench.activityBar.view': [string, true],
+  'gs.workbench.activityBar.active': [string, false],
+  'gs.workbench.primarySidebar.view': [string, false],
+  'gs.workbench.secondarySidebar.view': [string, false],
+  'gs.workbench.stage.view': [string, false],
+  'gs.workbench.panel.view': [string, true],
 
-  'groot.state.workbench.primarySidebar.view': [string, false],
-  'groot.state.workbench.secondarySidebar.view': [string, false],
-  'groot.state.workbench.stage.view': [string, false],
-  'groot.state.workbench.panel.view': [string, true],
+  'gs.studio.rootComponentInstance': [ComponentInstance, false],
+  'gs.studio.component': [Component, false],
+  'gs.studio.componentVersion': [ComponentVersion, false],
+  'gs.studio.allComponentInstance': [ComponentInstance[], false],
 }
 
 
 
-type ViewRenderType = string | ReactElement | React.FC;
+type ViewRender = string | ReactElement | React.FC;
 
-export type ViewsContainerType = {
+export type CommandObject = { thisArg?: any, callback: Function, provider: string, origin?: CommandObject }
+export type StateObject = { value: any, provider: string, eventTarget: EventTarget }
+
+export type ViewsContainer = {
   id: string,
-  name: ViewRenderType,
-  icon?: ViewRenderType,
-  view?: ViewRenderType,
-  toolbar?: ViewRenderType
+  name: ViewRender,
+  icon?: ViewRender,
+  view?: ViewRender,
+  toolbar?: ViewRender
 };
 
-export type ViewType = {
+export type ViewChildItem = {
   parent: string
-} & ViewsContainerType;
+} & ViewsContainer;
 
-export const viewRender = (view: ViewRenderType, id?: any) => {
+export const viewRender = (view: ViewRender, id?: any) => {
   if (typeof view !== 'function') {
     return <React.Fragment key={id || undefined}>{view}</React.Fragment>;
   }

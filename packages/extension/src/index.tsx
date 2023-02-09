@@ -1,19 +1,15 @@
 
-import { GrootContext, MainType } from '@grootio/common';
+import { MainFunction } from '@grootio/common';
+import { setContext } from 'context';
 import { startup } from 'core';
 
 import './index.less'
 
-export let groot: GrootContext;
 
-const Main: MainType = (context) => {
-  groot = context.groot;
+const Main: MainFunction = (context) => {
+  setContext(context);
 
-  startup(context)
-
-  groot.onReady(() => {
-
-  })
+  startup()
 
   return {
 

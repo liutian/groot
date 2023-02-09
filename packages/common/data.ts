@@ -122,7 +122,7 @@ export enum ValueStruct {
   ChildComponentList = 2
 }
 
-export enum StateType {
+export enum StateCategory {
   Str = 1,
   Bool = 2,
   Num = 3,
@@ -131,9 +131,9 @@ export enum StateType {
 }
 
 export const StateTypeMap = [
-  { name: '字符串', key: StateType.Str },
-  { name: '数字', key: StateType.Num },
-  { name: '布尔', key: StateType.Bool },
-  { name: '对象', key: StateType.Obj },
-  { name: '数组', key: StateType.Arr },
+  { name: '字符串', key: StateCategory.Str },
+  { name: '数字', key: StateCategory.Num },
+  { name: '布尔', key: StateCategory.Bool },
+  { name: '对象', key: StateCategory.Obj },
+  { name: '数组', key: StateCategory.Arr },
 ];

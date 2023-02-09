@@ -1,4 +1,4 @@
-import { Release, StateType } from "@grootio/common";
+import { Release, StateCategory } from "@grootio/common";
 import { Entity, Enum, ManyToOne, Property } from "@mikro-orm/core";
 import { BaseEntity } from "./BaseEntity";
 import { ComponentInstance } from "./ComponentInstance";
@@ -15,7 +15,7 @@ export class State extends BaseEntity {
   componentInstance: ComponentInstance = { id: 0 } as any;
 
   @Enum({ type: 'tinyint' })
-  type: StateType = StateType.Str;
+  type: StateCategory = StateCategory.Str;
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'releaseId' })
   release: Release;

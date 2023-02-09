@@ -1,9 +1,10 @@
-import { GrootStateType, viewRender, ViewsContainerType } from "@grootio/common";
-import { groot } from "index";
+import { GrootStateDict, viewRender, ViewsContainer } from "@grootio/common";
+import { getContext } from "context";
 
-const ViewsContainer: React.FC<{ context: ViewsContainerType }> = ({ context }) => {
-  const { useStateByName } = groot.stateManager<GrootStateType>();
-  const [viewList] = useStateByName('groot.state.ui.views', []);
+const ViewsContainer: React.FC<{ context: ViewsContainer }> = ({ context }) => {
+  const { groot } = getContext();
+  const { useStateByName } = groot.stateManager<GrootStateDict>();
+  const [viewList] = useStateByName('gs.ui.views', []);
   const childrenView = viewList.filter(item => item.parent === context.id)
 
   return <>{

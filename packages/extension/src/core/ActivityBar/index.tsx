@@ -1,14 +1,15 @@
-import { GrootStateType, viewRender } from "@grootio/common";
-import { groot } from "index";
+import { GrootStateDict, viewRender } from "@grootio/common";
+import { getContext } from "context";
 import styles from './index.module.less';
 
 
 const ActivityBar: React.FC = () => {
-  const { useStateByName } = groot.stateManager<GrootStateType>();
-  const [viewKeys] = useStateByName('groot.state.workbench.activityBar.view', []);
-  const [viewsContainers] = useStateByName('groot.state.ui.viewsContainers', []);
-  const [active, setActive] = useStateByName('groot.state.workbench.activityBar.active', '');
-  const [, setPrimarySidebarKey] = useStateByName('groot.state.workbench.primarySidebar.view', '');
+  const { groot } = getContext();
+  const { useStateByName } = groot.stateManager<GrootStateDict>();
+  const [viewKeys] = useStateByName('gs.workbench.activityBar.view', []);
+  const [viewsContainers] = useStateByName('gs.ui.viewsContainers', []);
+  const [active, setActive] = useStateByName('gs.workbench.activityBar.active', '');
+  const [, setPrimarySidebarKey] = useStateByName('gs.workbench.primarySidebar.view', '');
 
   const items = viewsContainers.filter(vc => {
     return viewKeys.includes(vc.id)

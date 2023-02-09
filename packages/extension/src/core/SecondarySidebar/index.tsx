@@ -1,10 +1,11 @@
-import { GrootStateType, viewRender } from "@grootio/common";
-import { groot } from "index";
+import { GrootStateDict, viewRender } from "@grootio/common";
+import { getContext } from "context";
 
 const SecondarySidebar = () => {
-  const { useStateByName } = groot.stateManager<GrootStateType>();
-  const [viewsContainers] = useStateByName('groot.state.ui.viewsContainers', []);
-  const [viewKey] = useStateByName('groot.state.workbench.secondarySidebar.view', '');
+  const { groot } = getContext();
+  const { useStateByName } = groot.stateManager<GrootStateDict>();
+  const [viewsContainers] = useStateByName('gs.ui.viewsContainers', []);
+  const [viewKey] = useStateByName('gs.workbench.secondarySidebar.view', '');
   const view = viewsContainers.find(item => item.id === viewKey)?.view
 
   return <>{viewRender(view)}</>
