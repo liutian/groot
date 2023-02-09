@@ -1,9 +1,7 @@
-import { GrootStateDict } from "@grootio/common";
-import { getContext } from "context";
+import { grootStateManager } from "context";
 
 const StatusBar = () => {
-  const { groot } = getContext();
-  const { useStateByName } = groot.stateManager<GrootStateDict>();
+  const { useStateByName } = grootStateManager();
 
   return <>StatusBar</>
 }

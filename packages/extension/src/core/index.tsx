@@ -1,5 +1,5 @@
-import { GrootCommandDict, StudioMode } from "@grootio/common";
-import { getContext } from "context";
+import { StudioMode } from "@grootio/common";
+import { getContext, grootCommandManager } from "context";
 import { instanceBootstrap } from "instance";
 import { prototypeBootstrap } from "prototype";
 import ActivityBar from "./ActivityBar";
@@ -12,7 +12,7 @@ import StatusBar from "./StatusBar";
 
 export const startup = () => {
   const { groot } = getContext()
-  const { registerCommand } = groot.commandManager<GrootCommandDict>();
+  const { registerCommand } = grootCommandManager();
 
   registerCommand('gc.workbench.render.banner', () => {
     return <Banner />

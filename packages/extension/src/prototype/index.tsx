@@ -1,6 +1,5 @@
 import { AppstoreOutlined } from "@ant-design/icons";
-import { GrootStateDict } from "@grootio/common";
-import { getContext } from "context";
+import { getContext, grootStateManager } from "context";
 import ViewsContainer from "core/ViewsContainer";
 import { PropSetter } from "share/PropSetter";
 import { WorkArea } from "share/WorkArea";
@@ -8,7 +7,7 @@ import { Solution } from "./Solution";
 
 export const prototypeBootstrap = () => {
   const { groot } = getContext();
-  const { registerState } = groot.stateManager<GrootStateDict>();
+  const { registerState } = grootStateManager();
 
   registerState('gs.ui.viewsContainers', [
     {

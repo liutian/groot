@@ -1,11 +1,10 @@
-import { GrootStateDict, viewRender } from "@grootio/common";
-import { getContext } from "context";
+import { viewRender } from "@grootio/common";
+import { grootStateManager } from "context";
 import styles from './index.module.less';
 
 
 const ActivityBar: React.FC = () => {
-  const { groot } = getContext();
-  const { useStateByName } = groot.stateManager<GrootStateDict>();
+  const { useStateByName } = grootStateManager();
   const [viewKeys] = useStateByName('gs.workbench.activityBar.view', []);
   const [viewsContainers] = useStateByName('gs.ui.viewsContainers', []);
   const [active, setActive] = useStateByName('gs.workbench.activityBar.active', '');

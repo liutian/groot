@@ -1,6 +1,6 @@
 import { AppstoreOutlined } from "@ant-design/icons";
-import { APIPath, GrootCommandDict, GrootStateDict } from "@grootio/common";
-import { getContext } from "context";
+import { APIPath } from "@grootio/common";
+import { getContext, grootCommandManager, grootStateManager } from "context";
 import ViewsContainer from "core/ViewsContainer";
 import { PropSetter } from "share/PropSetter";
 import { WorkArea } from "share/WorkArea";
@@ -10,8 +10,8 @@ import { Material } from "./Material";
 
 export const instanceBootstrap = () => {
   const { groot } = getContext();
-  const { registerState } = groot.stateManager<GrootStateDict>();
-  const { registerCommand, executeCommand } = groot.commandManager<GrootCommandDict>();
+  const { registerState } = grootStateManager();
+  const { registerCommand, executeCommand } = grootCommandManager();
 
   registerState('gs.ui.viewsContainers', [
     {
@@ -98,15 +98,15 @@ export const instanceBootstrap = () => {
 }
 
 const fetchRootInstance = (rootInstanceId: number) => {
-  const { request, groot: { stateManager } } = getContext();
+  const { request } = getContext();
   request(APIPath.componentInstance_rootDetail_instanceId, { instanceId: rootInstanceId }).then(({ data: { children, root } }) => {
     // this.breadcrumbList.length = 0;
     // this.breadcrumbList.push({ id: rootInstanceId, name: root.name });
 
-    stateManager<GrootStateDict>().setState('gs.studio.rootComponentInstance', root)
-    stateManager<GrootStateDict>().setState('gs.studio.component', root.component)
-    stateManager<GrootStateDict>().setState('gs.studio.componentVersion', root.componentVersion)
-    stateManager<GrootStateDict>().setState('gs.studio.allComponentInstance', [root, ...children])
+    grootStateManager().setState('gs.studio.rootComponentInstance', root)
+    grootStateManager().setState('gs.studio.component', root.component)
+    grootStateManager().setState('gs.studio.componentVersion', root.componentVersion)
+    grootStateManager().setState('gs.studio.allComponentInstance', [root, ...children])
     // this.globalStateList = rootInstance.stateList.filter(item => !item.instanceId);
     // this.pageStateList = rootInstance.stateList.filter(item => !!item.instanceId);
 
