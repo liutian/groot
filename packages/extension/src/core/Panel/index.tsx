@@ -5,7 +5,7 @@ import { grootStateManager } from "context";
 const Panel = () => {
   const { useStateByName } = grootStateManager();
   const [viewsContainers] = useStateByName('gs.ui.viewsContainers', []);
-  const [viewKeyList] = useStateByName('gs.workbench.panel.view', []);
+  const [viewKeyList] = useStateByName('gs.workbench.panel.viewsContainers', []);
   const viewList = viewsContainers.filter(item => viewKeyList.includes(item.id));
 
   return <>

@@ -27,25 +27,25 @@ const Workbench: React.FC<{ layout: GridLayout }> = ({ layout }) => {
 
   return <div className={styles.container} style={{ ...containerStyle, ...layout.styles }}>
     <div className={styles.banner} style={bannerStyle}>
-      {executeCommand('gc.workbench.render.banner')}
+      {executeCommand('gc.workbench.banner.render')}
     </div>
     <div className={styles.activityBar} style={activityBarStyle}>
-      {executeCommand('gc.workbench.render.activityBar')}
+      {executeCommand('gc.workbench.activityBar.render')}
     </div>
     <div className={styles.primarySidebar} style={primarySidebarStyle}>
-      {executeCommand('gc.workbench.render.primarySidebar')}
+      {executeCommand('gc.workbench.primarySidebar.render')}
     </div>
     <div className={styles.secondarySidebar} style={secondarySidebarStyle}>
-      {executeCommand('gc.workbench.render.secondarySidebar')}
+      {executeCommand('gc.workbench.secondarySidebar.render')}
     </div>
     <div className={styles.stage} style={stageStyle}>
-      {executeCommand('gc.workbench.render.stage')}
+      {executeCommand('gc.workbench.stage.render')}
     </div>
     <div className={styles.panel} style={panelStyle}>
-      {executeCommand('gc.workbench.render.panel')}
+      {executeCommand('gc.workbench.panel.render')}
     </div>
     <div className={styles.statusBar} style={statusBarStyle}>
-      {executeCommand('gc.workbench.render.statusBar')}
+      {executeCommand('gc.workbench.statusBar.render')}
     </div>
   </div>
 }

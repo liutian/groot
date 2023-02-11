@@ -1,13 +1,14 @@
-import { CommandManager, CommandObject, ExtensionRuntime, GridLayout, GrootContextExecuteCommand, GrootContextGetState, GrootContextParams, GrootContextRegisterCommand, GrootContextRegisterState, GrootContextSetState, GrootContextUseStateByName, isBaseType, loadRemoteModule, MainFunction, StateManager, StateObject, wrapperState } from "@grootio/common"
+import { CommandManager, CommandObject, ExtensionRuntime, GridLayout, GrootContextCallHook, GrootContextExecuteCommand, GrootContextGetState, GrootContextParams, GrootContextRegisterCommand, GrootContextRegisterHook, GrootContextRegisterState, GrootContextSetState, GrootContextUseStateByName, GrootContextWatchState, HookManager, HookObject, isBaseType, loadRemoteModule, MainFunction, StateManager, StateObject, wrapperState } from "@grootio/common"
 import { useEffect, useReducer } from "react";
 import request from "util/request";
 
-let registorReady = false;
 const commandMap = new Map<string, CommandObject>();
-let extensionList: ExtensionRuntime[] = [];
 const stateMap = new Map<string, StateObject>();
-let tempProvider = ''
+const hookMap = new Map<string, HookObject[]>();
 const contextEventTarget = new EventTarget();
+let extensionList: ExtensionRuntime[] = [];
+let registorReady = false;
+let tempProvider = ''
 let extIdTick = 0;
 
 export const loadExtension = (remoteExtensionList: ExtensionRuntime[]) => {
@@ -48,6 +49,7 @@ export const execExtension = (remoteExtensionList: ExtensionRuntime[], params: G
         layout,
         stateManager,
         commandManager,
+        hookManager,
         onReady: function (listener) {
           contextEventTarget.addEventListener('ready', listener);
         }
@@ -66,14 +68,14 @@ export const execExtension = (remoteExtensionList: ExtensionRuntime[], params: G
     configSchemaList.push({ ...configSchema, id: ++extIdTick });
   });
 
-  registerState('groot.extension.configSchema', Object.freeze(configSchemaList));
-  registerState('groot.extension.data', Object.freeze(extensionList));
+  registerState('gs.extension.configSchema', Object.freeze(configSchemaList) as any, true);
+  registerState('gs.extension.data', Object.freeze(extensionList) as any, true);
   registorReady = true;
   contextEventTarget.dispatchEvent(new Event('ready'));
 }
 
 
-const registerCommand: GrootContextRegisterCommand<Record<string, [any[], any]>> = (command, callback, thisArg?) => {
+const registerCommand: GrootContextRegisterCommand<Record<string, [any[], any]>> = (command, callback) => {
   if (registorReady) {
     throw new Error('命令系统已准备完成，不可再次注册命令');
   }
@@ -84,15 +86,15 @@ const registerCommand: GrootContextRegisterCommand<Record<string, [any[], any]>>
   }
   commandMap.set(command, {
     callback,
-    thisArg,
     provider: tempProvider,
     origin: originCommand
   });
   return () => {
     if (commandMap.has(command) && commandMap.get(command).callback !== callback) {
       console.warn(`命令:${String(command)} 已经被覆盖`)
+    } else {
+      commandMap.delete(command);
     }
-    commandMap.delete(command);
   }
 }
 
@@ -104,55 +106,43 @@ export const executeCommand: GrootContextExecuteCommand<Record<string, [any[], a
     throw new Error(`命令:${String(command)} 未找到`)
   }
   const commandData = commandMap.get(command);
-  const { callback, thisArg, origin } = commandData
+  const { callback, origin } = commandData
   const originCommand = origin || (() => undefined);
-  const result = callback.apply(thisArg, [originCommand, ...args]);
+  const result = callback.apply(null, [originCommand, ...args]);
   // todo hookName
   return result;
 }
 
 
-const registerState: GrootContextRegisterState<Record<string, [any, boolean]>> = (name, defaultValue, onChange) => {
+const registerState: GrootContextRegisterState<Record<string, [any, boolean]>> = (name, defaultValue, multi, onChange) => {
   if (registorReady) {
     throw new Error('状态系统已准备完成，不可再次注册状态');
   }
 
-  if (Array.isArray(defaultValue)) {
-    for (const item of defaultValue as any[]) {
-      if (!isBaseType(item) && item.id === undefined) {
-        throw new Error('状态列表属性 id为空')
-      }
-    }
-  }
-
-  let stateValue;
   const eventTarget = new EventTarget();
   eventTarget.addEventListener('change', () => {
-    onChange && onChange();
+    const newValue = stateMap.get(name).value
+    onChange && onChange(newValue);
   })
-  if (Array.isArray(defaultValue)) {
-    stateValue = defaultValue.map(item => {
-      return wrapperState(item, () => {
-        eventTarget.dispatchEvent(new Event('change'))
-      })
-    })
-  } else {
-    stateValue = wrapperState(defaultValue, () => {
-      eventTarget.dispatchEvent(new Event('change'))
-    })
-  }
+
+  const stateValue = wrapperState(defaultValue, () => {
+    eventTarget.dispatchEvent(new Event('change'))
+  })
+
+  const overwrite = stateMap.has(name);
+
   stateMap.set(name, {
     value: stateValue,
     provider: tempProvider,
     eventTarget,
+    multi
   });
 
-  if (stateMap.has(name)) {
+  if (overwrite) {
     console.warn(`状态:${name} 已被覆盖`);
-    return true;
   }
 
-  return false;
+  return overwrite;
 }
 
 const getState: GrootContextGetState<Record<string, [any, boolean]>> = (name) => {
@@ -164,7 +154,23 @@ const getState: GrootContextGetState<Record<string, [any, boolean]>> = (name) =>
   return stateData.value;
 }
 
-const setState: GrootContextSetState<Record<string, [any, boolean]>> = (name, newValue, dispatch = true) => {
+const watchState: GrootContextWatchState<Record<string, [any, boolean]>> = (name, callback) => {
+  if (!stateMap.get(name)) {
+    console.warn(`状态:${name} 未找到`)
+  }
+
+  const stateData = stateMap.get(name);
+  const listener = () => {
+    callback(stateData.value);
+  }
+  stateData.eventTarget.addEventListener('change', listener)
+
+  return () => {
+    stateData.eventTarget.removeEventListener('change', listener)
+  }
+}
+
+const setState: GrootContextSetState<Record<string, [any, boolean]>> = (name, newValue) => {
   if (!registorReady) {
     throw new Error(`状态系统未准备就绪`)
   }
@@ -173,84 +179,26 @@ const setState: GrootContextSetState<Record<string, [any, boolean]>> = (name, ne
   }
 
   const stateData = stateMap.get(name);
-  if (Array.isArray(stateData.value)) {
-    if (!newValue) {
-      stateData.value = [];
-      if (dispatch) {
-        stateData.eventTarget.dispatchEvent(new Event('change'));
-      }
-      return true;
+  if (stateData.multi) {
+    stateData.value.length = 0;
+    if (Array.isArray(newValue)) {
+      newValue.forEach((item) => {
+        stateData.value.push(item);
+      })
     }
-
-    if (!isBaseType(newValue.id) && isBaseType(newValue.index)) {
-      if (newValue.value === undefined) {
-        stateData.value.splice(newValue.index, 1);
-        if (dispatch) {
-          stateData.eventTarget.dispatchEvent(new Event('change'));
-        }
-        return true;
-      } else if (newValue.index < stateData.value.length) {
-        stateData.value[newValue.index] = newValue.value;
-        if (dispatch) {
-          stateData.eventTarget.dispatchEvent(new Event('change'));
-        }
-        return true;
-      }
-
-      return false;
+    stateData.eventTarget.dispatchEvent(new Event('change'))
+  } else if (newValue !== stateData.value) {
+    if (isBaseType(newValue)) {
+      stateData.value = newValue;
+    } else {
+      stateData.value = wrapperState(newValue, () => {
+        stateData.eventTarget.dispatchEvent(new Event('change'))
+      })
     }
-
-    if (!newValue.id) {
-      throw new Error(`状态:${name} 值id缺失`);
-    }
-
-    const index = (stateData.value as { id: string }[]).findIndex(item => item.id === newValue.id);
-    if (newValue.value !== undefined || newValue.value !== null || !Number.isNaN(newValue.value)) {
-      if (index === -1) {
-        stateData.value.push(
-          wrapperState(newValue, () => {
-            stateData.eventTarget.dispatchEvent(new Event('change'))
-          })
-        )
-        if (dispatch) {
-          stateData.eventTarget.dispatchEvent(new Event('change'));
-        }
-        return true;
-      } else if (stateData.value[index].value !== newValue.value) {
-        stateData.value[index].value = wrapperState(newValue, () => {
-          stateData.eventTarget.dispatchEvent(new Event('change'))
-        })
-        if (dispatch) {
-          stateData.eventTarget.dispatchEvent(new Event('change'));
-        }
-        return true;
-      }
-    } else if (index !== -1) {
-      stateData.value.splice(index, 1);
-      if (dispatch) {
-        stateData.eventTarget.dispatchEvent(new Event('change'));
-      }
-      return true;
-    }
-  } else {
-    if (newValue !== stateData.value) {
-      if (isBaseType(newValue)) {
-        stateData.value = newValue;
-      } else {
-        stateData.value = wrapperState(newValue, () => {
-          stateData.eventTarget.dispatchEvent(new Event('change'))
-        })
-      }
-
-      if (dispatch !== false) {
-        stateData.eventTarget.dispatchEvent(new Event('change'));
-      }
-
-      return true
-    }
+    stateData.eventTarget.dispatchEvent(new Event('change'))
   }
 
-  return false;
+  return stateData.value;
 }
 
 export const useStateByName: GrootContextUseStateByName<Record<string, [any, boolean]>> = (name, defaultValue) => {
@@ -279,18 +227,54 @@ export const useStateByName: GrootContextUseStateByName<Record<string, [any, boo
   return [
     stateObj?.value || defaultValue,
     (newValue) => {
-      setState(name, newValue);
+      return setState(name, newValue);
     }
   ]
 }
 
+export const registerHook: GrootContextRegisterHook<Record<string, [any[], any]>> = (hookName, callback) => {
+  let hookList = hookMap.get(hookName)
+  if (!hookMap.has(hookName)) {
+    hookList = []
+    hookMap.set(hookName, hookList);
+  }
+
+  if (hookList.find(item => item.callback === callback)) {
+    throw new Error('钩子函数重复注册')
+  }
+
+  hookList.push({
+    callback,
+    provider: tempProvider
+  })
+
+  return () => {
+    const index = hookList.findIndex(item => item.callback === callback);
+    if (index !== -1) {
+      hookList.splice(index, 1);
+    }
+  }
+}
+
+export const callHook: GrootContextCallHook<Record<string, [any[], any]>> = (hookName, ...args) => {
+  if (!hookMap.has(hookName)) {
+    return [];
+  }
+
+  let hookList = hookMap.get(hookName)
+
+  return hookList.map((item) => {
+    return item.callback.apply(null, args);
+  })
+}
 
 export const stateManager: StateManager = () => {
   return {
     registerState,
     setState,
     getState,
-    useStateByName
+    useStateByName,
+    watchState
   }
 }
 
@@ -298,5 +282,12 @@ export const commandManager: CommandManager = () => {
   return {
     registerCommand,
     executeCommand
+  }
+}
+
+export const hookManager: HookManager = () => {
+  return {
+    registerHook,
+    callHook
   }
 }

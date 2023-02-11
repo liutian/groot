@@ -1,7 +1,9 @@
 import { AppstoreOutlined } from "@ant-design/icons";
-import { APIPath } from "@grootio/common";
-import { getContext, grootCommandManager, grootStateManager } from "context";
+import { APIPath, ComponentInstance, PropGroup } from "@grootio/common";
+import { metadataFactory, propTreeFactory } from "@grootio/core";
+import { getContext, grootCommandManager, grootHookManager, grootStateManager } from "context";
 import ViewsContainer from "core/ViewsContainer";
+import { switchComponentInstance } from "share";
 import { PropSetter } from "share/PropSetter";
 import { WorkArea } from "share/WorkArea";
 import { Application } from "./Application";
@@ -10,8 +12,9 @@ import { Material } from "./Material";
 
 export const instanceBootstrap = () => {
   const { groot } = getContext();
-  const { registerState } = grootStateManager();
+  const { registerState, getState } = grootStateManager();
   const { registerCommand, executeCommand } = grootCommandManager();
+  const { callHook } = grootHookManager();
 
   registerState('gs.ui.viewsContainers', [
     {
@@ -45,7 +48,7 @@ export const instanceBootstrap = () => {
         return <ViewsContainer context={this} />
       }
     }
-  ])
+  ], true)
 
   registerState('gs.ui.views', [
     {
@@ -69,21 +72,19 @@ export const instanceBootstrap = () => {
       view: <WorkArea />,
       parent: 'workArea'
     }
-  ])
+  ], true)
 
-  registerState('gs.workbench.activityBar.view', [
-    'application', 'material'
-  ])
-  registerState('gs.workbench.activityBar.active', 'application');
-  registerState('gs.workbench.primarySidebar.view', 'application');
-  registerState('gs.workbench.secondarySidebar.view', 'propSetter');
-  registerState('gs.workbench.stage.view', 'workArea');
+  registerState('gs.workbench.activityBar.viewsContainers', ['application', 'material'], true)
+  registerState('gs.workbench.activityBar.active', 'application', false);
+  registerState('gs.workbench.primarySidebar.viewsContainer', 'application', false);
+  registerState('gs.workbench.secondarySidebar.viewsContainer', 'propSetter', false);
+  registerState('gs.workbench.stage.view', 'workArea', false);
 
 
-  registerState('gs.studio.rootComponentInstance', null)
-  registerState('gs.studio.component', null)
-  registerState('gs.studio.componentVersion', null)
-  registerState('gs.studio.allComponentInstance', null)
+  registerState('gs.studio.componentInstance', null, false)
+  registerState('gs.studio.component', null, false)
+  registerState('gs.studio.allComponentInstance', [], true)
+
 
   groot.layout.design('visible', 'secondarySidebar', true);
   groot.layout.design('visible', 'panel', false);
@@ -92,35 +93,55 @@ export const instanceBootstrap = () => {
     fetchRootInstance(rootInstanceId);
   });
 
+
+  registerCommand('gc.workbench.syncDataToStage', (_, refreshId) => {
+    const list = getState('gs.studio.allComponentInstance')
+    if (refreshId === 'all') {
+      const metadataList = instanceToMetadata(list);
+      callHook('gh.stage.syncData', metadataList)
+      return;
+    }
+
+    let instanceId = refreshId;
+    if (refreshId === 'current') {
+      instanceId = getState('gs.studio.componentInstance').id;
+    }
+
+    const refreshInstance = list.find(i => i.id === instanceId);
+    const [refreshMetadata] = instanceToMetadata([refreshInstance]);
+    callHook('gh.stage.syncData', refreshMetadata)
+  })
+
   groot.onReady(() => {
     executeCommand('gc.fetch.instance', groot.params.instanceId)
+  })
+}
+
+
+const instanceToMetadata = (instanceList: ComponentInstance[]) => {
+  return instanceList.map((instance) => {
+    const { groupList, blockList, itemList } = instance;
+    const valueList = instance.valueList;
+    if (!instance.propTree) {
+      instance.propTree = propTreeFactory(groupList, blockList, itemList, valueList) as PropGroup[];
+      groupList.forEach((group) => {
+        if (!Array.isArray(group.expandBlockIdList)) {
+          group.expandBlockIdList = group.propBlockList.map(block => block.id);
+        }
+      })
+    }
+    const metadata = metadataFactory(instance.propTree, instance.component, instance.id, instance.rootId, instance.parentId);
+    return metadata;
   })
 }
 
 const fetchRootInstance = (rootInstanceId: number) => {
   const { request } = getContext();
   request(APIPath.componentInstance_rootDetail_instanceId, { instanceId: rootInstanceId }).then(({ data: { children, root } }) => {
-    // this.breadcrumbList.length = 0;
-    // this.breadcrumbList.push({ id: rootInstanceId, name: root.name });
 
-    grootStateManager().setState('gs.studio.rootComponentInstance', root)
-    grootStateManager().setState('gs.studio.component', root.component)
-    grootStateManager().setState('gs.studio.componentVersion', root.componentVersion)
     grootStateManager().setState('gs.studio.allComponentInstance', [root, ...children])
-    // this.globalStateList = rootInstance.stateList.filter(item => !item.instanceId);
-    // this.pageStateList = rootInstance.stateList.filter(item => !!item.instanceId);
 
-    const { groupList, blockList, itemList, valueList } = root;
-    // const propTree = this.propHandle.buildPropTree(groupList, blockList, itemList, valueList);
-    // rootInstance.propTree = propTree;
-
-    // this.iframeReadyPromise.then(() => {
-    //   this.iframeManager.refresh(() => {
-    //     this.propHandle.refreshAllComponent();
-    //   });
-    // });
-
-    // window.history.pushState(null, '', `?app=${this.application.id}&release=${this.application.release.id}&page=${rootInstance.id}`);
-    // this.dispatchEvent(new Event(WorkbenchEvent.LaunchFinish));
+    grootCommandManager().executeCommand('gc.workbench.syncDataToStage', 'all');
+    switchComponentInstance(root.id);
   });
 }

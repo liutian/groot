@@ -4,7 +4,7 @@ import { grootStateManager } from "context";
 const PrimarySidebar = () => {
   const { useStateByName } = grootStateManager();
   const [viewsContainers] = useStateByName('gs.ui.viewsContainers', []);
-  const [viewKey] = useStateByName('gs.workbench.primarySidebar.view', '');
+  const [viewKey] = useStateByName('gs.workbench.primarySidebar.viewsContainer', '');
   const view = viewsContainers.find(item => item.id === viewKey)?.view
 
   return <>{viewRender(view)}</>

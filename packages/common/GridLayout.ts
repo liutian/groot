@@ -19,7 +19,7 @@ export class GridLayout extends EventTarget {
   public statusBarHeight = '22px'
   public activityBarWidth = '50px'
   public primarySidebarWidth = '170px'
-  public secondarySidebarWidth = '250px'
+  public secondarySidebarWidth = '350px'
 
   public styles = { gridTemplateColumns: '', gridTemplateRows: '', gridTemplateAreas: '' }
   public layoutSetting: LayoutSetting = {

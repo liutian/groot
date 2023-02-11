@@ -15,4 +15,5 @@ export * from './GridLayout';
 export * from './reactive';
 export * from './ViewLoader';
 export * from './robot2';
+export * from './MouseFollow';
 

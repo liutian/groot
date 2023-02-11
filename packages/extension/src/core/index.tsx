@@ -1,5 +1,5 @@
 import { StudioMode } from "@grootio/common";
-import { getContext, grootCommandManager } from "context";
+import { getContext, grootCommandManager, isPrototypeMode } from "context";
 import { instanceBootstrap } from "instance";
 import { prototypeBootstrap } from "prototype";
 import ActivityBar from "./ActivityBar";
@@ -14,29 +14,29 @@ export const startup = () => {
   const { groot } = getContext()
   const { registerCommand } = grootCommandManager();
 
-  registerCommand('gc.workbench.render.banner', () => {
+  registerCommand('gc.workbench.banner.render', () => {
     return <Banner />
   });
-  registerCommand('gc.workbench.render.activityBar', () => {
+  registerCommand('gc.workbench.activityBar.render', () => {
     return <ActivityBar />
   });
-  registerCommand('gc.workbench.render.primarySidebar', () => {
+  registerCommand('gc.workbench.primarySidebar.render', () => {
     return <PrimarySidebar />
   });
-  registerCommand('gc.workbench.render.secondarySidebar', () => {
+  registerCommand('gc.workbench.secondarySidebar.render', () => {
     return <SecondarySidebar />
   });
-  registerCommand('gc.workbench.render.stage', () => {
+  registerCommand('gc.workbench.stage.render', () => {
     return <Stage />
   });
-  registerCommand('gc.workbench.render.panel', () => {
+  registerCommand('gc.workbench.panel.render', () => {
     return <Panel />
   });
-  registerCommand('gc.workbench.render.statusBar', () => {
+  registerCommand('gc.workbench.statusBar.render', () => {
     return <StatusBar />
   });
 
-  if (groot.params.mode === StudioMode.Prototype) {
+  if (isPrototypeMode()) {
     prototypeBootstrap();
   } else if (groot.params.mode === StudioMode.Instance) {
     instanceBootstrap();
