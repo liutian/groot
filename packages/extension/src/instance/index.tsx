@@ -36,6 +36,17 @@ export const instanceBootstrap = () => {
         return <ViewsContainer context={this} />
       },
     }, {
+      id: 'custom_icon',
+      name: '物料',
+      icon: () => {
+        return <span onClick={(e) => {
+          alert('haha')
+          e.stopPropagation();
+        }}>
+          <AppstoreOutlined />
+        </span>
+      }
+    }, {
       id: 'propSetter',
       name: '属性设置器',
       view: function () {
@@ -74,7 +85,7 @@ export const instanceBootstrap = () => {
     }
   ], true)
 
-  registerState('gs.workbench.activityBar.viewsContainers', ['application', 'material'], true)
+  registerState('gs.workbench.activityBar.viewsContainers', ['application', 'material', 'custom_icon'], true)
   registerState('gs.workbench.activityBar.active', 'application', false);
   registerState('gs.workbench.primarySidebar.viewsContainer', 'application', false);
   registerState('gs.workbench.secondarySidebar.viewsContainer', 'propSetter', false);

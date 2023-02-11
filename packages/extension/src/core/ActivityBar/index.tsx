@@ -8,7 +8,6 @@ const ActivityBar: React.FC = () => {
   const [viewKeys] = useStateByName('gs.workbench.activityBar.viewsContainers', []);
   const [viewsContainers] = useStateByName('gs.ui.viewsContainers', []);
   const [active, setActive] = useStateByName('gs.workbench.activityBar.active', '');
-  const [, setPrimarySidebarKey] = useStateByName('gs.workbench.primarySidebar.viewsContainer', '');
 
   const items = viewsContainers.filter(vc => {
     return viewKeys.includes(vc.id)
@@ -16,7 +15,7 @@ const ActivityBar: React.FC = () => {
 
   const change = (key: string) => {
     setActive(key);
-    setPrimarySidebarKey(key);
+    grootStateManager().setState('gs.workbench.primarySidebar.viewsContainer', key);
   }
 
   return <div className={styles.container}>

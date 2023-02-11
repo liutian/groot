@@ -4,28 +4,28 @@ import { localExtension } from 'config';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import request from 'util/request';
-import { execExtension, loadExtension } from './groot';
+import { launchExtension, loadExtension } from './groot';
 import Workbench from './Workbench';
 
 /**
  * 1.加载解决方案或者应用信息 
  * 2.加载插件
- * 3.启动工作台
- * 4.启动插件入口
+ * 3.启动插件
+ * 4.启动工作台
  **/
 const Studio: React.FC<StudioParams & { account: any }> & { Wrapper: React.FC<{ account: any }> } = (params) => {
   const [loadStatus, setLoadStatus] = useState<'doing' | 'no-application' | 'no-solution' | 'no-instance' | 'fetch-extension' | 'notfound' | 'ok'>('doing');
   const [layout, setLayout] = useState<GridLayout>();
 
   useEffect(() => {
-    let fetchDataPromise;
+    let fetchCoreDataPromise;
     if (params.studioMode == StudioMode.Prototype) {
-      fetchDataPromise = fetchSolution(params.solutionId)
+      fetchCoreDataPromise = fetchSolution(params.solutionId)
     } else {
-      fetchDataPromise = fetchApplication(params.appId, params.releaseId)
+      fetchCoreDataPromise = fetchApplication(params.appId, params.releaseId)
     }
 
-    fetchDataPromise.then((data) => {
+    fetchCoreDataPromise.then((data) => {
       setLoadStatus('fetch-extension');
       // todo 研究promise自动刷新视图
       fetchExtension(data).then((remoteExtensionList) => {
@@ -33,14 +33,15 @@ const Studio: React.FC<StudioParams & { account: any }> & { Wrapper: React.FC<{ 
         const layout = new GridLayout();
         setLayout(layout);
 
-        execExtension(remoteExtensionList, {
+        launchExtension(remoteExtensionList, {
           mode: params.studioMode,
           application: params.studioMode === StudioMode.Instance ? data : null,
           solution: params.studioMode === StudioMode.Prototype ? data : null,
           account: params.account,
           releaseId: params.releaseId,
           instanceId: params.instanceId,
-          componentId: params.componentId
+          componentId: params.componentId,
+          versionId: params.versionId
         }, layout)
       })
     })
@@ -100,6 +101,7 @@ Studio.Wrapper = (account) => {
     const componentId = +searchParams.get('componentId')
     const instanceId = +searchParams.get('instanceId')
     const releaseId = +searchParams.get('releaseId')
+    const versionId = +searchParams.get('versionId')
 
     if (studioMode === StudioMode.Instance) {
       if (!appId) {
@@ -122,7 +124,8 @@ Studio.Wrapper = (account) => {
       instanceId,
       releaseId,
       componentId,
-      studioMode
+      studioMode,
+      versionId
     }
   })
 

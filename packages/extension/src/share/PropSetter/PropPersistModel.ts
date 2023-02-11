@@ -336,6 +336,7 @@ export default class PropPersistModel {
       grootCommandManager().executeCommand('gc.workbench.syncDataToStage', 'current');
     })
   }
+
   public updateValue = ({ propItem, value, abstractValueId, abstractValueIdChain, valueStruct, hostComponentInstanceId }: { propItem: PropItem, value: any, abstractValueId?: number, abstractValueIdChain?: string, valueStruct?: ValueStruct, hostComponentInstanceId?: number }) => {
     if (!abstractValueIdChain) {
       abstractValueIdChain = calcPropValueIdChain(propItem, abstractValueId);

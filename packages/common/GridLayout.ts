@@ -33,10 +33,10 @@ export class GridLayout extends EventTarget {
 
     primaryLayout: 'left',
     panelLayout: 'center',
-    bannerLayout: 'center'
+    bannerLayout: 'stretch'
   }
   private areasMap = new Map<string, string>([
-    ['1*1', 'activityBar'], ['1*2', 'primarySidebar'], ['1*3', 'banner'], ['1*4', 'secondarySidebar'],
+    ['1*1', 'banner'], ['1*2', 'banner'], ['1*3', 'banner'], ['1*4', 'banner'],
     ['2*1', 'activityBar'], ['2*2', 'primarySidebar'], ['2*3', 'editor'], ['2*4', 'secondarySidebar'],
     ['3*1', 'activityBar'], ['3*2', 'primarySidebar'], ['3*3', 'panel'], ['3*4', 'secondarySidebar'],
     ['4*1', 'statusBar'], ['4*2', 'statusBar'], ['4*3', 'statusBar'], ['4*4', 'statusBar'],

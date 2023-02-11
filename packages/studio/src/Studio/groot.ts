@@ -22,13 +22,13 @@ export const loadExtension = (remoteExtensionList: ExtensionRuntime[]) => {
         return Promise.reject(error);
       })
     .then((mainList: MainFunction[]) => {
-      return remoteExtensionList.map(({ packageName, packageUrl, name }, index) => {
-        return { packageName, packageUrl, main: mainList[index], config: null, name }
+      return remoteExtensionList.map(({ packageName, packageUrl, name, config }, index) => {
+        return { packageName, packageUrl, main: mainList[index], config, name }
       })
     })
 }
 
-export const execExtension = (remoteExtensionList: ExtensionRuntime[], params: GrootContextParams, layout: GridLayout) => {
+export const launchExtension = (remoteExtensionList: ExtensionRuntime[], params: GrootContextParams, layout: GridLayout) => {
   const configSchemaList = [];
   remoteExtensionList.forEach(({ name, main, packageName, packageUrl, config }, index) => {
     const requestClone = request.clone((type) => {

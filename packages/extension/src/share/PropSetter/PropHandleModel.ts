@@ -1,6 +1,5 @@
-import { ComponentInstance, ComponentValueItemType, ComponentValueType, DragAddComponentEventDataType, PostMessageType, PropBlock, PropGroup, PropItem, PropItemType, PropValue, PropValueType, StudioMode, ValueStruct } from "@grootio/common";
-import { metadataFactory, propTreeFactory } from "@grootio/core";
-import { getContext, grootCommandManager, grootHookManager, grootStateManager, isPrototypeMode } from "context";
+import { ComponentInstance, ComponentValueItemType, ComponentValueType, DragAddComponentEventDataType, PostMessageType, PropBlock, PropGroup, PropItem, PropItemType, PropValueType, ValueStruct } from "@grootio/common";
+import { grootCommandManager, grootHookManager, grootStateManager, isPrototypeMode } from "context";
 import { switchComponentInstance } from "share";
 
 import PropPersistModel from "./PropPersistModel";
