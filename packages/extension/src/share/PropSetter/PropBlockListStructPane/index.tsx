@@ -16,7 +16,6 @@ type PropsType = {
 }
 
 const PropBlockListStructPane: React.FC<PropsType> = ({ block: propBlock }) => {
-  propBlock.primaryShowPropItemList = [];
   const childPropItem = propBlock.propItemList[0];
   const childPropBlockList = childPropItem.childGroup.propBlockList;
   const dataSourceEditable = !!childPropItem.block.group.root || childPropItem.block.group.parentItem?.tempAbstractValueId;
@@ -25,7 +24,6 @@ const PropBlockListStructPane: React.FC<PropsType> = ({ block: propBlock }) => {
   const propHandleModel = useModel(PropHandleModel);
   const propPersistModel = useModel(PropPersistModel);
   const [form] = Form.useForm();
-  const [rootComponentInstance] = grootStateManager().useStateByName('gs.studio.componentInstance')
   const [component] = grootStateManager().useStateByName('gs.studio.component')
 
 
@@ -61,16 +59,17 @@ const PropBlockListStructPane: React.FC<PropsType> = ({ block: propBlock }) => {
     }
   }
 
+  const primaryShowPropItemList = [];
   propBlock.listStructData.forEach((propItemId) => {
     childPropBlockList.forEach((block) => {
       const propItem = block.propItemList.find(item => item.id === propItemId);
       if (propItem) {
-        propBlock.primaryShowPropItemList.push(propItem);
+        primaryShowPropItemList.push(propItem);
       }
     })
   });
 
-  const columns = propBlock.primaryShowPropItemList.map((propItem) => {
+  const columns = primaryShowPropItemList.map((propItem) => {
     return {
       title: propItem.label,
       dataIndex: `propItemId_${propItem.id}`,
@@ -185,14 +184,18 @@ const PropBlockListStructPane: React.FC<PropsType> = ({ block: propBlock }) => {
     });
 
     propPersistModel.updateValue({ propItem, value: changedValues[updateKey], abstractValueId: +abstractValueId }).then(() => {
-      grootCommandManager().executeCommand('gc.workbench.syncDataToStage', 'current');
+      grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'current');
     })
   }
 
   // 避免切换组件实例时表单控件无法刷新的问题
-  const formKey = isPrototypeMode() ?
-    `componentId:${component.id}|versionId:${component.componentVersion.id}`
-    : `releaseId:${getContext().groot.params.application?.release.id}|instanceId:${rootComponentInstance?.id}`;
+  let formKey;
+  if (isPrototypeMode()) {
+    formKey = `componentId:${component.id}|versionId:${component.componentVersion.id}`
+  } else {
+    const instance = grootStateManager().getState('gs.studio.componentInstance')
+    formKey = `releaseId:${getContext().groot.params.application.release.id}|instanceId:${instance.id}`;
+  }
 
   return <div className={styles.container}>
     <Form form={form} layout="vertical" key={formKey} onValuesChange={(changedValues) => { updateValue(changedValues) }}>

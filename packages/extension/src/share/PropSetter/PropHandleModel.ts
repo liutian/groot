@@ -284,7 +284,7 @@ export default class PropHandleModel {
         valueStruct: ValueStruct.ChildComponentList,
         hostComponentInstanceId: data.parentInstanceId
       }).then(() => {
-        grootCommandManager().executeCommand('gc.workbench.syncDataToStage', 'all');
+        grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'all');
 
         setTimeout(() => {
           grootHookManager().callHook(PostMessageType.OuterComponentSelect, instanceData.id)
@@ -306,11 +306,11 @@ export default class PropHandleModel {
         if (rootComponentInstance.id === instanceId) {
           grootHookManager().callHook(PostMessageType.OuterComponentSelect, instance.parentId)
         }
-        grootCommandManager().executeCommand('gc.workbench.syncDataToStage', 'all');
+        grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'all');
       } else {// 父级为根组件实例
         switchComponentInstance(instance.parentId)
         grootHookManager().callHook(PostMessageType.OuterOutlineReset)
-        grootCommandManager().executeCommand('gc.workbench.syncDataToStage', 'all');
+        grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'all');
       }
 
       // this.forceUpdateFormKey++;

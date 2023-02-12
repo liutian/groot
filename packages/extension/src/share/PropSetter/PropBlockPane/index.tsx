@@ -23,7 +23,6 @@ type PropType = {
 function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
   const propPersistModel = useModel(PropPersistModel);
   const propHandleModel = useModel(PropHandleModel);
-  const [rootComponentInstance] = grootStateManager().useStateByName('gs.studio.componentInstance')
   const [component] = grootStateManager().useStateByName('gs.studio.component')
   const [propSettingView] = grootStateManager().useStateByName('gs.studio.propSettingView', []);
   const [form] = Form.useForm();
@@ -185,18 +184,22 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
       valueStruct
     }).then(() => {
       if (!isPrototypeMode() && valueStruct === ValueStruct.ChildComponentList) {
-        grootCommandManager().executeCommand('gc.workbench.syncDataToStage', 'all');
+        grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'all');
       } else {
-        grootCommandManager().executeCommand('gc.workbench.syncDataToStage', 'current');
+        grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'current');
       }
     })
   }
 
 
   // 避免切换组件实例时表单控件无法刷新的问题
-  const formKey = isPrototypeMode() ?
-    `componentId:${component.id}|versionId:${component.componentVersion.id}`
-    : `releaseId:${getContext().groot.params.application?.release.id}|instanceId:${rootComponentInstance?.id}`;
+  let formKey;
+  if (isPrototypeMode()) {
+    formKey = `componentId:${component.id}|versionId:${component.componentVersion.id}`
+  } else {
+    const instance = grootStateManager().getState('gs.studio.componentInstance')
+    formKey = `releaseId:${getContext().groot.params.application?.release.id}|instanceId:${instance.id}`;
+  }
 
   return <div className={noWrapMode ? styles.containerWrap : ''}>
     <Form form={form} key={formKey} layout={PropBlockLayoutKeyMap[block.layout] as any} labelAlign="left" colon={false} className={styles.propForm}

@@ -23,18 +23,21 @@ export const PropSetter = () => {
 
   const containerRef = useRef<HTMLDivElement>({} as any);
 
+  const activeSubPropItem = propHandleModel.propItemStack[propHandleModel.propItemStack.length - 1];
+
   return <div ref={containerRef} className={styles.container}>
     <div className={styles.propContainer}>
 
-      <div className={`${styles.propPaneItem}  `}>
-        {!!component ? <PropPane /> : <>loading ...</>}
-      </div>
       {
-        propHandleModel.propItemStack.map(item => {
-          return <div key={item.id} className={`${styles.propPaneItem}`}>
-            <SubPropPane key={item.id} item={item} />
+        propHandleModel.propItemStack.length ? (
+          <div key={activeSubPropItem.id} className={`${styles.propPaneItem}`}>
+            <SubPropPane key={activeSubPropItem.id} item={activeSubPropItem} />
           </div>
-        })
+        ) : (
+          <div className={`${styles.propPaneItem}  `}>
+            {!!component ? <PropPane /> : <>loading ...</>}
+          </div>
+        )
       }
     </div>
 

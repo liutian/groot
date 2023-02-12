@@ -62,6 +62,7 @@ export const prototypeBootstrap = () => {
   registerState('gs.workbench.primarySidebar.viewsContainer', 'solution', false);
   registerState('gs.workbench.secondarySidebar.viewsContainer', 'propSetter', false);
   registerState('gs.workbench.stage.view', 'workArea', false);
+  registerState('gs.studio.component', null, false)
 
   groot.layout.design('visible', 'secondarySidebar', true);
   groot.layout.design('visible', 'panel', false);
@@ -70,7 +71,7 @@ export const prototypeBootstrap = () => {
     fetchComponent(componentId, versionId);
   })
 
-  registerCommand('gc.workbench.syncDataToStage', (_) => {
+  registerCommand('gc.workbench.makeDataToStage', (_) => {
     syncDataToStage();
   })
 
@@ -83,7 +84,7 @@ const fetchComponent = (componentId: number, versionId: number) => {
   const { request } = getContext();
   request(APIPath.componentPrototype_detail_componentId, { componentId, versionId }).then(({ data }) => {
     grootStateManager().setState('gs.studio.component', data)
-    grootCommandManager().executeCommand('gc.workbench.syncDataToStage', 'all')
+    grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'all')
   })
 }
 

@@ -115,6 +115,6 @@ export type StudioParams = {
   releaseId: number,
   componentId: number,
   instanceId: number,
-  studioMode: StudioMode,
+  mode: StudioMode,
   versionId: number
 }

@@ -131,7 +131,7 @@ export default class PropPersistModel {
 
         this.settingModalSubmitting = false;
         this.currSettingPropGroup = undefined;
-        grootCommandManager().executeCommand('gc.workbench.syncDataToStage', 'current');
+        grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'current');
       })
     } else {
       this.request(APIPath.group_add, newGroup).then(({ data: { newGroup, extra } }) => {
@@ -149,7 +149,7 @@ export default class PropPersistModel {
 
         this.settingModalSubmitting = false;
         this.currSettingPropGroup = undefined;
-        grootCommandManager().executeCommand('gc.workbench.syncDataToStage', 'current');
+        grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'current');
       })
     }
   }
@@ -165,7 +165,7 @@ export default class PropPersistModel {
         assignBaseType(group.propBlockList[blockIndex], newBlock);
         this.settingModalSubmitting = false;
         this.currSettingPropBlock = undefined;
-        grootCommandManager().executeCommand('gc.workbench.syncDataToStage', 'current');
+        grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'current');
       });
     } else {
       this.request(APIPath.block_add, newBlock).then(({ data: { newBlock, extra } }) => {
@@ -187,7 +187,7 @@ export default class PropPersistModel {
 
         this.settingModalSubmitting = false;
         this.currSettingPropBlock = undefined;
-        grootCommandManager().executeCommand('gc.workbench.syncDataToStage', 'current');
+        grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'current');
       })
 
     }
@@ -211,7 +211,7 @@ export default class PropPersistModel {
 
         this.settingModalSubmitting = false;
         this.currSettingPropItem = undefined;
-        grootCommandManager().executeCommand('gc.workbench.syncDataToStage', 'current');
+        grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'current');
       });
     } else {
       this.request(APIPath.item_add, newItem).then(({ data: { newItem, childGroup, extra } }) => {
@@ -237,7 +237,7 @@ export default class PropPersistModel {
 
         this.settingModalSubmitting = false;
         this.currSettingPropItem = undefined;
-        grootCommandManager().executeCommand('gc.workbench.syncDataToStage', 'current');
+        grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'current');
       })
     }
   }
@@ -250,7 +250,7 @@ export default class PropPersistModel {
       if (this.propHandle.activeGroupId === groupId) {
         this.propHandle.activeGroupId = this.propHandle.propTree[0]?.id
       }
-      grootCommandManager().executeCommand('gc.workbench.syncDataToStage', 'current');
+      grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'current');
     })
   }
 
@@ -258,7 +258,7 @@ export default class PropPersistModel {
     this.request(APIPath.block_remove_blockId, { blockId }).then(() => {
       let blockIndex = group.propBlockList.findIndex(b => b.id === blockId);
       group.propBlockList.splice(blockIndex, 1);
-      grootCommandManager().executeCommand('gc.workbench.syncDataToStage', 'current');
+      grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'current');
     })
   }
 
@@ -266,7 +266,7 @@ export default class PropPersistModel {
     this.request(APIPath.item_remove_itemId, { itemId }).then(() => {
       let itemIndex = block.propItemList.findIndex(item => item.id === itemId);
       block.propItemList.splice(itemIndex, 1);
-      grootCommandManager().executeCommand('gc.workbench.syncDataToStage', 'current');
+      grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'current');
     })
   }
 
@@ -326,14 +326,14 @@ export default class PropPersistModel {
 
     this.request(APIPath.value_abstractType_add, paramsData).then(({ data }) => {
       propItem.valueList.push(data);
-      grootCommandManager().executeCommand('gc.workbench.syncDataToStage', 'current');
+      grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'current');
     })
   }
 
   public removeBlockListStructChildItem = (propValueId: number, propItem: PropItem) => {
     this.request(APIPath.value_abstractType_remove_propValueId, { propValueId }).then(() => {
       propItem.valueList = propItem.valueList.filter(v => v.id !== propValueId);
-      grootCommandManager().executeCommand('gc.workbench.syncDataToStage', 'current');
+      grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'current');
     })
   }
 

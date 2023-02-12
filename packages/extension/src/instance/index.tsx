@@ -105,7 +105,7 @@ export const instanceBootstrap = () => {
   });
 
 
-  registerCommand('gc.workbench.syncDataToStage', (_, refreshId) => {
+  registerCommand('gc.workbench.makeDataToStage', (_, refreshId) => {
     const list = getState('gs.studio.allComponentInstance')
     if (refreshId === 'all') {
       const metadataList = instanceToMetadata(list);
@@ -152,7 +152,7 @@ const fetchRootInstance = (rootInstanceId: number) => {
 
     grootStateManager().setState('gs.studio.allComponentInstance', [root, ...children])
 
-    grootCommandManager().executeCommand('gc.workbench.syncDataToStage', 'all');
+    grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'all');
     switchComponentInstance(root.id);
   });
 }

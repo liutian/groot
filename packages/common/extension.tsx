@@ -161,7 +161,7 @@ export type GrootCommandDict = {
 
   'gc.fetch.instance': [[number], void],
   'gc.fetch.prototype': [[number, number], void],
-  'gc.workbench.syncDataToStage': [[number | 'all' | 'current'], void],
+  'gc.workbench.makeDataToStage': [[number | 'all' | 'current'], void],
 }
 
 export type GrootStateDict = {

@@ -18,8 +18,9 @@ const Studio: React.FC<StudioParams & { account: any }> & { Wrapper: React.FC<{ 
   const [layout, setLayout] = useState<GridLayout>();
 
   useEffect(() => {
-    let fetchCoreDataPromise;
-    if (params.studioMode == StudioMode.Prototype) {
+    let fetchCoreDataPromise, prototypeMode = params.mode === StudioMode.Prototype;
+
+    if (prototypeMode) {
       fetchCoreDataPromise = fetchSolution(params.solutionId)
     } else {
       fetchCoreDataPromise = fetchApplication(params.appId, params.releaseId)
@@ -34,9 +35,9 @@ const Studio: React.FC<StudioParams & { account: any }> & { Wrapper: React.FC<{ 
         setLayout(layout);
 
         launchExtension(remoteExtensionList, {
-          mode: params.studioMode,
-          application: params.studioMode === StudioMode.Instance ? data : null,
-          solution: params.studioMode === StudioMode.Prototype ? data : null,
+          mode: params.mode,
+          application: !prototypeMode ? data : null,
+          solution: prototypeMode ? data : null,
           account: params.account,
           releaseId: params.releaseId,
           instanceId: params.instanceId,
@@ -95,7 +96,7 @@ Studio.Wrapper = (account) => {
   const [searchParams] = useSearchParams();
 
   const [params] = useState(() => {
-    const studioMode = searchParams.get('studioMode') as StudioMode || StudioMode.Instance;
+    const mode = searchParams.get('mode') as StudioMode || StudioMode.Instance;
     const solutionId = +searchParams.get('solutionId')
     const appId = +searchParams.get('appId')
     const componentId = +searchParams.get('componentId')
@@ -103,14 +104,14 @@ Studio.Wrapper = (account) => {
     const releaseId = +searchParams.get('releaseId')
     const versionId = +searchParams.get('versionId')
 
-    if (studioMode === StudioMode.Instance) {
+    if (mode === StudioMode.Instance) {
       if (!appId) {
         setTimeout(() => {
           message.warning('参数appId为空');
         })
         return null;
       }
-    } else if (studioMode === StudioMode.Prototype) {
+    } else if (mode === StudioMode.Prototype) {
       if (!solutionId) {
         setTimeout(() => {
           message.warning('参数solutionId为空');
@@ -124,7 +125,7 @@ Studio.Wrapper = (account) => {
       instanceId,
       releaseId,
       componentId,
-      studioMode,
+      mode,
       versionId
     }
   })
