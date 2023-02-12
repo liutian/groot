@@ -25,17 +25,64 @@ export default class PropHandleModel {
    */
   public propTree: PropGroup[] = [];
   private stateManager = grootStateManager();
-
+  public propPathChainEle: HTMLElement;
 
   public inject(propPersist: PropPersistModel) {
     this.propPersist = propPersist;
     this.watchEvent();
   }
+
+
+  public setPropPathChain = (itemId?: number) => {
+    if (!this.propPathChainEle) {
+      return;
+    }
+
+    if (!itemId) {
+      this.propPathChainEle.innerText = '';
+      this.propPathChainEle.dataset['activeId'] = '';
+      return;
+    }
+
+    const activeId = this.propPathChainEle.dataset['activeId'];
+    if (+activeId === itemId) {
+      return;
+    }
+
+    let path = [];
+    const result = this.getPropItem(itemId, path as any);
+    if (!result) {
+      throw new Error(`not found propItem id: ${itemId}`);
+    }
+    const propKeyList = path.reduce((pre, current, index) => {
+      if (index % 3 === 0) {
+        const group = current as PropGroup;
+        if (group.root && group.propKey) {
+          pre.push(group.propKey);
+        }
+      } else if (index % 3 === 1) {
+        const block = current as PropBlock;
+        if (block.propKey) {
+          pre.push(block.propKey);
+        }
+      } else if (index % 3 === 2) {
+        const item = current as PropItem;
+        pre.push(item.propKey);
+      }
+
+      return pre;
+    }, []) as string[];
+
+    this.propPathChainEle.innerText = propKeyList.join('.');
+    this.propPathChainEle.dataset['activeId'] = `${itemId}`;
+  }
+
+
   /**
    * 向堆栈中追加item分组
    * @param item 追加的PropItem
    */
-  public pushPropItemToStack = (propItem: PropItem) => {
+  public pushPropItemToStack(propItem: PropItem) {
     let removeList = [];
 
     // 从堆栈中查找同属一个分组的item，移除将其本身以及之后的item
@@ -73,7 +120,7 @@ export default class PropHandleModel {
    * 从堆栈中弹出item
    * @param propItem 从当前propItem开始之后所有item
    */
-  public popPropItemFromStack = (propItem: PropItem) => {
+  public popPropItemFromStack(propItem: PropItem) {
     const index = this.propItemStack.findIndex(item => item.id === propItem.id);
     if (index !== -1) {
       const isolateItemList = this.propItemStack.splice(index);
@@ -81,7 +128,7 @@ export default class PropHandleModel {
     }
   }
 
-  public switchActiveGroup = (id: number) => {
+  public switchActiveGroup(id: number) {
 
     const group = this.propTree.find(g => g.id === id);
     if (!group) {
@@ -99,7 +146,7 @@ export default class PropHandleModel {
    * @param itemId 配置项ID
    * @returns 配置项对象
    */
-  getPropItem(itemId: number, pathChain?: [PropItem | PropBlock | PropGroup | null], propTree?: PropGroup[]): PropItem {
+  getPropItem = (itemId: number, pathChain?: [PropItem | PropBlock | PropGroup | null], propTree?: PropGroup[]): PropItem => {
     return this.getPropBlockOrGroupOrItem(itemId, 'item', pathChain, propTree)
   }
 
@@ -108,7 +155,7 @@ export default class PropHandleModel {
    * @param blockId 配置块ID
    * @returns 配置块对象
    */
-  getPropBlock(blockId: number, pathChain?: [PropItem | PropBlock | PropGroup], propTree?: PropGroup[]): PropBlock {
+  getPropBlock = (blockId: number, pathChain?: [PropItem | PropBlock | PropGroup], propTree?: PropGroup[]): PropBlock => {
     return this.getPropBlockOrGroupOrItem(blockId, 'block', pathChain, propTree);
   }
 
@@ -117,11 +164,11 @@ export default class PropHandleModel {
    * @param groupId 配置组ID
    * @returns 配置组对象
    */
-  getPropGroup(groupId: number, pathChain?: [PropItem | PropBlock | PropGroup], propTree?: PropGroup[]): PropGroup {
+  getPropGroup = (groupId: number, pathChain?: [PropItem | PropBlock | PropGroup], propTree?: PropGroup[]): PropGroup => {
     return this.getPropBlockOrGroupOrItem(groupId, 'group', pathChain, propTree);
   }
 
-  getPropBlockOrGroupOrItem(id: number, type: 'group' | 'block' | 'item', pathChain?: [PropItem | PropBlock | PropGroup], propTree?: PropGroup[]) {
+  getPropBlockOrGroupOrItem = (id: number, type: 'group' | 'block' | 'item', pathChain?: [PropItem | PropBlock | PropGroup], propTree?: PropGroup[]) => {
     if (!pathChain) {
       pathChain = [] as any;
     }
@@ -143,7 +190,7 @@ export default class PropHandleModel {
   }
 
   // 使用范型会导致sourceMap信息丢失
-  getProp(id: number, type: 'block' | 'group' | 'item', group: PropGroup, pathChain?: [PropItem | PropBlock | PropGroup]) {
+  getProp = (id: number, type: 'block' | 'group' | 'item', group: PropGroup, pathChain?: [PropItem | PropBlock | PropGroup]) => {
     const pathChainEndIndex = pathChain.length;
     pathChain.push(group);
 

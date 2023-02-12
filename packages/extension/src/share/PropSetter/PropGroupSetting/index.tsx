@@ -1,7 +1,7 @@
 import { Form, Input, Modal, Radio } from "antd";
 import React, { useEffect, useRef } from "react";
 
-import { useModel } from "@grootio/common";
+import { PropGroupStructType, useModel } from "@grootio/common";
 import PropPersistModel from "../PropPersistModel";
 import { propKeyRule } from "util/utils";
 
@@ -40,10 +40,10 @@ const PropGroupSetting: React.FC = () => {
           <Form.Item name="name" label="名称" rules={[{ required: true }]}>
             <Input ref={inputRef} />
           </Form.Item>
-          <Form.Item name="struct" label="结构" rules={[{ required: true }]} initialValue="default">
+          <Form.Item name="struct" label="结构" rules={[{ required: true }]} initialValue={PropGroupStructType.Default}>
             <Radio.Group disabled={!!propPersistModel.currSettingPropGroup.id}>
-              <Radio value="default">层级</Radio>
-              <Radio value="flat">平铺</Radio>
+              <Radio value={PropGroupStructType.Default}>层级</Radio>
+              <Radio value={PropGroupStructType.Flat}>平铺</Radio>
             </Radio.Group>
           </Form.Item>
           <Form.Item

@@ -35,11 +35,9 @@ function PropPane() {
 
   const createTabItems = () => {
     const list = propHandleModel.propTree.map((group) => {
-      let content = <PropGroupPane group={group}
-        key={`group-${group.id}-${propHandleModel.forceUpdateFormKey}`} />;
+      let content = <PropGroupPane group={group} key={`group-${group.id}-${propHandleModel.forceUpdateFormKey}`} />;
       if (group.struct === PropGroupStructType.Flat) {
-        content = <PropBlockPane noWrapMode block={group.propBlockList[0]}
-          key={`block-${group.propBlockList[0].id}-${propHandleModel.forceUpdateFormKey}`} />;
+        content = <PropBlockPane noWrapMode block={group.propBlockList[0]} key={`block-${group.propBlockList[0].id}-${propHandleModel.forceUpdateFormKey}`} />;
       }
 
       return { key: `${group.id}`, label: renderTabBarItem(group), children: content };
@@ -56,10 +54,8 @@ function PropPane() {
   }
 
   /////////////////////////////////////////////////////////////////////////////
-  return <>
-    <Tabs size="small" activeKey={propHandleModel.activeGroupId?.toString()}
-      onChange={tabOnChange} tabBarExtraContent={<PropGroupToolBar />} items={createTabItems() as any} />
-  </>
+  return <Tabs size="small" activeKey={propHandleModel.activeGroupId?.toString()}
+    onChange={tabOnChange} tabBarExtraContent={<PropGroupToolBar />} items={createTabItems() as any} />
 }
 
 

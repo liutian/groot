@@ -38,7 +38,7 @@ export default class PropPersistModel {
     this.propHandle = propHandle;
   }
 
-  public movePropBlock = (group: PropGroup, originIndex: number, up: boolean) => {
+  public movePropBlock(group: PropGroup, originIndex: number, up: boolean) {
     const originBlock = group.propBlockList[originIndex];
     const targetId = up ? group.propBlockList[originIndex - 1].id : group.propBlockList[originIndex + 1].id;
 
@@ -59,7 +59,7 @@ export default class PropPersistModel {
     });
   }
 
-  public movePropGroup = (dragId: string, hoverId: string) => {
+  public movePropGroup(dragId: string, hoverId: string) {
     if (dragId === hoverId) {
       return;
     }
@@ -96,7 +96,7 @@ export default class PropPersistModel {
     })
   }
 
-  public movePropItem = (block: PropBlock, originIndex: number, up: boolean) => {
+  public movePropItem(block: PropBlock, originIndex: number, up: boolean) {
     const originItem = block.propItemList[originIndex];
     const targetId = up ? block.propItemList[originIndex - 1].id : block.propItemList[originIndex + 1].id;
 
@@ -117,7 +117,7 @@ export default class PropPersistModel {
     });
   }
 
-  public updateOrAddPropGroup = (group: PropGroup) => {
+  public updateOrAddPropGroup(group: PropGroup) {
     const newGroup = Object.assign(this.currSettingPropGroup, group);
 
     newGroup.componentId = this.stateManager.getState('gs.studio.component').id
@@ -132,6 +132,8 @@ export default class PropPersistModel {
         this.settingModalSubmitting = false;
         this.currSettingPropGroup = undefined;
         grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'current');
+      }, () => {
+        this.settingModalSubmitting = false;
       })
     } else {
       this.request(APIPath.group_add, newGroup).then(({ data: { newGroup, extra } }) => {
@@ -154,7 +156,7 @@ export default class PropPersistModel {
     }
   }
 
-  public updateOrAddPropBlock = (block: PropBlock) => {
+  public updateOrAddPropBlock(block: PropBlock) {
     const newBlock = Object.assign(this.currSettingPropBlock, block);
     const group = this.propHandle.getPropGroup(newBlock.groupId);
 
@@ -193,7 +195,7 @@ export default class PropPersistModel {
     }
   }
 
-  public updateOrAddPropItem = (item: PropItem) => {
+  public updateOrAddPropItem(item: PropItem) {
     const newItem = Object.assign(this.currSettingPropItem, item);
 
     stringifyOptions(newItem);
@@ -242,7 +244,7 @@ export default class PropPersistModel {
     }
   }
 
-  public delGroup = (groupId: number) => {
+  public delGroup(groupId: number) {
     this.request(APIPath.group_remove_groupId, { groupId }).then(() => {
       const index = this.propHandle.propTree.findIndex(g => g.id === groupId);
       this.propHandle.propTree.splice(index, 1);
@@ -254,7 +256,7 @@ export default class PropPersistModel {
     })
   }
 
-  public delBlock = (blockId: number, group: PropGroup) => {
+  public delBlock(blockId: number, group: PropGroup) {
     this.request(APIPath.block_remove_blockId, { blockId }).then(() => {
       let blockIndex = group.propBlockList.findIndex(b => b.id === blockId);
       group.propBlockList.splice(blockIndex, 1);
@@ -262,7 +264,7 @@ export default class PropPersistModel {
     })
   }
 
-  public delItem = (itemId: number, block: PropBlock) => {
+  public delItem(itemId: number, block: PropBlock) {
     this.request(APIPath.item_remove_itemId, { itemId }).then(() => {
       let itemIndex = block.propItemList.findIndex(item => item.id === itemId);
       block.propItemList.splice(itemIndex, 1);
@@ -270,7 +272,7 @@ export default class PropPersistModel {
     })
   }
 
-  public showPropBlockSettinngForCreate = (group: PropGroup) => {
+  public showPropBlockSettinngForCreate(group: PropGroup) {
     const nameSuffix = autoIncrementForName(group.propBlockList.map(b => b.name));
 
     this.currSettingPropBlock = {
@@ -279,7 +281,7 @@ export default class PropPersistModel {
     } as PropBlock;
   }
 
-  public showPropItemSettinngForCreate = (block: PropBlock) => {
+  public showPropItemSettinngForCreate(block: PropBlock) {
     const nameSuffix = autoIncrementForName(block.propItemList.map(item => item.label));
     const propSuffix = autoIncrementForName(block.propItemList.map(item => item.propKey));
 
@@ -303,7 +305,7 @@ export default class PropPersistModel {
     })
   }
 
-  public addAbstractTypeValue = (propItem: PropItem) => {
+  public addAbstractTypeValue(propItem: PropItem) {
     const abstractValueIdChain = calcPropValueIdChain(propItem);
     const component = this.stateManager.getState('gs.studio.component');
     const rootComponentInstance = this.stateManager.getState('gs.studio.componentInstance')
@@ -330,14 +332,14 @@ export default class PropPersistModel {
     })
   }
 
-  public removeBlockListStructChildItem = (propValueId: number, propItem: PropItem) => {
+  public removeBlockListStructChildItem(propValueId: number, propItem: PropItem) {
     this.request(APIPath.value_abstractType_remove_propValueId, { propValueId }).then(() => {
       propItem.valueList = propItem.valueList.filter(v => v.id !== propValueId);
       grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'current');
     })
   }
 
-  public updateValue = ({ propItem, value, abstractValueId, abstractValueIdChain, valueStruct, hostComponentInstanceId }: { propItem: PropItem, value: any, abstractValueId?: number, abstractValueIdChain?: string, valueStruct?: ValueStruct, hostComponentInstanceId?: number }) => {
+  public updateValue({ propItem, value, abstractValueId, abstractValueIdChain, valueStruct, hostComponentInstanceId }: { propItem: PropItem, value: any, abstractValueId?: number, abstractValueIdChain?: string, valueStruct?: ValueStruct, hostComponentInstanceId?: number }) {
     if (!abstractValueIdChain) {
       abstractValueIdChain = calcPropValueIdChain(propItem, abstractValueId);
     }
@@ -397,7 +399,7 @@ export default class PropPersistModel {
     });
   }
 
-  public addChildComponentInstance = (rawInstance: ComponentInstance) => {
+  public addChildComponentInstance(rawInstance: ComponentInstance) {
     return this.request(APIPath.componentInstance_addChild, rawInstance).then(({ data }) => data);
   }
 

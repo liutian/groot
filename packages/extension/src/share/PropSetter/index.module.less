@@ -1,37 +1,14 @@
 .container {
-  display: flex;
-  flex-direction: column;
+  position: relative;
   height: 100%;
+
+  --prop-pane-padding-x: 16px;
+  --prop-pane-padding-y: 10px;
 }
 
 .propContainer {
-  flex-grow: 1;
+  height: 100%;
   overflow: hidden;
-}
-
-.footerContainer {
-  display: flex;
-  padding: 0 var(--prop-pane-padding-x);
-  line-height: var(--footer-bar-min-height);
-  height: var(--footer-bar-min-height);
-  color: #fff;
-  background-color: var(--theme-color);
-
-  > :first-child {
-    margin-left: -8px;
-  }
-
-  > :last-child {
-    margin-right: -8px;
-  }
-
-  .actionItemLeft {
-    margin-left: '-8px'
-  }
-
-  .actionItemRight {
-    margin-right: '-8px'
-  }
 }
 
 .moveHandle {
@@ -51,6 +28,7 @@
 
   :global(.ant-tabs .ant-tabs-content-holder) {
     overflow: auto;
+    padding-bottom: 12px;
   }
 
   :global(.ant-tabs .ant-tabs-nav) {
@@ -58,7 +36,7 @@
     padding: 0 var(--prop-pane-padding-x);
 
     :global(.ant-tabs-tab) {
-      color: var(--font-color);
+      color: #aaa;
       margin-left: 0;
       margin-right: var(--prop-pane-padding-x);
     }

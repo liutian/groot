@@ -1,4 +1,4 @@
-import { PropBlockStructType, useModel } from "@grootio/common";
+import { PropBlockLayout, PropBlockStructType, useModel } from "@grootio/common";
 import { Form, Input, Modal, Radio, Switch } from "antd";
 import React, { useEffect, useRef } from "react";
 import PropPersistModel from "../PropPersistModel";
@@ -54,16 +54,16 @@ const PropBlockSetting: React.FC = () => {
           <Form.Item valuePropName="checked" label="根属性" name="rootPropKey">
             <Switch />
           </Form.Item>
-          <Form.Item label="结构" name="struct" initialValue="default">
+          <Form.Item label="结构" name="struct" initialValue={PropBlockStructType.Default}>
             <Radio.Group disabled={!!propPersistModel.currSettingPropBlock.id}>
-              <Radio value="default">默认</Radio>
-              <Radio value="list">列表</Radio>
+              <Radio value={PropBlockStructType.Default}>默认</Radio>
+              <Radio value={PropBlockStructType.List}>列表</Radio>
             </Radio.Group>
           </Form.Item>
-          <Form.Item label="配置项布局" name="layout" initialValue="horizontal">
+          <Form.Item label="配置项布局" name="layout" initialValue={PropBlockLayout.Horizontal}>
             <Radio.Group >
-              <Radio value="horizontal">水平</Radio>
-              <Radio value="vertical">垂直</Radio>
+              <Radio value={PropBlockLayout.Horizontal}>水平</Radio>
+              <Radio value={PropBlockLayout.Vertical}>垂直</Radio>
             </Radio.Group>
           </Form.Item>
         </Form>

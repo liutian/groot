@@ -210,11 +210,11 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
             return <Col span={block.layout === PropBlockLayout.Vertical ? item.span : 24} key={item.id}
               onMouseEnter={() => {
                 // todo 稍后实现
-                // workbenchModel.setPropPathChain(item.id);
+                propHandleModel.setPropPathChain(item.id);
               }}
               onMouseLeave={() => {
                 // todo 稍后实现
-                // workbenchModel.setPropPathChain();
+                propHandleModel.setPropPathChain();
               }}>
               <div className={`${styles.propItemContainer} ${noSetting || block.layout === PropBlockLayout.Vertical
                 ? '' : styles.hasAction}`}>

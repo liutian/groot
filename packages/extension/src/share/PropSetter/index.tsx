@@ -10,6 +10,7 @@ import { grootStateManager } from "context";
 import SubPropPane from "./SubPropPane";
 import PropPersistModel from "./PropPersistModel";
 import PropHandleModel from "./PropHandleModel";
+import PropFooter from "./PropFooter";
 
 export const PropSetter = () => {
   const propPersistModel = useRegisterModel(PropPersistModel);
@@ -41,7 +42,7 @@ export const PropSetter = () => {
       }
     </div>
 
-    {/* <PropFooter className={styles.footerContainer} /> */}
+    <PropFooter />
 
     <PropGroupSetting />
     <PropBlockSetting />
