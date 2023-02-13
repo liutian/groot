@@ -49,7 +49,7 @@ function PropPane() {
     if (isPrototypeMode()) {
       list.push({
         key: '__add',
-        label: <Typography.Link><PlusOutlined /></Typography.Link>,
+        label: <Typography.Link style={{ display: 'inline-block', width: '40px' }}><PlusOutlined /></Typography.Link>,
       } as any)
     }
 
