@@ -1,17 +1,16 @@
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { Space, Typography } from "antd";
 import { useEffect, useState } from "react";
-import { PropGroup, useModel } from "@grootio/common";
+import { pick, PropGroup, useModel } from "@grootio/common";
 
 
 import styles from './index.module.less';
 import PropPersistModel from "../PropPersistModel";
 import PropHandleModel from "../PropHandleModel";
 import { isPrototypeMode } from "context";
-import { stringify } from "util/utils";
 
 const PropGroupToolBar: React.FC = () => {
-  const propPersistModel = useModel<PropPersistModel>(PropPersistModel);
+  const propPersistModel = useModel(PropPersistModel);
   const propHandleModel = useModel(PropHandleModel);
 
   const [group, setGroup] = useState<PropGroup>();
@@ -19,9 +18,9 @@ const PropGroupToolBar: React.FC = () => {
   useEffect(() => {
     const group = propHandleModel.getPropGroup(propHandleModel.activeGroupId);
     setGroup(group);
-  }, [propHandleModel.activeGroupId, propPersistModel.settingModalSubmitting]);
+  }, [propHandleModel.activeGroupId]);
 
-  if (!group || !isPrototypeMode()) {
+  if (!isPrototypeMode() || !group) {
     return null;
   }
 
@@ -29,7 +28,7 @@ const PropGroupToolBar: React.FC = () => {
     <Space >
 
       <Typography.Link onClick={() => {
-        propPersistModel.currSettingPropGroup = JSON.parse(stringify(group));
+        propPersistModel.currSettingPropGroup = pick(group, ['id', 'name', 'propKey']);
       }}>
         <EditOutlined />
       </Typography.Link>
