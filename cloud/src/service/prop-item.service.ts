@@ -181,7 +181,8 @@ export class PropItemService {
 
     await em.begin();
     try {
-      if (rawItem.type !== propItem.type) {
+      const typeChange = rawItem.type !== propItem.type
+      if (typeChange) {
         propItem.versionTraceId = propItem.id;
         await em.nativeDelete(PropValue, {
           abstractValueIdChain: { $like: `${propItem.id}` },
@@ -189,7 +190,9 @@ export class PropItemService {
         });
       }
       pick(rawItem, ['label', 'propKey', 'rootPropKey', 'type', 'subType', 'span', 'valueOptions'], propItem);
-      propItem.defaultValue = null;
+      if (typeChange) {
+        propItem.defaultValue = '';
+      }
       await em.flush();
 
       // warning!!! flush之后可以查到最新的数据吗？
