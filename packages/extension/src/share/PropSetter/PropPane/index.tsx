@@ -10,6 +10,8 @@ import PropHandleModel from "../PropHandleModel";
 import PropPersistModel from "../PropPersistModel";
 import { autoIncrementForName } from "util/utils";
 
+import styles from './index.module.less'
+
 function PropPane() {
   const propHandleModel = useModel(PropHandleModel);
   const propPersistModel = useModel(PropPersistModel);
@@ -55,8 +57,10 @@ function PropPane() {
   }
 
   /////////////////////////////////////////////////////////////////////////////
-  return <Tabs size="small" activeKey={propHandleModel.activeGroupId?.toString()}
-    onChange={tabOnChange} tabBarExtraContent={<PropGroupToolBar />} items={createTabItems() as any} />
+  return <div className={styles.container}>
+    <Tabs size="small" activeKey={propHandleModel.activeGroupId?.toString()}
+      onChange={tabOnChange} tabBarExtraContent={<PropGroupToolBar />} items={createTabItems() as any} />
+  </div>
 }
 
 

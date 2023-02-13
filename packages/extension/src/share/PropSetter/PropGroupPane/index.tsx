@@ -1,5 +1,5 @@
 import { Button, Collapse, Space, Typography } from "antd";
-import { PropBlock, PropBlockStructType, PropGroup, useModel } from "@grootio/common";
+import { pick, PropBlock, PropBlockStructType, PropGroup, useModel } from "@grootio/common";
 import { CaretRightOutlined, DeleteOutlined, EditOutlined, PlusOutlined, VerticalAlignBottomOutlined, VerticalAlignTopOutlined } from "@ant-design/icons";
 
 import styles from './index.module.less';
@@ -7,7 +7,6 @@ import styles from './index.module.less';
 import PropBlockPane from "../PropBlockPane";
 import PropPersistModel from "../PropPersistModel";
 import { isPrototypeMode } from "context";
-import { stringify } from "util/utils";
 import PropBlockListStructPane from "../PropBlockListStructPane";
 
 type PropsType = {
@@ -19,7 +18,7 @@ const PropGroupPane: React.FC<PropsType> = ({ group }) => {
   const noSetting = !isPrototypeMode() || group.parentItem?.noSetting;
 
   const editBlock = (block: PropBlock) => {
-    propPersistModel.currSettingPropBlock = JSON.parse(stringify(block));
+    propPersistModel.currSettingPropBlock = pick(block, ['id', 'name', 'propKey', 'layout', 'rootPropKey'])
   }
 
   const onChangeCollapse = (key: string | string[]) => {
@@ -84,12 +83,12 @@ const PropGroupPane: React.FC<PropsType> = ({ group }) => {
   }
 
 
-  return (<>
+  return (<div className={styles.container}>
     <Collapse activeKey={group.expandBlockIdList} onChange={onChangeCollapse} bordered={false}
       expandIconPosition="end" expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}>
       {
         group.propBlockList.map((block, blockIndex) => {
-          return (<Collapse.Panel key={block.id} className={styles.blockContainer} extra={renderBlockSetting(block, blockIndex)}
+          return (<Collapse.Panel key={block.id} extra={renderBlockSetting(block, blockIndex)}
             header={<>
               {block.name}<i className="highlight" hidden={!block.highlight} />
             </>} >
@@ -116,7 +115,7 @@ const PropGroupPane: React.FC<PropsType> = ({ group }) => {
       }
     </div>
 
-  </>)
+  </div>)
 };
 
 export default PropGroupPane;
