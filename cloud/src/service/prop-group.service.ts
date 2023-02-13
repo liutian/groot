@@ -29,7 +29,7 @@ export class PropGroupService {
       }
     }
 
-    const firstGroup = await em.findOne(PropGroup, {
+    const preGroup = await em.findOne(PropGroup, {
       componentVersion: rawGroup.componentVersionId,
       component: rawGroup.componentId,
     }, { orderBy: { order: 'DESC' } });
@@ -38,7 +38,7 @@ export class PropGroupService {
       ...pick(rawGroup, ['name', 'propKey', 'struct', 'root']),
       componentVersion: rawGroup.componentVersionId,
       component: rawGroup.componentId,
-      order: (firstGroup ? firstGroup.order : 0) + 1000
+      order: (preGroup ? preGroup.order : 0) + 1000
     });
 
     // if (rawGroup.parentItemId) {
@@ -56,7 +56,6 @@ export class PropGroupService {
     const parentCtx = parentEm ? em.getTransactionContext() : undefined;
     await em.begin();
     try {
-      // 创建配置组
       await em.flush();
 
       // 创建内嵌配置块

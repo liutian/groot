@@ -42,8 +42,8 @@ export class PropBlockService {
       }
     }
 
-    const firstBlock = await em.findOne(PropBlock, { group, order: { $gt: 0 } }, { orderBy: { order: 'DESC' } });
-    const order = rawBlock.order ? rawBlock.order : (firstBlock ? firstBlock.order + 1000 : 1000);
+    const preBlock = await em.findOne(PropBlock, { group, order: { $gt: 0 } }, { orderBy: { order: 'DESC' } });
+    const order = rawBlock.order ? rawBlock.order : (preBlock ? preBlock.order + 1000 : 1000);
 
     const newBlock = em.create(PropBlock, {
       ...pick(rawBlock, ['name', 'propKey', 'rootPropKey', 'layout', 'struct']),
