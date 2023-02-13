@@ -57,7 +57,7 @@ const PropItemSetting: React.FC = () => {
                   <Form.Item noStyle dependencies={['type']}>
                     {() => {
                       const type = form.getFieldValue('type');
-                      return type === 'Button_Group' ? <Form.Item name={[name, 'title']} {...restField} >
+                      return type === PropItemType.ButtonGroup ? <Form.Item name={[name, 'title']} {...restField} >
                         <Input placeholder="请输入描述" />
                       </Form.Item> : null;
                     }}
@@ -66,7 +66,7 @@ const PropItemSetting: React.FC = () => {
                   <Form.Item noStyle dependencies={['type']}>
                     {() => {
                       const type = form.getFieldValue('type');
-                      return type === 'Button_Group' ? <Form.Item name={[name, 'icon']} {...restField} >
+                      return type === PropItemType.ButtonGroup ? <Form.Item name={[name, 'icon']} {...restField} >
                         <Input placeholder="请输入图标" />
                       </Form.Item> : null;
                     }}
