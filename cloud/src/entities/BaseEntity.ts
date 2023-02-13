@@ -13,9 +13,6 @@ export abstract class BaseEntity {
   @Property({ onUpdate: () => new Date(), lazy: true })
   updatedAt = new Date();
 
-  isEmpty() {
-    return this.id === 0;
-  }
 
   // todo 添加创建人和更新人，自动从会话中抓取
 }

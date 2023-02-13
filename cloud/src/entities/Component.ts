@@ -32,7 +32,7 @@ export class Component extends BaseEntity {
    * 组件最新版本，此处必须为可选，否则创建组建会引发recentVersion非空校验
    */
   @OneToOne({ serializer: value => value?.id, serializedName: 'recentVersionId' })
-  recentVersion: ComponentVersion = { id: 0 } as any;
+  recentVersion?: ComponentVersion;
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'orgId' })
   org: Organization;

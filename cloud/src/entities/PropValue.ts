@@ -23,7 +23,7 @@ export class PropValue extends BaseEntity {
   componentVersion: ComponentVersion;
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'instanceId' })
-  componentInstance: ComponentInstance = { id: 0 } as any;
+  componentInstance?: ComponentInstance;
 
   @Property({ length: 1000 })
   value = '';

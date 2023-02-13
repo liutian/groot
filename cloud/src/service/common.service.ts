@@ -99,7 +99,7 @@ export class CommonService {
           chainList.push(propGroup.propKey);
         }
 
-        if (propGroup.parentItem) {
+        if (propGroup.parentItem?.id) {
           if (propGroup.root) {
             throw new LogicException(`root and parentItem cannot both exists group id:${ctxId}`, LogicExceptionCode.UnExpect);
           } else {

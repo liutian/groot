@@ -44,7 +44,7 @@ export class PropGroup extends BaseEntity {
    * 关联配置项，层级结构时需要通过该值查找上级配置项
    */
   @ManyToOne({ serializer: value => value?.id, serializedName: 'parentItemId' })
-  parentItem: PropItem = { id: 0 } as any;
+  parentItem?: PropItem;
 
   //************************已下是接口入参或者查询返回需要定义的属性************************
 

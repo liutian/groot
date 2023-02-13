@@ -56,7 +56,7 @@ export class PropItem extends BaseEntity {
    * 类型为Hierarchy Item时，所属下级配置组
    */
   @ManyToOne({ serializer: value => value?.id, serializedName: 'childGroupId' })
-  childGroup: PropGroup = { id: 0 } as any;
+  childGroup?: PropGroup;
 
   @Property({ length: 20 })
   propKey = '';

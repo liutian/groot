@@ -33,10 +33,10 @@ export class ComponentInstance extends BaseEntity {
   trackId: number;
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'rootId' })
-  root: ComponentInstance = { id: 0 } as any;
+  root?: ComponentInstance;
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'parentId' })
-  parent: ComponentInstance = { id: 0 } as any;
+  parent?: ComponentInstance;
 
   @Property({ length: 20 })
   key = '';

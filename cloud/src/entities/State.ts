@@ -12,7 +12,7 @@ export class State extends BaseEntity {
   value = '';
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'instanceId' })
-  componentInstance: ComponentInstance = { id: 0 } as any;
+  componentInstance?: ComponentInstance;
 
   @Enum({ type: 'tinyint' })
   type: StateCategory = StateCategory.Str;
