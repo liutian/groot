@@ -2,7 +2,7 @@ import { Button, Checkbox, Col, DatePicker, Form, Input, InputNumber, Radio, Row
 import { VerticalAlignTopOutlined, DeleteOutlined, VerticalAlignBottomOutlined, EditOutlined } from '@ant-design/icons';
 import { useState } from "react";
 
-import { PropBlock, PropBlockLayout, PropBlockLayoutKeyMap, PropItem, PropItemType, PropValueType, useModel, ValueStruct, ViewLoader } from "@grootio/common";
+import { pick, PropBlock, PropBlockLayout, PropBlockLayoutKeyMap, PropItem, PropItemType, PropValueType, useModel, ValueStruct, ViewLoader } from "@grootio/common";
 import { parsePropItemValue } from "@grootio/core";
 
 import ComponentChildren from "./ComponentChildren";
@@ -12,7 +12,7 @@ import TextEditor from "./TextEditor";
 import PropPersistModel from "../PropPersistModel";
 import PropHandleModel from "../PropHandleModel";
 import { getContext, grootCommandManager, grootStateManager, isPrototypeMode } from "context";
-import { calcPropValueIdChain, parseOptions, RemotePluginKeySep, stringify } from "util/utils";
+import { calcPropValueIdChain, RemotePluginKeySep, stringify } from "util/utils";
 
 type PropType = {
   block: PropBlock,
@@ -55,7 +55,7 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
     if (noSetting) return null;
 
     const editPropItem = () => {
-      propPersistModel.currSettingPropItem = JSON.parse(stringify(propItem));
+      propPersistModel.currSettingPropItem = pick(propItem, ['id', 'type', 'propKey', 'rootPropKey', 'label', 'subType', 'span']);
       if (propItem.optionList?.length) {
         propPersistModel.currSettingPropItem.optionList = propItem.optionList.map(option => JSON.parse(stringify(option)));
       }
@@ -122,10 +122,6 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
   }
 
   const renderFormItem = (item: PropItem) => {
-    // 延迟到渲染时在进行转换
-    if (item.valueOptions && !item.optionList) {
-      parseOptions(item);
-    }
 
     if (item.type === PropItemType.Text) {
       return <Input />;
@@ -209,13 +205,12 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
           block.propItemList.map((item, index) => {
             return <Col span={block.layout === PropBlockLayout.Vertical ? item.span : 24} key={item.id}
               onMouseEnter={() => {
-                // todo 稍后实现
                 propHandleModel.setPropPathChain(item.id);
               }}
               onMouseLeave={() => {
-                // todo 稍后实现
                 propHandleModel.setPropPathChain();
               }}>
+              {/* todo 只有垂直模式可以显示action，水平模式action待设计 */}
               <div className={`${styles.propItemContainer} ${noSetting || block.layout === PropBlockLayout.Vertical
                 ? '' : styles.hasAction}`}>
                 <div className="content">
@@ -233,6 +228,7 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
       </Row>
     </Form>
     {
+      // 平铺模式添加子项按钮在底部
       (!noSetting && noWrapMode) ? (
         <Button type="primary" ghost block onClick={() => {
           propPersistModel.showPropItemSettinngForCreate(block)

@@ -34,6 +34,8 @@ export const stringifyOptions = (propItem: PropItem) => {
 export const parseOptions = (propItem: PropItem) => {
   if (([PropItemType.Checkbox, PropItemType.Radio, PropItemType.Select, PropItemType.ButtonGroup] as number[]).includes(propItem.type)) {
     propItem.optionList = JSON.parse(propItem.valueOptions || '[]');
+  } else {
+    propItem.optionList = []
   }
 }
 

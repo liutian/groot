@@ -6,6 +6,7 @@ import ViewsContainer from "core/ViewsContainer";
 import { switchComponentInstance } from "share";
 import { PropSetter } from "share/PropSetter";
 import { WorkArea } from "share/WorkArea";
+import { parseOptions } from "util/utils";
 import { Application } from "./Application";
 import { Material } from "./Material";
 
@@ -150,7 +151,14 @@ const fetchRootInstance = (rootInstanceId: number) => {
   const { request } = getContext();
   request(APIPath.componentInstance_rootDetail_instanceId, { instanceId: rootInstanceId }).then(({ data: { children, root } }) => {
 
-    grootStateManager().setState('gs.studio.allComponentInstance', [root, ...children])
+    const list = [root, ...children]
+    for (const { itemList } of list) {
+      itemList.forEach(item => {
+        parseOptions(item);
+      })
+    }
+
+    grootStateManager().setState('gs.studio.allComponentInstance', list)
 
     grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'all');
     switchComponentInstance(root.id);

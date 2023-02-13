@@ -139,10 +139,6 @@ const PropBlockListStructPane: React.FC<PropsType> = ({ block: propBlock }) => {
   }
 
   const renderFormItem = (item: PropItem) => {
-    // 延迟到渲染时在进行转换
-    if (item.valueOptions && !item.optionList) {
-      parseOptions(item);
-    }
 
     if (item.type === PropItemType.Text) {
       return <Input />;

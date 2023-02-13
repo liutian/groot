@@ -1,10 +1,11 @@
 import { AppstoreOutlined } from "@ant-design/icons";
-import { APIPath, PropGroup } from "@grootio/common";
+import { APIPath, PropBlockStructType, PropGroup } from "@grootio/common";
 import { metadataFactory, propTreeFactory } from "@grootio/core";
 import { getContext, grootCommandManager, grootHookManager, grootStateManager } from "context";
 import ViewsContainer from "core/ViewsContainer";
 import { PropSetter } from "share/PropSetter";
 import { WorkArea } from "share/WorkArea";
+import { parseOptions } from "util/utils";
 import { Solution } from "./Solution";
 
 export const prototypeBootstrap = () => {
@@ -83,6 +84,15 @@ export const prototypeBootstrap = () => {
 const fetchComponent = (componentId: number, versionId: number) => {
   const { request } = getContext();
   request(APIPath.componentPrototype_detail_componentId, { componentId, versionId }).then(({ data }) => {
+    const { blockList, itemList } = data;
+    blockList.filter(block => block.struct === PropBlockStructType.List).forEach((block) => {
+      block.listStructData = JSON.parse(block.listStructData as any || '[]');
+    })
+
+    itemList.forEach(item => {
+      parseOptions(item);
+    })
+
     grootStateManager().setState('gs.studio.component', data)
     grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'all')
   })
