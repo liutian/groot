@@ -6,7 +6,7 @@ import PropItemSetting from "./PropItemSetting";
 import styles from './index.module.less'
 import { useRef, useState } from "react";
 import PropPane from "./PropPane";
-import { grootStateManager } from "context";
+import { getContext, grootStateManager } from "context";
 import SubPropPane from "./SubPropPane";
 import PropPersistModel from "./PropPersistModel";
 import PropHandleModel from "./PropHandleModel";
@@ -57,12 +57,12 @@ export const PropSetter = () => {
       }}
       move={(x, _y, originData) => {
         const width = originData - x;
-        let sideWidth = width;
+        let sideWidth = width <= 350 ? 350 : width;
 
-        // if (width <= workbenchModel.minSideWidth) {
-        //   sideWidth = workbenchModel.minSideWidth;
-        // }
-        // workbenchModel.setContainerCssVar('--side-width', `${sideWidth}px`);
+        const layout = getContext().groot.layout
+        layout.secondarySidebarWidth = `${sideWidth}px`
+        console.log(`layout width ${layout.secondarySidebarWidth}`)
+        layout.refresh(true);
       }}
       end={() => {
         // workbenchModel.toggleWorkAreaMask(false);

@@ -1,13 +1,12 @@
 
 import styles from './index.module.less';
 import { GridLayout, GrootCommandDict, GrootStateDict } from '@grootio/common';
-import { useEffect, useReducer } from 'react';
+import { useLayoutEffect, useRef } from 'react';
 import { commandManager, stateManager } from 'Studio/groot';
 
 
 
 const Workbench: React.FC<{ layout: GridLayout }> = ({ layout }) => {
-  const [, refresh] = useReducer((tick) => ++tick, 1);
   const { useStateByName } = stateManager<GrootStateDict>();
   const { executeCommand } = commandManager<GrootCommandDict>();
   const [containerStyle] = useStateByName('gs.workbench.style.container', {});
@@ -18,14 +17,22 @@ const Workbench: React.FC<{ layout: GridLayout }> = ({ layout }) => {
   const [stageStyle] = useStateByName('gs.workbench.style.stage', {});
   const [panelStyle] = useStateByName('gs.workbench.style.panel', {});
   const [statusBarStyle] = useStateByName('gs.workbench.style.statusBar', {});
+  const containerEleRef = useRef<HTMLDivElement>();
 
-  useEffect(() => {
-    return layout.watch(() => {
-      refresh();
-    });
+  useLayoutEffect(() => {
+    refresh();
+    layout.watch(refresh);
+
+    function refresh() {
+      const style = containerEleRef.current.style
+
+      style['grid-template-columns'] = layout.styles.gridTemplateColumns;
+      style['gridTemplateRows'] = layout.styles.gridTemplateRows
+      style['gridTemplateAreas'] = layout.styles.gridTemplateAreas
+    }
   }, []);
 
-  return <div className={styles.container} style={{ ...containerStyle, ...layout.styles }}>
+  return <div className={styles.container} ref={containerEleRef} style={{ ...containerStyle }}>
     <div className={styles.banner} style={bannerStyle}>
       {executeCommand('gc.workbench.banner.render')}
     </div>

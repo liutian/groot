@@ -63,6 +63,13 @@ export class GridLayout extends EventTarget {
     this.dispatchEvent(new Event('change'));
   }
 
+  public refresh(emit = true) {
+    this.calcLayoutStyle();
+    if (emit) {
+      this.dispatchEvent(new Event('change'));
+    }
+  }
+
   public watch(callback: () => void) {
     this.addEventListener('change', callback);
 
