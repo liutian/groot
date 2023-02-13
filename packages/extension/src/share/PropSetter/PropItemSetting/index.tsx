@@ -90,63 +90,59 @@ const PropItemSetting: React.FC = () => {
   return (<Modal mask={false} destroyOnClose width={600} title={propPersistModel.currSettingPropItem?.id ? '更新配置项' : '创建配置项'}
     confirmLoading={propPersistModel.settingModalSubmitting} open={!!propPersistModel.currSettingPropItem}
     onOk={handleOk} onCancel={handleCancel} okText={propPersistModel.currSettingPropItem?.id ? '更新' : '创建'}>
-    {
-      !!propPersistModel.currSettingPropItem && (
 
-        <Form form={form} colon={false} labelAlign="right" labelCol={{ span: 4 }} wrapperCol={{ span: 20 }} >
-          <Form.Item name="label" label="名称" rules={[{ required: true }]}>
-            <Input />
-          </Form.Item>
-          <Form.Item label="类型" name="type" rules={[{ required: true }]} >
-            <Select options={propItemTypeOptions} fieldNames={{ label: 'name', value: 'key' }} />
-          </Form.Item>
-          <Form.Item noStyle dependencies={['type']}>
-            {({ getFieldValue }) => {
-              const type = getFieldValue('type');
+    <Form form={form} colon={false} labelAlign="right" labelCol={{ span: 4 }} wrapperCol={{ span: 20 }} >
+      <Form.Item name="label" label="名称" rules={[{ required: true }]}>
+        <Input />
+      </Form.Item>
+      <Form.Item label="类型" name="type" rules={[{ required: true }]} >
+        <Select options={propItemTypeOptions} fieldNames={{ label: 'name', value: 'key' }} />
+      </Form.Item>
+      <Form.Item noStyle dependencies={['type']}>
+        {({ getFieldValue }) => {
+          const type = getFieldValue('type');
 
-              if (type === PropItemType.Extension) {
-                const options = propSettingView.map((item) => {
-                  return { name: item.name, key: `${item.packageName}${RemotePluginKeySep}${item.module}` }
-                })
+          if (type === PropItemType.Extension) {
+            const options = propSettingView.map((item) => {
+              return { name: item.name, key: `${item.packageName}${RemotePluginKeySep}${item.module}` }
+            })
 
-                return (<Form.Item label="子类型" name="subType" rules={[{ required: true }]} >
-                  <Select options={options} fieldNames={{ label: 'name', value: 'key' }} />
-                </Form.Item>)
-              } else {
-                return null;
-              }
-            }}
-          </Form.Item>
-
-          <Form.Item label="属性名" rules={[{ required: true }, { pattern: propKeyRule, message: '格式错误，必须是标准js标识符' }]} name="propKey">
-            <Input />
-          </Form.Item>
-          <Form.Item valuePropName="checked" label="根属性" name="rootPropKey">
-            <Switch />
-          </Form.Item>
-
-          {
-            propPersistModel.currSettingPropItem.span !== -1 && (
-              <Form.Item label="宽度" name="span">
-                <Radio.Group >
-                  <Radio value={12}>半行</Radio>
-                  <Radio value={24}>整行</Radio>
-                </Radio.Group>
-              </Form.Item>)
+            return (<Form.Item label="子类型" name="subType" rules={[{ required: true }]} >
+              <Select options={options} fieldNames={{ label: 'name', value: 'key' }} />
+            </Form.Item>)
+          } else {
+            return null;
           }
+        }}
+      </Form.Item>
+
+      <Form.Item label="属性名" rules={[{ required: true }, { pattern: propKeyRule, message: '格式错误，必须是标准js标识符' }]} name="propKey">
+        <Input />
+      </Form.Item>
+      <Form.Item valuePropName="checked" label="根属性" name="rootPropKey">
+        <Switch />
+      </Form.Item>
+
+      {
+        propPersistModel.currSettingPropItem?.span !== -1 && (
+          <Form.Item label="宽度" name="span">
+            <Radio.Group >
+              <Radio value={12}>半行</Radio>
+              <Radio value={24}>整行</Radio>
+            </Radio.Group>
+          </Form.Item>)
+      }
 
 
-          <Form.Item dependencies={['type']} noStyle >
-            {({ getFieldValue }) => {
-              const type = getFieldValue('type');
-              const hasOption = ([PropItemType.Select, PropItemType.Radio, PropItemType.Checkbox, PropItemType.ButtonGroup]).includes(type);
+      <Form.Item dependencies={['type']} noStyle >
+        {({ getFieldValue }) => {
+          const type = getFieldValue('type');
+          const hasOption = ([PropItemType.Select, PropItemType.Radio, PropItemType.Checkbox, PropItemType.ButtonGroup]).includes(type);
 
-              return hasOption ? renderSelectFormItem() : null
-            }}
-          </Form.Item>
-        </Form>
-      )
-    }
+          return hasOption ? renderSelectFormItem() : null
+        }}
+      </Form.Item>
+    </Form>
   </Modal>)
 }
 
