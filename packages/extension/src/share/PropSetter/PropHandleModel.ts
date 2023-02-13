@@ -346,14 +346,14 @@ export default class PropHandleModel {
   public removeChild(instanceId: number, itemId: number, abstractValueIdChain?: string) {
     this.propPersist.removeChildInstance(instanceId, itemId, abstractValueIdChain).then(() => {
       const allComponentInstance = this.stateManager.getState('gs.studio.allComponentInstance');
-      const rootComponentInstance = this.stateManager.getState('gs.studio.componentInstance');
+      const componentInstance = this.stateManager.getState('gs.studio.componentInstance');
 
       const instanceIndex = allComponentInstance.findIndex(i => i.id === instanceId);
       const instance = allComponentInstance[instanceIndex];
       allComponentInstance.splice(instanceIndex, 1);
 
       if (instance.parentId && instance.parentId !== instance.rootId) {
-        if (rootComponentInstance.id === instanceId) {
+        if (componentInstance.id === instanceId) {
           grootHookManager().callHook(PostMessageType.OuterComponentSelect, instance.parentId)
         }
         grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'all');

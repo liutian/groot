@@ -311,7 +311,6 @@ export default class PropPersistModel {
   public addAbstractTypeValue(propItem: PropItem) {
     const abstractValueIdChain = calcPropValueIdChain(propItem);
     const component = this.stateManager.getState('gs.studio.component');
-    const rootComponentInstance = this.stateManager.getState('gs.studio.componentInstance')
 
     const paramsData = {
       propItemId: propItem.id,
@@ -324,9 +323,10 @@ export default class PropPersistModel {
     if (getContext().groot.params.mode === StudioMode.Prototype) {
       paramsData.type = PropValueType.Prototype;
     } else {
+      const componentInstance = this.stateManager.getState('gs.studio.componentInstance')
       paramsData.type = PropValueType.Instance;
       paramsData.releaseId = getContext().groot.params.application.release.id;
-      paramsData.componentInstanceId = rootComponentInstance.id;
+      paramsData.componentInstanceId = componentInstance.id;
     }
 
     this.request(APIPath.value_abstractType_add, paramsData).then(({ data }) => {
@@ -362,8 +362,6 @@ export default class PropPersistModel {
       paramData.value = valueStr;
     } else {
       const component = this.stateManager.getState('gs.studio.component');
-      const rootComponentInstance = this.stateManager.getState('gs.studio.componentInstance')
-      const allComponentInstance = this.stateManager.getState('gs.studio.allComponentInstance')
       const isPrototypeMode = getContext().groot.params.mode === StudioMode.Prototype;
 
       paramData.abstractValueIdChain = abstractValueIdChain;
@@ -376,9 +374,11 @@ export default class PropPersistModel {
       if (isPrototypeMode) {
         paramData.type = PropValueType.Prototype;
       } else {
+        const componentInstance = this.stateManager.getState('gs.studio.componentInstance')
+        const allComponentInstance = this.stateManager.getState('gs.studio.allComponentInstance')
         paramData.type = PropValueType.Instance;
         paramData.releaseId = getContext().groot.params.application.release.id;
-        paramData.componentInstanceId = rootComponentInstance.id;
+        paramData.componentInstanceId = componentInstance.id;
 
         if (hostComponentInstanceId) {
           paramData.componentInstanceId = hostComponentInstanceId;
