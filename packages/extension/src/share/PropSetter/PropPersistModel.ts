@@ -118,16 +118,16 @@ export default class PropPersistModel {
   }
 
   public updateOrAddPropGroup(group: PropGroup) {
-    const newGroup = Object.assign(this.currSettingPropGroup, group);
+    const groupData = Object.assign(this.currSettingPropGroup, group);
 
-    newGroup.componentId = this.stateManager.getState('gs.studio.component').id
-    newGroup.componentVersionId = getComponentVersionId()
+    groupData.componentId = this.stateManager.getState('gs.studio.component').id
+    groupData.componentVersionId = getComponentVersionId()
 
     this.settingModalSubmitting = true;
-    if (newGroup.id) {
-      this.request(APIPath.group_update, newGroup).then(() => {
-        let groupIndex = this.propHandle.propTree.findIndex(g => g.id === newGroup.id);
-        assignBaseType(this.propHandle.propTree[groupIndex], newGroup);
+    if (groupData.id) {
+      this.request(APIPath.group_update, groupData).then(() => {
+        let groupIndex = this.propHandle.propTree.findIndex(g => g.id === groupData.id);
+        assignBaseType(this.propHandle.propTree[groupIndex], groupData);
 
         this.currSettingPropGroup = undefined;
         grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'current');
@@ -135,7 +135,7 @@ export default class PropPersistModel {
         this.settingModalSubmitting = false;
       })
     } else {
-      this.request(APIPath.group_add, newGroup).then(({ data: { newGroup, extra } }) => {
+      this.request(APIPath.group_add, groupData).then(({ data: { newGroup, extra } }) => {
         newGroup.expandBlockIdList = [];
         newGroup.propBlockList = [];
         this.propHandle.propTree.push(newGroup);
@@ -157,21 +157,21 @@ export default class PropPersistModel {
   }
 
   public updateOrAddPropBlock(block: PropBlock) {
-    const newBlock = Object.assign(this.currSettingPropBlock, block);
-    const group = this.propHandle.getPropGroup(newBlock.groupId);
+    const blockData = Object.assign(this.currSettingPropBlock, block);
+    const group = this.propHandle.getPropGroup(blockData.groupId);
 
     this.settingModalSubmitting = true;
-    if (newBlock.id) {
-      this.request(APIPath.block_update, newBlock).then(() => {
-        let blockIndex = group.propBlockList.findIndex(b => b.id === newBlock.id);
-        assignBaseType(group.propBlockList[blockIndex], newBlock);
+    if (blockData.id) {
+      this.request(APIPath.block_update, blockData).then(() => {
+        let blockIndex = group.propBlockList.findIndex(b => b.id === blockData.id);
+        assignBaseType(group.propBlockList[blockIndex], blockData);
         this.currSettingPropBlock = undefined;
         grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'current');
       }).finally(() => {
         this.settingModalSubmitting = false;
       })
     } else {
-      this.request(APIPath.block_add, newBlock).then(({ data: { newBlock, extra } }) => {
+      this.request(APIPath.block_add, blockData).then(({ data: { newBlock, extra } }) => {
         group.propBlockList.push(newBlock);
         newBlock.group = group;
         newBlock.propItemList = [];
@@ -198,20 +198,18 @@ export default class PropPersistModel {
   }
 
   public updateOrAddPropItem(item: PropItem) {
-    const newItem = Object.assign(this.currSettingPropItem, item);
+    const itemData = Object.assign(this.currSettingPropItem, item);
 
-    stringifyOptions(newItem);
+    stringifyOptions(itemData);
 
     this.settingModalSubmitting = true;
-    if (newItem.id) {
-      this.request(APIPath.item_update, newItem).then(({ data }) => {
+    if (itemData.id) {
+      this.request(APIPath.item_update, itemData).then(({ data }) => {
         const block = this.propHandle.getPropBlock(data.blockId);
         let itemIndex = block.propItemList.findIndex(item => item.id === data.id);
         // block.propItemList.splice(itemIndex, 1, propItem);
         const originItem = block.propItemList[itemIndex];
         assignBaseType(originItem, data);
-        // 保障渲染时从valueOptions进行转换
-        originItem.optionList = undefined;
 
         this.currSettingPropItem = undefined;
         grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'current');
@@ -219,8 +217,9 @@ export default class PropPersistModel {
         this.settingModalSubmitting = false;
       })
     } else {
-      this.request(APIPath.item_add, newItem).then(({ data: { newItem, childGroup, extra } }) => {
+      this.request(APIPath.item_add, itemData).then(({ data: { newItem, childGroup, extra } }) => {
         newItem.valueList = [];
+        newItem.optionList = itemData.optionList;
         const block = this.propHandle.getPropBlock(newItem.blockId);
         block.propItemList.push(newItem);
         newItem.block = block;

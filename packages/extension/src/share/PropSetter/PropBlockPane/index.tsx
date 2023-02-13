@@ -55,10 +55,7 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
     if (noSetting) return null;
 
     const editPropItem = () => {
-      propPersistModel.currSettingPropItem = pick(propItem, ['id', 'type', 'propKey', 'rootPropKey', 'label', 'subType', 'span']);
-      if (propItem.optionList?.length) {
-        propPersistModel.currSettingPropItem.optionList = propItem.optionList.map(option => JSON.parse(stringify(option)));
-      }
+      propPersistModel.currSettingPropItem = pick(propItem, ['id', 'type', 'propKey', 'rootPropKey', 'label', 'subType', 'span', 'optionList']);
     }
 
     return (<Space size="small">
