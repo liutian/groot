@@ -129,10 +129,9 @@ export default class PropPersistModel {
         let groupIndex = this.propHandle.propTree.findIndex(g => g.id === newGroup.id);
         assignBaseType(this.propHandle.propTree[groupIndex], newGroup);
 
-        this.settingModalSubmitting = false;
         this.currSettingPropGroup = undefined;
         grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'current');
-      }, () => {
+      }).finally(() => {
         this.settingModalSubmitting = false;
       })
     } else {
@@ -149,9 +148,10 @@ export default class PropPersistModel {
           newGroup.propBlockList.push(extra.newBlock);
         }
 
-        this.settingModalSubmitting = false;
         this.currSettingPropGroup = undefined;
         grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'current');
+      }).finally(() => {
+        this.settingModalSubmitting = false;
       })
     }
   }
@@ -165,10 +165,11 @@ export default class PropPersistModel {
       this.request(APIPath.block_update, newBlock).then(() => {
         let blockIndex = group.propBlockList.findIndex(b => b.id === newBlock.id);
         assignBaseType(group.propBlockList[blockIndex], newBlock);
-        this.settingModalSubmitting = false;
         this.currSettingPropBlock = undefined;
         grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'current');
-      });
+      }).finally(() => {
+        this.settingModalSubmitting = false;
+      })
     } else {
       this.request(APIPath.block_add, newBlock).then(({ data: { newBlock, extra } }) => {
         group.propBlockList.push(newBlock);
@@ -187,9 +188,10 @@ export default class PropPersistModel {
           extra.childGroup.propBlockList = [];
         }
 
-        this.settingModalSubmitting = false;
         this.currSettingPropBlock = undefined;
         grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'current');
+      }).finally(() => {
+        this.settingModalSubmitting = false;
       })
 
     }
@@ -211,10 +213,11 @@ export default class PropPersistModel {
         // 保障渲染时从valueOptions进行转换
         originItem.optionList = undefined;
 
-        this.settingModalSubmitting = false;
         this.currSettingPropItem = undefined;
         grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'current');
-      });
+      }).finally(() => {
+        this.settingModalSubmitting = false;
+      })
     } else {
       this.request(APIPath.item_add, newItem).then(({ data: { newItem, childGroup, extra } }) => {
         newItem.valueList = [];
@@ -237,9 +240,10 @@ export default class PropPersistModel {
           }
         }
 
-        this.settingModalSubmitting = false;
         this.currSettingPropItem = undefined;
         grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'current');
+      }).finally(() => {
+        this.settingModalSubmitting = false;
       })
     }
   }
