@@ -72,7 +72,7 @@ export const parsePropItemValue = (propItem: PropItem, value?: any) => {
     // ... 不做任何处理
   } else if (propItem.type === PropItemType.Component && !value) {
     value = { list: [] };
-  } else if (value !== undefined && value !== null) {
+  } else if (typeof value === 'string' && value.length) {
     value = JSON.parse(value);
   }
 
