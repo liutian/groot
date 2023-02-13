@@ -46,19 +46,8 @@ const PropGroupSetting: React.FC = () => {
               <Radio value={PropGroupStructType.Flat}>平铺</Radio>
             </Radio.Group>
           </Form.Item>
-          <Form.Item
-            noStyle
-            shouldUpdate={(prevValues, currentValues) => prevValues.struct !== currentValues.struct}
-          >
-            {({ getFieldValue }) => {
-              const required = getFieldValue('struct') === 'List';
-              const rules = [{ required }, { pattern: propKeyRule, message: '格式错误，必须是标准js标识符' }];
-              return (
-                <Form.Item label="属性名" name="propKey" rules={rules}>
-                  <Input />
-                </Form.Item>
-              )
-            }}
+          <Form.Item label="属性名" name="propKey" >
+            <Input />
           </Form.Item>
 
         </Form>

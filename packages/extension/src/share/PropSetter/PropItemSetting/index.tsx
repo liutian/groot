@@ -4,7 +4,7 @@ import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import { PropItem, PropItemType, PropItemTypeNameMap, useModel } from "@grootio/common";
 import PropPersistModel from "../PropPersistModel";
 import { grootStateManager } from "context";
-import { RemotePluginKeySep } from "util/utils";
+import { propKeyRule, RemotePluginKeySep } from "util/utils";
 
 
 const PropItemSetting: React.FC = () => {
@@ -118,7 +118,7 @@ const PropItemSetting: React.FC = () => {
             }}
           </Form.Item>
 
-          <Form.Item label="属性名" rules={[{ required: true }]} name="propKey">
+          <Form.Item label="属性名" rules={[{ required: true }, { pattern: propKeyRule, message: '格式错误，必须是标准js标识符' }]} name="propKey">
             <Input />
           </Form.Item>
           <Form.Item valuePropName="checked" label="根属性" name="rootPropKey">
