@@ -38,8 +38,13 @@ export function wrapperState(target: any, listener: Function) {
           }
         }
 
-        // 非特殊数组函数外直接this指向
-        return value.bind(receiver);
+        if (sKey === '__groot_target') {
+          // 处理外部拿代理对象比对相等时总是为false的问题
+          return () => oTarget
+        } else {
+          // 非特殊数组函数外直接this指向
+          return value.bind(receiver);
+        }
 
       } else {
         // React.Element不做任何处理

@@ -49,3 +49,11 @@ export const isBaseType = (value: any) => {
   const typeStr = Object.prototype.toString.apply(value);
   return typeList.some(type => typeStr.includes(type));
 }
+
+
+export const compareGrootProxy = (proxyA: any, proxyB: any) => {
+  let targetA = proxyA.__groot_target ? proxyA.__groot_target() : proxyA;
+  let targetB = proxyB.__groot_target ? proxyB.__groot_target() : proxyB;
+
+  return targetA === targetB
+}

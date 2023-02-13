@@ -1,4 +1,4 @@
-import { ComponentInstance, ComponentValueItemType, ComponentValueType, DragAddComponentEventDataType, PostMessageType, PropBlock, PropGroup, PropItem, PropItemType, PropValueType, ValueStruct } from "@grootio/common";
+import { compareGrootProxy, ComponentInstance, ComponentValueItemType, ComponentValueType, DragAddComponentEventDataType, PostMessageType, PropBlock, PropGroup, PropItem, PropItemType, PropValueType, ValueStruct } from "@grootio/common";
 import { grootCommandManager, grootHookManager, grootStateManager, isPrototypeMode } from "context";
 import { switchComponentInstance } from "share";
 
@@ -258,11 +258,14 @@ export default class PropHandleModel {
     propItem.highlight = false;
   }
 
-  private watchEvent() {
+  private watchEvent = () => {
     const listener = (newValue) => {
-      if (newValue.propTree) {
+      if (newValue.propTree && !compareGrootProxy(newValue.propTree, this.propTree)) {
         this.propTree = newValue.propTree;
-        this.activeGroupId = this.propTree[0].id;
+
+        if (!this.propTree.map(item => item.id).includes(this.activeGroupId)) {
+          this.activeGroupId = this.propTree[0].id;
+        }
       }
     }
 
