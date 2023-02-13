@@ -5,7 +5,6 @@ import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { LogicException, LogicExceptionCode } from 'config/logic.exception';
 import { PropBlock } from 'entities/PropBlock';
 import { PropGroup } from 'entities/PropGroup';
-import { PropItem } from 'entities/PropItem';
 import { CommonService } from './common.service';
 import { PropBlockService } from './prop-block.service';
 
@@ -42,11 +41,11 @@ export class PropGroupService {
       order: (firstGroup ? firstGroup.order : 0) + 1000
     });
 
-    if (rawGroup.parentItemId) {
-      const parentItem = await em.findOne(PropItem, rawGroup.parentItemId);
-      LogicException.assertNotFound(parentItem, 'PropItem', rawGroup.parentItemId);
-      newGroup.parentItem = parentItem;
-    }
+    // if (rawGroup.parentItemId) {
+    //   const parentItem = await em.findOne(PropItem, rawGroup.parentItemId);
+    //   LogicException.assertNotFound(parentItem, 'PropItem', rawGroup.parentItemId);
+    //   newGroup.parentItem = parentItem;
+    // }
 
     if (!newGroup.root) {
       delete newGroup.propKey;
