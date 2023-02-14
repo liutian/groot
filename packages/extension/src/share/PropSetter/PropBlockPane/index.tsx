@@ -197,7 +197,7 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
 
   return <div className={noWrapMode ? styles.container : ''}>
     <Form form={form} key={formKey} layout={PropBlockLayoutKeyMap[block.layout] as any}
-      labelAlign="left" colon={false} className={`${styles.propForm} `}
+      labelAlign="left" colon={false} className={`${styles.propForm} ${styles.compact}`}
       onValuesChange={(changedValues) => { updateValue(changedValues); }}>
       <Row gutter={6}>
         {
