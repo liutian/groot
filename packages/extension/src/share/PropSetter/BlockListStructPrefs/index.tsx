@@ -35,7 +35,7 @@ const BlockListStructPrefs: React.FC<PropsType> = ({ block: propBlock }) => {
     {
       prefsBlock.map((block) => {
         return (<div key={block.id}>
-          <h4>{block.name}</h4>
+          <div className={styles.title}>{block.name}</div>
           <div style={{ marginBottom: '10px' }}>
             {
               block.propItemList.map((propItem) => {

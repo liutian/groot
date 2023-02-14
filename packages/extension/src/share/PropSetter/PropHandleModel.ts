@@ -113,7 +113,7 @@ export default class PropHandleModel {
     propItem.childGroup.templateDesignMode = false;
 
     // todo 计算坐标
-    // propItemStack.push(propItem);
+    this.propItemStack.push(propItem);
   }
 
   /**
