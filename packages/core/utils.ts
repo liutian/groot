@@ -1,5 +1,5 @@
 import { PropItem, PropItemType } from "@grootio/common";
-import moment from "moment";
+import dayjs from "dayjs";
 
 /**
  * 自动填充属性链，每个属性都为对象
@@ -67,7 +67,7 @@ export const parsePropItemValue = (propItem: PropItem, value?: any) => {
   value = value || propItem.defaultValue
   if (propItem.type === PropItemType.DatePicker || propItem.type === PropItemType.TimePicker) {
     // todo ... 包含moment类型的值 postMessage会有问题
-    value = moment(value);
+    value = dayjs(JSON.parse(value));
   } else if (propItem.type === PropItemType.Function) {
     // ... 不做任何处理
   } else if (propItem.type === PropItemType.Component && !value) {
