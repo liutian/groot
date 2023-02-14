@@ -175,6 +175,7 @@ export default class PropPersistModel {
         group.propBlockList.push(newBlock);
         newBlock.group = group;
         newBlock.propItemList = [];
+        newBlock.listStructData = [];
         group.expandBlockIdList.push(newBlock.id);
 
         if (extra?.childGroup) {

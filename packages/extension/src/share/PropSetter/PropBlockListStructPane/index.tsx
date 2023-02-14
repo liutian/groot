@@ -9,7 +9,6 @@ import styles from './index.module.less';
 import PropHandleModel from "../PropHandleModel";
 import PropPersistModel from "../PropPersistModel";
 import { getContext, grootCommandManager, grootStateManager, isPrototypeMode } from "context";
-import { parseOptions } from "util/utils";
 
 type PropsType = {
   block: PropBlock
@@ -52,12 +51,6 @@ const PropBlockListStructPane: React.FC<PropsType> = ({ block: propBlock }) => {
       return value;
     }
   });
-
-  if (propBlock.struct === PropBlockStructType.List) {
-    if (!Array.isArray(propBlock.listStructData)) {
-      propBlock.listStructData = JSON.parse(propBlock.listStructData || '[]');
-    }
-  }
 
   const primaryShowPropItemList = [];
   propBlock.listStructData.forEach((propItemId) => {
