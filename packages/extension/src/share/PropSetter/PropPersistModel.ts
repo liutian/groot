@@ -210,6 +210,7 @@ export default class PropPersistModel {
         // block.propItemList.splice(itemIndex, 1, propItem);
         const originItem = block.propItemList[itemIndex];
         assignBaseType(originItem, data);
+        originItem.optionList = itemData.optionList;
 
         this.currSettingPropItem = undefined;
         grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'current');
