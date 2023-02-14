@@ -52,7 +52,6 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
   })
 
   const renderItemSetting = (propItem: PropItem, itemIndex: number) => {
-    if (noSetting) return null;
 
     const editPropItem = () => {
       propPersistModel.currSettingPropItem = pick(propItem, ['id', 'type', 'propKey', 'rootPropKey', 'label', 'subType', 'span', 'optionList']);
@@ -98,24 +97,26 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
     </Space>)
   }
 
-  const renderItemLabel = (propItem: PropItem, itemIndex: number) => {
+  const renderItemLabel = (propItem: PropItem, itemIndex: number, action: boolean) => {
 
-    if (block.layout === PropBlockLayout.Horizontal) {
+    if (action) {
+      return <div className={`${styles.propItemHeader} `}>
+        <div className={styles.propItemHeaderText}>
+          {propItem.label}
+          <i className="highlight" hidden={!propItem.highlight} />
+        </div>
+        <div className={styles.propItemHeaderActions}>
+          {renderItemSetting(propItem, itemIndex)}
+        </div>
+      </div>
+
+    } else {
       return <>
         {propItem.label}
         <i className="highlight" hidden={!propItem.highlight} />
       </>
     }
 
-    return <div className={styles.propItemHeader}>
-      <div className={styles.propItemHeaderText}>
-        {propItem.label}
-        <i className="highlight" hidden={!propItem.highlight} />
-      </div>
-      <div className={styles.propItemHeaderActions}>
-        {renderItemSetting(propItem, itemIndex)}
-      </div>
-    </div>
   }
 
   const renderFormItem = (item: PropItem) => {
@@ -194,8 +195,9 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
     formKey = `releaseId:${getContext().groot.params.application?.release.id}|instanceId:${instance.id}`;
   }
 
-  return <div className={noWrapMode ? styles.containerWrap : ''}>
-    <Form form={form} key={formKey} layout={PropBlockLayoutKeyMap[block.layout] as any} labelAlign="left" colon={false} className={styles.propForm}
+  return <div className={noWrapMode ? styles.container : ''}>
+    <Form form={form} key={formKey} layout={PropBlockLayoutKeyMap[block.layout] as any}
+      labelAlign="left" colon={false} className={`${styles.propForm} `}
       onValuesChange={(changedValues) => { updateValue(changedValues); }}>
       <Row gutter={6}>
         {
@@ -207,18 +209,27 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
               onMouseLeave={() => {
                 propHandleModel.setPropPathChain();
               }}>
-              {/* todo 只有垂直模式可以显示action，水平模式action待设计 */}
-              <div className={`${styles.propItemContainer} ${noSetting || block.layout === PropBlockLayout.Vertical
-                ? '' : styles.hasAction}`}>
-                <div className="content">
-                  <Form.Item
-                    className={styles.propItem} label={renderItemLabel(item, index)} name={item.propKey} preserve={false}
-                    valuePropName={item.type === PropItemType.Switch ? 'checked' : 'value'} initialValue={getInitValue(item)}>
-                    {renderFormItem(item)}
-                  </Form.Item>
-                </div>
-                <div className="action">{block.layout === PropBlockLayout.Horizontal && renderItemSetting(item, index)}</div>
-              </div>
+              {
+                block.layout === PropBlockLayout.Vertical ? (
+                  <div className={`${styles.propItemContainer} ${styles.vertical} ${noSetting ? '' : styles.hasAction}`}>
+                    <Form.Item label={renderItemLabel(item, index, true)} name={item.propKey} preserve={false}
+                      valuePropName={item.type === PropItemType.Switch ? 'checked' : 'value'} initialValue={getInitValue(item)}>
+                      {renderFormItem(item)}
+                    </Form.Item>
+                  </div>
+                ) : (
+                  <div className={`${styles.propItemContainer} ${styles.horizontal} ${noSetting ? '' : styles.hasAction}`}>
+                    <div className="content">
+                      <Form.Item label={renderItemLabel(item, index, false)} name={item.propKey} preserve={false}
+                        valuePropName={item.type === PropItemType.Switch ? 'checked' : 'value'} initialValue={getInitValue(item)}>
+                        {renderFormItem(item)}
+                      </Form.Item>
+                    </div>
+                    <div className="action">{renderItemSetting(item, index)}</div>
+                  </div>
+                )
+              }
+
             </Col>
           })
         }

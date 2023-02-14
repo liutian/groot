@@ -1,51 +1,75 @@
-.containerWrap {
+.container {
   padding: 16px;
-}
-
-.propItem:hover .propItemHeaderActions {
-  display: block;
-}
-
-.propItemHeader {
-  display: flex;
-}
-
-.propItemHeaderText {
-  overflow: 'hidden';
-  text-overflow: 'ellipsis'
-}
-
-.propItemHeaderActions {
-  display: none;
-  margin-left: auto;
 }
 
 .propItemContainer {
 
-  &.hasAction {
-    --var-action-width: 80px;
+  &.vertical {
+    --var-action-width: 90px;
+
+    .propItemHeader {
+      display: flex;
+
+      .propItemHeaderText {
+        flex-grow: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .propItemHeaderActions {
+        width: 0;
+        overflow: hidden;
+        text-align: right;
+      }
+    }
+
+    &.hasAction:hover .propItemHeader .propItemHeaderActions {
+      width: var(--var-action-width);
+    }
+
+  }
+
+  &.horizontal {
+    display: flex;
+    --var-action-width: 90px;
 
     :global(.content) {
-      display: inline-block;
-      width: calc(100% - var(--var-action-width));
+      flex-grow: 1;
     }
 
     :global(.action) {
-      display: inline-block;
-      width: var(--var-action-width);
-      padding-left: 8px;
+      width: 0;
+      overflow: hidden;
+      line-height: 32px;
+      text-align: right;
+    }
+
+    &.hasAction {
+
+      :global(.action) {
+        width: var(--var-action-width);
+        visibility: hidden;
+      }
+
+      &:hover {
+        :global(.action) {
+          visibility: visible;
+        }
+      }
     }
   }
 
-  :global(.action) {
-    display: none;
-  }
 }
 
 .propForm {
 
+  :global(.number-slider .ant-input-number) {
+    width: 100%;
+  }
+
+
   &:global(.ant-form-vertical .ant-form-item-label>label) {
-    display: block !important;
+    display: inline-block !important;
     white-space: nowrap !important;
   }
 
@@ -53,21 +77,15 @@
     min-width: 80px;
   }
 
-  &:global(.ant-form-vertical .ant-form-item-label) {
-    padding-bottom: 2px;
-    margin-top: -4px;
-  }
+  &.compact {
+    &:global(.ant-form-vertical .ant-form-item-label) {
+      padding-bottom: 4px;
+      margin-top: -4px;
+    }
 
-  :global(.ant-form-item-label>label) {
-    color: var(--font-color);
-  }
-
-  :global(.ant-form-item) {
-    margin-bottom: 8px !important;
-  }
-
-  :global(.number-slider .ant-input-number) {
-    width: 100%;
+    :global(.ant-form-item) {
+      margin-bottom: 8px !important;
+    }
   }
 
 }
