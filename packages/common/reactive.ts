@@ -28,7 +28,17 @@ export function wrapperState(target: any, listener: Function) {
                 break
               case 'splice':
                 const insertItems = args.slice(2).map(item => wrapperState(item, listener));
-                newArgs = [args[0], args[1], ...insertItems]
+                newArgs = []
+                // 必须强制控制数组项，否则浏览器原始实现会误判，导致执行结果非预期
+                if (args[0] !== undefined) {
+                  newArgs.push(args[0])
+                }
+                if (args[1] !== undefined) {
+                  newArgs.push(args[1])
+                }
+                if (insertItems.length) {
+                  newArgs.push(...insertItems)
+                }
                 break
             }
 

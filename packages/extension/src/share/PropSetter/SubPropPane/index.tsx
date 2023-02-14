@@ -1,7 +1,6 @@
 import { LeftOutlined } from '@ant-design/icons';
 import { PropItem, PropItemType, useModel } from '@grootio/common';
 import { Button } from 'antd';
-import { grootStateManager } from 'context';
 import { useRef } from 'react';
 import BlockListStructPrefs from '../BlockListStructPrefs';
 
