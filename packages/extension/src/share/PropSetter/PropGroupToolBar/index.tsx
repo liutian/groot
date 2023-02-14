@@ -28,7 +28,7 @@ const PropGroupToolBar: React.FC = () => {
     <Space >
 
       <Typography.Link onClick={() => {
-        propPersistModel.currSettingPropGroup = pick(group, ['id', 'name', 'propKey']);
+        propPersistModel.currSettingPropGroup = pick(group, ['id', 'name', 'propKey', 'struct']);
       }}>
         <EditOutlined />
       </Typography.Link>

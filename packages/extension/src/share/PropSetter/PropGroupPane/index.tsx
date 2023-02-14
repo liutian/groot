@@ -18,7 +18,7 @@ const PropGroupPane: React.FC<PropsType> = ({ group }) => {
   const noSetting = !isPrototypeMode() || group.parentItem?.noSetting;
 
   const editBlock = (block: PropBlock) => {
-    propPersistModel.currSettingPropBlock = pick(block, ['id', 'name', 'propKey', 'layout', 'rootPropKey'])
+    propPersistModel.currSettingPropBlock = pick(block, ['id', 'name', 'propKey', 'layout', 'rootPropKey', 'groupId', 'struct'])
   }
 
   const onChangeCollapse = (key: string | string[]) => {
