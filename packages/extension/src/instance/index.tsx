@@ -1,5 +1,5 @@
 import { AppstoreOutlined } from "@ant-design/icons";
-import { APIPath, ComponentInstance, PropGroup } from "@grootio/common";
+import { APIPath, ComponentInstance, PropBlockStructType, PropGroup } from "@grootio/common";
 import { metadataFactory, propTreeFactory } from "@grootio/core";
 import { getContext, grootCommandManager, grootHookManager, grootStateManager } from "context";
 import ViewsContainer from "core/ViewsContainer";
@@ -152,9 +152,13 @@ const fetchRootInstance = (rootInstanceId: number) => {
   request(APIPath.componentInstance_rootDetail_instanceId, { instanceId: rootInstanceId }).then(({ data: { children, root } }) => {
 
     const list = [root, ...children]
-    for (const { itemList } of list) {
+    for (const { itemList, blockList } of list) {
       itemList.forEach(item => {
         parseOptions(item);
+      })
+
+      blockList.filter(block => block.struct === PropBlockStructType.List).forEach((block) => {
+        block.listStructData = JSON.parse(block.listStructData as any || '[]');
       })
     }
 
