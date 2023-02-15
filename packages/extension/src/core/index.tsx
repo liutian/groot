@@ -38,7 +38,7 @@ export const startup = () => {
 
   if (isPrototypeMode()) {
     prototypeBootstrap();
-  } else if (groot.params.mode === StudioMode.Instance) {
+  } else {
     instanceBootstrap();
   }
 }
