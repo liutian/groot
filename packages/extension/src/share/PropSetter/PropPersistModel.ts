@@ -12,6 +12,7 @@ import PropHandleModel from "./PropHandleModel";
 export default class PropPersistModel {
   static modelName = 'propPersist';
 
+  emitter: Function;
   /**
    * 正在配置的分组
    */

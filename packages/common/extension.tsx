@@ -10,9 +10,9 @@ export enum StudioMode {
   Instance = 'instance'
 }
 
-export type ModelClass<T> = (new () => T) & { modelName: string };
+export type ModelClass<T extends { emitter: Function }> = (new () => T) & { modelName: string };
 
-export type UseModelFnType = <T>(model: ModelClass<T>, isRoot?: boolean) => T;
+export type UseModelFnType = <T extends { emitter: Function }>(model: ModelClass<T>, isRoot?: boolean) => T;
 
 // 公开WorkbenchModel类型必须单独定义，不能直接通过ts import(...) ，该语法会导致ts深入解析 workbench项目中 WorkbenchModel 其他依赖项导致重复甚至循环解析
 

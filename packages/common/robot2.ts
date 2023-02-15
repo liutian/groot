@@ -19,7 +19,7 @@ const store = new Map<string, ModelContainer>();
  * @param modelClass 模型类
  * @returns [模型的代理对象, 主动更新的函数] 主动更新的函数可以不执行model方法的情况下更新model数据
  */
-export const useRegisterModel = <T>(modelClass: ModelClass<T>): T => {
+export const useRegisterModel = <T extends { emitter: Function }>(modelClass: ModelClass<T>): T => {
   const [unregister] = useState(() => {
     return registerModel(modelClass);
   });
@@ -36,15 +36,17 @@ export const useRegisterModel = <T>(modelClass: ModelClass<T>): T => {
  * @param modelClass 模型类
  * @returns 注销模型
  */
-export const registerModel = <T>(modelClass: ModelClass<T>): () => void => {
+export const registerModel = <T extends { emitter: Function }>(modelClass: ModelClass<T>): () => void => {
   if (store.has(modelClass.modelName)) {
     throw new Error(`模块 ${modelClass.modelName} 已存在`);
   }
 
+  const obj = new modelClass()
+  obj.emitter = () => {
+    launchDelay(modelClass.modelName)
+  }
   store.set(modelClass.modelName, {
-    proxy: wrapperState(new modelClass(), () => {
-      launchDelay(modelClass.modelName)
-    }),
+    proxy: wrapperState(obj, obj.emitter),
   });
 
   return () => {
@@ -57,7 +59,7 @@ export const registerModel = <T>(modelClass: ModelClass<T>): () => void => {
  * @param modelClass 模型类
  * @returns 模型的代理对象
  */
-export const useModel: UseModelFnType = <T>(modelClass: ModelClass<T>, isRoot = false): T => {
+export const useModel: UseModelFnType = <T extends { emitter: Function }>(modelClass: ModelClass<T>, isRoot = false): T => {
   if (!store.has(modelClass.modelName)) {
     throw new Error(`model ${modelClass.modelName} not find`);
   }

@@ -44,16 +44,16 @@ type ConvertArray<T> = T extends Array<infer U> ? ConvertArray<U> : T;
 type WrapMinus<T> = T extends string ? `-${T}` : never;
 
 
-const typeList = ['Number', 'String', 'Null', 'Undefined', 'Boolean', 'Symbol', 'BigInt'];
+const typeList = ['number', 'string', 'boolean', 'symbol', 'bigInt'];
 export const isBaseType = (value: any) => {
-  const typeStr = Object.prototype.toString.apply(value);
-  return typeList.some(type => typeStr.includes(type));
+  const typeStr = typeof value;
+  return typeList.includes(typeStr) || value === null || value === undefined
 }
 
 
 export const compareGrootProxy = (proxyA: any, proxyB: any) => {
-  let targetA = proxyA.__groot_target ? proxyA.__groot_target() : proxyA;
-  let targetB = proxyB.__groot_target ? proxyB.__groot_target() : proxyB;
+  let targetA = proxyA.__groot_origin || proxyA;
+  let targetB = proxyB.__groot_origin || proxyB;
 
   return targetA === targetB
 }

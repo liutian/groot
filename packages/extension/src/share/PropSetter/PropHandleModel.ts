@@ -1,4 +1,4 @@
-import { compareGrootProxy, ComponentInstance, ComponentValueItemType, ComponentValueType, DragAddComponentEventDataType, PostMessageType, PropBlock, PropGroup, PropItem, PropItemType, PropValueType, ValueStruct } from "@grootio/common";
+import { ComponentInstance, ComponentValueItemType, ComponentValueType, DragAddComponentEventDataType, getOrigin, PostMessageType, PropBlock, PropGroup, PropItem, PropItemType, PropValueType, ValueStruct, wrapperState } from "@grootio/common";
 import { grootCommandManager, grootHookManager, grootStateManager, isPrototypeMode } from "context";
 import { switchComponentInstance } from "share";
 
@@ -9,6 +9,7 @@ import PropPersistModel from "./PropPersistModel";
  */
 export default class PropHandleModel {
   static modelName = 'propHandle';
+  emitter: Function;
 
   public propPersist: PropPersistModel;
   public forceUpdateFormKey = 0;
@@ -258,31 +259,34 @@ export default class PropHandleModel {
     propItem.highlight = false;
   }
 
-  private watchEvent = () => {
-    const listener = (newValue) => {
-      if (newValue.propTree && !compareGrootProxy(newValue.propTree, this.propTree)) {
-        this.propTree = newValue.propTree;
+  private watchEvent() {
+    if (isPrototypeMode()) {
+      grootStateManager().watchState('gs.studio.component', this.propTreeListener.bind(this))
+    } else {
+      // 实例模式会多次调用
+      grootStateManager().watchState('gs.studio.componentInstance', this.propTreeListener.bind(this))
+    }
+
+    grootHookManager().registerHook(PostMessageType.InnerDragHitSlot, (detail) => {
+      this.addChildComponent(detail);
+    })
+  }
+
+  private propTreeListener(newValue: { propTree: PropGroup[] }) {
+    if (newValue?.propTree) {
+      const originPropTree = getOrigin(newValue.propTree)
+
+      // 擦除外部包裹的代理对象，取内部原生对象，避免外部代理对象不能监听对象属性变化
+      if (originPropTree !== getOrigin(this.propTree)) {
+        this.propTree = wrapperState(originPropTree, () => {
+          this.emitter();
+        });
 
         if (!this.propTree.map(item => item.id).includes(this.activeGroupId)) {
           this.activeGroupId = this.propTree[0].id;
         }
       }
     }
-
-    if (isPrototypeMode()) {
-      const component = grootStateManager().getState('gs.studio.component');
-      grootStateManager().watchState('gs.studio.component', listener)
-      component && listener(component)
-    } else {
-      // 实例模式会多次调用
-      grootStateManager().watchState('gs.studio.componentInstance', listener)
-      const componentInstance = grootStateManager().getState('gs.studio.componentInstance')
-      componentInstance && listener(componentInstance)
-    }
-
-    grootHookManager().registerHook(PostMessageType.InnerDragHitSlot, (detail) => {
-      this.addChildComponent(detail);
-    })
   }
 
   private addChildComponent(data: DragAddComponentEventDataType) {
