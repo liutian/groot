@@ -81,7 +81,7 @@ export const prototypeBootstrap = () => {
   })
 }
 
-const fetchComponent = (componentId: number, versionId: number) => {
+const fetchComponent = (componentId: number, versionId) => {
   const { request } = getContext();
   request(APIPath.componentPrototype_detail_componentId, { componentId, versionId }).then(({ data }) => {
     const { blockList, itemList } = data;

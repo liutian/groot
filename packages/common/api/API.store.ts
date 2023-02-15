@@ -13,7 +13,7 @@ export type APIStore = {
   [APIPath.move_position]: [{ originId: number, targetId: number, type: 'group' | 'block' | 'item' }];
   [APIPath.componentInstance_addChild]: [ComponentInstance, API.Response<ComponentInstance>];
   [APIPath.component_list]: [null, API.Response<Component[]>];
-  [APIPath.componentPrototype_detail_componentId]: [{ componentId: number, versionId: number }, API.Response<Component>];
+  [APIPath.componentPrototype_detail_componentId]: [{ componentId: number, versionId?: number }, API.Response<Component>];
   [APIPath.org_detail_orgId]: [{ orgId: number }, API.Response<Organization>];
   [APIPath.component_add]: [Component, API.Response<Component>];
   [APIPath.componentVersion_add]: [ComponentVersion, API.Response<ComponentVersion>];

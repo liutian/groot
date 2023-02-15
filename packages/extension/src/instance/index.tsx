@@ -3,7 +3,6 @@ import { APIPath, ComponentInstance, PropBlockStructType, PropGroup } from "@gro
 import { metadataFactory, propTreeFactory } from "@grootio/core";
 import { getContext, grootCommandManager, grootHookManager, grootStateManager } from "context";
 import ViewsContainer from "core/ViewsContainer";
-import { switchComponentInstance } from "share";
 import { PropSetter } from "share/PropSetter";
 import { WorkArea } from "share/WorkArea";
 import { parseOptions } from "util/utils";
@@ -105,6 +104,10 @@ export const instanceBootstrap = () => {
     fetchRootInstance(rootInstanceId);
   });
 
+  registerCommand('gc.studio.switchIstance', (_, instanceId) => {
+    switchComponentInstance(instanceId)
+  })
+
 
   registerCommand('gc.workbench.makeDataToStage', (_, refreshId) => {
     const list = getState('gs.studio.allComponentInstance')
@@ -167,4 +170,11 @@ const fetchRootInstance = (rootInstanceId: number) => {
     grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'all');
     switchComponentInstance(root.id);
   });
+}
+
+export const switchComponentInstance = (instanceId: number) => {
+  const list = grootStateManager().getState('gs.studio.allComponentInstance');
+  const instance = list.find(item => item.id === instanceId);
+  grootStateManager().setState('gs.studio.componentInstance', instance);
+  grootStateManager().setState('gs.studio.component', instance.component);
 }

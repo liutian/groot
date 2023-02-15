@@ -160,7 +160,8 @@ export type GrootCommandDict = {
   'gc.workbench.statusBar.render': [[], ReactElement | null],
 
   'gc.fetch.instance': [[number], void],
-  'gc.fetch.prototype': [[number, number], void],
+  'gc.fetch.prototype': [[number, number | null], void],
+  'gc.studio.switchIstance': [[number], void],
   'gc.workbench.makeDataToStage': [[number | 'all' | 'current'], void],
 }
 

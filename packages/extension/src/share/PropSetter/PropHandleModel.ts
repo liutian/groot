@@ -1,6 +1,5 @@
 import { ComponentInstance, ComponentValueItemType, ComponentValueType, DragAddComponentEventDataType, getOrigin, PostMessageType, PropBlock, PropGroup, PropItem, PropItemType, PropValueType, ValueStruct, wrapperState } from "@grootio/common";
 import { grootCommandManager, grootHookManager, grootStateManager, isPrototypeMode } from "context";
-import { switchComponentInstance } from "share";
 
 import PropPersistModel from "./PropPersistModel";
 
@@ -362,7 +361,7 @@ export default class PropHandleModel {
         }
         grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'all');
       } else {// 父级为根组件实例
-        switchComponentInstance(instance.parentId)
+        grootCommandManager().executeCommand('gc.studio.switchIstance', instance.parentId)
         grootHookManager().callHook(PostMessageType.OuterOutlineReset)
         grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'all');
       }
