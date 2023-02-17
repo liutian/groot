@@ -113,7 +113,7 @@ export const instanceBootstrap = () => {
     const list = getState('gs.studio.allComponentInstance')
     if (refreshId === 'all') {
       const metadataList = instanceToMetadata(list);
-      callHook('gh.stage.syncData', metadataList)
+      callHook('gh.studio.prop.change', metadataList)
       return;
     }
 
@@ -124,7 +124,7 @@ export const instanceBootstrap = () => {
 
     const refreshInstance = list.find(i => i.id === instanceId);
     const [refreshMetadata] = instanceToMetadata([refreshInstance]);
-    callHook('gh.stage.syncData', refreshMetadata)
+    callHook('gh.studio.prop.change', refreshMetadata)
   })
 
   groot.onReady(() => {

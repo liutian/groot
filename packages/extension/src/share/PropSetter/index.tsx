@@ -6,7 +6,7 @@ import PropItemSetting from "./PropItemSetting";
 import styles from './index.module.less'
 import { useRef, useState } from "react";
 import PropPane from "./PropPane";
-import { getContext, grootStateManager } from "context";
+import { getContext, grootHookManager, grootStateManager } from "context";
 import SubPropPane from "./SubPropPane";
 import PropPersistModel from "./PropPersistModel";
 import PropHandleModel from "./PropHandleModel";
@@ -52,7 +52,7 @@ export const PropSetter = () => {
       cursor="col-resize"
       className={styles.moveHandle}
       start={() => {
-        // workbenchModel.toggleWorkAreaMask(true);
+        grootHookManager().callHook('gh.sidebar.drag.start')
         return containerRef.current.getBoundingClientRect().width;
       }}
       move={(x, _y, originData) => {
@@ -65,7 +65,7 @@ export const PropSetter = () => {
         layout.refresh(true);
       }}
       end={() => {
-        // workbenchModel.toggleWorkAreaMask(false);
+        grootHookManager().callHook('gh.sidebar.drag.end')
       }}
     />
   </div >

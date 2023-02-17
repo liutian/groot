@@ -26,3 +26,9 @@ export const grootHookManager = () => {
 export const isPrototypeMode = () => {
   return _context.groot.params.mode === StudioMode.Prototype;
 }
+
+export const commandBridge = {
+  stageRefresh: (callback: Function): void => {
+    throw new Error('方法为实现')
+  }
+}

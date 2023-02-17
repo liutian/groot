@@ -56,7 +56,7 @@ export class View {
     }
 
     if (appControlMode && this.controlMode) {
-      window.parent.postMessage({ type: PostMessageType.InnerFetchView, data: this.key }, '*');
+      window.parent.postMessage({ type: PostMessageType.InnerFetchView }, '*');
       if (!this.metadataPromise) {
         this.metadataPromise = new Promise((resolve) => {
           this.fetchMetadataResolve = (metadataList: Metadata[]) => {

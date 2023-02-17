@@ -113,5 +113,5 @@ const syncDataToStage = () => {
   }
 
   const metadata = metadataFactory(component.propTree, component, component.id, null);
-  grootHookManager().callHook('gh.stage.syncData', metadata)
+  grootHookManager().callHook('gh.studio.prop.change', metadata)
 }

@@ -22,7 +22,7 @@ export enum PostMessageType {
   OuterDragComponentLeave = 'outer_drag_component_leave',
   OuterDragComponentDrop = 'outer_drag_component_drop',
   InnerDragHitSlot = 'inner_drag_hit_slot',
-  InnerDragLine = 'inner_drag_line',
+  InnerUpdateDragAnchor = 'inner_update_drag_anchor',
 
   InnerOutlineHover = 'inner_outline_hover',
   InnerOutlineSelect = 'inner_outline_Select',

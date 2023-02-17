@@ -4,7 +4,7 @@ import request from "util/request";
 
 const commandMap = new Map<string, CommandObject>();
 const stateMap = new Map<string, StateObject>();
-const hookMap = new Map<string, HookObject[]>();
+const hookMap = new Map<string, { preArgs?: any[], list: HookObject[] }>();
 const contextEventTarget = new EventTarget();
 let extensionList: ExtensionRuntime[] = [];
 let registorReady = false;
@@ -232,26 +232,32 @@ export const useStateByName: GrootContextUseStateByName<Record<string, [any, boo
   ]
 }
 
-export const registerHook: GrootContextRegisterHook<Record<string, [any[], any]>> = (hookName, callback) => {
-  let hookList = hookMap.get(hookName)
-  if (!hookMap.has(hookName)) {
-    hookList = []
-    hookMap.set(hookName, hookList);
+export const registerHook: GrootContextRegisterHook<Record<string, [any[], any]>> = (hookName, callback, emitPrevArgs = false) => {
+  let hook = hookMap.get(hookName)
+  if (!hook) {
+    hook = {
+      list: []
+    }
+    hookMap.set(hookName, hook);
   }
 
-  if (hookList.find(item => item.callback === callback)) {
+  if (hook.list.find(item => item.callback === callback)) {
     throw new Error('钩子函数重复注册')
   }
 
-  hookList.push({
+  hook.list.push({
     callback,
     provider: tempProvider
   })
 
+  if (emitPrevArgs && hook.preArgs) {
+    callback.apply(null, hook.preArgs as any)
+  }
+
   return () => {
-    const index = hookList.findIndex(item => item.callback === callback);
+    const index = hook.list.findIndex(item => item.callback === callback);
     if (index !== -1) {
-      hookList.splice(index, 1);
+      hook.list.splice(index, 1);
     }
   }
 }
@@ -261,9 +267,10 @@ export const callHook: GrootContextCallHook<Record<string, [any[], any]>> = (hoo
     return [];
   }
 
-  let hookList = hookMap.get(hookName)
+  let hook = hookMap.get(hookName)
+  hook.preArgs = args
 
-  return hookList.map((item) => {
+  return hook.list.map((item) => {
     return item.callback.apply(null, args);
   })
 }

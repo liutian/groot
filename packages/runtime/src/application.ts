@@ -37,7 +37,7 @@ export function bootstrap(customConfig: UIManagerConfig, defaultConfig: UIManage
   setConfig(customConfig, defaultConfig);
 
   if (appControlMode) {
-    window.parent.postMessage(PostMessageType.InnerReady, '*');
+    window.parent.postMessage({ type: PostMessageType.InnerReady }, '*');
     window.addEventListener('message', onMessage);
   }
 
@@ -60,7 +60,7 @@ function onMessage(event: any) {
     iframeApplicationLoadResolve(event.data.data);
   } else if (messageType === PostMessageType.OuterUpdateComponent) {
     if (activeView.key !== event.data.data.key) {
-      return
+      throw new Error('内外层界面标识不一致')
     }
 
     activeView.update(event.data.data.data);
@@ -110,7 +110,7 @@ function fetchApplicationData(): Promise<ApplicationData> {
   if (appControlMode) {
     return new Promise((resolve, reject) => {
       iframeApplicationLoadResolve = resolve;
-      window.parent.postMessage(PostMessageType.InnerFetchApplication, '*');
+      window.parent.postMessage({ type: PostMessageType.InnerFetchApplication }, '*');
       setTimeout(() => {
         reject(new Error('load application timeout'))
       }, 3000);
@@ -133,7 +133,7 @@ function initApplication(data: ApplicationData) {
     allViewMap.set(view.key, view);
   });
   if (appControlMode) {
-    window.parent.postMessage(PostMessageType.InnerApplicationnReady, '*');
+    window.parent.postMessage({ type: PostMessageType.InnerApplicationnReady }, '*');
   }
 }
 

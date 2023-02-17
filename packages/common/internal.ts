@@ -95,7 +95,7 @@ export type MarkerInfo = {
   abstractValueIdChain?: string
 }
 
-export type DragLineInfo = {
+export type DragAnchorInfo = {
   direction: 'bottom' | 'top',
   left: number,
   width: number,

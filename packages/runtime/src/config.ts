@@ -1,7 +1,7 @@
-import { GrootType, IframeControlType, iframeNamePrefix, UIManagerConfig } from "@grootio/common";
+import { GrootType, iframeNamePrefix, UIManagerConfig, StudioMode } from "@grootio/common";
 
 export const appControlMode = window.self !== window.top && window.self.name.startsWith(iframeNamePrefix);
-export const appControlType: IframeControlType = (appControlMode ? window.self.name.replace(iframeNamePrefix, '') : '') as IframeControlType;
+export const appControlType: StudioMode = (appControlMode ? window.self.name.replace(iframeNamePrefix, '') : '') as StudioMode;
 
 // 运行时配置项
 export const globalConfig: UIManagerConfig = {

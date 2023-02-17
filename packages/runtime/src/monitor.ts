@@ -1,4 +1,4 @@
-import { DragAddComponentEventDataType, DragLineInfo, MarkerInfo, Metadata, PostMessageType } from "@grootio/common";
+import { DragAddComponentEventDataType, DragAnchorInfo, MarkerInfo, Metadata, PostMessageType } from "@grootio/common";
 import { appControlMode } from "./config";
 
 let _viewEleMap: Map<number, HTMLElement>;
@@ -120,17 +120,17 @@ export function respondDragOver(positionX: number, positionY: number) {
   }
 
   if (!slotEle) {
-    window.parent.postMessage({ type: PostMessageType.InnerDragLine }, '*');
+    window.parent.postMessage({ type: PostMessageType.InnerUpdateDragAnchor }, '*');
     return;
   }
 
   if (activeSlotEle.dataset.grootAllowHighlight) {
     activeSlotEle.highlight();
-    window.parent.postMessage({ type: PostMessageType.InnerDragLine }, '*');
+    window.parent.postMessage({ type: PostMessageType.InnerUpdateDragAnchor }, '*');
   } else {
     const markerInfo = calcDragRect(positionX, positionY, slotEle);
     delete markerInfo.hitEle;
-    window.parent.postMessage({ type: PostMessageType.InnerDragLine, data: markerInfo }, '*');
+    window.parent.postMessage({ type: PostMessageType.InnerUpdateDragAnchor, data: markerInfo }, '*');
   }
 }
 
@@ -140,7 +140,7 @@ export function respondDragEnter() {
 
 export function respondDragLeave() {
   activeSlotEle?.cancelHighlight();
-  window.parent.postMessage({ type: PostMessageType.InnerDragLine }, '*');
+  window.parent.postMessage({ type: PostMessageType.InnerUpdateDragAnchor }, '*');
   activeSlotEle = null;
   draging = false;
 }
@@ -267,7 +267,7 @@ function detectWrapperEle(positionX: number, positionY: number, datasetKey: stri
   return null;
 }
 
-function calcDragRect(positionX: number, positionY: number, slotEle: HTMLElement): DragLineInfo {
+function calcDragRect(positionX: number, positionY: number, slotEle: HTMLElement): DragAnchorInfo {
   let hitEle = detectWrapperEle(positionX, positionY, 'grootSlotItem', slotEle);
   if (!hitEle) {
     const children = slotEle.querySelectorAll('[data-groot-slot-item]');

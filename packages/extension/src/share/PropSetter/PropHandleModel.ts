@@ -29,7 +29,7 @@ export default class PropHandleModel {
 
   public inject(propPersist: PropPersistModel) {
     this.propPersist = propPersist;
-    this.watchEvent();
+    this.init();
   }
 
 
@@ -258,7 +258,7 @@ export default class PropHandleModel {
     propItem.highlight = false;
   }
 
-  private watchEvent() {
+  private init() {
     if (isPrototypeMode()) {
       grootStateManager().watchState('gs.studio.component', this.propTreeListener.bind(this))
     } else {
@@ -268,6 +268,10 @@ export default class PropHandleModel {
 
     grootHookManager().registerHook(PostMessageType.InnerDragHitSlot, (detail) => {
       this.addChildComponent(detail);
+    })
+
+    grootHookManager().registerHook('gh.studio.removeChildComponent', (instanceId, itemId, abstractValueIdChain) => {
+      this.removeChild(instanceId, itemId, abstractValueIdChain)
     })
   }
 

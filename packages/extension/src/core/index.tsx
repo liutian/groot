@@ -1,7 +1,7 @@
-import { StudioMode } from "@grootio/common";
-import { getContext, grootCommandManager, isPrototypeMode } from "context";
+import { grootCommandManager, isPrototypeMode } from "context";
 import { instanceBootstrap } from "instance";
 import { prototypeBootstrap } from "prototype";
+import { shareBootstrap } from "share";
 import ActivityBar from "./ActivityBar";
 import Banner from "./Banner";
 import Panel from "./Panel";
@@ -11,7 +11,6 @@ import Stage from "./Stage";
 import StatusBar from "./StatusBar";
 
 export const startup = () => {
-  const { groot } = getContext()
   const { registerCommand } = grootCommandManager();
 
   registerCommand('gc.workbench.banner.render', () => {
@@ -35,6 +34,8 @@ export const startup = () => {
   registerCommand('gc.workbench.statusBar.render', () => {
     return <StatusBar />
   });
+
+  shareBootstrap();
 
   if (isPrototypeMode()) {
     prototypeBootstrap();

@@ -1,5 +1,12 @@
-import { grootStateManager, isPrototypeMode } from "context";
+import { commandBridge, grootCommandManager, grootStateManager, isPrototypeMode } from "context";
 
+
+export const shareBootstrap = () => {
+  const { registerCommand } = grootCommandManager();
+  registerCommand('gc.stage.refresh', (_, callback) => {
+    commandBridge.stageRefresh(callback)
+  })
+}
 
 
 export const getComponentVersionId = () => {

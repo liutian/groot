@@ -1,3 +1,4 @@
+import { StudioMode } from "./extension";
 import { Metadata } from "./internal";
 
 export type UIManagerConfig = {
@@ -20,15 +21,9 @@ export type UIManagerConfig = {
 };
 
 
-export enum IframeControlType {
-  Proptotype = 'prototype',
-  Instance = 'instance',
-}
-
-
 export type GrootType = {
   version: string,
   appControlMode: boolean,
-  appControlType: IframeControlType,
+  appControlType: StudioMode,
   globalConfig: UIManagerConfig
 }
