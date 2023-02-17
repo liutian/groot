@@ -1,9 +1,10 @@
-import React, { ReactElement } from "react";
+import { ReactElement } from "react";
+import React from "react";
 import { APIStore } from "./api/API.store";
 import { PostMessageType } from "./data";
-import { Application, Component, ComponentInstance, ComponentVersion, PropGroup, PropItem } from "./entities";
+import { Application, Component, ComponentInstance } from "./entities";
 import { GridLayout } from "./GridLayout";
-import { DragAddComponentEventDataType, Metadata, RequestFnType } from "./internal";
+import { ApplicationData, DragAddComponentEventDataType, DragAnchorInfo, IframeDebuggerConfig, MarkerInfo, Metadata, RequestFnType } from "./internal";
 
 export enum StudioMode {
   Prototype = 'prototype',
@@ -108,7 +109,7 @@ export type GrootContextRegisterHook<HT extends Record<string, [any[], any]>> = 
   K extends keyof HT & string,
   AR extends HT[K][0],
   R extends HT[K][1]
->(hookName: K, hook: (...args: AR) => R, thisArg?: any) => Function
+>(hookName: K, hook: (...args: AR) => R, emitPrevArgs?: boolean) => Function
 
 export type GrootContextCallHook<HT extends Record<string, [any[], any]>> = <
   K extends keyof HT & string,
@@ -163,6 +164,7 @@ export type GrootCommandDict = {
   'gc.fetch.prototype': [[number, number | null], void],
   'gc.studio.switchIstance': [[number], void],
   'gc.workbench.makeDataToStage': [[number | 'all' | 'current'], void],
+  'gc.stage.refresh': [[Function] | [], void],
 }
 
 export type GrootStateDict = {
@@ -196,11 +198,34 @@ export type GrootStateDict = {
 }
 
 export type GrootHookDict = {
-  'gh.stage.syncData': [[Metadata | Metadata[]], void],
-  [PostMessageType.OuterUpdateComponent]: [[any], void],
-  [PostMessageType.OuterComponentSelect]: [[number], void]
-  [PostMessageType.OuterOutlineReset]: [[], void],
-  [PostMessageType.InnerDragHitSlot]: [[DragAddComponentEventDataType], void]
+  'gh.studio.prop.change': [[Metadata | Metadata[]], void],
+  'gh.sidebar.drag.start': [[], void],
+  'gh.sidebar.drag.end': [[], void],
+  'gh.component.drag.start': [[], void],
+  'gh.component.drag.end': [[], void],
+  'gh.studio.removeChildComponent': [[number, number, string | null], void],
+
+  [PostMessageType.InnerReady]: [[], void],
+  [PostMessageType.OuterSetConfig]: [[IframeDebuggerConfig] | [], void],
+  [PostMessageType.InnerFetchApplication]: [[], void],
+  [PostMessageType.OuterSetApplication]: [[ApplicationData] | [], void],
+  [PostMessageType.InnerApplicationnReady]: [[], void],
+  [PostMessageType.InnerFetchView]: [[], void],
+  [PostMessageType.OuterUpdateComponent]: [[Metadata | Metadata[]], void],
+
+  [PostMessageType.OuterDragComponentEnter]: [[], void],
+  [PostMessageType.OuterDragComponentOver]: [[{ positionX: number, positionY: number }], void],
+  [PostMessageType.InnerDragHitSlot]: [[DragAddComponentEventDataType], void],
+  [PostMessageType.OuterDragComponentLeave]: [[], void],
+  [PostMessageType.OuterDragComponentDrop]: [[{ positionX: number, positionY: number, componentId: number }], void],
+  [PostMessageType.InnerOutlineHover]: [[MarkerInfo], void],
+  [PostMessageType.InnerUpdateDragAnchor]: [[DragAnchorInfo], void],
+  [PostMessageType.InnerOutlineSelect]: [[MarkerInfo], void],
+  [PostMessageType.OuterComponentSelect]: [[number], void],
+  [PostMessageType.OuterOutlineReset]: [['hover' | 'selected'] | [], void],
+  [PostMessageType.InnerOutlineUpdate]: [[{ selected: MarkerInfo, hover: MarkerInfo }], void],
+
+  [PostMessageType.OuterRefreshView]: [[string], void]
 }
 
 
