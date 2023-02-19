@@ -57,7 +57,7 @@ export default class WorkAreaModel {
     ]
 
     if (eventTypeList.includes(event.data.type)) {
-      callHook(event.data.type)
+      callHook(event.data.type, event.data.data)
     } else {
       console.warn(`未知的iframe消息: ${event.data.type}`)
     }

@@ -233,13 +233,7 @@ export const useStateByName: GrootContextUseStateByName<Record<string, [any, boo
 }
 
 export const registerHook: GrootContextRegisterHook<Record<string, [any[], any]>> = (hookName, callback, emitPrevArgs = false) => {
-  let hook = hookMap.get(hookName)
-  if (!hook) {
-    hook = {
-      list: []
-    }
-    hookMap.set(hookName, hook);
-  }
+  const hook = getOrCreateHook(hookName)
 
   if (hook.list.find(item => item.callback === callback)) {
     throw new Error('钩子函数重复注册')
@@ -263,16 +257,26 @@ export const registerHook: GrootContextRegisterHook<Record<string, [any[], any]>
 }
 
 export const callHook: GrootContextCallHook<Record<string, [any[], any]>> = (hookName, ...args) => {
-  if (!hookMap.has(hookName)) {
-    return [];
-  }
 
-  let hook = hookMap.get(hookName)
+  let hook = getOrCreateHook(hookName)
   hook.preArgs = args
 
   return hook.list.map((item) => {
     return item.callback.apply(null, args);
   })
+
+}
+
+const getOrCreateHook = (hookName: string) => {
+  let hook = hookMap.get(hookName)
+  if (!hook) {
+    hook = {
+      list: []
+    }
+    hookMap.set(hookName, hook);
+  }
+
+  return hook
 }
 
 export const stateManager: StateManager = () => {

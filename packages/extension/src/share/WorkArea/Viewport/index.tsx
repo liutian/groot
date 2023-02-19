@@ -33,7 +33,7 @@ const Viewport: React.FC = () => {
 
   return <div className={styles.container} style={viewportStyles}>
     <iframe ref={iframeRef} ></iframe>
-    {isPrototypeMode() && (
+    {!isPrototypeMode() && (
       <>
         <ViewportOutlineMarker />
         <ViewportDrag />
