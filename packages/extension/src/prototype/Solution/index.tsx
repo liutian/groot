@@ -1,22 +1,21 @@
 import { PlusOutlined } from "@ant-design/icons";
-import { APIPath, ComponentParserType } from "@grootio/common";
+import { ComponentParserType, ModalStatus, useRegisterModel } from "@grootio/common";
 import { Button, Menu } from "antd";
-import { getContext, grootCommandManager, grootStateManager } from "context";
-import { useEffect, useState } from "react";
+import { grootCommandManager, grootStateManager } from "context";
+import { useEffect } from "react";
+import ComponentAddModal from "./ComponentAddModal";
 
 import styles from './index.module.less'
+import SolutionModel from "./SolutionModel";
 
 export const Solution = () => {
-
+  const solutionModel = useRegisterModel(SolutionModel)
   const [currComponent] = grootStateManager().useStateByName('gs.studio.component');
-  const [componentList, setComponentList] = useState([]);
   const componentTypes = [
-    { label: '组件', key: ComponentParserType.ReactComponent, children: componentList },
-  ]
-
-  useEffect(() => {
-    getContext().request(APIPath.solution_component_list).then(({ data }) => {
-      const list = data.map((component) => {
+    {
+      label: '组件',
+      key: ComponentParserType.ReactComponent,
+      children: solutionModel.componentList.map((component) => {
         return {
           label: component.name,
           key: component.id,
@@ -29,14 +28,17 @@ export const Solution = () => {
             grootCommandManager().executeCommand('gc.fetch.prototype', component.id, component.recentVersionId)
           }
         };
-      });
-      setComponentList(list)
-    })
+      })
+    },
+  ]
+
+  useEffect(() => {
+    solutionModel.loadList();
   }, [])
 
 
   const showComponentAdd = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
-    // prototypeModel.componentAddModalStatus = ModalStatus.Init
+    solutionModel.componentAddModalStatus = ModalStatus.Init
     e.stopPropagation();
   }
 
@@ -46,11 +48,15 @@ export const Solution = () => {
     </>
   }
 
-
   if (!currComponent) {
     return null;
   }
 
-  return <Menu mode="inline" openKeys={[ComponentParserType.ReactComponent.toString()]} className={styles.menuContainer}
-    expandIcon={renderActions()} selectedKeys={[`${currComponent.id}`]} items={componentTypes} />
+  return <>
+    <Menu mode="inline" openKeys={[ComponentParserType.ReactComponent.toString()]} className={styles.menuContainer}
+      expandIcon={renderActions()} selectedKeys={[`${currComponent.id}`]} items={componentTypes} />
+
+    <ComponentAddModal />
+  </>
+
 }

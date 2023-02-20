@@ -234,6 +234,7 @@ export class WorkbenchController {
   @Get('/solution/detail/:solutionId')
   async solutionDetail() {
     return {
+      id: 1,
       debugBaseUrl: 'http://groot-local.com:11000',
       playgroundPath: '/groot/playground',
       extensionList: [
