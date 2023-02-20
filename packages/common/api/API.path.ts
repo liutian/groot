@@ -37,5 +37,7 @@ export enum APIPath {
 
   state_add = 'POST state/add',
   state_remove_stateId = 'state/remove/:stateId',
-  state_update = 'POST state/update'
+  state_update = 'POST state/update',
+
+  solution_component_list = 'solution/component/list'
 }

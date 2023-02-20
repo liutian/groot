@@ -112,9 +112,9 @@ export const instanceBootstrap = () => {
 
   registerCommand('gc.workbench.makeDataToStage', (_, refreshId) => {
     const list = getState('gs.studio.allComponentInstance')
-    if (refreshId === 'all') {
+    if (refreshId === 'all' || refreshId === 'first') {
       const metadataList = instanceToMetadata(list);
-      callHook('gh.studio.prop.change', metadataList)
+      callHook('gh.studio.prop.change', metadataList, refreshId === 'first')
       return;
     }
 
@@ -178,7 +178,7 @@ const fetchRootInstance = (rootInstanceId: number) => {
 
     grootStateManager().setState('gs.studio.allComponentInstance', list)
 
-    grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'all');
+    grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'first');
     switchComponentInstance(root.id);
   });
 }

@@ -163,7 +163,7 @@ export type GrootCommandDict = {
   'gc.fetch.instance': [[number], void],
   'gc.fetch.prototype': [[number, number | null], void],
   'gc.studio.switchIstance': [[number], void],
-  'gc.workbench.makeDataToStage': [[number | 'all' | 'current'], void],
+  'gc.workbench.makeDataToStage': [[number | 'all' | 'current' | 'first'], void],
   'gc.stage.refresh': [[Function] | [], void],
 }
 
@@ -200,7 +200,7 @@ export type GrootStateDict = {
 }
 
 export type GrootHookDict = {
-  'gh.studio.prop.change': [[Metadata | Metadata[]], void],
+  'gh.studio.prop.change': [[Metadata | Metadata[], boolean] | [Metadata | Metadata[]], void],
   'gh.sidebar.drag.start': [[], void],
   'gh.sidebar.drag.end': [[], void],
   'gh.component.drag.start': [[], void],

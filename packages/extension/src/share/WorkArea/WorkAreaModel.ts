@@ -169,8 +169,8 @@ export default class WorkAreaModel {
 
     commandBridge.stageRefresh = this.refresh;
 
-    registerHook('gh.studio.prop.change', (data) => {
-      if (!this.viewData) {
+    registerHook('gh.studio.prop.change', (data, first = false) => {
+      if (first) {
         executeCommand('gc.stage.refresh')
       } else {
         callHook(PostMessageType.OuterUpdateComponent, data);

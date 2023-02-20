@@ -72,8 +72,9 @@ export const prototypeBootstrap = () => {
     fetchComponent(componentId, versionId);
   })
 
-  registerCommand('gc.workbench.makeDataToStage', (_) => {
-    syncDataToStage();
+  registerCommand('gc.workbench.makeDataToStage', (_, refreshId) => {
+
+    syncDataToStage(refreshId === 'first');
   })
 
   groot.onReady(() => {
@@ -94,11 +95,11 @@ const fetchComponent = (componentId: number, versionId) => {
     })
 
     grootStateManager().setState('gs.studio.component', data)
-    grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'all')
+    grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'first')
   })
 }
 
-const syncDataToStage = () => {
+const syncDataToStage = (first = false) => {
   const component = grootStateManager().getState('gs.studio.component');
 
   if (!component.propTree) {
@@ -113,5 +114,5 @@ const syncDataToStage = () => {
   }
 
   const metadata = metadataFactory(component.propTree, component, component.id, null);
-  grootHookManager().callHook('gh.studio.prop.change', metadata)
+  grootHookManager().callHook('gh.studio.prop.change', metadata, first)
 }

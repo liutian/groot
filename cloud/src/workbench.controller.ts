@@ -247,4 +247,10 @@ export class WorkbenchController {
       ]
     }
   }
+
+  // todo 添加解决方案实现
+  @Get('/solution/component/list')
+  async solutionCompoentList() {
+    return await this.componentService.list();
+  }
 }
