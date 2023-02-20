@@ -194,7 +194,9 @@ export type GrootStateDict = {
   'gs.studio.component': [Component, false],
   // 'gs.studio.componentVersion': [ComponentVersion, false],
 
-  'gs.studio.propSettingView': [{ name: string, packageName: string, packageUrl: string, module: string }, true]
+  'gs.studio.propSettingView': [{ name: string, packageName: string, packageUrl: string, module: string }, true],
+
+  'gs.studio.breadcrumbList': [{ id: number, name: string }, true]
 }
 
 export type GrootHookDict = {

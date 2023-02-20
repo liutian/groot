@@ -6,11 +6,12 @@ import PropItemSetting from "./PropItemSetting";
 import styles from './index.module.less'
 import { useRef, useState } from "react";
 import PropPane from "./PropPane";
-import { getContext, grootHookManager, grootStateManager } from "context";
+import { getContext, grootHookManager, grootStateManager, isPrototypeMode } from "context";
 import SubPropPane from "./SubPropPane";
 import PropPersistModel from "./PropPersistModel";
 import PropHandleModel from "./PropHandleModel";
 import PropFooter from "./PropFooter";
+import { Navigation } from "./Navigation";
 
 export const PropSetter = () => {
   const propPersistModel = useRegisterModel(PropPersistModel);
@@ -27,6 +28,10 @@ export const PropSetter = () => {
   const activeSubPropItem = propHandleModel.propItemStack[propHandleModel.propItemStack.length - 1];
 
   return <div ref={containerRef} className={styles.container}>
+    {
+      isPrototypeMode() ? null : <Navigation />
+    }
+
     <div className={styles.propContainer}>
 
       {

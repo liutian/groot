@@ -95,6 +95,7 @@ export const instanceBootstrap = () => {
   registerState('gs.studio.componentInstance', null, false)
   registerState('gs.studio.component', null, false)
   registerState('gs.studio.allComponentInstance', [], true)
+  registerState('gs.studio.breadcrumbList', [], true)
 
 
   groot.layout.design('visible', 'secondarySidebar', true);
@@ -141,12 +142,11 @@ const instanceToMetadata = (instanceList: ComponentInstance[]) => {
 
       itemList.forEach(item => {
         parseOptions(item);
-        // delete item.valueOptions
+        delete item.valueOptions
       })
 
       blockList.filter(block => block.struct === PropBlockStructType.List).forEach((block) => {
         block.listStructData = JSON.parse(block.listStructData as any || '[]');
-        // delete block.listStructData
       })
 
       instance.propTree = propTreeFactory(groupList, blockList, itemList, valueList) as PropGroup[];
@@ -188,4 +188,14 @@ export const switchComponentInstance = (instanceId: number) => {
   const instance = list.find(item => item.id === instanceId);
   grootStateManager().setState('gs.studio.componentInstance', instance);
   grootStateManager().setState('gs.studio.component', instance.component);
+
+  const breadcrumbList = grootStateManager().getState('gs.studio.breadcrumbList')
+  breadcrumbList.length = 0;
+
+  let ctxInstance = instance;
+  do {
+    breadcrumbList.push({ id: ctxInstance.id, name: ctxInstance.name });
+    ctxInstance = list.find((item) => item.id === ctxInstance.parentId);
+  } while (ctxInstance);
+  breadcrumbList.reverse();
 }
