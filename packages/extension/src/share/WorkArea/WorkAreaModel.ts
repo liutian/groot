@@ -159,6 +159,14 @@ export default class WorkAreaModel {
       }, '*');
     })
 
+    registerHook(PostMessageType.OuterComponentSelect, (data) => {
+      guard()
+      this.iframeEle.contentWindow.postMessage({
+        type: PostMessageType.OuterComponentSelect,
+        data
+      }, '*');
+    })
+
     commandBridge.stageRefresh = this.refresh;
 
     registerHook('gh.studio.prop.change', (data) => {

@@ -301,7 +301,7 @@ export default class PropHandleModel {
     this.propPersist.addChildComponentInstance(rawInstance).then((instanceData) => {
       this.stateManager.getState('gs.studio.allComponentInstance').push(instanceData)
 
-      const propItem = this.getItemById(data.propItemId);
+      const propItem = this.getItemById(data.propItemId, data.parentInstanceId);
       const propValue = propItem.valueList.filter(v => v.type === PropValueType.Instance).find(value => {
         return value.abstractValueIdChain === data.abstractValueIdChain || (!value.abstractValueIdChain && !data.abstractValueIdChain)
       });
@@ -374,17 +374,22 @@ export default class PropHandleModel {
     })
   }
 
-  private getItemById(propItemId: number) {
+  private getItemById(propItemId: number, instanceId: number) {
     const allComponentInstance = this.stateManager.getState('gs.studio.allComponentInstance');
-    for (let instanceIndex = 0; instanceIndex < allComponentInstance.length; instanceIndex++) {
-      const instance = allComponentInstance[instanceIndex];
-      for (let itemIndex = 0; itemIndex < instance.itemList.length; itemIndex++) {
-        const item = instance.itemList[itemIndex];
-        if (item.id === propItemId) {
-          return item;
-        }
+    const instance = allComponentInstance.find(item => item.id === instanceId);
+
+    if (!instance) {
+      return null;
+    }
+
+
+    for (let itemIndex = 0; itemIndex < instance.itemList.length; itemIndex++) {
+      const item = instance.itemList[itemIndex];
+      if (item.id === propItemId) {
+        return item;
       }
     }
+
     return null;
   }
 }

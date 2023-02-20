@@ -395,7 +395,7 @@ export default class PropPersistModel {
     return this.request(APIPath.value_update, paramData).then(({ data }) => {
       if (propValue) {
         propValue.value = valueStr;
-      } else if ((paramData as any).type === 'instance') {
+      } else if ((paramData as any).type === PropValueType.Instance) {
         propItem.valueList.push(data);
       } else if (abstractValueIdChain) {
         propItem.valueList.push(data);

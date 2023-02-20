@@ -71,7 +71,7 @@ export function updateActiveRect() {
     return;
   }
 
-  let selectedInfo: Partial<MarkerInfo>, hoverInfo: Partial<MarkerInfo>;
+  let selectedInfo: MarkerInfo, hoverInfo: MarkerInfo;
   if (outlineSelectedInstanceId) {
     const selectedEle = _viewEleMap.get(outlineSelectedInstanceId);
     const selectedMetadata = _viewMetadataMap.get(outlineSelectedInstanceId);
@@ -80,7 +80,11 @@ export function updateActiveRect() {
       selectedInfo = {
         clientRect: selectedEle.getBoundingClientRect(),
         tagName: `${selectedMetadata.packageName}/${selectedMetadata.componentName}`,
-        instanceId: outlineSelectedInstanceId
+        instanceId: outlineSelectedInstanceId,
+        parentInstanceId: selectedMetadata.parentId,
+        rootInstanceId: selectedMetadata.rootId,
+        propItemId: selectedMetadata.$$runtime.propItemId,
+        abstractValueIdChain: selectedMetadata.$$runtime.abstractValueIdChain
       }
     } else {
       outlineSelectedInstanceId = undefined;
@@ -95,7 +99,11 @@ export function updateActiveRect() {
       hoverInfo = {
         clientRect: hoverEle.getBoundingClientRect(),
         tagName: `${hoverMetadata.packageName}/${hoverMetadata.componentName}`,
-        instanceId: outlineHoverInstanceId
+        instanceId: outlineHoverInstanceId,
+        parentInstanceId: hoverMetadata.parentId,
+        rootInstanceId: hoverMetadata.rootId,
+        propItemId: hoverMetadata.$$runtime.propItemId,
+        abstractValueIdChain: hoverMetadata.$$runtime.abstractValueIdChain
       }
     } else {
       outlineHoverInstanceId = undefined;

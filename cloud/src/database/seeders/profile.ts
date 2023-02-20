@@ -205,7 +205,8 @@ export const create = async (em: EntityManager, org: Organization, release: Rele
     list: [{
       instanceId: avatarComponentInstance.id,
       componentId: avatarComponent.id,
-      componentName: avatarComponent.name
+      componentName: avatarComponent.name,
+      order: 1000
     }]
   } as ComponentValueType;
 

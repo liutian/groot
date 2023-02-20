@@ -138,6 +138,17 @@ const instanceToMetadata = (instanceList: ComponentInstance[]) => {
     const { groupList, blockList, itemList } = instance;
     const valueList = instance.valueList;
     if (!instance.propTree) {
+
+      itemList.forEach(item => {
+        parseOptions(item);
+        // delete item.valueOptions
+      })
+
+      blockList.filter(block => block.struct === PropBlockStructType.List).forEach((block) => {
+        block.listStructData = JSON.parse(block.listStructData as any || '[]');
+        // delete block.listStructData
+      })
+
       instance.propTree = propTreeFactory(groupList, blockList, itemList, valueList) as PropGroup[];
       groupList.forEach((group) => {
         if (!Array.isArray(group.expandBlockIdList)) {
@@ -155,15 +166,15 @@ const fetchRootInstance = (rootInstanceId: number) => {
   request(APIPath.componentInstance_rootDetail_instanceId, { instanceId: rootInstanceId }).then(({ data: { children, root } }) => {
 
     const list = [root, ...children]
-    for (const { itemList, blockList } of list) {
-      itemList.forEach(item => {
-        parseOptions(item);
-      })
+    // for (const { itemList, blockList } of list) {
+    //   itemList.forEach(item => {
+    //     parseOptions(item);
+    //   })
 
-      blockList.filter(block => block.struct === PropBlockStructType.List).forEach((block) => {
-        block.listStructData = JSON.parse(block.listStructData as any || '[]');
-      })
-    }
+    //   blockList.filter(block => block.struct === PropBlockStructType.List).forEach((block) => {
+    //     block.listStructData = JSON.parse(block.listStructData as any || '[]');
+    //   })
+    // }
 
     grootStateManager().setState('gs.studio.allComponentInstance', list)
 
