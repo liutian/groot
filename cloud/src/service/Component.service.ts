@@ -32,7 +32,7 @@ export class ComponentService {
     LogicException.assertNotFound(version, 'ComponentVersion', versionId);
     component.componentVersion = wrap(version).toObject() as any;
 
-    component.versionList = await em.find(ComponentVersion, { component });
+    // component.versionList = await em.find(ComponentVersion, { component });
     component.groupList = await em.find(PropGroup, { component: id, componentVersion: version });
     component.blockList = await em.find(PropBlock, { component: id, componentVersion: version });
     component.itemList = await em.find(PropItem, { component: id, componentVersion: version });
@@ -102,6 +102,14 @@ export class ComponentService {
     const em = RequestContext.getEntityManager();
 
     const list = await em.find(Component, {});
+    for (const component of list) {
+      component.componentVersion = {
+        id: component.recentVersion.id,
+        name: component.recentVersion.name
+      } as any
+
+      component.versionList = await em.find(ComponentVersion, { component });
+    }
 
     return list;
   }
