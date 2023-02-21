@@ -15,7 +15,9 @@ const bootstrap = () => {
   dayjs.locale('zh-cn');
 
   ReactDOM.createRoot(document.getElementById(panguConfig.rootId) as HTMLElement).render(
-    <RouterProvider router={router} />
+    <ConfigProvider locale={zhCN} theme={{ token: { borderRadius: 1 } }}>
+      <RouterProvider router={router} />
+    </ConfigProvider>
   );
 }
 
@@ -25,11 +27,10 @@ const router = createBrowserRouter(Object.keys(panguConfig.appConfig).map((appNa
     return loadRemoteModule(appConfig.packageName, 'Main', appConfig.packageUrl)
   });
 
-  const element = <ConfigProvider locale={zhCN}>
-    <React.Suspense  >
-      <Component appEnv={process.env.APP_ENV} appName={appName} rootId={panguConfig.rootId} />
-    </React.Suspense >
-  </ConfigProvider>
+  const element = <React.Suspense  >
+    <Component appEnv={process.env.APP_ENV} appName={appName} rootId={panguConfig.rootId} />
+  </React.Suspense >
+
 
   const Wrapper = () => {
     useState(() => {
