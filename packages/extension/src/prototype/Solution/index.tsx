@@ -52,11 +52,11 @@ export const Solution = () => {
     return null;
   }
 
-  return <>
-    <Menu mode="inline" openKeys={[ComponentParserType.ReactComponent.toString()]} className={styles.menuContainer}
+  return <div className={styles.container}>
+    <Menu mode="inline" openKeys={[ComponentParserType.ReactComponent.toString()]} className={styles.menu}
       expandIcon={renderActions()} selectedKeys={[`${currComponent.id}`]} items={componentTypes} />
 
     <ComponentAddModal />
-  </>
+  </div>
 
 }

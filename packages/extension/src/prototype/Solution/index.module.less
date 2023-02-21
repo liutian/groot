@@ -1,24 +1,32 @@
-.menuContainer {
+.container {
 
-  :global(.ant-menu-submenu-title) {
-    border-radius: 0;
-    margin-top: 0;
-    margin-bottom: 0;
-    border-bottom: solid #ddd 1px;
-    padding-left: 16px !important;
-    padding-right: 8px !important;
-    color: #000 !important;
-    background-color: transparent !important;
+  height: 100%;
+
+  .menu {
+    background-color: transparent;
+
+    :global(.ant-menu-submenu-title) {
+      border-radius: 0;
+      margin-top: 0;
+      margin-bottom: 0;
+      border-bottom: solid #ddd 1px;
+      padding-left: 16px !important;
+      padding-right: 8px !important;
+      color: #000 !important;
+      background-color: transparent !important;
+    }
+
+    :global(.ant-menu-item) {
+      margin-top: 0;
+      margin-bottom: 0 !important;
+      padding-left: 16px !important;
+      border-radius: 0;
+
+      // &::after {
+      //   opacity: 0 !important;
+      // }
+    }
   }
 
-  :global(.ant-menu-item) {
-    margin-top: 0;
-    margin-bottom: 0 !important;
-    padding-left: 16px !important;
-    border-radius: 0;
 
-    // &::after {
-    //   opacity: 0 !important;
-    // }
-  }
 }
