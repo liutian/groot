@@ -1,51 +1,30 @@
 import { PlusOutlined } from "@ant-design/icons";
-import { ComponentParserType, ModalStatus, useRegisterModel } from "@grootio/common";
-import { Button, Menu } from "antd";
+import { Component, ModalStatus, useRegisterModel } from "@grootio/common";
+import { Button } from "antd";
 import { grootCommandManager, grootStateManager } from "context";
 import { useEffect } from "react";
 import ComponentAddModal from "./ComponentAddModal";
+import ComponentItem from "./ComponentItem";
+import ComponentVersionAddModal from "./ComponentVersionAddModal";
 
 import styles from './index.module.less'
 import SolutionModel from "./SolutionModel";
 
 export const Solution = () => {
-  const solutionModel = useRegisterModel(SolutionModel)
   const [currComponent] = grootStateManager().useStateByName('gs.studio.component');
-  const componentTypes = [
-    {
-      label: '组件',
-      key: ComponentParserType.ReactComponent,
-      children: solutionModel.componentList.map((component) => {
-        return {
-          label: component.name,
-          key: component.id,
-          onClick: () => {
-            const currComponent = grootStateManager().getState('gs.studio.component')
-            if (currComponent.id === component.id) {
-              return;
-            }
-
-            grootCommandManager().executeCommand('gc.fetch.prototype', component.id, component.recentVersionId)
-          }
-        };
-      })
-    },
-  ]
+  const solutionModel = useRegisterModel(SolutionModel)
 
   useEffect(() => {
     solutionModel.loadList();
   }, [])
 
 
-  const showComponentAdd = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
-    solutionModel.componentAddModalStatus = ModalStatus.Init
-    e.stopPropagation();
-  }
-
-  const renderActions = () => {
-    return <>
-      <Button icon={<PlusOutlined />} type="link" onClick={showComponentAdd} />
-    </>
+  const switchComponent = (component: Component) => {
+    const currComponent = grootStateManager().getState('gs.studio.component')
+    if (currComponent.id === component.id) {
+      return;
+    }
+    grootCommandManager().executeCommand('gc.fetch.prototype', component.id, component.recentVersionId)
   }
 
   if (!currComponent) {
@@ -53,10 +32,30 @@ export const Solution = () => {
   }
 
   return <div className={styles.container}>
-    <Menu mode="inline" openKeys={[ComponentParserType.ReactComponent.toString()]} className={styles.menu}
-      expandIcon={renderActions()} selectedKeys={[`${currComponent.id}`]} items={componentTypes} />
+    <div>
+      <div className={styles.componentItemHeader}>
+        <div style={{ flexGrow: 1 }}>组件</div>
+        <div >
+          <Button icon={<PlusOutlined />} type="link" onClick={() => {
+            solutionModel.componentAddModalStatus = ModalStatus.Init
+          }} />
+        </div>
+      </div>
+      <div >
+        {
+          solutionModel.componentList.map((component) => {
+            return (<div key={component.id}
+              className={`${styles.componentItem} ${currComponent.id === component.id ? styles.active : ''}`}
+              onClick={() => switchComponent(component)}>
+              <ComponentItem component={component} />
+            </div>)
+          })
+        }
+      </div>
+    </div>
 
     <ComponentAddModal />
-  </div>
+    <ComponentVersionAddModal />
+  </div >
 
 }
