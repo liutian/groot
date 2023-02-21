@@ -77,7 +77,10 @@ export const prototypeBootstrap = () => {
     syncDataToStage(refreshId === 'first');
   })
 
+
   groot.onReady(() => {
+    groot.layout.primarySidebarWidth = '220px'
+    groot.layout.refresh()
     executeCommand('gc.fetch.prototype', groot.params.componentId, groot.params.versionId)
   })
 }
