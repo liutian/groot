@@ -183,7 +183,7 @@ const PropBlockListStructPane: React.FC<PropsType> = ({ block: propBlock }) => {
     formKey = `componentId:${component.id}|versionId:${component.componentVersion.id}`
   } else {
     const instance = grootStateManager().getState('gs.studio.componentInstance')
-    formKey = `releaseId:${getContext().groot.params.application.release.id}|instanceId:${instance.id}`;
+    formKey = `releaseId:${grootStateManager().getState('gs.studio.release').id}|instanceId:${instance.id}`;
   }
 
   return <div className={styles.container}>

@@ -96,6 +96,7 @@ export const instanceBootstrap = () => {
   registerState('gs.studio.component', null, false)
   registerState('gs.studio.allComponentInstance', [], true)
   registerState('gs.studio.breadcrumbList', [], true)
+  registerState('gs.studio.release', null, false)
 
 
   groot.layout.design('visible', 'secondarySidebar', true);
@@ -163,7 +164,7 @@ const instanceToMetadata = (instanceList: ComponentInstance[]) => {
 
 const fetchRootInstance = (rootInstanceId: number) => {
   const { request } = getContext();
-  request(APIPath.componentInstance_rootDetail_instanceId, { instanceId: rootInstanceId }).then(({ data: { children, root } }) => {
+  request(APIPath.componentInstance_rootDetail_instanceId, { instanceId: rootInstanceId }).then(({ data: { children, root, release } }) => {
 
     const list = [root, ...children]
     // for (const { itemList, blockList } of list) {
@@ -176,6 +177,7 @@ const fetchRootInstance = (rootInstanceId: number) => {
     //   })
     // }
 
+    grootStateManager().setState('gs.studio.release', release)
     grootStateManager().setState('gs.studio.allComponentInstance', list)
 
     grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'first');

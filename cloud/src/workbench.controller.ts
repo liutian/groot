@@ -128,10 +128,6 @@ export class WorkbenchController {
     return await this.componentInstanceService.addRoot(componentInstance);
   }
 
-  @Get('/component/list')
-  async componentList() {
-    return await this.componentService.list();
-  }
 
   @Get('/org/detail/:orgId')
   async orgDetail(@Param('orgId') orgId: number) {
@@ -144,8 +140,8 @@ export class WorkbenchController {
   }
 
   @Get('/application/detail/:applicationId')
-  async applicationDetail(@Param('applicationId') applicationId: number, @Query('releaseId') releaseId: number) {
-    return this.applicationService.getDetail(applicationId, releaseId);
+  async applicationDetail(@Param('applicationId') applicationId: number) {
+    return this.applicationService.getDetail(applicationId);
   }
 
   @Get('/component-instance/root-detail/:instanceId')
@@ -164,10 +160,6 @@ export class WorkbenchController {
     return await this.releaseService.add(release);
   }
 
-  @Get('/release/detail/:releaseId')
-  async releaseDetail(@Param('releaseId') releaseId: number) {
-    return await this.releaseService.detail(releaseId);
-  }
 
   @Get('/component-instance/reverse-detect-id')
   async componentInstanceReverseDetectId(@Query('releaseId') releaseId: number, @Query('trackId') trackId: number) {
@@ -250,8 +242,19 @@ export class WorkbenchController {
   }
 
   // todo 添加解决方案实现
-  @Get('/solution/component/list')
-  async solutionCompoentList() {
+  @Get('/solution/component-list/:solutionId')
+  async solutionCompoentList(@Param('solutionId') solutionId: number) {
     return await this.componentService.list();
+  }
+
+
+  @Get('/release/instance-list/:releaseId')
+  async releaseComponentList(@Param('releaseId') releaseId: number) {
+    return await this.componentInstanceService.list(releaseId)
+  }
+
+  @Get('/application/release-list/:applicationId')
+  async componentList(@Param('applicationId') applicationId: number) {
+    return await this.releaseService.list(applicationId)
   }
 }

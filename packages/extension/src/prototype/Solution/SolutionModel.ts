@@ -23,7 +23,7 @@ export default class SolutionModel {
   }
 
   public loadList() {
-    getContext().request(APIPath.solution_component_list).then(({ data }) => {
+    getContext().request(APIPath.solution_component_list_solutionId, { solutionId: 1 }).then(({ data }) => {
       this.componentList = data;
     })
   }

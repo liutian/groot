@@ -11,7 +11,7 @@ const ComponentItem: React.FC<{ component: Component }> = ({ component }) => {
   const [currComponent] = grootStateManager().useStateByName('gs.studio.component');
 
   const onSwitchVersion = (value) => {
-    component.componentVersion = component.versionList.find(item => item.id === value)
+    component.componentVersionId = component.versionList.find(item => item.id === value).id
     grootCommandManager().executeCommand('gc.fetch.prototype', component.id, value)
   }
 
@@ -27,7 +27,7 @@ const ComponentItem: React.FC<{ component: Component }> = ({ component }) => {
         }} />
 
         {
-          component.recentVersionId !== component.componentVersion.id && !component.componentVersion.publish ? (
+          component.recentVersionId !== component.componentVersionId ? (
             <SendOutlined onClick={() => {
               Modal.confirm({
                 title: '确定发布版本',
@@ -42,7 +42,7 @@ const ComponentItem: React.FC<{ component: Component }> = ({ component }) => {
       </Space>
       <Select
         onChange={onSwitchVersion}
-        value={component.componentVersion.id}
+        value={component.componentVersionId}
         suffixIcon={<CaretDownOutlined />}
         dropdownMatchSelectWidth={false}
         defaultValue={component.recentVersionId}

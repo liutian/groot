@@ -103,11 +103,6 @@ export class ComponentService {
 
     const list = await em.find(Component, {});
     for (const component of list) {
-      component.componentVersion = {
-        id: component.recentVersion.id,
-        name: component.recentVersion.name
-      } as any
-
       component.versionList = await em.find(ComponentVersion, { component });
     }
 

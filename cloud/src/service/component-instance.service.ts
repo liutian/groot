@@ -174,7 +174,7 @@ export class ComponentInstanceService {
     rootInstance.blockList = await em.find(PropBlock, { component: rootInstance.component, componentVersion: rootInstance.componentVersion });
     rootInstance.itemList = await em.find(PropItem, { component: rootInstance.component, componentVersion: rootInstance.componentVersion });
     rootInstance.valueList = await em.find(PropValue, { componentInstance: rootInstance });
-    rootInstance.stateList = await em.find(State, { release: rootInstance.release, $or: [{ componentInstance: rootInstance }, { componentInstance: { id: 0 } }] });
+    rootInstance.stateList = await em.find(State, { release: rootInstance.release, $or: [{ componentInstance: rootInstance }, { componentInstance: null }] });
 
     const instanceList = await em.find(ComponentInstance, { root: instanceId }, {
       populate: ['component', 'componentVersion'],
@@ -189,7 +189,10 @@ export class ComponentInstanceService {
       instance.valueList = await em.find(PropValue, { componentInstance: instance });
     }
 
-    return { root: rootInstance, children: instanceList };
+
+    const release = await em.findOne(Release, rootInstance.release.id)
+
+    return { root: rootInstance, children: instanceList, release };
   }
 
   async reverseDetectId(trackId: number, releaseId: number) {
@@ -269,6 +272,18 @@ export class ComponentInstanceService {
     }
 
     await em.nativeDelete(ComponentInstance, { id: { $in: removeIds } });
+  }
+
+  async list(releaseId: number) {
+    const em = RequestContext.getEntityManager();
+
+    LogicException.assertParamEmpty(releaseId, 'releaseId');
+    const release = await em.findOne(Release, releaseId);
+    LogicException.assertNotFound(release, 'release', releaseId);
+
+    const instanceList = await em.find(ComponentInstance, { release, root: null });
+
+    return instanceList
   }
 
   private async addRootForWrapper(rawInstance: ComponentInstance, wrapperRawInstance: ComponentInstance, em: EntityManager) {

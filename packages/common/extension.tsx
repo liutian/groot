@@ -2,7 +2,7 @@ import { ReactElement } from "react";
 import React from "react";
 import { APIStore } from "./api/API.store";
 import { PostMessageType } from "./data";
-import { Application, Component, ComponentInstance } from "./entities";
+import { Application, Component, ComponentInstance, Release } from "./entities";
 import { GridLayout } from "./GridLayout";
 import { ApplicationData, DragAddComponentEventDataType, DragAnchorInfo, IframeDebuggerConfig, MarkerInfo, Metadata, RequestFnType } from "./internal";
 
@@ -59,7 +59,6 @@ export type GrootContextParams = {
   solution: any,
   instanceId?: number,
   componentId?: number,
-  releaseId?: number,
   versionId?: number
 }
 
@@ -192,6 +191,7 @@ export type GrootStateDict = {
   'gs.studio.componentInstance': [ComponentInstance, false],
   'gs.studio.allComponentInstance': [ComponentInstance, true],
   'gs.studio.component': [Component, false],
+  'gs.studio.release': [Release, false],
   // 'gs.studio.componentVersion': [ComponentVersion, false],
 
   'gs.studio.propSettingView': [{ name: string, packageName: string, packageUrl: string, module: string }, true],

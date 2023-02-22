@@ -112,7 +112,6 @@ export enum ViewportMode {
 export type StudioParams = {
   solutionId: number,
   appId: number,
-  releaseId: number,
   componentId: number,
   instanceId: number,
   mode: StudioMode,

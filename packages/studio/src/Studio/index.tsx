@@ -23,7 +23,7 @@ const Studio: React.FC<StudioParams & { account: any }> & { Wrapper: React.FC<{ 
     if (prototypeMode) {
       fetchCoreDataPromise = fetchSolution(params.solutionId)
     } else {
-      fetchCoreDataPromise = fetchApplication(params.appId, params.releaseId)
+      fetchCoreDataPromise = fetchApplication(params.appId)
     }
 
     fetchCoreDataPromise.then((data) => {
@@ -39,7 +39,6 @@ const Studio: React.FC<StudioParams & { account: any }> & { Wrapper: React.FC<{ 
           application: !prototypeMode ? data : null,
           solution: prototypeMode ? data : null,
           account: params.account,
-          releaseId: params.releaseId,
           instanceId: params.instanceId,
           componentId: params.componentId,
           versionId: params.versionId
@@ -57,8 +56,8 @@ const Studio: React.FC<StudioParams & { account: any }> & { Wrapper: React.FC<{ 
     })
   }
 
-  const fetchApplication = (applicationId: number, releaseId?: number) => {
-    return request(APIPath.application_detail_applicationId, { applicationId, releaseId }).then(({ data }) => {
+  const fetchApplication = (applicationId: number) => {
+    return request(APIPath.application_detail_applicationId, { applicationId }).then(({ data }) => {
       return data;
     }).catch((e) => {
       setLoadStatus('no-application');

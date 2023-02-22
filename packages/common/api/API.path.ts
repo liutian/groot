@@ -3,13 +3,12 @@ export enum APIPath {
   auth_logout = 'auth/logout',
   system_dict = 'system/dict',
 
-  application_detail_applicationId = 'application/detail/:applicationId?releaseId=:releaseId',
+  application_detail_applicationId = 'application/detail/:applicationId',
   org_detail_orgId = 'org/detail/:orgId',
   solution_detail_solutionId = 'solution/detail/:solutionId',
   componentInstance_addChild = 'POST component-instance/add-child',
   componentInstance_remove_instanceId = 'component-instance/remove/:instanceId',
   componentPrototype_detail_componentId = 'component-prototype/detail/:componentId?versionId=:versionId',
-  component_list = 'component/list',
   component_add = 'POST component/add',
   componentVersion_add = 'POST component-version/add',
   componentVersion_publish = 'POST component-version/publish',
@@ -17,7 +16,6 @@ export enum APIPath {
   componentInstance_addRoot = 'POST component-instance/add-root',
   componentInstance_reverseDetectId = 'component-instance/reverse-detect-id',
   release_add = 'POST release/add',
-  release_detail_releaseId = 'release/detail/:releaseId',
   asset_build = 'POST asset/build',
   asset_deploy = 'POST asset/deploy',
   item_update = 'POST item/update',
@@ -39,5 +37,10 @@ export enum APIPath {
   state_remove_stateId = 'state/remove/:stateId',
   state_update = 'POST state/update',
 
-  solution_component_list = 'solution/component/list'
+  solution_component_list_solutionId = 'solution/component-list/:solutionId',
+
+  release_instance_list_releaseId = 'release/instance-list/:releaseId',
+
+  application_release_list_applicationId = 'application/release-list/:applicationId'
+
 }

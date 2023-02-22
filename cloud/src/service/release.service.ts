@@ -122,16 +122,15 @@ export class ReleaseService {
     return newRelease;
   }
 
-  async detail(releaseId: number) {
+  async list(appId: number) {
     const em = RequestContext.getEntityManager();
 
-    LogicException.assertParamEmpty(releaseId, 'releaseId');
-    const release = await em.findOne(Release, releaseId);
-    release.instanceList = await em.find(ComponentInstance, { release, entry: true });
+    LogicException.assertParamEmpty(appId, 'appId');
 
-    return release;
+    const list = await em.find(Release, { application: appId })
+
+    return list
   }
-
 }
 
 

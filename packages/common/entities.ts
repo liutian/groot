@@ -97,6 +97,7 @@ export type Component = {
   recentVersionId: number,
 
   componentId: number,
+  componentVersionId: number,
   propTree: PropGroup[]
 } & Omit<import("../../cloud/src/entities/Component").Component, 'componentVersion' | 'groupList' | 'blockList' | 'itemList' | 'valueList' | 'versionList'>;
 

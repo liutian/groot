@@ -38,7 +38,7 @@ export class ComponentInstance extends BaseEntity {
   @ManyToOne({ serializer: value => value?.id, serializedName: 'parentId' })
   parent?: ComponentInstance;
 
-  @Property({ length: 20 })
+  @Property({ length: 100 })
   key = '';
 
   @Enum()
