@@ -31,7 +31,7 @@ export class StateService {
     if (rawState.instanceId) {
       query.$or = [
         { componentInstance: instance },
-        { componentInstance: { id: 0 } }
+        { componentInstance: null }
       ]
     }
     const stateUnique = await em.count(State, query);
@@ -71,7 +71,7 @@ export class StateService {
       if (rawState.instanceId) {
         query.$or = [
           { componentInstance: state.componentInstance },
-          { componentInstance: { id: 0 } }
+          { componentInstance: null }
         ]
       }
       const stateUnique = await em.count(State, query);
