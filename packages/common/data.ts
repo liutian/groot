@@ -84,6 +84,13 @@ export enum EnvType {
   Ol = 4
 }
 
+export enum EnvTypeStr {
+  Dev = 'dev',
+  Qa = 'qa',
+  Pl = 'pl',
+  Ol = 'online'
+}
+
 export enum DeployStatusType {
   Approval = 1,
   Online = 2,

@@ -1,6 +1,6 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { AssetService } from 'service/asset.service';
-import { EnvType } from '@grootio/common';
+import { EnvTypeStr } from '@grootio/common';
 
 
 @Controller('/asset')
@@ -16,7 +16,7 @@ export class AssetController {
   }
 
   @Get('/application/:appKey/:appEnv')
-  async applicationDetail(@Param('appKey') appKey: string, @Param('appEnv') appEnv: EnvType) {
+  async applicationDetail(@Param('appKey') appKey: string, @Param('appEnv') appEnv: EnvTypeStr) {
     return this.assetService.appReleaseDetail(appKey, appEnv);
   }
 

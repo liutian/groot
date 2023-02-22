@@ -1,4 +1,4 @@
-import { ApplicationData, DeployStatusType, EnvType, Metadata, PropGroup as IPropGroup, PropBlock as IPropBlock, PropItem as IPropItem, PropValue as IPropValue, Component as IComponent } from '@grootio/common';
+import { ApplicationData, DeployStatusType, EnvType, Metadata, PropGroup as IPropGroup, PropBlock as IPropBlock, PropItem as IPropItem, PropValue as IPropValue, Component as IComponent, EnvTypeStr } from '@grootio/common';
 import { EntityManager, RequestContext, wrap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { propTreeFactory, metadataFactory } from '@grootio/core';
@@ -22,14 +22,14 @@ export class AssetService {
   async instanceDetail(assetId: number) {
     const em = RequestContext.getEntityManager();
 
-    const asset = await em.findOne(InstanceAsset, assetId);
+    const asset = await em.findOne(InstanceAsset, assetId, { populate: ['content'] });
 
     LogicException.assertNotFound(asset, 'InstanceAsset', assetId);
 
     return asset.content;
   }
 
-  async appReleaseDetail(appKey: string, appEnv: EnvType) {
+  async appReleaseDetail(appKey: string, appEnv: EnvTypeStr) {
     const em = RequestContext.getEntityManager();
 
     const application = await em.findOne(Application, { key: appKey });
@@ -37,13 +37,13 @@ export class AssetService {
     LogicException.assertNotFound(application, 'Application', `key: ${appKey}`);
 
     const release = {
-      [EnvType.Dev]: application.devRelease,
-      [EnvType.Qa]: application.qaRelease,
-      [EnvType.Pl]: application.plRelease,
-      [EnvType.Ol]: application.onlineRelease
+      [EnvTypeStr.Dev]: application.devRelease,
+      [EnvTypeStr.Qa]: application.qaRelease,
+      [EnvTypeStr.Pl]: application.plRelease,
+      [EnvTypeStr.Ol]: application.onlineRelease
     }[appEnv];
 
-    const asset = await em.findOne(ReleaseAsset, { release }, { orderBy: { createdAt: 'DESC' } });
+    const asset = await em.findOne(ReleaseAsset, { release }, { orderBy: { createdAt: 'DESC' }, populate: ['content'] });
 
     LogicException.assertNotFound(asset, 'ReleaseAsset', `releaseId: ${release.id}`);
 
