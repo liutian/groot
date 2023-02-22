@@ -328,7 +328,7 @@ export default class PropPersistModel {
     } else {
       const componentInstance = this.stateManager.getState('gs.studio.componentInstance')
       paramsData.type = PropValueType.Instance;
-      paramsData.releaseId = getContext().groot.params.application.release.id;
+      paramsData.releaseId = grootStateManager().getState('gs.studio.release').id
       paramsData.componentInstanceId = componentInstance.id;
     }
 
@@ -380,7 +380,7 @@ export default class PropPersistModel {
         const componentInstance = this.stateManager.getState('gs.studio.componentInstance')
         const allComponentInstance = this.stateManager.getState('gs.studio.allComponentInstance')
         paramData.type = PropValueType.Instance;
-        paramData.releaseId = getContext().groot.params.application.release.id;
+        paramData.releaseId = grootStateManager().getState('gs.studio.release').id
         paramData.componentInstanceId = componentInstance.id;
 
         if (hostComponentInstanceId) {
