@@ -2,8 +2,6 @@ import { RequestContext, wrap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { LogicException } from 'config/logic.exception';
 import { Application } from 'entities/Application';
-import { ComponentInstance } from 'entities/ComponentInstance';
-import { Release } from 'entities/Release';
 
 
 @Injectable()

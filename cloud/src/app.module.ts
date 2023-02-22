@@ -17,6 +17,7 @@ import { ReleaseService } from 'service/release.service';
 import { AssetService } from 'service/asset.service';
 import { StateService } from 'service/state.service';
 import { AssetController } from 'asset.controller';
+import { SolutionService } from 'service/solution.service';
 @Module({
   imports: [
     MikroOrmModule.forRoot(config)
@@ -35,7 +36,8 @@ import { AssetController } from 'asset.controller';
     ComponentInstanceService,
     ReleaseService,
     AssetService,
-    StateService
+    StateService,
+    SolutionService
   ],
 })
 export class AppModule { }

@@ -1,4 +1,4 @@
-import { APIPath, GridLayout, StudioMode, StudioParams } from '@grootio/common';
+import { APIPath, ExtensionRuntime, GridLayout, StudioMode, StudioParams } from '@grootio/common';
 import { message } from 'antd';
 import { localExtension } from 'config';
 import { useEffect, useState } from 'react';
@@ -29,7 +29,7 @@ const Studio: React.FC<StudioParams & { account: any }> & { Wrapper: React.FC<{ 
     fetchCoreDataPromise.then((data) => {
       setLoadStatus('fetch-extension');
       // todo 研究promise自动刷新视图
-      fetchExtension(data).then((remoteExtensionList) => {
+      fetchExtension(data.extensionList).then((remoteExtensionList) => {
         setLoadStatus('ok');
         const layout = new GridLayout();
         setLayout(layout);
@@ -65,7 +65,7 @@ const Studio: React.FC<StudioParams & { account: any }> & { Wrapper: React.FC<{ 
     })
   }
 
-  const fetchExtension = (data) => {
+  const fetchExtension = (extensionList: ExtensionRuntime[]) => {
     const localCustomExtension = localStorage.getItem(localExtension);
 
     if (localCustomExtension) {
@@ -76,7 +76,7 @@ const Studio: React.FC<StudioParams & { account: any }> & { Wrapper: React.FC<{ 
       });
       return loadExtension(remoteExtensionList)
     } else {
-      return loadExtension(data.extensionList)
+      return loadExtension(extensionList)
     }
   }
 

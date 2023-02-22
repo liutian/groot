@@ -11,6 +11,7 @@ import { create as profileCreate } from './profile';
 import { create as proTableCreate } from './pro-table';
 import { create as containerCreate } from './groot-container';
 import { create as pageContainerCreate } from './groot-page-container';
+import { Solution } from '../../entities/Solution';
 
 export class DatabaseSeeder extends Seeder {
 
@@ -18,15 +19,32 @@ export class DatabaseSeeder extends Seeder {
     // 创建组织
     const org = em.create(Organization, {
       name: '管理平台',
-      playgroundPath: '/groot/playground',
-      debugBaseUrl: 'http://groot-local.com:11000'
     });
     await em.persistAndFlush(org);
 
+    const extension = em.create(Extension, {
+      name: '@groot/core-extension',
+      packageName: '_groot_core_extension',
+      packageUrl: 'http://groot-local.com:12000/groot-core-extension/index.js',
+      org
+    });
+    await em.persistAndFlush(extension);
+
+    const solution = em.create(Solution, {
+      name: '通用解决方案',
+      playgroundPath: '/groot/playground',
+      debugBaseUrl: 'http://groot-local.com:11000',
+      org
+    })
+    await em.persistAndFlush(solution);
+
+    solution.extensionList.add(extension);
+    await em.persistAndFlush(extension);
 
     // 创建项目
     const project = em.create(Project, {
-      name: '后台系统'
+      name: '后台系统',
+      org
     });
     await em.persistAndFlush(project);
 
@@ -40,6 +58,9 @@ export class DatabaseSeeder extends Seeder {
     });
     await em.persistAndFlush(application);
 
+    application.extensionList.add(extension);
+    await em.persistAndFlush(extension);
+
     // 创建迭代
     const release = em.create(Release, {
       name: 'v0.0.1',
@@ -50,15 +71,6 @@ export class DatabaseSeeder extends Seeder {
     application.plRelease = release;
     application.onlineRelease = release;
     await em.persistAndFlush(release);
-
-    const extension = em.create(Extension, {
-      name: '@groot/core-extension',
-      packageName: '_groot_core_extension',
-      packageUrl: 'http://groot-local.com:12000/groot-core-extension/index.js',
-      org
-    });
-    application.extensionList.add(extension);
-    await em.persistAndFlush(extension);
 
 
     await proTableCreate(em, org, release);

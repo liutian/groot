@@ -22,6 +22,7 @@ import { AssetService } from 'service/asset.service';
 import { StateService } from 'service/state.service';
 import { EnvType } from '@grootio/common';
 import { State } from 'entities/State';
+import { SolutionService } from 'service/solution.service';
 
 @UseInterceptors(StandardResultInterceptor)
 @Controller('/workbench')
@@ -38,7 +39,8 @@ export class WorkbenchController {
     private readonly componentInstanceService: ComponentInstanceService,
     private readonly releaseService: ReleaseService,
     private readonly assetService: AssetService,
-    private readonly stateService: StateService
+    private readonly stateService: StateService,
+    private readonly solutionService: SolutionService,
   ) { }
 
   @Post('/component/add')
@@ -220,25 +222,15 @@ export class WorkbenchController {
 
   @Get('/account')
   async account() {
-    return {}
+    const org = await this.orgService.getDetail(1)
+    return {
+      org
+    }
   }
 
   @Get('/solution/detail/:solutionId')
-  async solutionDetail() {
-    return {
-      id: 1,
-      debugBaseUrl: 'http://groot-local.com:11000',
-      playgroundPath: '/groot/playground',
-      extensionList: [
-        {
-          id: 1,
-          name: "@groot/core-extension",
-          orgId: 1,
-          packageName: "_groot_core_extension",
-          packageUrl: "http://groot-local.com:12000/groot-core-extension/index.js"
-        }
-      ]
-    }
+  async solutionDetail(@Param('solutionId') solutionId: number) {
+    return await this.solutionService.getDetail(solutionId)
   }
 
   // todo 添加解决方案实现
