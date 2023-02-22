@@ -1,4 +1,4 @@
-import { APIPath, ComponentInstance, ModalStatus, Release } from "@grootio/common";
+import { APIPath, ComponentInstance, Deploy, EnvType, ModalStatus, Release } from "@grootio/common";
 import { getContext, grootCommandManager, grootStateManager } from "context";
 
 export default class ApplicationModel {
@@ -7,9 +7,13 @@ export default class ApplicationModel {
 
   instanceAddModalStatus: ModalStatus = ModalStatus.None
   releaseAddModalStatus: ModalStatus = ModalStatus.None
+  assetBuildModalStatus: ModalStatus = ModalStatus.None
+  assetDeployModalStatus: ModalStatus = ModalStatus.None
+  assetBuildStatus: 'init' | 'analyseOver' | 'building' | 'buildOver' | 'approve' = 'init';
   entryInstanceList: ComponentInstance[] = [];
   noEntryInstanceList: ComponentInstance[] = [];
   releaseList: Release[] = [];
+  deployBundleId: number
 
   instanceAddEntry = true
 
@@ -92,6 +96,23 @@ export default class ApplicationModel {
         const firstInstance = this.entryInstanceList[0]
         grootCommandManager().executeCommand('gc.fetch.instance', firstInstance.id)
       }
+    })
+  }
+
+
+  public assetBuild() {
+    this.assetBuildStatus = 'building';
+    const releaseId = grootStateManager().getState('gs.studio.release').id
+    getContext().request(APIPath.asset_build, { releaseId }).then(({ data }) => {
+      this.assetBuildStatus = 'buildOver';
+      this.deployBundleId = data;
+    })
+  }
+
+  public assetDeploy(formData: Deploy) {
+    this.assetDeployModalStatus = ModalStatus.Submit;
+    getContext().request(APIPath.asset_deploy, { bundleId: this.deployBundleId, ...formData }).then(() => {
+      this.assetDeployModalStatus = ModalStatus.None;
     })
   }
 }
