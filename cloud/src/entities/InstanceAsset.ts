@@ -16,7 +16,6 @@ export class InstanceAsset extends BaseEntity {
   @ManyToOne()
   bundle: Bundle;
 
-  // 和ComponentInstance.key关联
-  @Property({ length: 100 })
+  @Property({ length: 100, comment: '和ComponentInstance.key关联' })
   key: string;
 }

@@ -9,7 +9,7 @@ import { ComponentInstance } from 'entities/ComponentInstance';
 import { Release } from 'entities/Release';
 import { Bundle } from 'entities/Bundle';
 import { InstanceAsset } from 'entities/InstanceAsset';
-import { ReleaseAsset } from 'entities/ReleaseAsset';
+import { DeployManifest } from 'entities/DeployManifest';
 import { Deploy } from 'entities/Deploy';
 import { PropValue } from 'entities/PropValue';
 import { PropGroup } from 'entities/PropGroup';
@@ -43,11 +43,11 @@ export class AssetService {
       [EnvTypeStr.Ol]: application.onlineRelease
     }[appEnv];
 
-    const asset = await em.findOne(ReleaseAsset, { release }, { orderBy: { createdAt: 'DESC' }, populate: ['content'] });
+    const manifest = await em.findOne(DeployManifest, { release }, { orderBy: { createdAt: 'DESC' }, populate: ['content'] });
 
-    LogicException.assertNotFound(asset, 'ReleaseAsset', `releaseId: ${release.id}`);
+    LogicException.assertNotFound(manifest, 'DeployManifest', `releaseId: ${release.id}`);
 
-    return asset.content;
+    return manifest.content;
   }
 
   async build(releaseId: number) {
@@ -83,8 +83,6 @@ export class AssetService {
     const bundle = await em.create(Bundle, {
       release,
       application,
-      appKey: application.key,
-      appName: application.name
     });
 
     await em.begin();
@@ -152,13 +150,13 @@ export class AssetService {
     })
 
     const appData: ApplicationData = {
-      name: bundle.appName,
-      key: bundle.appKey,
+      name: bundle.application.name,
+      key: bundle.application.key,
       views,
       envData: {}
     }
 
-    const asset = em.create(ReleaseAsset, {
+    const manifest = em.create(DeployManifest, {
       content: JSON.stringify(appData),
       release: bundle.release,
       bundle
@@ -169,7 +167,7 @@ export class AssetService {
     em.create(Deploy, {
       release: bundle.release,
       application: bundle.application,
-      asset,
+      manifest,
       env,
       status: DeployStatusType.Online,
       bundle
@@ -177,7 +175,7 @@ export class AssetService {
 
     await em.flush();
 
-    return asset.id;
+    return manifest.id;
   }
 
   private async createMetadata(instance: ComponentInstance, em: EntityManager) {

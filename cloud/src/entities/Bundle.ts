@@ -8,11 +8,6 @@ import { Release } from "./Release";
 @Entity()
 export class Bundle extends BaseEntity {
 
-  @Property({ length: 20 })
-  appName: string;
-
-  @Property({ length: 20 })
-  appKey: string;
 
   @ManyToOne()
   application: Application;

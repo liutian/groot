@@ -5,7 +5,7 @@ import { Application } from "./Application";
 import { BaseEntity } from "./BaseEntity";
 import { Bundle } from "./Bundle";
 import { Release } from "./Release";
-import { ReleaseAsset } from "./ReleaseAsset";
+import { DeployManifest } from "./DeployManifest";
 
 @Entity()
 export class Deploy extends BaseEntity {
@@ -17,7 +17,7 @@ export class Deploy extends BaseEntity {
   application: Application;
 
   @ManyToOne()
-  asset: ReleaseAsset;
+  manifest: DeployManifest;
 
   @Property({ type: 'tinyint' })
   env: EnvType;
@@ -30,6 +30,6 @@ export class Deploy extends BaseEntity {
 
   //************************已下是接口入参或者查询返回需要定义的属性************************
 
-  @Property({ persist: false })
-  bundleId?: number
+  // @Property({ persist: false })
+  // bundleId?: number
 }

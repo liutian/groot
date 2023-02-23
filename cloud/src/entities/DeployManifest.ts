@@ -5,7 +5,7 @@ import { Bundle } from "./Bundle";
 import { Release } from "./Release";
 
 @Entity()
-export class ReleaseAsset extends BaseEntity {
+export class DeployManifest extends BaseEntity {
 
   @Property({ type: 'text', lazy: true })
   content: string;
