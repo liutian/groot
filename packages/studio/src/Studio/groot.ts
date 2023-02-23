@@ -71,6 +71,7 @@ export const launchExtension = (remoteExtensionList: ExtensionRuntime[], params:
   registerState('gs.extension.configSchema', Object.freeze(configSchemaList) as any, true);
   registerState('gs.extension.data', Object.freeze(extensionList) as any, true);
   registorReady = true;
+  layout.refresh()
   contextEventTarget.dispatchEvent(new Event('ready'));
 }
 

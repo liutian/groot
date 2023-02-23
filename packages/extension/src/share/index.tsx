@@ -53,7 +53,7 @@ export const shareBootstrap = () => {
 
   groot.layout.design('visible', 'secondarySidebar', true);
   groot.layout.design('visible', 'panel', false);
-
+  groot.layout.design('banner', 'center', null)
 
   const { registerCommand } = grootCommandManager();
   registerCommand('gc.stage.refresh', (_, callback) => {

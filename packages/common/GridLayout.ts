@@ -44,11 +44,6 @@ export class GridLayout extends EventTarget {
   private rows = [this.bannerHeight, '1fr', this.panelHeight, this.statusBarHeight];
   private columns = [this.activityBarWidth, this.primarySidebarWidth, '1fr', this.secondarySidebarWidth];
 
-  constructor() {
-    super();
-    this.calcLayoutStyle();
-  }
-
   public design = <
     T extends 'visible' | 'primary' | 'panel' | 'banner',
     V extends (T extends 'visible' ? ('primarySidebar' | 'secondarySidebar' | 'panel' | 'activityBar' | 'statusBar' | 'banner') : (T extends 'primary' ? 'left' | 'right' : 'left' | 'right' | 'center' | 'stretch')),
