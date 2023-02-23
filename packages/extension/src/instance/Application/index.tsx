@@ -18,9 +18,10 @@ export const Application = () => {
   const [release] = grootStateManager().useStateByName('gs.studio.release')
 
   useEffect(() => {
-    const releaseId = grootStateManager().getState('gs.studio.release').id
-    applicationModel.loadList(releaseId);
-    applicationModel.loadReleaseList()
+    if (currInstance) {
+      applicationModel.loadList(release.id);
+      applicationModel.loadReleaseList()
+    }
   }, [currInstance])
 
   const switchInstance = (instance: ComponentInstance) => {
