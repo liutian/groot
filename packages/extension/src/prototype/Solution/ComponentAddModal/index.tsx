@@ -1,5 +1,6 @@
 import { Component, ModalStatus, useModel } from "@grootio/common";
 import { Form, Input, Modal } from "antd";
+import { useEffect } from "react";
 import SolutionModel from "../SolutionModel";
 
 
@@ -7,11 +8,15 @@ const ComponentAddModal: React.FC = () => {
   const [form] = Form.useForm();
   const solutionModel = useModel(SolutionModel)
 
+  useEffect(() => {
+    if (solutionModel.componentAddModalStatus !== ModalStatus.None) {
+      form.resetFields();
+    }
+  }, [solutionModel.componentAddModalStatus])
+
   const handleOk = async () => {
     const formData = await form.validateFields();
-    solutionModel.addComponent(formData as Component).then(() => {
-      form.resetFields();
-    })
+    solutionModel.addComponent(formData as Component)
   }
 
   const handleCancel = () => {

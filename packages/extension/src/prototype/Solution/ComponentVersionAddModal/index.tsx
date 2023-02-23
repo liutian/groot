@@ -6,27 +6,26 @@ import SolutionModel from "../SolutionModel";
 
 const ComponentVersionAddModal: React.FC = () => {
   const [form] = Form.useForm();
-  const solutionModelsol = useModel(SolutionModel)
+  const solutionModel = useModel(SolutionModel)
 
   useEffect(() => {
-    if (solutionModelsol.component) {
-      form.setFieldValue('imageVersionId', solutionModelsol.component.componentVersion.id)
+    if (solutionModel.componentVersionAddModalStatus !== ModalStatus.None) {
+      form.setFieldValue('imageVersionId', solutionModel.component.componentVersionId)
+      form.resetFields();
     }
-  }, [solutionModelsol.componentVersionAddModalStatus])
+  }, [solutionModel.componentVersionAddModalStatus])
 
   const handleOk = async () => {
     const formData = await form.validateFields();
-    solutionModelsol.addComponentVersion(formData as ComponentVersion).then(() => {
-      form.resetFields();
-    })
+    solutionModel.addComponentVersion(formData as ComponentVersion)
   }
 
   const handleCancel = () => {
-    solutionModelsol.componentVersionAddModalStatus = ModalStatus.None;
+    solutionModel.componentVersionAddModalStatus = ModalStatus.None;
   }
 
-  return <Modal open={solutionModelsol.componentVersionAddModalStatus !== ModalStatus.None} mask={false} title="创建版本"
-    confirmLoading={solutionModelsol.componentVersionAddModalStatus === ModalStatus.Submit}
+  return <Modal open={solutionModel.componentVersionAddModalStatus !== ModalStatus.None} mask={false} title="创建版本"
+    confirmLoading={solutionModel.componentVersionAddModalStatus === ModalStatus.Submit}
     onOk={handleOk} onCancel={handleCancel} okText="创建">
     <Form form={form} colon={false} labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
       <Form.Item label="名称" name="name" rules={[{ required: true }]}>
@@ -34,7 +33,7 @@ const ComponentVersionAddModal: React.FC = () => {
       </Form.Item>
 
       <Form.Item label="关联版本" name="imageVersionId" rules={[{ required: true }]} >
-        <Select options={solutionModelsol.component?.versionList.map((item) => {
+        <Select options={solutionModel.component?.versionList.map((item) => {
           return { label: item.name, value: item.id }
         })} />
       </Form.Item>
