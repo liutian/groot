@@ -24,7 +24,7 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
   const propPersistModel = useModel(PropPersistModel);
   const propHandleModel = useModel(PropHandleModel);
   const [component] = grootStateManager().useStateByName('gs.studio.component')
-  const [propSettingView] = grootStateManager().useStateByName('gs.studio.propSettingView', []);
+  const [propSettingView] = grootStateManager().useStateByName('gs.studio.propSettingViews', []);
   const [form] = Form.useForm();
   const noSetting = !isPrototypeMode() || freezeSetting || block.group.parentItem?.noSetting;
 

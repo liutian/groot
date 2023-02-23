@@ -186,6 +186,7 @@ export type GrootStateDict = {
   'gs.workbench.primarySidebar.viewsContainer': [string, false],
   'gs.workbench.secondarySidebar.viewsContainer': [string, false],
   'gs.workbench.stage.view': [string, false],
+  'gs.workbench.stage.viewport': ['desktop' | 'mobile', false],
   'gs.workbench.panel.viewsContainers': [string, true],
 
   'gs.studio.componentInstance': [ComponentInstance, false],
@@ -194,9 +195,11 @@ export type GrootStateDict = {
   'gs.studio.release': [Release, false],
   // 'gs.studio.componentVersion': [ComponentVersion, false],
 
-  'gs.studio.propSettingView': [{ name: string, packageName: string, packageUrl: string, module: string }, true],
+  'gs.studio.propSettingViews': [{ name: string, packageName: string, packageUrl: string, module: string }, true],
 
   'gs.studio.breadcrumbList': [{ id: number, name: string }, true]
+
+  'gs.workbench.banner.views': [{ id: string, placement: 'left' | 'center' | 'right' }, true]
 }
 
 export type GrootHookDict = {
@@ -247,7 +250,7 @@ export type ViewsContainer = {
 };
 
 export type ViewChildItem = {
-  parent: string
+  parent?: string
 } & ViewsContainer;
 
 export const viewRender = (view: ViewRender, id?: any) => {

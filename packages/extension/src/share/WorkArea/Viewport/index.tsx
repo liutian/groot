@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { useModel } from '@grootio/common';
 
 
-import { isPrototypeMode } from 'context';
+import { grootStateManager, isPrototypeMode } from 'context';
 import ViewportDrag from './ViewportDrag';
 import ViewportOutlineMarker from './ViewportOutlineMarker';
 import WorkAreaModel from '../WorkAreaModel';
@@ -10,11 +10,11 @@ import WorkAreaModel from '../WorkAreaModel';
 import styles from './index.module.less';
 
 const viewportModeMap = {
-  h5: {
+  mobile: {
     width: '400px',
     height: '700px'
   },
-  pc: {
+  desktop: {
     width: '100%',
     height: '100%'
   }
@@ -23,7 +23,7 @@ const viewportModeMap = {
 const Viewport: React.FC = () => {
   const iframeRef = useRef<HTMLIFrameElement>({} as any);
   const workAreaModel = useModel(WorkAreaModel)
-  const [viewportMode, setViewportMode] = useState('pc');
+  const [viewportMode] = grootStateManager().useStateByName('gs.workbench.stage.viewport')
 
   useEffect(() => {
     workAreaModel.initIframe(iframeRef.current);

@@ -9,7 +9,7 @@ import { propKeyRule, RemotePluginKeySep } from "util/utils";
 
 const PropItemSetting: React.FC = () => {
   const propPersistModel = useModel(PropPersistModel);
-  const [propSettingView] = grootStateManager().useStateByName('gs.studio.propSettingView', []);
+  const [propSettingView] = grootStateManager().useStateByName('gs.studio.propSettingViews', []);
   const [propItemTypeOptions] = useState(() => {
     if (propSettingView.length) {
       return [

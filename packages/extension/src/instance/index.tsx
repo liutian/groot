@@ -3,8 +3,6 @@ import { APIPath, ComponentInstance, PropBlockStructType, PropGroup } from "@gro
 import { metadataFactory, propTreeFactory } from "@grootio/core";
 import { getContext, grootCommandManager, grootHookManager, grootStateManager } from "context";
 import ViewsContainer from "core/ViewsContainer";
-import { PropSetter } from "share/PropSetter";
-import { WorkArea } from "share/WorkArea";
 import { parseOptions } from "util/utils";
 import { Application } from "./Application";
 import { Material } from "./Material";
@@ -16,7 +14,7 @@ export const instanceBootstrap = () => {
   const { registerCommand, executeCommand } = grootCommandManager();
   const { callHook } = grootHookManager();
 
-  registerState('gs.ui.viewsContainers', [
+  getState('gs.ui.viewsContainers').push(...[
     {
       id: 'application',
       name: '页面',
@@ -46,22 +44,10 @@ export const instanceBootstrap = () => {
           <AppstoreOutlined />
         </span>
       }
-    }, {
-      id: 'propSetter',
-      name: '属性设置器',
-      view: function () {
-        return <ViewsContainer context={this} />
-      },
-    }, {
-      id: 'workArea',
-      name: '工作区',
-      view: function () {
-        return <ViewsContainer context={this} />
-      }
-    }
-  ], true)
+    },
+  ])
 
-  registerState('gs.ui.views', [
+  getState('gs.ui.views').push(...[
     {
       id: 'application',
       name: '页面',
@@ -72,24 +58,13 @@ export const instanceBootstrap = () => {
       name: '物料',
       view: <Material />,
       parent: 'material'
-    }, {
-      id: 'propSetter',
-      name: '属性设置器',
-      view: <PropSetter />,
-      parent: 'propSetter'
-    }, {
-      id: 'workArea',
-      name: '工作区',
-      view: <WorkArea />,
-      parent: 'workArea'
-    }
-  ], true)
+    },
+  ])
+
 
   registerState('gs.workbench.activityBar.viewsContainers', ['application', 'material', 'custom_icon'], true)
   registerState('gs.workbench.activityBar.active', 'application', false);
   registerState('gs.workbench.primarySidebar.viewsContainer', 'application', false);
-  registerState('gs.workbench.secondarySidebar.viewsContainer', 'propSetter', false);
-  registerState('gs.workbench.stage.view', 'workArea', false);
 
 
   registerState('gs.studio.componentInstance', null, false)
@@ -98,10 +73,6 @@ export const instanceBootstrap = () => {
   registerState('gs.studio.breadcrumbList', [], true)
   registerState('gs.studio.release', null, false)
 
-
-  groot.layout.design('visible', 'secondarySidebar', true);
-  groot.layout.design('visible', 'panel', false);
-
   registerCommand('gc.fetch.instance', (_, rootInstanceId) => {
     fetchRootInstance(rootInstanceId);
   });
@@ -109,7 +80,6 @@ export const instanceBootstrap = () => {
   registerCommand('gc.studio.switchIstance', (_, instanceId) => {
     switchComponentInstance(instanceId)
   })
-
 
   registerCommand('gc.workbench.makeDataToStage', (_, refreshId) => {
     const list = getState('gs.studio.allComponentInstance')

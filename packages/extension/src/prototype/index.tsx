@@ -3,17 +3,15 @@ import { APIPath, PropBlockStructType, PropGroup } from "@grootio/common";
 import { metadataFactory, propTreeFactory } from "@grootio/core";
 import { getContext, grootCommandManager, grootHookManager, grootStateManager } from "context";
 import ViewsContainer from "core/ViewsContainer";
-import { PropSetter } from "share/PropSetter";
-import { WorkArea } from "share/WorkArea";
 import { parseOptions } from "util/utils";
 import { Solution } from "./Solution";
 
 export const prototypeBootstrap = () => {
   const { groot } = getContext();
-  const { registerState } = grootStateManager();
+  const { registerState, getState } = grootStateManager();
   const { registerCommand, executeCommand } = grootCommandManager();
 
-  registerState('gs.ui.viewsContainers', [
+  getState('gs.ui.viewsContainers').push(...[
     {
       id: 'solution',
       name: '组件',
@@ -23,57 +21,29 @@ export const prototypeBootstrap = () => {
       view: function () {
         return <ViewsContainer context={this} />
       },
-    }, {
-      id: 'propSetter',
-      name: '属性设置器',
-      view: function () {
-        return <ViewsContainer context={this} />
-      }
-    }, {
-      id: 'workArea',
-      name: '工作区',
-      view: function () {
-        return <ViewsContainer context={this} />
-      }
     }
-  ], true)
+  ])
 
-  registerState('gs.ui.views', [
+  getState('gs.ui.views').push(...[
     {
       id: 'solutio',
       name: '组件',
       view: <Solution />,
       parent: 'solution'
-    }, {
-      id: 'propSetter',
-      name: '属性设置器',
-      view: <PropSetter />,
-      parent: 'propSetter'
-    }, {
-      id: 'workArea',
-      name: '工作区',
-      view: <WorkArea />,
-      parent: 'workArea'
-    }
-  ], true)
+    },
+  ])
 
 
   registerState('gs.workbench.activityBar.viewsContainers', ['solution'], true)
   registerState('gs.workbench.activityBar.active', 'solution', false);
   registerState('gs.workbench.primarySidebar.viewsContainer', 'solution', false);
-  registerState('gs.workbench.secondarySidebar.viewsContainer', 'propSetter', false);
-  registerState('gs.workbench.stage.view', 'workArea', false);
   registerState('gs.studio.component', null, false)
-
-  groot.layout.design('visible', 'secondarySidebar', true);
-  groot.layout.design('visible', 'panel', false);
 
   registerCommand('gc.fetch.prototype', (_, componentId, versionId) => {
     fetchComponent(componentId, versionId);
   })
 
   registerCommand('gc.workbench.makeDataToStage', (_, refreshId) => {
-
     syncDataToStage(refreshId === 'first');
   })
 
