@@ -24,7 +24,7 @@ export type PropBlock = {
   // ************************** 分割线已下是界面属性 **************************
   highlight?: boolean,
   // 首要显示的PropItem
-  primaryShowPropItemList: PropItem[]
+  // primaryShowPropItemList: PropItem[]
 } & Omit<import("../../cloud/src/entities/PropBlock").PropBlock, 'propItemList' | 'listStructData' | 'group'>;
 
 /**
@@ -68,15 +68,15 @@ export type ComponentInstance = {
   blockList: PropBlock[],
   itemList: PropItem[],
   valueList: PropValue[],
-  stateList: State[],
+  // stateList: State[],
 
   // ************************** 分割线已下是界面属性 **************************
   propTree: PropGroup[],
-  empty: boolean
+  // empty: boolean
 } & Omit<import("../../cloud/src/entities/ComponentInstance").ComponentInstance, 'component' | 'componentVersion' | 'groupList' | 'blockList' | 'itemList' | 'valueList'>;
 
 export type Release = {
-  instanceList: ComponentInstance[]
+  // instanceList: ComponentInstance[]
 } & Omit<import("../../cloud/src/entities/Release").Release, ''>;
 
 export type PropValue = {
@@ -84,7 +84,7 @@ export type PropValue = {
 } & Omit<import("../../cloud/src/entities/PropValue").PropValue, ''>;
 
 export type State = {
-  isRuntime?: boolean
+  // isRuntime?: boolean
 } & Omit<import("../../cloud/src/entities/State").State, 'componentInstance' | 'release'>;
 
 export type Component = {
@@ -96,19 +96,19 @@ export type Component = {
   valueList: PropValue[],
   recentVersionId: number,
 
-  componentId: number,
+  // componentId: number,
   componentVersionId: number,
   propTree: PropGroup[]
 } & Omit<import("../../cloud/src/entities/Component").Component, 'componentVersion' | 'groupList' | 'blockList' | 'itemList' | 'valueList' | 'versionList'>;
 
 export type Application = {
-  release: Release,
-  extensionList: Extension[]
+  // release: Release,
+  // extensionList: Extension[]
 } & Omit<import("../../cloud/src/entities/Application").Application, ''>;
 
 export type Organization = {
-  componentList: Component[],
-  extensionList: Extension[]
+  // componentList: Component[],
+  // extensionList: Extension[]
 } & Omit<import("../../cloud/src/entities/Organization").Organization, ''>;
 
 export type Deploy = {

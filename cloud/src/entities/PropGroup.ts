@@ -48,8 +48,8 @@ export class PropGroup extends BaseEntity {
 
   //************************已下是接口入参或者查询返回需要定义的属性************************
 
-  @Property({ persist: false })
-  parentItemId?: number;
+  // @Property({ persist: false })
+  // parentItemId?: number;
 
   @Property({ persist: false })
   componentVersionId?: number;
