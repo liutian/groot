@@ -37,7 +37,7 @@ export class GridLayout extends EventTarget {
   }
   private areasMap = new Map<string, string>([
     ['1*1', 'banner'], ['1*2', 'banner'], ['1*3', 'banner'], ['1*4', 'banner'],
-    ['2*1', 'activityBar'], ['2*2', 'primarySidebar'], ['2*3', 'editor'], ['2*4', 'secondarySidebar'],
+    ['2*1', 'activityBar'], ['2*2', 'primarySidebar'], ['2*3', 'stage'], ['2*4', 'secondarySidebar'],
     ['3*1', 'activityBar'], ['3*2', 'primarySidebar'], ['3*3', 'panel'], ['3*4', 'secondarySidebar'],
     ['4*1', 'statusBar'], ['4*2', 'statusBar'], ['4*3', 'statusBar'], ['4*4', 'statusBar'],
   ]);
@@ -124,7 +124,7 @@ export class GridLayout extends EventTarget {
   private calcLayoutStyleLeft() {
     this.areasMap.set('2*1', 'activityBar');
     this.areasMap.set('2*2', 'primarySidebar');
-    this.areasMap.set('2*3', 'editor');
+    this.areasMap.set('2*3', 'stage');
     this.areasMap.set('2*4', 'secondarySidebar');
 
     if (this.layoutSetting.bannerLayout === 'left') {
@@ -194,7 +194,7 @@ export class GridLayout extends EventTarget {
 
   private calcLayoutStyleRight() {
     this.areasMap.set('2*1', 'secondarySidebar');
-    this.areasMap.set('2*2', 'editor');
+    this.areasMap.set('2*2', 'stage');
     this.areasMap.set('2*3', 'primarySidebar');
     this.areasMap.set('2*4', 'activityBar');
 
