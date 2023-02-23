@@ -16,29 +16,20 @@ export class Component extends BaseEntity {
   @Property({ length: 20 })
   name: string;
 
-  /**
-   * 组件注册时的包名
-   */
-  @Property({ length: 30 })
+  @Property({ length: 30, comment: '组件虚拟包名' })
   packageName: string;
 
-  /**
-   * 组件注册时的组件名
-   */
-  @Property({ length: 20 })
+  @Property({ length: 20, comment: '组件名' })
   componentName: string;
 
   /**
-   * 组件最新版本，此处必须为可选，否则创建组建会引发recentVersion非空校验
+   * 此处必须为可选，否则创建组建会引发recentVersion非空校验
    */
-  @OneToOne({ serializer: value => value?.id, serializedName: 'recentVersionId' })
+  @OneToOne({ serializer: value => value?.id, serializedName: 'recentVersionId', comment: '组件最新版本' })
   recentVersion?: ComponentVersion;
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'orgId' })
   org: Organization;
-
-  @Property({ type: 'tinyint' })
-  parserType: ComponentParserType = ComponentParserType.ReactComponent;
 
   //************************已下是接口入参或者查询返回需要定义的属性************************
 
@@ -51,11 +42,11 @@ export class Component extends BaseEntity {
   @Property({ persist: false })
   componentVersion: ComponentVersion;
 
-  @Property({ persist: false })
-  release: Release;
+  // @Property({ persist: false })
+  // release: Release;
 
-  @Property({ persist: false })
-  releaseList: Release[];
+  // @Property({ persist: false })
+  // releaseList: Release[];
 
   @Property({ persist: false })
   orgId?: number;

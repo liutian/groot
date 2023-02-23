@@ -13,10 +13,7 @@ export class Release extends BaseEntity {
   @ManyToOne({ serializer: value => value?.id, serializedName: 'applicationId' })
   application: Application;
 
-  /**
-   * 是否归档，true组件实例不能在调整，关联online环境时，上一个release自动设置为true
-   */
-  @Property()
+  @Property({ comment: '迭代版本是否归档，并限制组件实例修改' })
   archive = false;
 
   //************************已下是接口入参或者查询返回需要定义的属性************************

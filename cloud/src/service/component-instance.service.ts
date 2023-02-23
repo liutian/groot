@@ -104,7 +104,6 @@ export class ComponentInstanceService {
       componentVersion: component.recentVersion,
       release,
       trackId: 0,
-      parserType: component.parserType
     });
 
     let parentCtx = parentEm ? em.getTransactionContext() : undefined;
