@@ -70,7 +70,7 @@ export class ComponentVersionService {
         const originGroup = originGroupList[groupIndex];
         const group = em.create(PropGroup, {
           ...pick(originGroup,
-            ['name', 'root', 'propKey', 'order', 'component', 'struct']
+            ['name', 'propKey', 'order', 'component', 'struct']
           ),
           componentVersion
         }

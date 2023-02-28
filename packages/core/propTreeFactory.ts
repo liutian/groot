@@ -3,7 +3,7 @@ import { PropBlock, PropGroup, PropItem, PropValue, PropItemType } from "@grooti
 export function propTreeFactory(groupList: PropGroup[], blockList: PropBlock[], itemList: PropItem[], valueList: PropValue[]) {
   const rootGroupList: PropGroup[] = [];
 
-  const rootGroupIds = groupList.filter(g => g.root)
+  const rootGroupIds = groupList.filter(g => !g.parentItem?.id && !g.parentItemId)
     .sort((a, b) => a.order - b.order)
     .map(g => g.id);
 

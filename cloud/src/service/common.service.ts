@@ -91,7 +91,7 @@ export class CommonService {
         if (store) {
           propGroup = store.propGroupMap.get(ctxId);
         } else {
-          propGroup = await em.findOne(PropGroup, ctxId, { fields: ['propKey', 'parentItem', 'root'] });
+          propGroup = await em.findOne(PropGroup, ctxId, { fields: ['propKey', 'parentItem'] });
         }
         LogicException.assertNotFound(propGroup, 'PropGroup', ctxId);
 
@@ -100,12 +100,8 @@ export class CommonService {
         }
 
         if (propGroup.parentItem?.id) {
-          if (propGroup.root) {
-            throw new LogicException(`root and parentItem cannot both exists group id:${ctxId}`, LogicExceptionCode.UnExpect);
-          } else {
-            ctxType = 'item';
-            ctxId = propGroup.parentItem.id;
-          }
+          ctxType = 'item';
+          ctxId = propGroup.parentItem.id;
         } else {
           ctxType = undefined;
           ctxId = undefined;

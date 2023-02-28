@@ -89,7 +89,6 @@ export class PropItemService {
           name: '内嵌配置组',
           componentId: block.component.id,
           componentVersionId: block.componentVersion.id,
-          root: false,
           struct: groupStruct
         } as PropGroup;
         const { newGroup, extra } = await this.propGroupService.add(rawGroup, em);

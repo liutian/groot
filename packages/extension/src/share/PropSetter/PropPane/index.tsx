@@ -32,7 +32,6 @@ function PropPane() {
     // 显示分组弹框
     propPersistModel.currSettingPropGroup = {
       name: `配置组${nameSuffix}`,
-      root: true
     } as PropGroup;
   }
 

@@ -17,7 +17,7 @@ type PropsType = {
 const PropBlockListStructPane: React.FC<PropsType> = ({ block: propBlock }) => {
   const childPropItem = propBlock.propItemList[0];
   const childPropBlockList = childPropItem.childGroup.propBlockList;
-  const dataSourceEditable = !!childPropItem.block.group.root || childPropItem.block.group.parentItem?.tempAbstractValueId;
+  const dataSourceEditable = !childPropItem.block.group.parentItemId || childPropItem.block.group.parentItem?.tempAbstractValueId;
   const dataSource = [];
 
   const propHandleModel = useModel(PropHandleModel);

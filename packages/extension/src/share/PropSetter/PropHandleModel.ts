@@ -57,7 +57,7 @@ export default class PropHandleModel {
     const propKeyList = path.reduce((pre, current, index) => {
       if (index % 3 === 0) {
         const group = current as PropGroup;
-        if (group.root && group.propKey) {
+        if (!group.parentItemId && group.propKey) {
           pre.push(group.propKey);
         }
       } else if (index % 3 === 1) {

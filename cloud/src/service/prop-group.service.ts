@@ -5,6 +5,7 @@ import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { LogicException, LogicExceptionCode } from 'config/logic.exception';
 import { PropBlock } from 'entities/PropBlock';
 import { PropGroup } from 'entities/PropGroup';
+import { PropItem } from 'entities/PropItem';
 import { CommonService } from './common.service';
 import { PropBlockService } from './prop-block.service';
 
@@ -21,7 +22,7 @@ export class PropGroupService {
   async add(rawGroup: PropGroup, parentEm?: EntityManager) {
     let em = parentEm || RequestContext.getEntityManager();
 
-    if (rawGroup.propKey && rawGroup.root) {
+    if (rawGroup.propKey && !rawGroup.parentItemId) {
       const chainList = await this.commonService.calcAllPropKeyChain(rawGroup.componentId, rawGroup.componentVersionId, em);
 
       if (chainList.includes(rawGroup.propKey)) {
@@ -35,19 +36,19 @@ export class PropGroupService {
     }, { orderBy: { order: 'DESC' } });
 
     const newGroup = em.create(PropGroup, {
-      ...pick(rawGroup, ['name', 'propKey', 'struct', 'root']),
+      ...pick(rawGroup, ['name', 'propKey', 'struct']),
       componentVersion: rawGroup.componentVersionId,
       component: rawGroup.componentId,
       order: (preGroup ? preGroup.order : 0) + 1000
     });
 
-    // if (rawGroup.parentItemId) {
-    //   const parentItem = await em.findOne(PropItem, rawGroup.parentItemId);
-    //   LogicException.assertNotFound(parentItem, 'PropItem', rawGroup.parentItemId);
-    //   newGroup.parentItem = parentItem;
-    // }
+    if (rawGroup.parentItemId) {
+      const parentItem = await em.findOne(PropItem, rawGroup.parentItemId);
+      LogicException.assertNotFound(parentItem, 'PropItem', rawGroup.parentItemId);
+      newGroup.parentItem = parentItem;
+    }
 
-    if (!newGroup.root) {
+    if (newGroup.parentItem) {
       delete newGroup.propKey;
     }
 
@@ -124,7 +125,7 @@ export class PropGroupService {
       // 更新配置块信息
       await em.flush();
 
-      if (rawGroup.propKey && group.root) {
+      if (rawGroup.propKey && !group.parentItem?.id) {
         const repeatChainMap = await this.commonService.checkPropKeyUnique(group.component.id, group.componentVersion.id, em);
         if (repeatChainMap.size > 0) {
           await em.rollback();
