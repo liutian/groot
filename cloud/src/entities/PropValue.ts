@@ -48,8 +48,6 @@ export class PropValue extends BaseEntity {
   @Property({ persist: false })
   componentVersionId?: number;
 
-  // @Property({ persist: false })
-  // orgId?: number;
 
   @Property({ persist: false })
   releaseId?: number;

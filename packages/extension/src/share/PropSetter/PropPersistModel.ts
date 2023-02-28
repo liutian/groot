@@ -320,7 +320,6 @@ export default class PropPersistModel {
       abstractValueIdChain,
       componentVersionId: getComponentVersionId(),
       componentId: component.id,
-      orgId: component.orgId
     } as PropValue;
 
     if (getContext().groot.params.mode === StudioMode.Prototype) {

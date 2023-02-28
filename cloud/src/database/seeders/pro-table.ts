@@ -66,7 +66,6 @@ export const create = async (em: EntityManager, org: Organization, release: Rele
     order: 1000,
     componentVersion: tableComponentVersion,
     component: tableComponent,
-    root: false,
     parentItem: columnInnerItem
   });
   await em.persistAndFlush(columnInnerGroup);
