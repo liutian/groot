@@ -65,7 +65,7 @@ export type APIStore = {
   [APIPath.state_remove_stateId]: [{ stateId: number }],
   [APIPath.state_update]: [State, API.Response<State>],
 
-  [APIPath.solution_component_list_solutionId]: [{ solutionId: number }, API.Response<Component[]>],
+  [APIPath.solution_component_list_solutionId]: [{ solutionId: number, all: string }, API.Response<Component[]>],
   [APIPath.release_instance_list_releaseId]: [{ releaseId: number }, API.Response<ComponentInstance[]>],
 
   [APIPath.application_release_list_applicationId]: [{ applicationId: number }, API.Response<Release[]>]

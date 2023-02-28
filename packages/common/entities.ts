@@ -116,3 +116,6 @@ export type Deploy = {
 
 export type Extension = {
 } & Omit<import("../../cloud/src/entities/Extension").Extension, ''>;
+
+export type Solution = {
+} & Omit<import("../../cloud/src/entities/Solution").Solution, ''>;

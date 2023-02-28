@@ -9,15 +9,15 @@ import { PropBlock } from "../../entities/PropBlock";
 import { PropGroup } from "../../entities/PropGroup";
 import { PropItem } from "../../entities/PropItem";
 import { Release } from "../../entities/Release";
-import { Organization } from "../../entities/Organization";
+import { Solution } from "../../entities/Solution";
 
-export const create = async (em: EntityManager, org: Organization, release: Release) => {
+export const create = async (em: EntityManager, solution: Solution, release: Release) => {
   // 创建组件
   const avatarComponent = em.create(Component, {
     name: '头像',
     packageName: 'antd',
     componentName: 'Avatar',
-    org
+    solution
   });
   await em.persistAndFlush(avatarComponent);
 
@@ -100,7 +100,7 @@ export const create = async (em: EntityManager, org: Organization, release: Rele
     name: '个人资料',
     packageName: 'app',
     componentName: 'Profile',
-    org
+    solution
   });
   await em.persistAndFlush(profileComponent);
 

@@ -51,6 +51,9 @@ export const shareBootstrap = () => {
   ], true)
   registerState('gs.workbench.stage.viewport', 'desktop', false)
 
+  registerState('gs.workbench.stage.debugBaseUrl', '', false)
+  registerState('gs.workbench.stage.playgroundPath', '', false)
+
   groot.layout.design('visible', 'secondarySidebar', true);
   groot.layout.design('visible', 'panel', false);
   groot.layout.design('banner', 'center', null)

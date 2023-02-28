@@ -8,7 +8,7 @@ import { Solution } from "./Solution";
 
 export const prototypeBootstrap = () => {
   const { groot } = getContext();
-  const { registerState, getState } = grootStateManager();
+  const { registerState, getState, setState } = grootStateManager();
   const { registerCommand, executeCommand } = grootCommandManager();
 
   getState('gs.ui.viewsContainers').push(...[
@@ -50,6 +50,8 @@ export const prototypeBootstrap = () => {
   groot.layout.primarySidebarWidth = '220px'
 
   groot.onReady(() => {
+    setState('gs.workbench.stage.debugBaseUrl', groot.params.solution.debugBaseUrl)
+    setState('gs.workbench.stage.playgroundPath', groot.params.solution.playgroundPath)
     executeCommand('gc.fetch.prototype', groot.params.componentId, groot.params.versionId)
   })
 }
@@ -65,6 +67,7 @@ const fetchComponent = (componentId: number, versionId) => {
     itemList.forEach(item => {
       parseOptions(item);
     })
+
 
     grootStateManager().setState('gs.studio.component', data)
     grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'first')

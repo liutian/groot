@@ -24,7 +24,7 @@ export class ReleaseService {
     LogicException.assertParamEmpty(rawRelease.imageReleaseId, 'imageReleaseId');
     LogicException.assertParamEmpty(rawRelease.name, 'name');
 
-    const imageRelease = await em.findOne(Release, rawRelease.imageReleaseId);
+    const imageRelease = await em.findOne(Release, rawRelease.imageReleaseId, { populate: ['application'] });
     LogicException.assertNotFound(imageRelease, 'Release', rawRelease.imageReleaseId);
 
     const count = await em.count(Release, { application: imageRelease.application, name: rawRelease.name });
@@ -40,7 +40,9 @@ export class ReleaseService {
 
     const newRelease = em.create(Release, {
       name: rawRelease.name,
-      application: imageRelease.application
+      application: imageRelease.application,
+      playgroundPath: rawRelease.playgroundPath || imageRelease.application.playgroundPath,
+      debugBaseUrl: rawRelease.debugBaseUrl || imageRelease.application.debugBaseUrl
     });
 
     const instanceMap = new Map<number, ComponentInstance>();

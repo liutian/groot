@@ -1,6 +1,6 @@
 import { ApplicationData, IframeDebuggerConfig, iframeNamePrefix, Metadata, PostMessageType } from "@grootio/common";
 
-import { commandBridge, getContext, grootCommandManager, grootHookManager, isPrototypeMode } from "context";
+import { commandBridge, getContext, grootCommandManager, grootHookManager, grootStateManager, isPrototypeMode } from "context";
 
 export default class WorkAreaModel {
   static modelName = 'workArea';
@@ -8,9 +8,6 @@ export default class WorkAreaModel {
 
   public iframeEle: HTMLIFrameElement;
   private iframeReady = false
-  private playgroundPath = ''
-  private appData: ApplicationData;
-  private iframeBasePath: string;
   private iframeDebuggerConfig: IframeDebuggerConfig = {
     runtimeConfig: {}
   }
@@ -18,16 +15,8 @@ export default class WorkAreaModel {
   private viewData: Metadata | Metadata[]
 
   public initIframe(iframe: HTMLIFrameElement) {
-    const { solution, application, mode } = getContext().groot.params
-    if (isPrototypeMode()) {
-      this.iframeBasePath = solution.debugBaseUrl;
-      this.playgroundPath = solution.playgroundPath;
-    } else {
-      this.iframeBasePath = application.debugBaseUrl;
-      this.playgroundPath = application.playgroundPath;
-    }
+    const { mode } = getContext().groot.params
 
-    this.appData = this.buildApplicationData(this.playgroundPath);
     this.iframeEle = iframe;
     this.iframeEle.contentWindow.name = `${iframeNamePrefix}${mode}`;
 
@@ -93,7 +82,7 @@ export default class WorkAreaModel {
 
     registerHook(PostMessageType.OuterSetApplication, (appData) => {
       guard();
-      const messageData = appData || this.appData
+      const messageData = appData || this.buildApplicationData(grootStateManager().getState('gs.workbench.stage.playgroundPath'));
       this.iframeEle.contentWindow.postMessage({ type: PostMessageType.OuterSetApplication, data: messageData }, '*');
     })
 
@@ -182,17 +171,19 @@ export default class WorkAreaModel {
   private refresh = (callback?: Function) => {
     this.pageNavCallback = callback;
 
-    const path = `${this.iframeBasePath}${this.playgroundPath}`;
+    const iframeBasePath = grootStateManager().getState('gs.workbench.stage.debugBaseUrl')
+    const playgroundPath = grootStateManager().getState('gs.workbench.stage.playgroundPath')
+    const path = `${iframeBasePath}${playgroundPath}`;
     if (this.iframeEle.src) {
       if (this.iframeEle.src === path) {
         grootHookManager().callHook(PostMessageType.OuterRefreshView, path)
       } else {
         this.viewData = null;
-        this.iframeDebuggerConfig.controlView = this.playgroundPath;
+        this.iframeDebuggerConfig.controlView = playgroundPath;
         this.iframeEle.src = path;
       }
     } else {
-      this.iframeDebuggerConfig.controlView = this.playgroundPath;
+      this.iframeDebuggerConfig.controlView = playgroundPath;
       this.iframeEle.src = path;
     }
   }

@@ -6,15 +6,15 @@ import { ComponentVersion } from "../../entities/ComponentVersion";
 import { PropBlock } from "../../entities/PropBlock";
 import { PropGroup } from "../../entities/PropGroup";
 import { PropItem } from "../../entities/PropItem";
-import { Organization } from "../../entities/Organization";
+import { Solution } from "../../entities/Solution";
 
-export const create = async (em: EntityManager, org: Organization) => {
+export const create = async (em: EntityManager, solution: Solution) => {
   // 创建组件
   const pageComponent = em.create(Component, {
     name: '容器',
     packageName: 'groot',
     componentName: 'Container',
-    org
+    solution
   });
   await em.persistAndFlush(pageComponent);
 

@@ -64,7 +64,9 @@ export class DatabaseSeeder extends Seeder {
     // 创建迭代
     const release = em.create(Release, {
       name: 'v0.0.1',
-      application
+      application,
+      debugBaseUrl: application.debugBaseUrl,
+      playgroundPath: application.playgroundPath
     });
     application.devRelease = release;
     application.qaRelease = release;
@@ -73,14 +75,14 @@ export class DatabaseSeeder extends Seeder {
     await em.persistAndFlush(release);
 
 
-    await proTableCreate(em, org, release);
+    await proTableCreate(em, solution, release);
 
-    await btnCreate(em, org, release);
+    await btnCreate(em, solution, release);
 
-    await profileCreate(em, org, release);
+    await profileCreate(em, solution, release);
 
-    await containerCreate(em, org);
+    await containerCreate(em, solution);
 
-    await pageContainerCreate(em, org);
+    await pageContainerCreate(em, solution);
   }
 }

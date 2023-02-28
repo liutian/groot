@@ -2,7 +2,7 @@ import { ReactElement } from "react";
 import React from "react";
 import { APIStore } from "./api/API.store";
 import { PostMessageType } from "./data";
-import { Application, Component, ComponentInstance, Release } from "./entities";
+import { Application, Component, ComponentInstance, Release, Solution } from "./entities";
 import { GridLayout } from "./GridLayout";
 import { ApplicationData, DragAddComponentEventDataType, DragAnchorInfo, IframeDebuggerConfig, MarkerInfo, Metadata, RequestFnType } from "./internal";
 
@@ -56,7 +56,7 @@ export type GrootContextParams = {
   mode: StudioMode,
   account: any,
   application: Application,
-  solution: any,
+  solution: Solution,
   instanceId?: number,
   componentId?: number,
   versionId?: number
@@ -197,9 +197,12 @@ export type GrootStateDict = {
 
   'gs.studio.propSettingViews': [{ name: string, packageName: string, packageUrl: string, module: string }, true],
 
-  'gs.studio.breadcrumbList': [{ id: number, name: string }, true]
+  'gs.studio.breadcrumbList': [{ id: number, name: string }, true],
 
-  'gs.workbench.banner.views': [{ id: string, placement: 'left' | 'center' | 'right' }, true]
+  'gs.workbench.banner.views': [{ id: string, placement: 'left' | 'center' | 'right' }, true],
+
+  'gs.workbench.stage.playgroundPath': [string, false],
+  'gs.workbench.stage.debugBaseUrl': [string, false],
 }
 
 export type GrootHookDict = {

@@ -7,8 +7,7 @@ import { PropBlock } from "./PropBlock";
 import { PropGroup } from "./PropGroup";
 import { PropItem } from "./PropItem";
 import { PropValue } from "./PropValue";
-import { Release } from "./Release";
-import { Organization } from "./Organization";
+import { Solution } from "./Solution";
 
 @Entity()
 export class Component extends BaseEntity {
@@ -28,8 +27,8 @@ export class Component extends BaseEntity {
   @OneToOne({ serializer: value => value?.id, serializedName: 'recentVersionId', comment: '组件最新版本' })
   recentVersion?: ComponentVersion;
 
-  @ManyToOne({ serializer: value => value?.id, serializedName: 'orgId' })
-  org: Organization;
+  @ManyToOne({ serializer: value => value?.id, serializedName: 'solutionId' })
+  solution: Solution;
 
   //************************已下是接口入参或者查询返回需要定义的属性************************
 
@@ -49,7 +48,7 @@ export class Component extends BaseEntity {
   // releaseList: Release[];
 
   @Property({ persist: false })
-  orgId?: number;
+  solutionId?: number;
 
   @Property({ persist: false })
   groupList?: PropGroup[];

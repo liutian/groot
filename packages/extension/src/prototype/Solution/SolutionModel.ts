@@ -14,7 +14,7 @@ export default class SolutionModel {
     this.componentAddModalStatus = ModalStatus.Submit;
     getContext().request(APIPath.component_add, {
       ...rawComponent,
-      orgId: getContext().groot.params.solution.id
+      solutionId: getContext().groot.params.solution.id,
     }).then(({ data }) => {
       this.componentAddModalStatus = ModalStatus.None;
       this.componentList.push(data)
@@ -23,7 +23,7 @@ export default class SolutionModel {
   }
 
   public loadList() {
-    getContext().request(APIPath.solution_component_list_solutionId, { solutionId: 1 }).then(({ data }) => {
+    getContext().request(APIPath.solution_component_list_solutionId, { solutionId: 1, all: '1' }).then(({ data }) => {
       this.componentList = data;
     })
   }

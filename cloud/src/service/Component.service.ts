@@ -9,7 +9,7 @@ import { PropBlock } from 'entities/PropBlock';
 import { PropGroup } from 'entities/PropGroup';
 import { PropItem } from 'entities/PropItem';
 import { PropValue } from 'entities/PropValue';
-import { Organization } from 'entities/Organization';
+import { Solution } from 'entities/Solution';
 
 
 @Injectable()
@@ -47,13 +47,13 @@ export class ComponentService {
     if (!rawComponent.packageName || !rawComponent.componentName) {
       throw new LogicException('参数packageName和componentName不能同时为空', LogicExceptionCode.ParamEmpty);
     }
-    LogicException.assertParamEmpty(rawComponent.orgId, 'orgId');
+    LogicException.assertParamEmpty(rawComponent.solutionId, 'solutionId');
 
-    const org = await em.findOne(Organization, rawComponent.orgId);
-    LogicException.assertNotFound(org, 'Organization', rawComponent.orgId);
+    const solution = await em.findOne(Solution, rawComponent.solutionId);
+    LogicException.assertNotFound(solution, 'Solution', rawComponent.solutionId);
 
     const newComponent = em.create(Component, pick(rawComponent, ['name', 'componentName', 'packageName']));
-    newComponent.org = org;
+    newComponent.solution = solution;
 
     await em.begin();
     try {
@@ -98,10 +98,18 @@ export class ComponentService {
     return newComponent;
   }
 
-  async list() {
+  async list(solutionId: number, all = false) {
     const em = RequestContext.getEntityManager();
 
-    const list = await em.find(Component, {});
+    const query: any = {
+      solution: solutionId,
+    }
+
+    if (!all) {
+      query.recentVersion = { publish: true }
+    }
+
+    const list = await em.find(Component, query);
     for (const component of list) {
       component.versionList = await em.find(ComponentVersion, { component });
     }

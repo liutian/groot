@@ -9,15 +9,15 @@ import { PropGroup } from "../../entities/PropGroup";
 import { PropItem } from "../../entities/PropItem";
 import { PropValue } from "../../entities/PropValue";
 import { Release } from "../../entities/Release";
-import { Organization } from "../../entities/Organization";
+import { Solution } from "../../entities/Solution";
 
-export const create = async (em: EntityManager, org: Organization, release: Release) => {
+export const create = async (em: EntityManager, solution: Solution, release: Release) => {
   // 创建组件
   const tableComponent = em.create(Component, {
     name: '列表查询',
     packageName: '@ant-design/pro-table',
     componentName: 'ProTable',
-    org
+    solution
   });
   await em.persistAndFlush(tableComponent);
 

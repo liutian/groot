@@ -1,7 +1,8 @@
-import { Release, StateCategory } from "@grootio/common";
+import { StateCategory } from "@grootio/common";
 import { Entity, Enum, ManyToOne, Property } from "@mikro-orm/core";
 import { BaseEntity } from "./BaseEntity";
 import { ComponentInstance } from "./ComponentInstance";
+import { Release } from "./Release";
 
 @Entity()
 export class State extends BaseEntity {

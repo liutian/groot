@@ -24,6 +24,14 @@ const ReleaseAddModal: React.FC = () => {
     applicationModel.releaseAddModalStatus = ModalStatus.None;
   }
 
+  const changeImageRelease = (releaseId: number) => {
+    const release = applicationModel.releaseList.find(item => item.id === releaseId)
+    form.setFieldsValue({
+      debugBaseUrl: release.debugBaseUrl,
+      playgroundPath: release.playgroundPath
+    })
+  }
+
   return <Modal open={applicationModel.releaseAddModalStatus !== ModalStatus.None} mask={false} title="新增迭代"
     confirmLoading={applicationModel.releaseAddModalStatus === ModalStatus.Submit}
     onOk={handleOk} onCancel={handleCancel} okText="新增">
@@ -33,7 +41,9 @@ const ReleaseAddModal: React.FC = () => {
       </Form.Item>
 
       <Form.Item label="克隆" name="imageReleaseId" >
-        <Select>
+        <Select onChange={(e) => {
+          changeImageRelease(e)
+        }}>
           {
             applicationModel.releaseList.map((release) => {
               return <Select.Option key={release.id} value={release.id}>{release.name}</Select.Option>
@@ -42,6 +52,13 @@ const ReleaseAddModal: React.FC = () => {
         </Select>
       </Form.Item>
 
+      <Form.Item label="页面地址" name="debugBaseUrl">
+        <Input />
+      </Form.Item>
+
+      <Form.Item label="调试地址" name="playgroundPath">
+        <Input />
+      </Form.Item>
     </Form>
   </Modal>
 }

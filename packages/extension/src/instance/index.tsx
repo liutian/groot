@@ -147,6 +147,9 @@ const fetchRootInstance = (rootInstanceId: number) => {
     //   })
     // }
 
+    const application = getContext().groot.params.application
+    grootStateManager().setState('gs.workbench.stage.debugBaseUrl', release.debugBaseUrl || application.debugBaseUrl)
+    grootStateManager().setState('gs.workbench.stage.playgroundPath', release.playgroundPath || application.playgroundPath)
     grootStateManager().setState('gs.studio.release', release)
     grootStateManager().setState('gs.studio.allComponentInstance', list)
 
