@@ -27,8 +27,14 @@ const Workbench: React.FC<{ layout: GridLayout }> = ({ layout }) => {
       const style = containerEleRef.current.style
 
       style['grid-template-columns'] = layout.styles.gridTemplateColumns;
-      style['gridTemplateRows'] = layout.styles.gridTemplateRows
-      style['gridTemplateAreas'] = layout.styles.gridTemplateAreas
+      style['grid-template-rows'] = layout.styles.gridTemplateRows;
+      style['grid-template-areas'] = layout.styles.gridTemplateAreas;
+      style.setProperty('--groot-banner-height', layout.bannerHeight)
+      style.setProperty('--groot-panel-height', layout.panelHeight)
+      style.setProperty('--groot-status-bar-height', layout.statusBarHeight)
+      style.setProperty('--groot-activity-bar-width', layout.activityBarWidth)
+      style.setProperty('--groot-primary-sidebar-width', layout.primarySidebarWidth)
+      style.setProperty('--groot-secondary-sidebar-width', layout.secondarySidebarWidth)
     }
   }, []);
 
