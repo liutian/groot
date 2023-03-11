@@ -1,7 +1,12 @@
 import { GrootType, iframeNamePrefix, UIManagerConfig, StudioMode } from "@grootio/common";
 
-export const appControlMode = window.self !== window.top && window.self.name.startsWith(iframeNamePrefix);
-export const appControlType: StudioMode = (appControlMode ? window.self.name.replace(iframeNamePrefix, '') : '') as StudioMode;
+export let controlMode: StudioMode;
+
+const appControlMode = window.self !== window.top && window.self.name.startsWith(iframeNamePrefix);
+if (appControlMode) {
+  controlMode = window.self.name.replace(iframeNamePrefix, '') as StudioMode;
+}
+
 
 // 运行时配置项
 export const globalConfig: UIManagerConfig = {
@@ -18,9 +23,8 @@ export const setConfig = (customConfig: UIManagerConfig, defaultConfig: UIManage
 
 export const groot = {
   version: '0.0.1',
-  appControlMode,
-  appControlType,
-  globalConfig
+  controlMode,
+  config: globalConfig
 } as GrootType;
 
 

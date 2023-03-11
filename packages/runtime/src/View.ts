@@ -1,7 +1,8 @@
-import { Metadata, ViewData, PostMessageType } from "@grootio/common";
+import type { Metadata, ViewData } from "@grootio/common";
+import { PostMessageType } from "@grootio/common";
 
 import { buildComponent, reBuildComponent } from "./compiler";
-import { appControlMode } from "./config";
+import { controlMode } from "./config";
 
 export class View {
   readonly key: string;
@@ -19,7 +20,7 @@ export class View {
     this.metadataList = data.metadataList;
     this.controlMode = controlMode;
 
-    if (!appControlMode && !this.metadataUrl && (!Array.isArray(this.metadataList) || this.metadataList.length === 0)) {
+    if (!controlMode && !this.metadataUrl && (!Array.isArray(this.metadataList) || this.metadataList.length === 0)) {
       throw new Error('metadataUrl 和 metadataList 不能同时为空');
     }
   }
@@ -55,7 +56,7 @@ export class View {
       this.status = 'loading';
     }
 
-    if (appControlMode && this.controlMode) {
+    if (controlMode && this.controlMode) {
       window.parent.postMessage({ type: PostMessageType.InnerFetchView }, '*');
       if (!this.metadataPromise) {
         this.metadataPromise = new Promise((resolve) => {

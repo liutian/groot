@@ -1,10 +1,11 @@
 import { Form, Input, Modal, Radio, Select, Space, Switch, Typography } from "antd";
 import React, { useEffect, useState } from "react";
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
-import { PropItem, PropItemType, PropItemTypeNameMap, useModel } from "@grootio/common";
+import { PropItem, PropItemType, useModel } from "@grootio/common";
 import PropPersistModel from "../PropPersistModel";
 import { grootStateManager } from "context";
 import { propKeyRule, RemotePluginKeySep } from "util/utils";
+import { PropItemTypeNameMap } from "util/data-map";
 
 
 const PropItemSetting: React.FC = () => {
@@ -104,7 +105,7 @@ const PropItemSetting: React.FC = () => {
 
           if (type === PropItemType.Extension) {
             const options = propSettingView.map((item) => {
-              return { name: item.name, key: `${item.packageName}${RemotePluginKeySep}${item.module}` }
+              return { name: item.name, key: `${item.remotePackage}${RemotePluginKeySep}${item.remoteModule}` }
             })
 
             return (<Form.Item label="子类型" name="subType" rules={[{ required: true }]} >

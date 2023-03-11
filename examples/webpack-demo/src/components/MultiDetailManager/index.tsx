@@ -24,10 +24,10 @@ const MultiDetailManager: React.FC<PropsType> = ({ children, _groot, value = [],
   return (<>
     <div>明细项</div>
     {
-      _groot.appControlMode && (<ComponentSlot children={children}></ComponentSlot>)
+      _groot.controlMode && (<ComponentSlot children={children}></ComponentSlot>)
     }
     {
-      !_groot.appControlMode && value.map((item) => {
+      !_groot.controlMode && value.map((item) => {
         return (<div key={item.id}>
           <FormAdapter ref={(form) => item.form = form} onChange={(values) => {
             const index = value.findIndex(data => data.id === item.id);
@@ -44,7 +44,7 @@ const MultiDetailManager: React.FC<PropsType> = ({ children, _groot, value = [],
       })
     }
     <div>
-      <Button onClick={add} type="primary" disabled={_groot.appControlMode} style={{ width: '100%' }}>添加</Button>
+      <Button onClick={add} type="primary" disabled={!!_groot.controlMode} style={{ width: '100%' }}>添加</Button>
     </div>
   </>)
 }

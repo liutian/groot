@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import { loadRemoteModule } from "./fetch-remote-module";
 
 type PropsType = {
-  packageName: string,
-  module: string,
-  packageUrl: string,
+  remotePackage: string,
+  remoteModule: string,
+  remoteUrl: string,
   fallback?: React.ReactNode
 }
 export const ViewLoader: React.FC<PropsType> = (config) => {
@@ -15,7 +15,7 @@ export const ViewLoader: React.FC<PropsType> = (config) => {
       return;
     }
 
-    setComponent(React.lazy(() => loadRemoteModule(config.packageName, config.module, config.packageUrl)));
+    setComponent(React.lazy(() => loadRemoteModule(config.remotePackage, config.remoteModule, config.remoteUrl)));
   }, [config]);
 
   return <>{

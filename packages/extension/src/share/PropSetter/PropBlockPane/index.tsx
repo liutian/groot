@@ -2,7 +2,7 @@ import { Button, Checkbox, Col, DatePicker, Form, Input, InputNumber, Radio, Row
 import { VerticalAlignTopOutlined, DeleteOutlined, VerticalAlignBottomOutlined, EditOutlined } from '@ant-design/icons';
 import { useState } from "react";
 
-import { pick, PropBlock, PropBlockLayout, PropBlockLayoutKeyMap, PropItem, PropItemType, PropValueType, useModel, ValueStruct, ViewLoader } from "@grootio/common";
+import { pick, PropBlock, PropBlockLayout, PropItem, PropItemType, PropValueType, useModel, ValueStruct, ViewLoader } from "@grootio/common";
 import { parsePropItemValue } from "@grootio/core";
 
 import ComponentChildren from "./ComponentChildren";
@@ -11,8 +11,9 @@ import styles from './index.module.less';
 import TextEditor from "./TextEditor";
 import PropPersistModel from "../PropPersistModel";
 import PropHandleModel from "../PropHandleModel";
-import { getContext, grootCommandManager, grootStateManager, isPrototypeMode } from "context";
-import { calcPropValueIdChain, RemotePluginKeySep, stringify } from "util/utils";
+import { grootCommandManager, grootStateManager, isPrototypeMode } from "context";
+import { calcPropValueIdChain, RemotePluginKeySep } from "util/utils";
+import { PropBlockLayoutKeyMap } from "util/data-map";
 
 type PropType = {
   block: PropBlock,
@@ -160,7 +161,7 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
     } else if (item.type === PropItemType.Component) {
       return <ComponentChildren />
     } else if (item.type === PropItemType.Extension) {
-      const config = propSettingView.find(configItem => `${configItem.packageName}${RemotePluginKeySep}${configItem.module}` === item.subType);
+      const config = propSettingView.find(configItem => `${configItem.remotePackage}${RemotePluginKeySep}${configItem.remoteModule}` === item.subType);
       return <ViewLoader {...config} />
     }
 

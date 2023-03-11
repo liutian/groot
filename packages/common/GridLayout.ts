@@ -13,6 +13,13 @@ export type LayoutSetting = {
   bannerLayout: 'left' | 'right' | 'center' | 'stretch'
 }
 
+
+/**
+ * 提供类似vscode布局方案
+ * 通过layoutSetting来调整布局，然后通过refresh()刷新布局
+ * 另一种简洁方式：design(...)
+ * 也可以通过 watch 监听布局变化
+ */
 export class GridLayout extends EventTarget {
   public bannerHeight = '40px'
   public panelHeight = '80px'
@@ -54,8 +61,7 @@ export class GridLayout extends EventTarget {
       this.layoutSetting[type + 'Layout'] = value;
     }
 
-    this.calcLayoutStyle();
-    this.dispatchEvent(new Event('change'));
+    this.refresh()
   }
 
   public refresh(emit = true) {

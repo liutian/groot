@@ -11,6 +11,6 @@ export const defaultConfig: Partial<UIManagerConfig> = {
       PageContainer
     },
   },
-  _createComponent: createComponent,
-  _refreshComponent: refreshComponent
+  createComponent,
+  refreshComponent
 };

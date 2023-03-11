@@ -9,10 +9,10 @@ export * from './api/API.common';
 export * from './api/API.path';
 export * from './api/API.store';
 export * from './util';
-export * from './data';
+export * from './enum';
 export * from './GridLayout';
 export * from './reactive';
 export * from './ViewLoader';
-export * from './robot2';
+export * from './robot';
 export * from './MouseFollow';
 

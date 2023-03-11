@@ -9,8 +9,6 @@ type PropsType = {
 
 /**
  * 监控鼠标拖拽操作时的坐标位置
- * @param param0 
- * @returns 
  */
 export const MouseFollow: React.FC<PropsType> = ({ start, end, move, cursor = 'move', ...props }) => {
   const hostRef = useRef<HTMLDivElement>(null);

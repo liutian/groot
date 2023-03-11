@@ -1,29 +1,40 @@
 import { ReactElement } from "react";
 import React from "react";
 import { APIStore } from "./api/API.store";
-import { PostMessageType } from "./data";
 import { Application, Component, ComponentInstance, Release, Solution } from "./entities";
 import { GridLayout } from "./GridLayout";
-import { ApplicationData, DragAddComponentEventDataType, DragAnchorInfo, IframeDebuggerConfig, MarkerInfo, Metadata, RequestFnType } from "./internal";
-
-export enum StudioMode {
-  Prototype = 'prototype',
-  Instance = 'instance'
-}
-
-export type ModelClass<T extends { emitter: Function }> = (new () => T) & { modelName: string };
-
-export type UseModelFnType = <T extends { emitter: Function }>(model: ModelClass<T>, isRoot?: boolean) => T;
+import { ApplicationData, IframeDebuggerConfig, Metadata, RequestFnType } from "./internal";
+import { StudioMode } from "./enum";
 
 // 公开WorkbenchModel类型必须单独定义，不能直接通过ts import(...) ，该语法会导致ts深入解析 workbench项目中 WorkbenchModel 其他依赖项导致重复甚至循环解析
 
-export enum ModalStatus {
-  None = 'none',
-  Init = 'init',
-  Submit = 'submit'
-}
 
 export type MainFunction = (context: ExtensionContext) => ExtensionConfigSchema;
+
+export type ExtensionConfigSchema = {
+}
+
+export type GrootContextParams = {
+  mode: StudioMode,
+  account: any,
+  application: Application,
+  solution: Solution,
+  instanceId?: number,
+  componentId?: number,
+  versionId?: number
+}
+
+export type RemoteExtension = {
+  key?: string,
+  package: string,
+  title: string,
+  url: string,
+  module: string
+}
+
+
+
+// 插件机制
 
 export type GrootContext = {
   params: GrootContextParams,
@@ -52,19 +63,8 @@ export type HookManager = <HT extends Record<string, [any[], any]>>() => {
   callHook: GrootContextCallHook<HT>
 }
 
-export type GrootContextParams = {
-  mode: StudioMode,
-  account: any,
-  application: Application,
-  solution: Solution,
-  instanceId?: number,
-  componentId?: number,
-  versionId?: number
-}
-
 export type GrootContextRegisterCommand<CT extends Record<string, [any[], any]>> = <K extends keyof CT & string, AR extends CT[K][0], R extends CT[K][1]>(commandName: K, command: (originCommand: Function, ...args: AR) => R) => Function
 export type GrootContextExecuteCommand<CT extends Record<string, [any[], any]>> = <K extends keyof CT & string, AR extends CT[K][0], R extends CT[K][1]>(commandName: K, ...args: AR) => R;
-
 
 export type GrootContextRegisterState<ST extends Record<string, [any, boolean]>> = <
   K extends keyof ST & string,
@@ -116,7 +116,6 @@ export type GrootContextCallHook<HT extends Record<string, [any[], any]>> = <
   R extends HT[K][1]
 >(commandName: K, ...args: AR) => R[];
 
-
 export type ExtensionContext = {
   extName: string,
   extPackageName: string,
@@ -133,22 +132,6 @@ export type ExtensionRuntime = {
   main: MainFunction,
   config: any
 }
-
-
-export type HostConfig = {
-}
-
-export type ExtensionConfigSchema = {
-}
-
-export type RemoteExtension = {
-  key?: string,
-  package: string,
-  title: string,
-  url: string,
-  module: string
-}
-
 
 export type GrootCommandDict = {
   'gc.workbench.banner.render': [[], ReactElement | null],
@@ -195,7 +178,7 @@ export type GrootStateDict = {
   'gs.studio.release': [Release, false],
   // 'gs.studio.componentVersion': [ComponentVersion, false],
 
-  'gs.studio.propSettingViews': [{ name: string, packageName: string, packageUrl: string, module: string }, true],
+  'gs.studio.propSettingViews': [{ name: string, remotePackage: string, remoteUrl: string, remoteModule: string }, true],
 
   'gs.studio.breadcrumbList': [{ id: number, name: string }, true],
 
@@ -236,13 +219,48 @@ export type GrootHookDict = {
   [PostMessageType.OuterRefreshView]: [[string], void]
 }
 
-
-
-type ViewRender = string | ReactElement | React.FC;
-
 export type CommandObject = { callback: Function, provider: string, origin?: CommandObject }
 export type StateObject = { value: any, provider: string, eventTarget: EventTarget, multi: boolean }
 export type HookObject = { callback: Function, provider: string }
+
+
+
+
+
+export enum PostMessageType {
+
+  InnerReady = 'inner_ready',
+  OuterSetConfig = 'outer_set_config',
+  InnerFetchApplication = 'inner_fetch_application',
+  OuterSetApplication = 'outer_set_application',
+  InnerApplicationnReady = 'inner_applicationn_ready',
+  InnerFetchView = 'inner_fetch_view',
+  OuterUpdateState = 'outer_update_state',
+  OuterUpdateComponent = 'outer_update_component',
+  OuterRefreshView = 'outer_refresh_view',
+
+  OuterDragComponentOver = 'outer_drag_component_over',
+  OuterDragComponentEnter = 'outer_drag_component_enter',
+  OuterDragComponentLeave = 'outer_drag_component_leave',
+  OuterDragComponentDrop = 'outer_drag_component_drop',
+  InnerDragHitSlot = 'inner_drag_hit_slot',
+  InnerUpdateDragAnchor = 'inner_update_drag_anchor',
+
+  InnerOutlineHover = 'inner_outline_hover',
+  InnerOutlineSelect = 'inner_outline_Select',
+  InnerOutlineUpdate = 'inner_outline_update',
+  OuterOutlineReset = 'outer_outline_reset',
+  OuterComponentSelect = 'outer_component_select',
+}
+
+
+
+
+
+
+
+
+type ViewRender = string | ReactElement | React.FC;
 
 export type ViewsContainer = {
   id: string,
@@ -265,3 +283,37 @@ export const viewRender = (view: ViewRender, id?: any) => {
 }
 
 
+
+
+
+
+
+
+
+export type DragAddComponentEventDataType = {
+  propItemId: number,
+  abstractValueIdChain?: string,
+  parentInstanceId: number
+  componentId: number,
+  currentInstanceId?: number,
+  direction?: 'next' | 'pre'
+}
+
+export type MarkerInfo = {
+  clientRect: DOMRect,
+  tagName: string,
+  instanceId: number,
+  parentInstanceId?: number,
+  rootInstanceId: number,
+  propItemId?: number,
+  abstractValueIdChain?: string
+}
+
+export type DragAnchorInfo = {
+  direction: 'bottom' | 'top',
+  left: number,
+  width: number,
+  top: number,
+  hitEle?: HTMLElement,
+  slotRect: DOMRect
+}

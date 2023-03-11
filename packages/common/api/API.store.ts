@@ -2,7 +2,11 @@ import { State, Application, Component, ComponentInstance, ComponentVersion, Dep
 import { API } from './API.common';
 import type { APIPath } from './API.path';
 
-// key APIPath枚举值: value [请求参数类型 , 返回数据类型]
+// 
+/**
+ * 请求服务器接口的规则列表
+ * 格式 [key APIPath枚举值]: [请求参数类型 , 返回数据类型] 
+ */
 export type APIStore = {
   [APIPath.auth_currentAccount]: [null, API.Response<API.Account>];
   [APIPath.auth_logout]: [];

@@ -1,5 +1,5 @@
 import { Metadata, PropMetadata, PropMetadataType, RuntimeComponentValueType } from "@grootio/common";
-import { globalConfig, groot } from "./config";
+import { controlMode, globalConfig, groot } from "./config";
 import { launchWatch } from "./monitor";
 
 
@@ -7,20 +7,20 @@ const viewEleMap = new Map<number, HTMLElement>();
 const viewMetadataMap = new Map<number, Metadata>();
 
 export const buildComponent = (metadata: Metadata, store: Metadata[], isRoot = false) => {
-  if (!globalConfig._prototypeMode) {
+  if (!controlMode) {
     // 推迟到页面加载时执行监听
     launchWatch(viewEleMap, viewMetadataMap);
   }
 
   processAdvancedProp(metadata, store);
 
-  return globalConfig._createComponent(metadata, isRoot, viewEleMap, viewMetadataMap);
+  return globalConfig.createComponent(metadata, isRoot, viewEleMap, viewMetadataMap);
 }
 
 export const reBuildComponent = (metadata: Metadata, store: Metadata[]) => {
   processAdvancedProp(metadata, store);
 
-  globalConfig._refreshComponent && globalConfig._refreshComponent(metadata.id);
+  globalConfig.refreshComponent && globalConfig.refreshComponent(metadata.id);
 }
 
 const processAdvancedProp = (metadata: Metadata, store: Metadata[]) => {

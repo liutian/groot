@@ -131,11 +131,13 @@ function buildPropObjectForLeafItem(propItem: PropItem, ctx: Object, ctxKeyChain
     metadata.advancedProps.push({
       keyChain: ctxKeyChain,
       type: PropMetadataType.Json,
+      data: null
     })
   } else if (propItem.type === PropItemType.Function) {
     metadata.advancedProps.push({
       keyChain: ctxKeyChain,
       type: PropMetadataType.Function,
+      data: null
     })
   } else if (propItem.type === PropItemType.Component) {
     if (!newCTX[propEnd]) {

@@ -1,3 +1,7 @@
+/**
+ * 服务器接口地址列表
+ * 枚举值格式 [method get请求可以省略] + <url 接口地址>
+ */
 export enum APIPath {
   auth_currentAccount = 'auth/current-account',
   auth_logout = 'auth/logout',

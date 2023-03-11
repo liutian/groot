@@ -1,0 +1,76 @@
+<mxfile host="65bd71144e">
+    <diagram id="dX5xL5w637CH2jivHBS5" name="第 1 页">
+        <mxGraphModel dx="826" dy="357" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="2" value="Pangu" style="whiteSpace=wrap;html=1;fillColor=#CC6600;fontColor=#FFFFFF;" vertex="1" parent="1">
+                    <mxGeometry x="80" y="610" width="400" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="5" value="Studio" style="rounded=0;whiteSpace=wrap;html=1;fontColor=#FFFFFF;fillColor=#FFB366;" vertex="1" parent="1">
+                    <mxGeometry x="141" y="500" width="80" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="6" value="主应用" style="rounded=0;whiteSpace=wrap;html=1;fontColor=#FFFFFF;fillColor=#FFB366;dashed=1;" vertex="1" parent="1">
+                    <mxGeometry x="377" y="500" width="80" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="7" value="extension" style="rounded=0;whiteSpace=wrap;html=1;fontColor=#FFFFFF;fillColor=#FFB366;" vertex="1" parent="1">
+                    <mxGeometry x="141" y="390" width="80" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="8" value="" style="shape=flexArrow;endArrow=classic;html=1;fontColor=#FFFFFF;" edge="1" parent="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="180.51999999999998" y="600" as="sourcePoint"/>
+                        <mxPoint x="181" y="550" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="9" value="子应用" style="rounded=0;whiteSpace=wrap;html=1;fontColor=#FFFFFF;fillColor=#FFB366;dashed=1;" vertex="1" parent="1">
+                    <mxGeometry x="377" y="390" width="80" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="12" value="groot插件" style="rounded=0;whiteSpace=wrap;html=1;fontColor=#FFFFFF;fillColor=#FFB366;" vertex="1" parent="1">
+                    <mxGeometry x="80" y="280" width="80" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="15" value="" style="shape=flexArrow;endArrow=classic;html=1;fontColor=#FFFFFF;" edge="1" parent="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="180.51999999999998" y="490" as="sourcePoint"/>
+                        <mxPoint x="181" y="440" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="16" value="groot插件" style="rounded=0;whiteSpace=wrap;html=1;fontColor=#FFFFFF;fillColor=#FFB366;" vertex="1" parent="1">
+                    <mxGeometry x="211" y="280" width="80" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="17" value="" style="shape=flexArrow;endArrow=classic;html=1;fontColor=#FFFFFF;" edge="1" parent="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="180.51999999999998" y="380" as="sourcePoint"/>
+                        <mxPoint x="140" y="340" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="18" value="" style="shape=flexArrow;endArrow=classic;html=1;fontColor=#FFFFFF;" edge="1" parent="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="191" y="380" as="sourcePoint"/>
+                        <mxPoint x="230" y="340" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="19" value="" style="shape=flexArrow;endArrow=classic;html=1;fontColor=#FFFFFF;" edge="1" parent="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="416.52" y="600" as="sourcePoint"/>
+                        <mxPoint x="417" y="550" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="20" value="" style="shape=flexArrow;endArrow=classic;html=1;fontColor=#FFFFFF;" edge="1" parent="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="416.52" y="490" as="sourcePoint"/>
+                        <mxPoint x="417" y="440" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="21" value="子应用插件" style="rounded=0;whiteSpace=wrap;html=1;fontColor=#FFFFFF;fillColor=#FFB366;dashed=1;" vertex="1" parent="1">
+                    <mxGeometry x="377" y="280" width="80" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="22" value="" style="shape=flexArrow;endArrow=classic;html=1;fontColor=#FFFFFF;" edge="1" parent="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="416.52" y="380" as="sourcePoint"/>
+                        <mxPoint x="417" y="330" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

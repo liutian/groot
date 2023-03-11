@@ -1,6 +1,6 @@
 import React, { useEffect, useReducer, useRef } from "react";
 
-import { appControlMode, globalConfig, groot } from "@grootio/runtime";
+import { globalConfig, groot } from "@grootio/runtime";
 import { Metadata } from "@grootio/common";
 
 const refreshFnMap = new Map<number, Function>();
@@ -28,7 +28,7 @@ export const createComponent = (metadata: Metadata, isRoot: boolean, viewEleMap,
       }
     }, []);
 
-    if (appControlMode) {
+    if (groot.controlMode) {
       console.log(`组件刷新 ${componentName}`);
     }
 
@@ -36,7 +36,7 @@ export const createComponent = (metadata: Metadata, isRoot: boolean, viewEleMap,
     const propsObj = Object.assign({}, metadata.propsObj);
     delete propsObj.$setting;
     propsObj._groot = groot;
-    if (!appControlMode && !globalConfig.useWrapper) {
+    if (!groot.controlMode && !globalConfig.useWrapper) {
       return React.createElement(module, propsObj)
     } else {
 

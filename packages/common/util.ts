@@ -51,9 +51,3 @@ export const isBaseType = (value: any) => {
 }
 
 
-export const compareGrootProxy = (proxyA: any, proxyB: any) => {
-  let targetA = proxyA.__groot_origin || proxyA;
-  let targetB = proxyB.__groot_origin || proxyB;
-
-  return targetA === targetB
-}

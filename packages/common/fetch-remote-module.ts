@@ -1,4 +1,11 @@
-
+/**
+ * 动态加载webpack模块联邦
+ * @param remotePackage 远程包名
+ * @param remoteModule 远程模块名
+ * @param remoteUrl 远程地址
+ * @param sharedScope webpack共享作用域
+ * @returns Promise
+ */
 export const loadRemoteModule = (remotePackage: string, remoteModule: string, remoteUrl: string, sharedScope = 'default') => {
   return getOrLoadModule(remotePackage, remoteUrl, sharedScope).then((container: any) => {
     return container.get(remoteModule).then((factory) => {

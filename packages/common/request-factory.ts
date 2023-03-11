@@ -3,14 +3,6 @@ import { RequestFnType } from './internal';
 export const requestFactory = <T extends Record<string, any[]>>(config: ConfigType) => {
   axiosWrapper(config);
 
-  /**
-   * 该方法主要功能是转换接口入参和返回值结构，目的是更好和不同项目进行适配，少一些数据转换的代码
-   * 不同的项目，该文件适配逻辑可能不同
-   * @param path 接口地址
-   * @param data 接口传参
-   * @param config axios其他配置项
-   * @returns
-   */
   const request: RequestFnType<T> & { clone: CloneType<T> } = (path, data?, axiosConfig?) => {
     let [method, url] = path.trim().split(/\s+/gim);
     // 默认get请求不需要加method
@@ -78,7 +70,6 @@ function axiosWrapper(config: ConfigType) {
         // path: /api/user/list/:typeCode  data: {typeCode: 'xyz', name: 'aaa'}
         // 转换
         // path: /api/user/list/axy  data: {name: 'aaa'}
-        // ** 尽量不要使用url参数占位符
         const [pathname, search] = [newUrl.pathname, newUrl.search].map(str => {
           return str.replace(/:[^/?&#]+/img, (matchStr) => {
             const key = matchStr.substr(1);

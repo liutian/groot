@@ -1,5 +1,5 @@
-import { DragAddComponentEventDataType, DragAnchorInfo, MarkerInfo, Metadata, PostMessageType } from "@grootio/common";
-import { appControlMode } from "./config";
+import { DragAddComponentEventDataType, DragAnchorInfo, MarkerInfo, Metadata, PostMessageType, RuntimeComponentValueType } from "@grootio/common";
+import { controlMode } from "./config";
 
 let _viewEleMap: Map<number, HTMLElement>;
 let _viewMetadataMap: Map<number, Metadata>;
@@ -12,7 +12,7 @@ let activeSlotEle: HTMLElement & {
 };
 
 export const launchWatch = (viewEleMap: Map<number, HTMLElement>, viewMetadataMap: Map<number, Metadata>) => {
-  if (monitorRunning || !appControlMode) {
+  if (monitorRunning || !controlMode) {
     return () => { };
   }
   _viewEleMap = viewEleMap;
@@ -162,8 +162,7 @@ export function respondDragDrop(positionX: number, positionY: number, componentI
   const keyChain = activeSlotEle.dataset.grootKeyChain;
   const parentMetadata = _viewMetadataMap.get(parentInstanceId);
   const propMetadata = parentMetadata.advancedProps.find(item => item.keyChain === keyChain);
-  const propItemId = propMetadata.data.propItemId;
-  const abstractValueIdChain = propMetadata.data.abstractValueIdChain;
+  const { propItemId, abstractValueIdChain } = propMetadata.data as RuntimeComponentValueType;
   if (activeSlotEle.dataset.grootAllowHighlight) {
     window.parent.postMessage({
       type: PostMessageType.InnerDragHitSlot,

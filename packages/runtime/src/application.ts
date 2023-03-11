@@ -1,7 +1,7 @@
 import { ApplicationData, IframeDebuggerConfig, PostMessageType, UIManagerConfig } from '@grootio/common';
 
 import { resetWatch, outerSelected, updateActiveRect, respondDragOver, respondDragEnter, respondDragLeave, respondDragDrop } from './monitor';
-import { appControlMode, globalConfig, groot, setConfig } from './config';
+import { controlMode, globalConfig, groot, setConfig } from './config';
 import { View } from './View';
 
 export enum ApplicationStatus {
@@ -36,7 +36,7 @@ const allViewMap = new Map<string, View>();
 export function bootstrap(customConfig: UIManagerConfig, defaultConfig: UIManagerConfig): ApplicationInstance {
   setConfig(customConfig, defaultConfig);
 
-  if (appControlMode) {
+  if (controlMode) {
     window.parent.postMessage({ type: PostMessageType.InnerReady }, '*');
     window.addEventListener('message', onMessage);
   }
@@ -107,7 +107,7 @@ function loadApplicationData(): Promise<void> {
 }
 
 function fetchApplicationData(): Promise<ApplicationData> {
-  if (appControlMode) {
+  if (controlMode) {
     return new Promise((resolve, reject) => {
       iframeApplicationLoadResolve = resolve;
       window.parent.postMessage({ type: PostMessageType.InnerFetchApplication }, '*');
@@ -129,10 +129,10 @@ function fetchApplicationData(): Promise<ApplicationData> {
 function initApplication(data: ApplicationData) {
   // 初始化view
   data.views.forEach((viewData) => {
-    const view = new View(viewData, appControlMode && viewData.key === iframeDebuggerConfig.controlView);
+    const view = new View(viewData, controlMode && viewData.key === iframeDebuggerConfig.controlView);
     allViewMap.set(view.key, view);
   });
-  if (appControlMode) {
+  if (controlMode) {
     window.parent.postMessage({ type: PostMessageType.InnerApplicationnReady }, '*');
   }
 }
