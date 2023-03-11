@@ -21,7 +21,7 @@ export const create = async (em: EntityManager, solution: Solution) => {
   // 创建组件版本
   const pageComponentVersion = em.create(ComponentVersion, {
     name: 'v0.0.1',
-    component: pageComponent
+    component: pageComponent,
   });
   pageComponent.recentVersion = pageComponentVersion;
   await em.persistAndFlush(pageComponentVersion);

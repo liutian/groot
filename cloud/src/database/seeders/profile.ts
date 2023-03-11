@@ -24,7 +24,8 @@ export const create = async (em: EntityManager, solution: Solution, release: Rel
   // 创建组件版本
   const avatarComponentVersion = em.create(ComponentVersion, {
     name: 'v0.0.1',
-    component: avatarComponent
+    component: avatarComponent,
+    publish: true
   });
   avatarComponent.recentVersion = avatarComponentVersion;
   await em.persistAndFlush(avatarComponentVersion);
@@ -107,7 +108,8 @@ export const create = async (em: EntityManager, solution: Solution, release: Rel
   // 创建组件版本
   const profileComponentVersion = em.create(ComponentVersion, {
     name: 'v0.0.1',
-    component: profileComponent
+    component: profileComponent,
+    publish: true
   });
   profileComponent.recentVersion = profileComponentVersion;
   await em.persistAndFlush(profileComponentVersion);

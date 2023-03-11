@@ -24,7 +24,8 @@ export const create = async (em: EntityManager, solution: Solution, release: Rel
   // 创建组件版本
   const tableComponentVersion = em.create(ComponentVersion, {
     name: 'v0.0.1',
-    component: tableComponent
+    component: tableComponent,
+    publish: true
   });
   tableComponent.recentVersion = tableComponentVersion;
   await em.persistAndFlush(tableComponentVersion);

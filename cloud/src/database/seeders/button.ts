@@ -23,7 +23,8 @@ export const create = async (em: EntityManager, solution: Solution, release: Rel
   // 创建组件版本
   const btnComponentVersion = em.create(ComponentVersion, {
     name: 'v0.0.1',
-    component: btnComponent
+    component: btnComponent,
+    publish: true
   });
   btnComponent.recentVersion = btnComponentVersion;
   await em.persistAndFlush(btnComponentVersion);
