@@ -1,4 +1,4 @@
-import { Metadata, PropMetadata, PropMetadataType, RuntimeComponentValueType } from "@grootio/common";
+import { Metadata, PropMetadata, PropMetadataType, RuntimeComponentValueType, StudioMode } from "@grootio/common";
 import { controlMode, globalConfig, groot } from "./config";
 import { launchWatch } from "./monitor";
 
@@ -7,8 +7,7 @@ const viewEleMap = new Map<number, HTMLElement>();
 const viewMetadataMap = new Map<number, Metadata>();
 
 export const buildComponent = (metadata: Metadata, store: Metadata[], isRoot = false) => {
-  if (!controlMode) {
-    // 推迟到页面加载时执行监听
+  if (controlMode === StudioMode.Instance) {
     launchWatch(viewEleMap, viewMetadataMap);
   }
 
