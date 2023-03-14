@@ -1,4 +1,4 @@
-import { DragAddComponentEventDataType, DragAnchorInfo, MarkerInfo, Metadata, PostMessageType, RuntimeComponentValueType } from "@grootio/common";
+import { DragAddComponentEventData, ComponentDragAnchor, ComponentAnchor, Metadata, PostMessageType, PropMetadataComponent, PropMetadataType } from "@grootio/common";
 import { controlMode } from "./config";
 
 let _viewEleMap: Map<number, HTMLElement>;
@@ -62,7 +62,7 @@ export function outerSelected(instanceId: number) {
       rootInstanceId: metadata.rootId,
       propItemId: metadata.$$runtime.propItemId,
       abstractValueIdChain: metadata.$$runtime.abstractValueIdChain
-    } as MarkerInfo
+    } as ComponentAnchor
   }, '*');
 }
 
@@ -71,7 +71,7 @@ export function updateActiveRect() {
     return;
   }
 
-  let selectedInfo: MarkerInfo, hoverInfo: MarkerInfo;
+  let selectedInfo: ComponentAnchor, hoverInfo: ComponentAnchor;
   if (outlineSelectedInstanceId) {
     const selectedEle = _viewEleMap.get(outlineSelectedInstanceId);
     const selectedMetadata = _viewMetadataMap.get(outlineSelectedInstanceId);
@@ -162,7 +162,10 @@ export function respondDragDrop(positionX: number, positionY: number, componentI
   const keyChain = activeSlotEle.dataset.grootKeyChain;
   const parentMetadata = _viewMetadataMap.get(parentInstanceId);
   const propMetadata = parentMetadata.advancedProps.find(item => item.keyChain === keyChain);
-  const { propItemId, abstractValueIdChain } = propMetadata.data as RuntimeComponentValueType;
+  if (propMetadata.type !== PropMetadataType.Component) {
+    throw new Error('参数错误')
+  }
+  const { propItemId, abstractValueIdChain } = propMetadata.data.$$runtime;
   if (activeSlotEle.dataset.grootAllowHighlight) {
     window.parent.postMessage({
       type: PostMessageType.InnerDragHitSlot,
@@ -171,7 +174,7 @@ export function respondDragDrop(positionX: number, positionY: number, componentI
         componentId,
         propItemId,
         abstractValueIdChain,
-      } as DragAddComponentEventDataType
+      } as DragAddComponentEventData
     }, '*');
   } else {
     const markerInfo = calcDragRect(positionX, positionY, activeSlotEle);
@@ -187,7 +190,7 @@ export function respondDragDrop(positionX: number, positionY: number, componentI
         abstractValueIdChain,
         currentInstanceId,
         direction: { top: 'pre', bottom: 'next' }[markerInfo.direction]
-      } as DragAddComponentEventDataType
+      } as DragAddComponentEventData
     }, '*');
   }
   respondDragLeave();
@@ -226,7 +229,7 @@ function outlineHoverAction({ clientX, clientY }: MouseEvent) {
         rootInstanceId: metadata.rootId,
         propItemId: metadata.$$runtime.propItemId,
         abstractValueIdChain: metadata.$$runtime.abstractValueIdChain
-      } as MarkerInfo
+      } as ComponentAnchor
     }, '*');
   } else {
     outlineHoverInstanceId = undefined;
@@ -255,7 +258,7 @@ function outlineMousedownAction() {
       rootInstanceId: metadata.rootId,
       propItemId: metadata.$$runtime.propItemId,
       abstractValueIdChain: metadata.$$runtime.abstractValueIdChain
-    } as MarkerInfo
+    } as ComponentAnchor
   }, '*');
 }
 
@@ -274,7 +277,7 @@ function detectWrapperEle(positionX: number, positionY: number, datasetKey: stri
   return null;
 }
 
-function calcDragRect(positionX: number, positionY: number, slotEle: HTMLElement): DragAnchorInfo {
+function calcDragRect(positionX: number, positionY: number, slotEle: HTMLElement): ComponentDragAnchor {
   let hitEle = detectWrapperEle(positionX, positionY, 'grootSlotItem', slotEle);
   if (!hitEle) {
     const children = slotEle.querySelectorAll('[data-groot-slot-item]');

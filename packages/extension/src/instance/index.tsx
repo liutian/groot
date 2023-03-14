@@ -62,41 +62,41 @@ export const instanceBootstrap = () => {
   ])
 
 
-  registerState('gs.workbench.activityBar.viewsContainers', ['application', 'material', 'custom_icon'], true)
-  registerState('gs.workbench.activityBar.active', 'application', false);
-  registerState('gs.workbench.primarySidebar.viewsContainer', 'application', false);
+  registerState('gs.ui.activityBar.viewsContainers', ['application', 'material', 'custom_icon'], true)
+  registerState('gs.ui.activityBar.active', 'application', false);
+  registerState('gs.ui.primarySidebar.active', 'application', false);
 
 
-  registerState('gs.studio.componentInstance', null, false)
-  registerState('gs.studio.component', null, false)
-  registerState('gs.studio.allComponentInstance', [], true)
-  registerState('gs.studio.breadcrumbList', [], true)
-  registerState('gs.studio.release', null, false)
+  registerState('gs.componentInstance', null, false)
+  registerState('gs.component', null, false)
+  registerState('gs.allComponentInstance', [], true)
+  registerState('gs.propSetting.breadcrumbList', [], true)
+  registerState('gs.release', null, false)
 
   registerCommand('gc.fetch.instance', (_, rootInstanceId) => {
     fetchRootInstance(rootInstanceId);
   });
 
-  registerCommand('gc.studio.switchIstance', (_, instanceId) => {
+  registerCommand('gc.switchIstance', (_, instanceId) => {
     switchComponentInstance(instanceId)
   })
 
-  registerCommand('gc.workbench.makeDataToStage', (_, refreshId) => {
-    const list = getState('gs.studio.allComponentInstance')
+  registerCommand('gc.makeDataToStage', (_, refreshId) => {
+    const list = getState('gs.allComponentInstance')
     if (refreshId === 'all' || refreshId === 'first') {
       const metadataList = instanceToMetadata(list);
-      callHook('gh.studio.prop.change', metadataList, refreshId === 'first')
+      callHook('gh.component.propChange', metadataList, refreshId === 'first')
       return;
     }
 
     let instanceId = refreshId;
     if (refreshId === 'current') {
-      instanceId = getState('gs.studio.componentInstance').id;
+      instanceId = getState('gs.componentInstance').id;
     }
 
     const refreshInstance = list.find(i => i.id === instanceId);
     const [refreshMetadata] = instanceToMetadata([refreshInstance]);
-    callHook('gh.studio.prop.change', refreshMetadata)
+    callHook('gh.component.propChange', refreshMetadata)
   })
 
   groot.onReady(() => {
@@ -148,23 +148,23 @@ const fetchRootInstance = (rootInstanceId: number) => {
     // }
 
     const application = getContext().groot.params.application
-    grootStateManager().setState('gs.workbench.stage.debugBaseUrl', release.debugBaseUrl || application.debugBaseUrl)
-    grootStateManager().setState('gs.workbench.stage.playgroundPath', release.playgroundPath || application.playgroundPath)
-    grootStateManager().setState('gs.studio.release', release)
-    grootStateManager().setState('gs.studio.allComponentInstance', list)
+    grootStateManager().setState('gs.stage.debugBaseUrl', release.debugBaseUrl || application.debugBaseUrl)
+    grootStateManager().setState('gs.stage.playgroundPath', release.playgroundPath || application.playgroundPath)
+    grootStateManager().setState('gs.release', release)
+    grootStateManager().setState('gs.allComponentInstance', list)
 
-    grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'first');
+    grootCommandManager().executeCommand('gc.makeDataToStage', 'first');
     switchComponentInstance(root.id);
   });
 }
 
 export const switchComponentInstance = (instanceId: number) => {
-  const list = grootStateManager().getState('gs.studio.allComponentInstance');
+  const list = grootStateManager().getState('gs.allComponentInstance');
   const instance = list.find(item => item.id === instanceId);
-  grootStateManager().setState('gs.studio.componentInstance', instance);
-  grootStateManager().setState('gs.studio.component', instance.component);
+  grootStateManager().setState('gs.componentInstance', instance);
+  grootStateManager().setState('gs.component', instance.component);
 
-  const breadcrumbList = grootStateManager().getState('gs.studio.breadcrumbList')
+  const breadcrumbList = grootStateManager().getState('gs.propSetting.breadcrumbList')
   breadcrumbList.length = 0;
 
   let ctxInstance = instance;

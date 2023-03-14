@@ -24,8 +24,8 @@ type PropType = {
 function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
   const propPersistModel = useModel(PropPersistModel);
   const propHandleModel = useModel(PropHandleModel);
-  const [component] = grootStateManager().useStateByName('gs.studio.component')
-  const [propSettingView] = grootStateManager().useStateByName('gs.studio.propSettingViews', []);
+  const [component] = grootStateManager().useStateByName('gs.component')
+  const [propSettingView] = grootStateManager().useStateByName('gs.ui.propSettingViews', []);
   const [form] = Form.useForm();
   const noSetting = !isPrototypeMode() || freezeSetting || block.group.parentItem?.noSetting;
 
@@ -179,9 +179,9 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
       valueStruct
     }).then(() => {
       if (!isPrototypeMode() && valueStruct === ValueStruct.ChildComponentList) {
-        grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'all');
+        grootCommandManager().executeCommand('gc.makeDataToStage', 'all');
       } else {
-        grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'current');
+        grootCommandManager().executeCommand('gc.makeDataToStage', 'current');
       }
     })
   }
@@ -192,8 +192,8 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
   if (isPrototypeMode()) {
     formKey = `componentId:${component.id}|versionId:${component.componentVersion.id}`
   } else {
-    const instance = grootStateManager().getState('gs.studio.componentInstance')
-    formKey = `releaseId:${grootStateManager().getState('gs.studio.release').id}|instanceId:${instance.id}`;
+    const instance = grootStateManager().getState('gs.componentInstance')
+    formKey = `releaseId:${grootStateManager().getState('gs.release').id}|instanceId:${instance.id}`;
   }
 
   return <div className={noWrapMode ? styles.container : ''}>

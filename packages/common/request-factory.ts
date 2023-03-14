@@ -1,5 +1,9 @@
-import { RequestFnType } from './internal';
 
+/**
+ * 基于axios进行包装的请求库，插件也可以使用请求能力，并可拦截监控插件请求数据
+ * @param config 
+ * @returns 
+ */
 export const requestFactory = <T extends Record<string, any[]>>(config: ConfigType) => {
   axiosWrapper(config);
 
@@ -199,3 +203,11 @@ type ConfigType = {
 }
 
 type CloneType<T extends Record<string, any[]>> = (logger?: (type: 'request' | 'response', ...args: any[]) => void) => RequestFnType<T>;
+
+
+export type RequestFnType<Store extends Record<string, any[]>> =
+  <T extends keyof Store & string, P extends Store[T][0], R extends Promise<Store[T][1]>>(
+    path: T,
+    params?: P,
+    config?: any,
+  ) => R;

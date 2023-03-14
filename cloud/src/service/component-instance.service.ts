@@ -1,4 +1,4 @@
-import { ComponentValueType, pick, PropValueType, ValueStruct } from '@grootio/common';
+import { PropMetadataComponent, pick, PropValueType, ValueStruct } from '@grootio/common';
 import { EntityManager, RequestContext } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 
@@ -307,7 +307,7 @@ export class ComponentInstanceService {
           componentId: childInstance.component.id,
           componentName: childInstance.component.name
         }]
-      } as ComponentValueType;
+      } as PropMetadataComponent;
 
       const contentItem = await em.findOne(PropItem, {
         component: wrapperInstance.component,

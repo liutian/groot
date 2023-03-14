@@ -3,9 +3,6 @@ import dayjs from "dayjs";
 
 /**
  * 自动填充属性链，每个属性都为对象
- * @param ctx 
- * @param propStr 
- * @returns 
  */
 export const fillPropChainGreed = (ctx: Object, propStr: string, isArray = false) => {
   if (!propStr) return ctx;
@@ -41,9 +38,6 @@ export const fillPropChainGreed = (ctx: Object, propStr: string, isArray = false
 
 /**
  * 只填充属性链前面的属性，最后一个属性不填充
- * @param ctx 
- * @param propStr 
- * @returns 
  */
 export const fillPropChain = (ctx: Object, propStr: string): [Object, string] => {
   const propList = propStr.replace(/^\./, '').replace(/\.$/, '').replace(/\.{2,}/g, '').split('.');

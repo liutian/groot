@@ -9,14 +9,14 @@ import { commandManager, stateManager } from 'Studio/groot';
 const Workbench: React.FC<{ layout: GridLayout }> = ({ layout }) => {
   const { useStateByName } = stateManager<GrootStateDict>();
   const { executeCommand } = commandManager<GrootCommandDict>();
-  const [containerStyle] = useStateByName('gs.workbench.style.container', {});
-  const [bannerStyle] = useStateByName('gs.workbench.style.banner', {});
-  const [activityBarStyle] = useStateByName('gs.workbench.style.activityBar', {});
-  const [primarySidebarStyle] = useStateByName('gs.workbench.style.primarySidebar', {});
-  const [secondarySidebarStyle] = useStateByName('gs.workbench.style.secondarySidebar', {});
-  const [stageStyle] = useStateByName('gs.workbench.style.stage', {});
-  const [panelStyle] = useStateByName('gs.workbench.style.panel', {});
-  const [statusBarStyle] = useStateByName('gs.workbench.style.statusBar', {});
+  const [containerStyle] = useStateByName('gs.ui.style.container', {});
+  const [bannerStyle] = useStateByName('gs.ui.style.banner', {});
+  const [activityBarStyle] = useStateByName('gs.ui.style.activityBar', {});
+  const [primarySidebarStyle] = useStateByName('gs.ui.style.primarySidebar', {});
+  const [secondarySidebarStyle] = useStateByName('gs.ui.style.secondarySidebar', {});
+  const [stageStyle] = useStateByName('gs.ui.style.stage', {});
+  const [panelStyle] = useStateByName('gs.ui.style.panel', {});
+  const [statusBarStyle] = useStateByName('gs.ui.style.statusBar', {});
   const containerEleRef = useRef<HTMLDivElement>();
 
   useLayoutEffect(() => {
@@ -40,25 +40,25 @@ const Workbench: React.FC<{ layout: GridLayout }> = ({ layout }) => {
 
   return <div className={styles.container} ref={containerEleRef} style={{ ...containerStyle }}>
     <div className={styles.banner} style={bannerStyle}>
-      {executeCommand('gc.workbench.banner.render')}
+      {executeCommand('gc.ui.render.banner')}
     </div>
     <div className={styles.activityBar} style={activityBarStyle}>
-      {executeCommand('gc.workbench.activityBar.render')}
+      {executeCommand('gc.ui.render.activityBar')}
     </div>
     <div className={styles.primarySidebar} style={primarySidebarStyle}>
-      {executeCommand('gc.workbench.primarySidebar.render')}
+      {executeCommand('gc.ui.render.primarySidebar')}
     </div>
     <div className={styles.secondarySidebar} style={secondarySidebarStyle}>
-      {executeCommand('gc.workbench.secondarySidebar.render')}
+      {executeCommand('gc.ui.render.secondarySidebar')}
     </div>
     <div className={styles.stage} style={stageStyle}>
-      {executeCommand('gc.workbench.stage.render')}
+      {executeCommand('gc.ui.render.stage')}
     </div>
     <div className={styles.panel} style={panelStyle}>
-      {executeCommand('gc.workbench.panel.render')}
+      {executeCommand('gc.ui.render.panel')}
     </div>
     <div className={styles.statusBar} style={statusBarStyle}>
-      {executeCommand('gc.workbench.statusBar.render')}
+      {executeCommand('gc.ui.render.statusBar')}
     </div>
   </div>
 }

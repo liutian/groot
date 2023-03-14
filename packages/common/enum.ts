@@ -95,3 +95,9 @@ export enum ViewportMode {
   PC = 'pc',
   H5 = 'h5'
 }
+
+export enum PropMetadataType {
+  Component = 'component',
+  Json = 'json',
+  Function = 'function'
+}

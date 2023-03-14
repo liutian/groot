@@ -34,24 +34,24 @@ export const prototypeBootstrap = () => {
   ])
 
 
-  registerState('gs.workbench.activityBar.viewsContainers', ['solution'], true)
-  registerState('gs.workbench.activityBar.active', 'solution', false);
-  registerState('gs.workbench.primarySidebar.viewsContainer', 'solution', false);
-  registerState('gs.studio.component', null, false)
+  registerState('gs.ui.activityBar.viewsContainers', ['solution'], true)
+  registerState('gs.ui.activityBar.active', 'solution', false);
+  registerState('gs.ui.primarySidebar.active', 'solution', false);
+  registerState('gs.component', null, false)
 
   registerCommand('gc.fetch.prototype', (_, componentId, versionId) => {
     fetchComponent(componentId, versionId);
   })
 
-  registerCommand('gc.workbench.makeDataToStage', (_, refreshId) => {
+  registerCommand('gc.makeDataToStage', (_, refreshId) => {
     syncDataToStage(refreshId === 'first');
   })
 
   groot.layout.primarySidebarWidth = '220px'
 
   groot.onReady(() => {
-    setState('gs.workbench.stage.debugBaseUrl', groot.params.solution.debugBaseUrl)
-    setState('gs.workbench.stage.playgroundPath', groot.params.solution.playgroundPath)
+    setState('gs.stage.debugBaseUrl', groot.params.solution.debugBaseUrl)
+    setState('gs.stage.playgroundPath', groot.params.solution.playgroundPath)
     executeCommand('gc.fetch.prototype', groot.params.componentId, groot.params.versionId)
   })
 }
@@ -69,13 +69,13 @@ const fetchComponent = (componentId: number, versionId) => {
     })
 
 
-    grootStateManager().setState('gs.studio.component', data)
-    grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'first')
+    grootStateManager().setState('gs.component', data)
+    grootCommandManager().executeCommand('gc.makeDataToStage', 'first')
   })
 }
 
 const syncDataToStage = (first = false) => {
-  const component = grootStateManager().getState('gs.studio.component');
+  const component = grootStateManager().getState('gs.component');
 
   if (!component.propTree) {
     const { groupList, blockList, itemList, valueList } = component;
@@ -89,5 +89,5 @@ const syncDataToStage = (first = false) => {
   }
 
   const metadata = metadataFactory(component.propTree, component, component.id, null);
-  grootHookManager().callHook('gh.studio.prop.change', metadata, first)
+  grootHookManager().callHook('gh.component.propChange', metadata, first)
 }

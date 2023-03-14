@@ -11,7 +11,7 @@ import styles from './index.module.less'
 import SolutionModel from "./SolutionModel";
 
 export const Solution = () => {
-  const [currComponent] = grootStateManager().useStateByName('gs.studio.component');
+  const [currComponent] = grootStateManager().useStateByName('gs.component');
   const solutionModel = useRegisterModel(SolutionModel)
 
   useEffect(() => {
@@ -20,7 +20,7 @@ export const Solution = () => {
 
 
   const switchComponent = (component: Component) => {
-    const currComponent = grootStateManager().getState('gs.studio.component')
+    const currComponent = grootStateManager().getState('gs.component')
     if (currComponent.id === component.id) {
       return;
     }

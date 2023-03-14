@@ -41,10 +41,10 @@ export enum APIPath {
   state_remove_stateId = 'state/remove/:stateId',
   state_update = 'POST state/update',
 
-  solution_component_list_solutionId = 'solution/component-list/:solutionId',
+  solution_componentList_SolutionId = 'solution/component-list/:solutionId',
 
-  release_instance_list_releaseId = 'release/instance-list/:releaseId',
+  release_instanceList_releaseId = 'release/instance-list/:releaseId',
 
-  application_release_list_applicationId = 'application/release-list/:applicationId'
+  application_releaseList_applicationId = 'application/release-list/:applicationId'
 
 }

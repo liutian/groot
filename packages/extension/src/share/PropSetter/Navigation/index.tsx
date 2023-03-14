@@ -10,7 +10,7 @@ export const Navigation = () => {
   const { callHook } = grootHookManager()
   const { executeCommand } = grootCommandManager()
 
-  const [breadcrumbList] = useStateByName('gs.studio.breadcrumbList', []);
+  const [breadcrumbList] = useStateByName('gs.propSetting.breadcrumbList', []);
 
   return <div className={styles.container}>
     <Breadcrumb separator=">">
@@ -24,7 +24,7 @@ export const Navigation = () => {
                 callHook(PostMessageType.OuterComponentSelect, item.id)
               } else {
                 // 根组件不需要选择效果，直接切换，并清空标记
-                executeCommand('gc.studio.switchIstance', item.id)
+                executeCommand('gc.switchIstance', item.id)
                 callHook(PostMessageType.OuterOutlineReset)
               }
             }}>

@@ -6,7 +6,7 @@ import { startup } from 'core';
 import './index.less'
 
 
-const Main: MainFunction = (context) => {
+const Main: MainFunction<any> = (context) => {
   setContext(context);
 
   startup()

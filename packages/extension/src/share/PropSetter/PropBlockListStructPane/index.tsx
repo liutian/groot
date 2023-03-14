@@ -23,7 +23,7 @@ const PropBlockListStructPane: React.FC<PropsType> = ({ block: propBlock }) => {
   const propHandleModel = useModel(PropHandleModel);
   const propPersistModel = useModel(PropPersistModel);
   const [form] = Form.useForm();
-  const [component] = grootStateManager().useStateByName('gs.studio.component')
+  const [component] = grootStateManager().useStateByName('gs.component')
 
 
   const [getInitValue] = useState(() => {
@@ -173,7 +173,7 @@ const PropBlockListStructPane: React.FC<PropsType> = ({ block: propBlock }) => {
     });
 
     propPersistModel.updateValue({ propItem, value: changedValues[updateKey], abstractValueId: +abstractValueId }).then(() => {
-      grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'current');
+      grootCommandManager().executeCommand('gc.makeDataToStage', 'current');
     })
   }
 
@@ -182,8 +182,8 @@ const PropBlockListStructPane: React.FC<PropsType> = ({ block: propBlock }) => {
   if (isPrototypeMode()) {
     formKey = `componentId:${component.id}|versionId:${component.componentVersion.id}`
   } else {
-    const instance = grootStateManager().getState('gs.studio.componentInstance')
-    formKey = `releaseId:${grootStateManager().getState('gs.studio.release').id}|instanceId:${instance.id}`;
+    const instance = grootStateManager().getState('gs.componentInstance')
+    formKey = `releaseId:${grootStateManager().getState('gs.release').id}|instanceId:${instance.id}`;
   }
 
   return <div className={styles.container}>

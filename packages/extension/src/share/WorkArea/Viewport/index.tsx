@@ -23,7 +23,7 @@ const viewportModeMap = {
 const Viewport: React.FC = () => {
   const iframeRef = useRef<HTMLIFrameElement>({} as any);
   const workAreaModel = useModel(WorkAreaModel)
-  const [viewportMode] = grootStateManager().useStateByName('gs.workbench.stage.viewport')
+  const [viewportMode] = grootStateManager().useStateByName('gs.ui.stageViewport')
 
   useEffect(() => {
     workAreaModel.initIframe(iframeRef.current);

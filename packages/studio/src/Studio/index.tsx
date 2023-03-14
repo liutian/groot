@@ -1,6 +1,7 @@
-import { APIPath, ExtensionRuntime, GridLayout, StudioMode, StudioParams } from '@grootio/common';
+import { APIPath, ExtensionRuntime, GridLayout, StudioMode } from '@grootio/common';
 import { message } from 'antd';
 import { localExtension } from 'config';
+import { StudioParams } from 'index';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import request from 'util/request';

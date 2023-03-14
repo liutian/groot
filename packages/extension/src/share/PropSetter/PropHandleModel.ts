@@ -1,4 +1,4 @@
-import { ComponentInstance, ComponentValueItemType, ComponentValueType, DragAddComponentEventDataType, getOrigin, PostMessageType, PropBlock, PropGroup, PropItem, PropItemType, PropValueType, ValueStruct, wrapperState } from "@grootio/common";
+import { ComponentInstance, PropMetadataComponentItem, PropMetadataComponent, DragAddComponentEventData, getOrigin, PostMessageType, PropBlock, PropGroup, PropItem, PropItemType, PropValueType, ValueStruct, wrapperState } from "@grootio/common";
 import { grootCommandManager, grootHookManager, grootStateManager, isPrototypeMode } from "context";
 
 import PropPersistModel from "./PropPersistModel";
@@ -260,17 +260,17 @@ export default class PropHandleModel {
 
   private init() {
     if (isPrototypeMode()) {
-      grootStateManager().watchState('gs.studio.component', this.propTreeListener.bind(this))
+      grootStateManager().watchState('gs.component', this.propTreeListener.bind(this))
     } else {
       // 实例模式会多次调用
-      grootStateManager().watchState('gs.studio.componentInstance', this.propTreeListener.bind(this))
+      grootStateManager().watchState('gs.componentInstance', this.propTreeListener.bind(this))
     }
 
     grootHookManager().registerHook(PostMessageType.InnerDragHitSlot, (detail) => {
       this.addChildComponent(detail);
     })
 
-    grootHookManager().registerHook('gh.studio.removeChildComponent', (instanceId, itemId, abstractValueIdChain) => {
+    grootHookManager().registerHook('gh.component.removeChild', (instanceId, itemId, abstractValueIdChain) => {
       this.removeChild(instanceId, itemId, abstractValueIdChain)
     })
   }
@@ -292,20 +292,20 @@ export default class PropHandleModel {
     }
   }
 
-  private addChildComponent(data: DragAddComponentEventDataType) {
+  private addChildComponent(data: DragAddComponentEventData) {
     const rawInstance = {
       id: data.parentInstanceId,
       componentId: data.componentId,
     } as ComponentInstance;
 
     this.propPersist.addChildComponentInstance(rawInstance).then((instanceData) => {
-      this.stateManager.getState('gs.studio.allComponentInstance').push(instanceData)
+      this.stateManager.getState('gs.allComponentInstance').push(instanceData)
 
       const propItem = this.getItemById(data.propItemId, data.parentInstanceId);
       const propValue = propItem.valueList.filter(v => v.type === PropValueType.Instance).find(value => {
         return value.abstractValueIdChain === data.abstractValueIdChain || (!value.abstractValueIdChain && !data.abstractValueIdChain)
       });
-      const value = JSON.parse(propValue?.value || '{"setting": {},"list":[]}') as ComponentValueType;
+      const value = JSON.parse(propValue?.value || '{"setting": {},"list":[]}') as PropMetadataComponent;
 
       let order = 1000;
       if (data.currentInstanceId) {
@@ -330,7 +330,7 @@ export default class PropHandleModel {
         componentName: instanceData.component.name,
         componentId: instanceData.component.id,
         order
-      } as ComponentValueItemType;
+      } as PropMetadataComponentItem;
 
       value.list.push(newValueItem);
       value.list = value.list.sort((a, b) => a.order - b.order);
@@ -341,7 +341,7 @@ export default class PropHandleModel {
         valueStruct: ValueStruct.ChildComponentList,
         hostComponentInstanceId: data.parentInstanceId
       }).then(() => {
-        grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'all');
+        grootCommandManager().executeCommand('gc.makeDataToStage', 'all');
 
         setTimeout(() => {
           grootHookManager().callHook(PostMessageType.OuterComponentSelect, instanceData.id)
@@ -352,8 +352,8 @@ export default class PropHandleModel {
 
   public removeChild(instanceId: number, itemId: number, abstractValueIdChain?: string) {
     this.propPersist.removeChildInstance(instanceId, itemId, abstractValueIdChain).then(() => {
-      const allComponentInstance = this.stateManager.getState('gs.studio.allComponentInstance');
-      const componentInstance = this.stateManager.getState('gs.studio.componentInstance');
+      const allComponentInstance = this.stateManager.getState('gs.allComponentInstance');
+      const componentInstance = this.stateManager.getState('gs.componentInstance');
 
       const instanceIndex = allComponentInstance.findIndex(i => i.id === instanceId);
       const instance = allComponentInstance[instanceIndex];
@@ -363,11 +363,11 @@ export default class PropHandleModel {
         if (componentInstance.id === instanceId) {
           grootHookManager().callHook(PostMessageType.OuterComponentSelect, instance.parentId)
         }
-        grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'all');
+        grootCommandManager().executeCommand('gc.makeDataToStage', 'all');
       } else {// 父级为根组件实例
-        grootCommandManager().executeCommand('gc.studio.switchIstance', instance.parentId)
+        grootCommandManager().executeCommand('gc.switchIstance', instance.parentId)
         grootHookManager().callHook(PostMessageType.OuterOutlineReset)
-        grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'all');
+        grootCommandManager().executeCommand('gc.makeDataToStage', 'all');
       }
 
       // this.forceUpdateFormKey++;
@@ -375,7 +375,7 @@ export default class PropHandleModel {
   }
 
   private getItemById(propItemId: number, instanceId: number) {
-    const allComponentInstance = this.stateManager.getState('gs.studio.allComponentInstance');
+    const allComponentInstance = this.stateManager.getState('gs.allComponentInstance');
     const instance = allComponentInstance.find(item => item.id === instanceId);
 
     if (!instance) {

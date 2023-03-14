@@ -1,4 +1,4 @@
-import { CommandManager, CommandObject, ExtensionRuntime, GridLayout, GrootContextCallHook, GrootContextExecuteCommand, GrootContextGetState, GrootContextParams, GrootContextRegisterCommand, GrootContextRegisterHook, GrootContextRegisterState, GrootContextSetState, GrootContextUseStateByName, GrootContextWatchState, HookManager, HookObject, isBaseType, loadRemoteModule, MainFunction, StateManager, StateObject, wrapperState } from "@grootio/common"
+import { CommandManager, ExtensionRuntime, GridLayout, GrootContextCallHook, GrootContextExecuteCommand, GrootContextGetState, GrootContextParams, GrootContextRegisterCommand, GrootContextRegisterHook, GrootContextRegisterState, GrootContextSetState, GrootContextUseStateByName, GrootContextWatchState, HookManager, isBaseType, loadRemoteModule, MainFunction, StateManager, wrapperState } from "@grootio/common"
 import { useEffect, useReducer } from "react";
 import request from "util/request";
 
@@ -21,7 +21,7 @@ export const loadExtension = (remoteExtensionList: ExtensionRuntime[]) => {
         console.error('加载插件失败');
         return Promise.reject(error);
       })
-    .then((mainList: MainFunction[]) => {
+    .then((mainList: MainFunction<any>[]) => {
       return remoteExtensionList.map(({ packageName, packageUrl, name, config }, index) => {
         return { packageName, packageUrl, main: mainList[index], config, name }
       })
@@ -68,8 +68,8 @@ export const launchExtension = (remoteExtensionList: ExtensionRuntime[], params:
     configSchemaList.push({ ...configSchema, id: ++extIdTick });
   });
 
-  registerState('gs.extension.configSchema', Object.freeze(configSchemaList) as any, true);
-  registerState('gs.extension.data', Object.freeze(extensionList) as any, true);
+  registerState('gs.extension.configSchemaList', Object.freeze(configSchemaList) as any, true);
+  registerState('gs.extension.dataList', Object.freeze(extensionList) as any, true);
   registorReady = true;
   layout.refresh()
   contextEventTarget.dispatchEvent(new Event('ready'));
@@ -303,3 +303,8 @@ export const hookManager: HookManager = () => {
     callHook
   }
 }
+
+
+type CommandObject = { callback: Function, provider: string, origin?: CommandObject }
+type StateObject = { value: any, provider: string, eventTarget: EventTarget, multi: boolean }
+type HookObject = { callback: Function, provider: string }

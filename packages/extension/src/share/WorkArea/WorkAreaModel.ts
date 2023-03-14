@@ -82,7 +82,7 @@ export default class WorkAreaModel {
 
     registerHook(PostMessageType.OuterSetApplication, (appData) => {
       guard();
-      const messageData = appData || this.buildApplicationData(grootStateManager().getState('gs.workbench.stage.playgroundPath'));
+      const messageData = appData || this.buildApplicationData(grootStateManager().getState('gs.stage.playgroundPath'));
       this.iframeEle.contentWindow.postMessage({ type: PostMessageType.OuterSetApplication, data: messageData }, '*');
     })
 
@@ -158,9 +158,9 @@ export default class WorkAreaModel {
 
     commandBridge.stageRefresh = this.refresh;
 
-    registerHook('gh.studio.prop.change', (data, first = false) => {
+    registerHook('gh.component.propChange', (data, first = false) => {
       if (first) {
-        executeCommand('gc.stage.refresh')
+        executeCommand('gc.stageRefresh')
       } else {
         callHook(PostMessageType.OuterUpdateComponent, data);
       }
@@ -171,8 +171,8 @@ export default class WorkAreaModel {
   private refresh = (callback?: Function) => {
     this.pageNavCallback = callback;
 
-    const iframeBasePath = grootStateManager().getState('gs.workbench.stage.debugBaseUrl')
-    const playgroundPath = grootStateManager().getState('gs.workbench.stage.playgroundPath')
+    const iframeBasePath = grootStateManager().getState('gs.stage.debugBaseUrl')
+    const playgroundPath = grootStateManager().getState('gs.stage.playgroundPath')
     const path = `${iframeBasePath}${playgroundPath}`;
     if (this.iframeEle.src) {
       if (this.iframeEle.src === path) {

@@ -1,19 +1,3 @@
-
-export type LayoutSetting = {
-  primarySidebar: boolean,
-  secondarySidebar: boolean,
-  panel: boolean,
-
-  activityBar: boolean,
-  statusBar: boolean,
-  banner: boolean,
-
-  primaryLayout: 'left' | 'right',
-  panelLayout: 'left' | 'right' | 'center' | 'stretch',
-  bannerLayout: 'left' | 'right' | 'center' | 'stretch'
-}
-
-
 /**
  * 提供类似vscode布局方案
  * 通过layoutSetting来调整布局，然后通过refresh()刷新布局
@@ -263,4 +247,18 @@ export class GridLayout extends EventTarget {
       this.columns[0] = '0'
     }
   }
+}
+
+export type LayoutSetting = {
+  primarySidebar: boolean,
+  secondarySidebar: boolean,
+  panel: boolean,
+
+  activityBar: boolean,
+  statusBar: boolean,
+  banner: boolean,
+
+  primaryLayout: 'left' | 'right',
+  panelLayout: 'left' | 'right' | 'center' | 'stretch',
+  bannerLayout: 'left' | 'right' | 'center' | 'stretch'
 }

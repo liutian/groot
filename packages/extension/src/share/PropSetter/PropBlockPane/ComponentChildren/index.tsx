@@ -1,8 +1,8 @@
 import { List } from "antd";
-import { PostMessageType, RuntimeComponentValueType, useModel } from "@grootio/common";
+import { PostMessageType, PropMetadataComponent } from "@grootio/common";
 import { grootHookManager } from "context";
 
-const ComponentChildren: React.FC<{ value?: RuntimeComponentValueType }> = ({ value }) => {
+const ComponentChildren: React.FC<{ value?: PropMetadataComponent }> = ({ value }) => {
 
   return <List size="small" bordered dataSource={value?.list || []}
     renderItem={item => (

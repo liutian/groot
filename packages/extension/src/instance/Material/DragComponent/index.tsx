@@ -8,12 +8,12 @@ export const DragComponent: React.FC<{ component: Component }> = ({ component })
 
   const { callHook } = grootHookManager()
   const dragstart = (e) => {
-    callHook('gh.component.drag.start')
+    callHook('gh.component.dragStart')
     e.dataTransfer.setData('componentId', component.id);
   }
 
   const dragend = () => {
-    callHook('gh.component.drag.end')
+    callHook('gh.component.dragEnd')
   }
 
   return (<Button style={{ width: '100px', marginBottom: '10px', textAlign: 'left', paddingLeft: '8px' }}

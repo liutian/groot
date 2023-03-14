@@ -5,9 +5,9 @@ import styles from './index.module.less';
 
 const ActivityBar: React.FC = () => {
   const { useStateByName } = grootStateManager();
-  const [viewKeys] = useStateByName('gs.workbench.activityBar.viewsContainers', []);
+  const [viewKeys] = useStateByName('gs.ui.activityBar.viewsContainers', []);
   const [viewsContainers] = useStateByName('gs.ui.viewsContainers', []);
-  const [active, setActive] = useStateByName('gs.workbench.activityBar.active', '');
+  const [active, setActive] = useStateByName('gs.ui.activityBar.active', '');
 
   const items = viewsContainers.filter(vc => {
     return viewKeys.includes(vc.id)
@@ -15,7 +15,7 @@ const ActivityBar: React.FC = () => {
 
   const change = (key: string) => {
     setActive(key);
-    grootStateManager().setState('gs.workbench.primarySidebar.viewsContainer', key);
+    grootStateManager().setState('gs.ui.primarySidebar.active', key);
   }
 
   return <div className={styles.container}>

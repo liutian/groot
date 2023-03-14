@@ -5,8 +5,17 @@ import App from "./App";
 
 // import 'antd/dist/reset.css';
 import './index.less'
-import { StudioParams } from "@grootio/common";
+import { StudioMode } from "@grootio/common";
 import Studio from "./Studio";
+
+export type StudioParams = {
+  solutionId: number,
+  appId: number,
+  componentId: number,
+  instanceId: number,
+  mode: StudioMode,
+  versionId: number
+}
 
 type PropsType = {
   appEnv: string,

@@ -19,13 +19,13 @@ export default class ApplicationModel {
 
   public loadReleaseList() {
     const applicationId = getContext().groot.params.application.id
-    getContext().request(APIPath.application_release_list_applicationId, { applicationId }).then(({ data }) => {
+    getContext().request(APIPath.application_releaseList_applicationId, { applicationId }).then(({ data }) => {
       this.releaseList = data;
     })
   }
 
   public loadList(releaseId: number) {
-    return getContext().request(APIPath.release_instance_list_releaseId, { releaseId }).then(({ data }) => {
+    return getContext().request(APIPath.release_instanceList_releaseId, { releaseId }).then(({ data }) => {
       this.entryInstanceList.length = 0;
       this.noEntryInstanceList.length = 0
 
@@ -47,7 +47,7 @@ export default class ApplicationModel {
       rawComponentInstance.wrapper = 'groot/Container';
     }
 
-    const releaseId = grootStateManager().getState('gs.studio.release').id
+    const releaseId = grootStateManager().getState('gs.release').id
     return getContext().request(APIPath.componentInstance_addRoot, {
       ...rawComponentInstance,
       entry: this.instanceAddEntry,
@@ -71,7 +71,7 @@ export default class ApplicationModel {
     return getContext().request(APIPath.release_add, rawRelease).then(({ data }) => {
       this.releaseList.push(data);
 
-      const currInstance = grootStateManager().getState('gs.studio.componentInstance')
+      const currInstance = grootStateManager().getState('gs.componentInstance')
       const rootInstanceId = currInstance.rootId || currInstance.id
 
       return this.switchRelease(data.id, rootInstanceId);
@@ -102,7 +102,7 @@ export default class ApplicationModel {
 
   public assetBuild() {
     this.assetBuildStatus = 'building';
-    const releaseId = grootStateManager().getState('gs.studio.release').id
+    const releaseId = grootStateManager().getState('gs.release').id
     getContext().request(APIPath.asset_build, { releaseId }).then(({ data }) => {
       this.assetBuildStatus = 'buildOver';
       this.deployBundleId = data;

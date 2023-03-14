@@ -1,4 +1,4 @@
-import { ComponentInstance, ComponentValueItemType, ComponentValueType, DragAddComponentEventDataType, PostMessageType, PropBlock, PropGroup, PropItem, PropItemType, PropValue, PropValueType, ValueStruct } from "@grootio/common";
+import { ComponentInstance, ComponentValueItemType, ComponentValueType, DragAddComponentEventData, PostMessageType, PropBlock, PropGroup, PropItem, PropItemType, PropValue, PropValueType, ValueStruct } from "@grootio/common";
 import { metadataFactory, propTreeFactory } from "@grootio/core";
 
 import PropPersistModel from "./PropPersistModel";
@@ -276,12 +276,12 @@ export default class PropHandleModel {
 
   private watchEvent() {
     this.workbench.addEventListener(PostMessageType.InnerDragHitSlot, (event) => {
-      const { detail } = event as CustomEvent<DragAddComponentEventDataType>;
+      const { detail } = event as CustomEvent<DragAddComponentEventData>;
       this.addChildComponent(detail);
     });
   }
 
-  private addChildComponent(data: DragAddComponentEventDataType) {
+  private addChildComponent(data: DragAddComponentEventData) {
     const rawInstance = {
       id: data.parentInstanceId,
       componentId: data.componentId,

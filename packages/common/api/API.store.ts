@@ -2,7 +2,6 @@ import { State, Application, Component, ComponentInstance, ComponentVersion, Dep
 import { API } from './API.common';
 import type { APIPath } from './API.path';
 
-// 
 /**
  * 请求服务器接口的规则列表
  * 格式 [key APIPath枚举值]: [请求参数类型 , 返回数据类型] 
@@ -69,10 +68,10 @@ export type APIStore = {
   [APIPath.state_remove_stateId]: [{ stateId: number }],
   [APIPath.state_update]: [State, API.Response<State>],
 
-  [APIPath.solution_component_list_solutionId]: [{ solutionId: number, all: string }, API.Response<Component[]>],
-  [APIPath.release_instance_list_releaseId]: [{ releaseId: number }, API.Response<ComponentInstance[]>],
+  [APIPath.solution_componentList_SolutionId]: [{ solutionId: number, all: string }, API.Response<Component[]>],
+  [APIPath.release_instanceList_releaseId]: [{ releaseId: number }, API.Response<ComponentInstance[]>],
 
-  [APIPath.application_release_list_applicationId]: [{ applicationId: number }, API.Response<Release[]>]
+  [APIPath.application_releaseList_applicationId]: [{ applicationId: number }, API.Response<Release[]>]
 
 };
 

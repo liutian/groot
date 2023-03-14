@@ -4,7 +4,7 @@ import { grootStateManager } from "context"
 import styles from './index.module.less'
 
 const ToolBar = () => {
-  const [viewportMode, setViewportMode] = grootStateManager().useStateByName('gs.workbench.stage.viewport')
+  const [viewportMode, setViewportMode] = grootStateManager().useStateByName('gs.ui.stageViewport')
   return <div className={styles.container}>
 
     <Space>

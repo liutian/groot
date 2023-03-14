@@ -1,6 +1,6 @@
 import { RequestContext } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
-import { ComponentValueType, pick, PropValueType, ValueStruct } from '@grootio/common';
+import { PropMetadataComponent, pick, PropValueType, ValueStruct } from '@grootio/common';
 
 import { LogicException, LogicExceptionCode } from 'config/logic.exception';
 import { Release } from 'entities/Release';
@@ -102,7 +102,7 @@ export class ReleaseService {
         }).join(',');
 
         if (newPropValue.valueStruct === ValueStruct.ChildComponentList) {
-          const componentValue = JSON.parse(newPropValue.value) as ComponentValueType;
+          const componentValue = JSON.parse(newPropValue.value) as PropMetadataComponent;
           componentValue.list.forEach(data => {
             data.instanceId = instanceMap.get(data.instanceId).id;
           });

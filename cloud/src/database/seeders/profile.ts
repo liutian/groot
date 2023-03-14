@@ -1,4 +1,4 @@
-import { ComponentValueType, PropBlockLayout, PropBlockStructType, PropItemType, PropValueType } from "@grootio/common";
+import { PropMetadataComponent, PropBlockLayout, PropBlockStructType, PropItemType, PropValueType } from "@grootio/common";
 import { EntityManager } from "@mikro-orm/core";
 
 import { PropValue } from "../../entities/PropValue";
@@ -210,7 +210,7 @@ export const create = async (em: EntityManager, solution: Solution, release: Rel
       componentName: avatarComponent.name,
       order: 1000
     }]
-  } as ComponentValueType;
+  } as PropMetadataComponent;
 
   const profileItem4Value = em.create(PropValue, {
     propItem: profileItem4,

@@ -1,14 +1,8 @@
 import React, { HTMLAttributes, useEffect, useRef } from 'react';
 
-type PropsType = {
-  start?: () => boolean | any,
-  end?: () => void,
-  move?: (x: number, y: number, originData: any) => void,
-  cursor?: 'move' | 'row-resize' | 'col-resize'
-} & HTMLAttributes<HTMLDivElement>;
 
 /**
- * 监控鼠标拖拽操作时的坐标位置
+ * 监控鼠标拖拽时的坐标位置
  */
 export const MouseFollow: React.FC<PropsType> = ({ start, end, move, cursor = 'move', ...props }) => {
   const hostRef = useRef<HTMLDivElement>(null);
@@ -53,3 +47,10 @@ export const MouseFollow: React.FC<PropsType> = ({ start, end, move, cursor = 'm
 
   return <div ref={hostRef} {...props} style={{ display: 'inline-block' }}></div>
 }
+
+type PropsType = {
+  start?: () => boolean | any,
+  end?: () => void,
+  move?: (x: number, y: number, originData: any) => void,
+  cursor?: 'move' | 'row-resize' | 'col-resize'
+} & HTMLAttributes<HTMLDivElement>;

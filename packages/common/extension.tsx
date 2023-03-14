@@ -3,15 +3,20 @@ import React from "react";
 import { APIStore } from "./api/API.store";
 import { Application, Component, ComponentInstance, Release, Solution } from "./entities";
 import { GridLayout } from "./GridLayout";
-import { ApplicationData, IframeDebuggerConfig, Metadata, RequestFnType } from "./internal";
+import { ApplicationData, Metadata } from "./internal";
 import { StudioMode } from "./enum";
+import { RequestFnType } from "./request-factory";
+import { UIManagerConfig } from "./runtime";
 
-// 公开WorkbenchModel类型必须单独定义，不能直接通过ts import(...) ，该语法会导致ts深入解析 workbench项目中 WorkbenchModel 其他依赖项导致重复甚至循环解析
 
 
-export type MainFunction = (context: ExtensionContext) => ExtensionConfigSchema;
-
-export type ExtensionConfigSchema = {
+export type GrootContext = {
+  params: GrootContextParams,
+  commandManager: CommandManager,
+  stateManager: StateManager,
+  hookManager: HookManager,
+  layout: GridLayout,
+  onReady: (listener: EventListener) => void;
 }
 
 export type GrootContextParams = {
@@ -24,26 +29,29 @@ export type GrootContextParams = {
   versionId?: number
 }
 
-export type RemoteExtension = {
-  key?: string,
-  package: string,
-  title: string,
-  url: string,
-  module: string
+export type MainFunction<C> = (context: ExtensionContext, config?: C) => ExtensionConfigSchema;
+
+export type ExtensionConfigSchema = {
+  // todo 待开发，参照vscode设计https://code.visualstudio.com/api/references/contribution-points#contributes.configuration
 }
 
-
-
-// 插件机制
-
-export type GrootContext = {
-  params: GrootContextParams,
-  commandManager: CommandManager,
-  stateManager: StateManager,
-  hookManager: HookManager,
-  layout: GridLayout,
-  onReady: (listener: EventListener) => void;
+export type ExtensionContext = {
+  extName: string,
+  extPackageName: string,
+  extPackageUrl: string,
+  extConfig: any,
+  request: RequestFnType<APIStore>,
+  groot: GrootContext,
 }
+
+export type ExtensionRuntime = {
+  name: string,
+  packageName: string,
+  packageUrl: string,
+  main: MainFunction<any>,
+  config: any
+}
+
 
 export type CommandManager = <CT extends Record<string, [any[], any]>>() => {
   registerCommand: GrootContextRegisterCommand<CT>,
@@ -116,85 +124,64 @@ export type GrootContextCallHook<HT extends Record<string, [any[], any]>> = <
   R extends HT[K][1]
 >(commandName: K, ...args: AR) => R[];
 
-export type ExtensionContext = {
-  extName: string,
-  extPackageName: string,
-  extPackageUrl: string,
-  extConfig: any,
-  request: RequestFnType<APIStore>,
-  groot: GrootContext,
-}
-
-export type ExtensionRuntime = {
-  name: string,
-  packageName: string,
-  packageUrl: string,
-  main: MainFunction,
-  config: any
-}
-
 export type GrootCommandDict = {
-  'gc.workbench.banner.render': [[], ReactElement | null],
-  'gc.workbench.activityBar.render': [[], ReactElement | null],
-  'gc.workbench.primarySidebar.render': [[], ReactElement | null],
-  'gc.workbench.secondarySidebar.render': [[], ReactElement | null],
-  'gc.workbench.stage.render': [[], ReactElement | null],
-  'gc.workbench.panel.render': [[], ReactElement | null],
-  'gc.workbench.statusBar.render': [[], ReactElement | null],
+  'gc.ui.render.banner': [[], ReactElement | null],
+  'gc.ui.render.activityBar': [[], ReactElement | null],
+  'gc.ui.render.primarySidebar': [[], ReactElement | null],
+  'gc.ui.render.secondarySidebar': [[], ReactElement | null],
+  'gc.ui.render.stage': [[], ReactElement | null],
+  'gc.ui.render.panel': [[], ReactElement | null],
+  'gc.ui.render.statusBar': [[], ReactElement | null],
 
   'gc.fetch.instance': [[number], void],
   'gc.fetch.prototype': [[number, number | null], void],
-  'gc.studio.switchIstance': [[number], void],
-  'gc.workbench.makeDataToStage': [[number | 'all' | 'current' | 'first'], void],
-  'gc.stage.refresh': [[Function] | [], void],
+  'gc.switchIstance': [[number], void],
+  'gc.makeDataToStage': [[number | 'all' | 'current' | 'first'], void],
+  'gc.stageRefresh': [[Function] | [], void],
 }
 
 export type GrootStateDict = {
-  'gs.extension.configSchema': [ExtensionConfigSchema, true],
-  'gs.extension.data': [any, true],
-  'gs.ui.views': [ViewChildItem, true],
-  'gs.ui.viewsContainers': [ViewsContainer, true],
+  'gs.extension.configSchemaList': [ExtensionConfigSchema, true],
+  'gs.extension.dataList': [any, true],
+  'gs.ui.views': [ViewItem, true],
+  'gs.ui.viewsContainers': [ViewContainerItem, true],
 
-  'gs.workbench.style.container': [React.CSSProperties, false],
-  'gs.workbench.style.banner': [React.CSSProperties, false],
-  'gs.workbench.style.activityBar': [React.CSSProperties, false],
-  'gs.workbench.style.primarySidebar': [React.CSSProperties, false],
-  'gs.workbench.style.secondarySidebar': [React.CSSProperties, false],
-  'gs.workbench.style.stage': [React.CSSProperties, false],
-  'gs.workbench.style.panel': [React.CSSProperties, false],
-  'gs.workbench.style.statusBar': [React.CSSProperties, false],
+  'gs.ui.style.container': [React.CSSProperties, false],
+  'gs.ui.style.banner': [React.CSSProperties, false],
+  'gs.ui.style.activityBar': [React.CSSProperties, false],
+  'gs.ui.style.primarySidebar': [React.CSSProperties, false],
+  'gs.ui.style.secondarySidebar': [React.CSSProperties, false],
+  'gs.ui.style.stage': [React.CSSProperties, false],
+  'gs.ui.style.panel': [React.CSSProperties, false],
+  'gs.ui.style.statusBar': [React.CSSProperties, false],
 
-  'gs.workbench.activityBar.viewsContainers': [string, true],
-  'gs.workbench.activityBar.active': [string, false],
-  'gs.workbench.primarySidebar.viewsContainer': [string, false],
-  'gs.workbench.secondarySidebar.viewsContainer': [string, false],
-  'gs.workbench.stage.view': [string, false],
-  'gs.workbench.stage.viewport': ['desktop' | 'mobile', false],
-  'gs.workbench.panel.viewsContainers': [string, true],
+  'gs.ui.activityBar.viewsContainers': [string, true],
+  'gs.ui.activityBar.active': [string, false],
+  'gs.ui.primarySidebar.active': [string, false],
+  'gs.ui.secondarySidebar.active': [string, false],
+  'gs.ui.stage.active': [string, false],
+  'gs.ui.panel.viewsContainers': [string, true],
+  'gs.ui.stageViewport': ['desktop' | 'mobile', false],
+  'gs.ui.banner.views': [{ id: string, placement: 'left' | 'center' | 'right' }, true],
+  'gs.ui.propSettingViews': [{ name: string, remotePackage: string, remoteUrl: string, remoteModule: string }, true],
 
-  'gs.studio.componentInstance': [ComponentInstance, false],
-  'gs.studio.allComponentInstance': [ComponentInstance, true],
-  'gs.studio.component': [Component, false],
-  'gs.studio.release': [Release, false],
-  // 'gs.studio.componentVersion': [ComponentVersion, false],
+  'gs.componentInstance': [ComponentInstance, false],
+  'gs.allComponentInstance': [ComponentInstance, true],
+  'gs.component': [Component, false],
+  'gs.release': [Release, false],
 
-  'gs.studio.propSettingViews': [{ name: string, remotePackage: string, remoteUrl: string, remoteModule: string }, true],
-
-  'gs.studio.breadcrumbList': [{ id: number, name: string }, true],
-
-  'gs.workbench.banner.views': [{ id: string, placement: 'left' | 'center' | 'right' }, true],
-
-  'gs.workbench.stage.playgroundPath': [string, false],
-  'gs.workbench.stage.debugBaseUrl': [string, false],
+  'gs.propSetting.breadcrumbList': [{ id: number, name: string }, true],
+  'gs.stage.playgroundPath': [string, false],
+  'gs.stage.debugBaseUrl': [string, false],
 }
 
 export type GrootHookDict = {
-  'gh.studio.prop.change': [[Metadata | Metadata[], boolean] | [Metadata | Metadata[]], void],
-  'gh.sidebar.drag.start': [[], void],
-  'gh.sidebar.drag.end': [[], void],
-  'gh.component.drag.start': [[], void],
-  'gh.component.drag.end': [[], void],
-  'gh.studio.removeChildComponent': [[number, number, string | null], void],
+  'gh.sidebar.dragStart': [[], void],
+  'gh.sidebar.dragEnd': [[], void],
+  'gh.component.propChange': [[Metadata | Metadata[], boolean] | [Metadata | Metadata[]], void],
+  'gh.component.dragStart': [[], void],
+  'gh.component.dragEnd': [[], void],
+  'gh.component.removeChild': [[number, number, string | null], void],
 
   [PostMessageType.InnerReady]: [[], void],
   [PostMessageType.OuterSetConfig]: [[IframeDebuggerConfig] | [], void],
@@ -206,26 +193,63 @@ export type GrootHookDict = {
 
   [PostMessageType.OuterDragComponentEnter]: [[], void],
   [PostMessageType.OuterDragComponentOver]: [[{ positionX: number, positionY: number }], void],
-  [PostMessageType.InnerDragHitSlot]: [[DragAddComponentEventDataType], void],
+  [PostMessageType.InnerDragHitSlot]: [[DragAddComponentEventData], void],
   [PostMessageType.OuterDragComponentLeave]: [[], void],
   [PostMessageType.OuterDragComponentDrop]: [[{ positionX: number, positionY: number, componentId: number }], void],
-  [PostMessageType.InnerOutlineHover]: [[MarkerInfo], void],
-  [PostMessageType.InnerUpdateDragAnchor]: [[DragAnchorInfo], void],
-  [PostMessageType.InnerOutlineSelect]: [[MarkerInfo], void],
+  [PostMessageType.InnerOutlineHover]: [[ComponentAnchor], void],
+  [PostMessageType.InnerUpdateDragAnchor]: [[ComponentDragAnchor], void],
+  [PostMessageType.InnerOutlineSelect]: [[ComponentAnchor], void],
   [PostMessageType.OuterComponentSelect]: [[number], void],
   [PostMessageType.OuterOutlineReset]: [['hover' | 'selected'] | [], void],
-  [PostMessageType.InnerOutlineUpdate]: [[{ selected: MarkerInfo, hover: MarkerInfo }], void],
+  [PostMessageType.InnerOutlineUpdate]: [[{ selected: ComponentAnchor, hover: ComponentAnchor }], void],
 
   [PostMessageType.OuterRefreshView]: [[string], void]
 }
 
-export type CommandObject = { callback: Function, provider: string, origin?: CommandObject }
-export type StateObject = { value: any, provider: string, eventTarget: EventTarget, multi: boolean }
-export type HookObject = { callback: Function, provider: string }
+export type ViewContainerItem = {
+  id: string,
+  name: ViewElement,
+  icon?: ViewElement,
+  view?: ViewElement,
+  toolbar?: ViewElement
+};
+
+export type ViewItem = {
+  parent?: string
+} & ViewContainerItem;
+
+export const viewRender = (view: ViewElement, id?: any) => {
+  if (typeof view !== 'function') {
+    return <React.Fragment key={id || undefined}>{view}</React.Fragment>;
+  }
+  const View = view as React.FC;
+  return <View key={id || undefined} />
+}
+
+type ViewElement = string | ReactElement | React.FC;
 
 
 
 
+
+
+
+
+
+
+
+
+
+
+export const iframeNamePrefix = 'groot_';
+
+/**
+ * 设计模式下宿主传递给iframe的配置信息
+ */
+export type IframeDebuggerConfig = {
+  runtimeConfig?: Partial<UIManagerConfig>,
+  controlView?: string,
+}
 
 export enum PostMessageType {
 
@@ -260,27 +284,6 @@ export enum PostMessageType {
 
 
 
-type ViewRender = string | ReactElement | React.FC;
-
-export type ViewsContainer = {
-  id: string,
-  name: ViewRender,
-  icon?: ViewRender,
-  view?: ViewRender,
-  toolbar?: ViewRender
-};
-
-export type ViewChildItem = {
-  parent?: string
-} & ViewsContainer;
-
-export const viewRender = (view: ViewRender, id?: any) => {
-  if (typeof view !== 'function') {
-    return <React.Fragment key={id || undefined}>{view}</React.Fragment>;
-  }
-  const View = view as React.FC;
-  return <View key={id || undefined} />
-}
 
 
 
@@ -288,9 +291,7 @@ export const viewRender = (view: ViewRender, id?: any) => {
 
 
 
-
-
-export type DragAddComponentEventDataType = {
+export type DragAddComponentEventData = {
   propItemId: number,
   abstractValueIdChain?: string,
   parentInstanceId: number
@@ -299,7 +300,7 @@ export type DragAddComponentEventDataType = {
   direction?: 'next' | 'pre'
 }
 
-export type MarkerInfo = {
+export type ComponentAnchor = {
   clientRect: DOMRect,
   tagName: string,
   instanceId: number,
@@ -309,7 +310,7 @@ export type MarkerInfo = {
   abstractValueIdChain?: string
 }
 
-export type DragAnchorInfo = {
+export type ComponentDragAnchor = {
   direction: 'bottom' | 'top',
   left: number,
   width: number,
@@ -317,3 +318,9 @@ export type DragAnchorInfo = {
   hitEle?: HTMLElement,
   slotRect: DOMRect
 }
+
+
+
+
+
+

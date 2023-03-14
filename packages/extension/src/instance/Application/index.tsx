@@ -13,9 +13,9 @@ import BuildModal from "./BuildModal";
 import DeployModal from "./DeployModal";
 
 export const Application = () => {
-  const [currInstance] = grootStateManager().useStateByName('gs.studio.componentInstance');
+  const [currInstance] = grootStateManager().useStateByName('gs.componentInstance');
   const applicationModel = useRegisterModel(ApplicationModel)
-  const [release] = grootStateManager().useStateByName('gs.studio.release')
+  const [release] = grootStateManager().useStateByName('gs.release')
 
   useEffect(() => {
     if (currInstance) {

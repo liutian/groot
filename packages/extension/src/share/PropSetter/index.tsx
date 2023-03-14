@@ -21,7 +21,7 @@ export const PropSetter = () => {
     propHandleModel.inject(propPersistModel);
   });
 
-  const [component] = grootStateManager().useStateByName('gs.studio.component');
+  const [component] = grootStateManager().useStateByName('gs.component');
 
   const containerRef = useRef<HTMLDivElement>({} as any);
 
@@ -57,7 +57,7 @@ export const PropSetter = () => {
       cursor="col-resize"
       className={styles.moveHandle}
       start={() => {
-        grootHookManager().callHook('gh.sidebar.drag.start')
+        grootHookManager().callHook('gh.sidebar.dragStart')
         return containerRef.current.getBoundingClientRect().width;
       }}
       move={(x, _y, originData) => {
@@ -70,7 +70,7 @@ export const PropSetter = () => {
         layout.refresh(true);
       }}
       end={() => {
-        grootHookManager().callHook('gh.sidebar.drag.end')
+        grootHookManager().callHook('gh.sidebar.dragEnd')
       }}
     />
   </div >

@@ -10,7 +10,7 @@ import { PropItemTypeNameMap } from "util/data-map";
 
 const PropItemSetting: React.FC = () => {
   const propPersistModel = useModel(PropPersistModel);
-  const [propSettingView] = grootStateManager().useStateByName('gs.studio.propSettingViews', []);
+  const [propSettingView] = grootStateManager().useStateByName('gs.ui.propSettingViews', []);
   const [propItemTypeOptions] = useState(() => {
     if (propSettingView.length) {
       return [

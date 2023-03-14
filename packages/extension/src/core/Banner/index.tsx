@@ -1,4 +1,4 @@
-import { ViewChildItem, viewRender } from "@grootio/common";
+import { ViewItem, viewRender } from "@grootio/common";
 import { getContext, grootStateManager } from "context";
 
 import styles from './index.module.less'
@@ -6,11 +6,11 @@ import styles from './index.module.less'
 const Banner = () => {
   const { useStateByName } = grootStateManager();
   const [viewList] = useStateByName('gs.ui.views', []);
-  const [viewKeyList] = useStateByName('gs.workbench.banner.views');
+  const [viewKeyList] = useStateByName('gs.ui.banner.views');
 
-  const leftViewItemList: ViewChildItem[] = [];
-  const centerViewItemList: ViewChildItem[] = [];
-  const rightViewItemList: ViewChildItem[] = [];
+  const leftViewItemList: ViewItem[] = [];
+  const centerViewItemList: ViewItem[] = [];
+  const rightViewItemList: ViewItem[] = [];
 
   viewKeyList.forEach((viewKey) => {
     const viewItem = viewList.find(item => viewKey.id === item.id)

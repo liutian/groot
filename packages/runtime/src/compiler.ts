@@ -1,4 +1,4 @@
-import { Metadata, PropMetadata, PropMetadataType, RuntimeComponentValueType, StudioMode } from "@grootio/common";
+import { Metadata, PropMetadata, PropMetadataComponent, PropMetadataType, StudioMode } from "@grootio/common";
 import { controlMode, globalConfig, groot } from "./config";
 import { launchWatch } from "./monitor";
 
@@ -61,15 +61,19 @@ const processAdvancedProp = (metadata: Metadata, store: Metadata[]) => {
 }
 
 const createComponentByValue = (propMetadata: PropMetadata, store: Metadata[]) => {
-  const rootData = propMetadata.data as RuntimeComponentValueType;
-  const nodes = propMetadata.data.list.map((item) => {
+  if (propMetadata.type !== PropMetadataType.Component) {
+    throw new Error('参数错误')
+  }
+
+  const rootData = propMetadata.data
+  const nodes = rootData.list.map((item) => {
     const metadata = store.find(m => m.id === item.instanceId);
     if (!metadata) {
       throw new Error('数据异常');
     }
     metadata.$$runtime = {
-      propItemId: rootData.propItemId,
-      abstractValueIdChain: rootData.abstractValueIdChain
+      propItemId: rootData.$$runtime?.propItemId,
+      abstractValueIdChain: rootData.$$runtime?.abstractValueIdChain
     }
     return buildComponent(metadata, store);
   });

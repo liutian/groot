@@ -1,4 +1,4 @@
-import { Component, Metadata, PropBlockStructType, PropGroup, PropItem, PropItemType, PropMetadataType, PropValue, RuntimeComponentValueType } from '@grootio/common';
+import { Component, Metadata, PropBlockStructType, PropGroup, PropItem, PropItemType, PropMetadataComponent, PropMetadataType, PropValue } from '@grootio/common';
 
 import { fillPropChainGreed, fillPropChain, parsePropItemValue } from './utils';
 
@@ -131,23 +131,23 @@ function buildPropObjectForLeafItem(propItem: PropItem, ctx: Object, ctxKeyChain
     metadata.advancedProps.push({
       keyChain: ctxKeyChain,
       type: PropMetadataType.Json,
-      data: null
     })
   } else if (propItem.type === PropItemType.Function) {
     metadata.advancedProps.push({
       keyChain: ctxKeyChain,
       type: PropMetadataType.Function,
-      data: null
     })
   } else if (propItem.type === PropItemType.Component) {
     if (!newCTX[propEnd]) {
       throw new Error(`类型为: ${PropItemType.Component}，值未正常初始化`);
     }
-    const data = newCTX[propEnd] as RuntimeComponentValueType;
-    data.propItemId = propItem.id;
-    data.propKeyChain = ctxKeyChain;
-    data.abstractValueIdChain = abstractValueIdChain;
-    data.parentId = metadata.id;
+    const data = newCTX[propEnd] as PropMetadataComponent;
+    data.$$runtime = {
+      propItemId: propItem.id,
+      propKeyChain: ctxKeyChain,
+      abstractValueIdChain: abstractValueIdChain,
+      parentId: metadata.id
+    }
     metadata.advancedProps.push({
       keyChain: ctxKeyChain,
       type: PropMetadataType.Component,

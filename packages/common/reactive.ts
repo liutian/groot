@@ -4,7 +4,9 @@ import { isBaseType } from './util';
 const ArrayPatchMethods = ['push', 'pop', 'shift', 'unshift', 'splice', 'sort', 'reverse', 'fill'];
 
 
-
+/**
+ * 检测对象属性变化
+ */
 export function wrapperState(target: any, listener: Function) {
 
   // 避免不必类型的包装

@@ -13,25 +13,25 @@ import StatusBar from "./StatusBar";
 export const startup = () => {
   const { registerCommand } = grootCommandManager();
 
-  registerCommand('gc.workbench.banner.render', () => {
+  registerCommand('gc.ui.render.banner', () => {
     return <Banner />
   });
-  registerCommand('gc.workbench.activityBar.render', () => {
+  registerCommand('gc.ui.render.activityBar', () => {
     return <ActivityBar />
   });
-  registerCommand('gc.workbench.primarySidebar.render', () => {
+  registerCommand('gc.ui.render.primarySidebar', () => {
     return <PrimarySidebar />
   });
-  registerCommand('gc.workbench.secondarySidebar.render', () => {
+  registerCommand('gc.ui.render.secondarySidebar', () => {
     return <SecondarySidebar />
   });
-  registerCommand('gc.workbench.stage.render', () => {
+  registerCommand('gc.ui.render.stage', () => {
     return <Stage />
   });
-  registerCommand('gc.workbench.panel.render', () => {
+  registerCommand('gc.ui.render.panel', () => {
     return <Panel />
   });
-  registerCommand('gc.workbench.statusBar.render', () => {
+  registerCommand('gc.ui.render.statusBar', () => {
     return <StatusBar />
   });
 

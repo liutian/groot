@@ -1,4 +1,4 @@
-import { DragAnchorInfo, PostMessageType } from "@grootio/common";
+import { ComponentDragAnchor, PostMessageType } from "@grootio/common";
 import { useEffect, useRef } from "react";
 
 import styles from './index.module.less';
@@ -12,11 +12,11 @@ const ViewportDrag: React.FC = () => {
   const { callHook } = grootHookManager()
 
   useEffect(() => {
-    registerHook('gh.component.drag.start', () => {
+    registerHook('gh.component.dragStart', () => {
       // 开始响应外部组件拖入操作
       containerRef.current.style.display = 'inline-block';
     })
-    registerHook('gh.component.drag.end', () => {
+    registerHook('gh.component.dragEnd', () => {
       containerRef.current.style.display = 'none';
     })
     registerHook(PostMessageType.InnerUpdateDragAnchor, setDragAnchor)
@@ -51,7 +51,7 @@ const ViewportDrag: React.FC = () => {
     callHook(PostMessageType.OuterDragComponentLeave)
   }
 
-  function setDragAnchor(data: DragAnchorInfo) {
+  function setDragAnchor(data: ComponentDragAnchor) {
     if (data) {
       let styles = dragAnchorRef.current.style;
       styles.display = 'inline-block';

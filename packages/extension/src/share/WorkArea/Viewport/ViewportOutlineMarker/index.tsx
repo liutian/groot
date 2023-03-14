@@ -1,5 +1,5 @@
 import { DeleteOutlined, UpOutlined } from '@ant-design/icons';
-import { MarkerInfo, PostMessageType } from '@grootio/common';
+import { ComponentAnchor, PostMessageType } from '@grootio/common';
 import { useEffect, useRef } from 'react';
 
 import styles from './index.module.less';
@@ -8,8 +8,8 @@ import { grootCommandManager, grootHookManager } from 'context';
 const ViewportOutlineMarker: React.FC = () => {
   const hoverRef = useRef<HTMLDivElement>();
   const selectedRef = useRef<HTMLDivElement>();
-  const hoverCacheRef = useRef<MarkerInfo>();
-  const selectedCacheRef = useRef<MarkerInfo>();
+  const hoverCacheRef = useRef<ComponentAnchor>();
+  const selectedCacheRef = useRef<ComponentAnchor>();
   const { registerHook, callHook } = grootHookManager()
   const { executeCommand } = grootCommandManager()
 
@@ -46,7 +46,7 @@ const ViewportOutlineMarker: React.FC = () => {
     }
   }
 
-  function onHover(data: MarkerInfo) {
+  function onHover(data: ComponentAnchor) {
 
     if (data) {
       updateEle(hoverRef.current, data, true);
@@ -57,14 +57,14 @@ const ViewportOutlineMarker: React.FC = () => {
     hoverCacheRef.current = data;
   }
 
-  function onSelected(data: MarkerInfo) {
+  function onSelected(data: ComponentAnchor) {
     updateEle(selectedRef.current, data, true);
     selectedCacheRef.current = data;
 
-    executeCommand('gc.studio.switchIstance', data.instanceId)
+    executeCommand('gc.switchIstance', data.instanceId)
   }
 
-  function onUpdate({ selected, hover }: { selected: MarkerInfo, hover: MarkerInfo }) {
+  function onUpdate({ selected, hover }: { selected: ComponentAnchor, hover: ComponentAnchor }) {
 
     if (hover) {
       updateEle(hoverRef.current, hover);
@@ -81,7 +81,7 @@ const ViewportOutlineMarker: React.FC = () => {
     selectedCacheRef.current = selected;
   }
 
-  function updateEle(ele: HTMLElement, data: MarkerInfo, refreshToolbar = false) {
+  function updateEle(ele: HTMLElement, data: ComponentAnchor, refreshToolbar = false) {
     ele.style.display = 'inline-block';
     ele.style.left = `${data.clientRect.x}px`;
     ele.style.top = `${data.clientRect.y}px`;
@@ -120,7 +120,7 @@ const ViewportOutlineMarker: React.FC = () => {
     if (action === 'select-parent') {
       callHook(PostMessageType.OuterComponentSelect, ctx.parentInstanceId)
     } else if (action === 'remove') {
-      callHook('gh.studio.removeChildComponent', ctx.instanceId, ctx.propItemId, ctx.abstractValueIdChain)
+      callHook('gh.component.removeChild', ctx.instanceId, ctx.propItemId, ctx.abstractValueIdChain)
     }
   }
 

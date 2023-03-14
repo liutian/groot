@@ -44,35 +44,35 @@ export const shareBootstrap = () => {
     }
   ], true)
 
-  registerState('gs.workbench.secondarySidebar.viewsContainer', 'propSetter', false);
-  registerState('gs.workbench.stage.view', 'workArea', false);
-  registerState('gs.workbench.banner.views', [
+  registerState('gs.ui.secondarySidebar.active', 'propSetter', false);
+  registerState('gs.ui.stage.active', 'workArea', false);
+  registerState('gs.ui.banner.views', [
     { id: 'toolBar', placement: 'center' }
   ], true)
-  registerState('gs.workbench.stage.viewport', 'desktop', false)
+  registerState('gs.ui.stageViewport', 'desktop', false)
 
-  registerState('gs.workbench.stage.debugBaseUrl', '', false)
-  registerState('gs.workbench.stage.playgroundPath', '', false)
+  registerState('gs.stage.debugBaseUrl', '', false)
+  registerState('gs.stage.playgroundPath', '', false)
 
   groot.layout.design('visible', 'secondarySidebar', true);
   groot.layout.design('visible', 'panel', false);
   groot.layout.design('banner', 'center', null)
 
   const { registerCommand } = grootCommandManager();
-  registerCommand('gc.stage.refresh', (_, callback) => {
+  registerCommand('gc.stageRefresh', (_, callback) => {
     commandBridge.stageRefresh(callback)
   })
 }
 
 
 export const getComponentVersionId = () => {
-  const component = grootStateManager().getState('gs.studio.component');
+  const component = grootStateManager().getState('gs.component');
 
   let componentVersionId;
   if (isPrototypeMode()) {
     componentVersionId = component.componentVersion.id;
   } else {
-    const componentInstance = grootStateManager().getState('gs.studio.componentInstance');
+    const componentInstance = grootStateManager().getState('gs.componentInstance');
     componentVersionId = componentInstance.componentVersion.id;
   }
 

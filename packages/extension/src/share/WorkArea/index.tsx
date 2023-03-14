@@ -12,11 +12,11 @@ export const WorkArea = () => {
   const { registerHook } = grootHookManager()
 
   useEffect(() => {
-    registerHook('gh.sidebar.drag.start', () => {
+    registerHook('gh.sidebar.dragStart', () => {
       maskEleRef.current.classList.add('show')
     })
 
-    registerHook('gh.sidebar.drag.end', () => {
+    registerHook('gh.sidebar.dragEnd', () => {
       maskEleRef.current.classList.remove('show')
     })
   }, []);

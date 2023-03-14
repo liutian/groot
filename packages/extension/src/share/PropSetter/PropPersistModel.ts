@@ -1,4 +1,4 @@
-import { APIPath, ComponentInstance, PropBlock, PropGroup, PropItem, PropItemType, PropValue, PropValueType, RuntimeComponentValueType, StudioMode, ValueStruct } from "@grootio/common";
+import { APIPath, ComponentInstance, PropBlock, PropGroup, PropItem, PropItemType, PropMetadataComponent, PropValue, PropValueType, StudioMode, ValueStruct } from "@grootio/common";
 import { stringifyPropItemValue } from "@grootio/core";
 import { getContext, grootCommandManager, grootStateManager } from "context";
 import { getComponentVersionId } from "share";
@@ -121,7 +121,7 @@ export default class PropPersistModel {
   public updateOrAddPropGroup(group: PropGroup) {
     const groupData = Object.assign(this.currSettingPropGroup, group);
 
-    groupData.componentId = this.stateManager.getState('gs.studio.component').id
+    groupData.componentId = this.stateManager.getState('gs.component').id
     groupData.componentVersionId = getComponentVersionId()
 
     this.settingModalSubmitting = true;
@@ -131,7 +131,7 @@ export default class PropPersistModel {
         assignBaseType(this.propHandle.propTree[groupIndex], groupData);
 
         this.currSettingPropGroup = undefined;
-        grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'current');
+        grootCommandManager().executeCommand('gc.makeDataToStage', 'current');
       }).finally(() => {
         this.settingModalSubmitting = false;
       })
@@ -150,7 +150,7 @@ export default class PropPersistModel {
         }
 
         this.currSettingPropGroup = undefined;
-        grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'current');
+        grootCommandManager().executeCommand('gc.makeDataToStage', 'current');
       }).finally(() => {
         this.settingModalSubmitting = false;
       })
@@ -167,7 +167,7 @@ export default class PropPersistModel {
         let blockIndex = group.propBlockList.findIndex(b => b.id === blockData.id);
         assignBaseType(group.propBlockList[blockIndex], blockData);
         this.currSettingPropBlock = undefined;
-        grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'current');
+        grootCommandManager().executeCommand('gc.makeDataToStage', 'current');
       }).finally(() => {
         this.settingModalSubmitting = false;
       })
@@ -191,7 +191,7 @@ export default class PropPersistModel {
         }
 
         this.currSettingPropBlock = undefined;
-        grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'current');
+        grootCommandManager().executeCommand('gc.makeDataToStage', 'current');
       }).finally(() => {
         this.settingModalSubmitting = false;
       })
@@ -215,7 +215,7 @@ export default class PropPersistModel {
         originItem.optionList = itemData.optionList;
 
         this.currSettingPropItem = undefined;
-        grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'current');
+        grootCommandManager().executeCommand('gc.makeDataToStage', 'current');
       }).finally(() => {
         this.settingModalSubmitting = false;
       })
@@ -243,7 +243,7 @@ export default class PropPersistModel {
         }
 
         this.currSettingPropItem = undefined;
-        grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'current');
+        grootCommandManager().executeCommand('gc.makeDataToStage', 'current');
       }).finally(() => {
         this.settingModalSubmitting = false;
       })
@@ -258,7 +258,7 @@ export default class PropPersistModel {
       if (this.propHandle.activeGroupId === groupId) {
         this.propHandle.activeGroupId = this.propHandle.propTree[0]?.id
       }
-      grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'current');
+      grootCommandManager().executeCommand('gc.makeDataToStage', 'current');
     })
   }
 
@@ -266,7 +266,7 @@ export default class PropPersistModel {
     this.request(APIPath.block_remove_blockId, { blockId }).then(() => {
       let blockIndex = group.propBlockList.findIndex(b => b.id === blockId);
       group.propBlockList.splice(blockIndex, 1);
-      grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'current');
+      grootCommandManager().executeCommand('gc.makeDataToStage', 'current');
     })
   }
 
@@ -274,7 +274,7 @@ export default class PropPersistModel {
     this.request(APIPath.item_remove_itemId, { itemId }).then(() => {
       let itemIndex = block.propItemList.findIndex(item => item.id === itemId);
       block.propItemList.splice(itemIndex, 1);
-      grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'current');
+      grootCommandManager().executeCommand('gc.makeDataToStage', 'current');
     })
   }
 
@@ -313,7 +313,7 @@ export default class PropPersistModel {
 
   public addAbstractTypeValue(propItem: PropItem) {
     const abstractValueIdChain = calcPropValueIdChain(propItem);
-    const component = this.stateManager.getState('gs.studio.component');
+    const component = this.stateManager.getState('gs.component');
 
     const paramsData = {
       propItemId: propItem.id,
@@ -325,22 +325,22 @@ export default class PropPersistModel {
     if (getContext().groot.params.mode === StudioMode.Prototype) {
       paramsData.type = PropValueType.Prototype;
     } else {
-      const componentInstance = this.stateManager.getState('gs.studio.componentInstance')
+      const componentInstance = this.stateManager.getState('gs.componentInstance')
       paramsData.type = PropValueType.Instance;
-      paramsData.releaseId = grootStateManager().getState('gs.studio.release').id
+      paramsData.releaseId = grootStateManager().getState('gs.release').id
       paramsData.componentInstanceId = componentInstance.id;
     }
 
     this.request(APIPath.value_abstractType_add, paramsData).then(({ data }) => {
       propItem.valueList.push(data);
-      grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'current');
+      grootCommandManager().executeCommand('gc.makeDataToStage', 'current');
     })
   }
 
   public removeBlockListStructChildItem(propValueId: number, propItem: PropItem) {
     this.request(APIPath.value_abstractType_remove_propValueId, { propValueId }).then(() => {
       propItem.valueList = propItem.valueList.filter(v => v.id !== propValueId);
-      grootCommandManager().executeCommand('gc.workbench.makeDataToStage', 'current');
+      grootCommandManager().executeCommand('gc.makeDataToStage', 'current');
     })
   }
 
@@ -363,7 +363,7 @@ export default class PropPersistModel {
       paramData.id = propValue.id;
       paramData.value = valueStr;
     } else {
-      const component = this.stateManager.getState('gs.studio.component');
+      const component = this.stateManager.getState('gs.component');
       const isPrototypeMode = getContext().groot.params.mode === StudioMode.Prototype;
 
       paramData.abstractValueIdChain = abstractValueIdChain;
@@ -376,10 +376,10 @@ export default class PropPersistModel {
       if (isPrototypeMode) {
         paramData.type = PropValueType.Prototype;
       } else {
-        const componentInstance = this.stateManager.getState('gs.studio.componentInstance')
-        const allComponentInstance = this.stateManager.getState('gs.studio.allComponentInstance')
+        const componentInstance = this.stateManager.getState('gs.componentInstance')
+        const allComponentInstance = this.stateManager.getState('gs.allComponentInstance')
         paramData.type = PropValueType.Instance;
-        paramData.releaseId = grootStateManager().getState('gs.studio.release').id
+        paramData.releaseId = grootStateManager().getState('gs.release').id
         paramData.componentInstanceId = componentInstance.id;
 
         if (hostComponentInstanceId) {
@@ -409,7 +409,7 @@ export default class PropPersistModel {
   }
 
   public removeChildInstance(instanceId: number, itemId: number, abstractValueIdChain?: string) {
-    const allComponentInstance = this.stateManager.getState('gs.studio.allComponentInstance')
+    const allComponentInstance = this.stateManager.getState('gs.allComponentInstance')
 
     return this.request(APIPath.componentInstance_remove_instanceId, { instanceId }).then(() => {
       let propItem;
@@ -425,7 +425,7 @@ export default class PropPersistModel {
         return value.abstractValueIdChain === abstractValueIdChain || (!value.abstractValueIdChain && !abstractValueIdChain)
       });
 
-      const componentValue = JSON.parse(propValue.value) as RuntimeComponentValueType;
+      const componentValue = JSON.parse(propValue.value) as PropMetadataComponent;
       const index = componentValue.list.findIndex(i => i.instanceId === instanceId);
       componentValue.list.splice(index, 1);
 

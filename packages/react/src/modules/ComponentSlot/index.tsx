@@ -1,9 +1,9 @@
-import { RuntimeComponentValueType } from "@grootio/common";
 import { useEffect, useRef, useState } from "react";
 import { groot } from "@grootio/runtime";
+import { PropMetadataComponent } from "@grootio/common";
 
 type PropType = {
-  children: React.ReactElement[] & { _groot?: RuntimeComponentValueType },
+  children: React.ReactElement[] & { _groot?: PropMetadataComponent },
   minHeight?: number,
   padding?: number
 }
@@ -39,8 +39,8 @@ export const ComponentSlot: React.FC<PropType> = ({ children, minHeight = 100, p
   }
 
   {/* 预留自由布局 */ }
-  return <div data-groot-slot={children._groot.parentId}
-    data-groot-key-chain={children._groot.propKeyChain}
+  return <div data-groot-slot={children._groot.$$runtime?.parentId}
+    data-groot-key-chain={children._groot.$$runtime?.propKeyChain}
     {...{ 'data-groot-allow-highlight': !children?.length ? true : undefined }}
     ref={containerRef}
     style={{

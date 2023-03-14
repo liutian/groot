@@ -9,7 +9,7 @@ import styles from './index.module.less'
 
 const ComponentItem: React.FC<{ component: Component }> = ({ component }) => {
   const solutionModel = useModel(SolutionModel)
-  const [currComponent] = grootStateManager().useStateByName('gs.studio.component');
+  const [currComponent] = grootStateManager().useStateByName('gs.component');
 
   useEffect(() => {
     component.componentVersionId = component.recentVersionId
