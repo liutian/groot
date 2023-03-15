@@ -66,10 +66,11 @@ export type ComponentInstance = {
   blockList: PropBlock[],
   itemList: PropItem[],
   valueList: PropValue[],
+  stateList: State[],
 
   // ************************** 分割线已下是界面属性 **************************
   propTree: PropGroup[],
-} & Omit<import("../../cloud/src/entities/ComponentInstance").ComponentInstance, 'component' | 'componentVersion' | 'groupList' | 'blockList' | 'itemList' | 'valueList'>;
+} & Omit<import("../../cloud/src/entities/ComponentInstance").ComponentInstance, 'component' | 'componentVersion' | 'groupList' | 'blockList' | 'itemList' | 'valueList' | 'stateList'>;
 
 export type Release = {
 
@@ -81,6 +82,8 @@ export type PropValue = {
 
 export type State = {
 
+  // ************************** 分割线已下是界面属性 **************************
+  isReadonly: boolean
 } & Omit<import("../../cloud/src/entities/State").State, 'componentInstance' | 'release'>;
 
 export type Component = {

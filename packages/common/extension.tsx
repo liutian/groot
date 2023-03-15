@@ -1,7 +1,7 @@
 import { ReactElement } from "react";
 import React from "react";
 import { APIStore } from "./api/API.store";
-import { Application, Component, ComponentInstance, Release, Solution } from "./entities";
+import { Application, Component, ComponentInstance, Release, Solution, State } from "./entities";
 import { GridLayout } from "./GridLayout";
 import { ApplicationData, Metadata } from "./internal";
 import { StudioMode } from "./enum";
@@ -173,6 +173,8 @@ export type GrootStateDict = {
   'gs.propSetting.breadcrumbList': [{ id: number, name: string }, true],
   'gs.stage.playgroundPath': [string, false],
   'gs.stage.debugBaseUrl': [string, false],
+  'gs.globalStateList': [State, true],
+  'gs.localStateList': [State, true],
 }
 
 export type GrootHookDict = {

@@ -1,11 +1,12 @@
 import { AppstoreOutlined } from "@ant-design/icons";
-import { APIPath, ComponentInstance, PropBlockStructType, PropGroup } from "@grootio/common";
+import { APIPath, ComponentInstance, PropBlockStructType, PropGroup, State, StateCategory } from "@grootio/common";
 import { metadataFactory, propTreeFactory } from "@grootio/core";
 import { getContext, grootCommandManager, grootHookManager, grootStateManager } from "context";
 import ViewsContainer from "core/ViewsContainer";
-import { parseOptions } from "util/utils";
+import { parseOptions, uuid } from "util/utils";
 import { Application } from "./Application";
 import { Material } from "./Material";
+import StateList from "./State";
 
 
 export const instanceBootstrap = () => {
@@ -34,15 +35,11 @@ export const instanceBootstrap = () => {
         return <ViewsContainer context={this} />
       },
     }, {
-      id: 'custom_icon',
-      name: '物料',
-      icon: () => {
-        return <span onClick={(e) => {
-          alert('haha')
-          e.stopPropagation();
-        }}>
-          <AppstoreOutlined />
-        </span>
+      id: 'state',
+      name: '状态',
+      icon: <AppstoreOutlined />,
+      view: function () {
+        return <ViewsContainer context={this} />
       }
     },
   ])
@@ -58,11 +55,17 @@ export const instanceBootstrap = () => {
       name: '物料',
       view: <Material />,
       parent: 'material'
+    }, {
+      id: 'state',
+      name: '状态',
+      view: <StateList />,
+      parent: 'state'
     },
+
   ])
 
 
-  registerState('gs.ui.activityBar.viewsContainers', ['application', 'material', 'custom_icon'], true)
+  registerState('gs.ui.activityBar.viewsContainers', ['application', 'material', 'state'], true)
   registerState('gs.ui.activityBar.active', 'application', false);
   registerState('gs.ui.primarySidebar.active', 'application', false);
 
@@ -72,6 +75,8 @@ export const instanceBootstrap = () => {
   registerState('gs.allComponentInstance', [], true)
   registerState('gs.propSetting.breadcrumbList', [], true)
   registerState('gs.release', null, false)
+  registerState('gs.globalStateList', [], true)
+  registerState('gs.localStateList', [], true)
 
   registerCommand('gc.fetch.instance', (_, rootInstanceId) => {
     fetchRootInstance(rootInstanceId);
@@ -152,6 +157,23 @@ const fetchRootInstance = (rootInstanceId: number) => {
     grootStateManager().setState('gs.stage.playgroundPath', release.playgroundPath || application.playgroundPath)
     grootStateManager().setState('gs.release', release)
     grootStateManager().setState('gs.allComponentInstance', list)
+
+    const globalStateList = root.stateList.filter(item => !item.instanceId)
+    const localStateList = root.stateList.filter(item => !!item.instanceId)
+
+    const runtimeStateList: Partial<State>[] = []
+
+    runtimeStateList.push({
+      id: uuid(),
+      name: '标题',
+      value: 'xxx',
+      type: StateCategory.Str,
+      isReadonly: true,
+      instanceId: root.id
+    })
+
+    grootStateManager().setState('gs.localStateList', [...(runtimeStateList as any), ...localStateList])
+    grootStateManager().setState('gs.globalStateList', globalStateList)
 
     grootCommandManager().executeCommand('gc.makeDataToStage', 'first');
     switchComponentInstance(root.id);
