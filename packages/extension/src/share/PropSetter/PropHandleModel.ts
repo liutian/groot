@@ -1,4 +1,4 @@
-import { ComponentInstance, PropMetadataComponentItem, PropMetadataComponent, DragAddComponentEventData, getOrigin, PostMessageType, PropBlock, PropGroup, PropItem, PropItemType, PropValueType, ValueStruct, wrapperState } from "@grootio/common";
+import { ComponentInstance, PropMetadataComponentItem, PropMetadataComponent, DragAddComponentEventData, getOrigin, PostMessageType, PropBlock, PropGroup, PropItem, PropItemType, PropValueType, ValueStruct, wrapperState, BaseModel } from "@grootio/common";
 import { grootCommandManager, grootHookManager, grootStateManager, isPrototypeMode } from "context";
 
 import PropPersistModel from "./PropPersistModel";
@@ -6,9 +6,8 @@ import PropPersistModel from "./PropPersistModel";
 /**
  * 控制属性编辑器整体UI状态
  */
-export default class PropHandleModel {
+export default class PropHandleModel extends BaseModel {
   static modelName = 'propHandle';
-  emitter: Function;
 
   public propPersist: PropPersistModel;
   public forceUpdateFormKey = 0;

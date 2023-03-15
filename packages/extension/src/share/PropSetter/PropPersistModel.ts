@@ -1,4 +1,4 @@
-import { APIPath, ComponentInstance, PropBlock, PropGroup, PropItem, PropItemType, PropMetadataComponent, PropValue, PropValueType, StudioMode, ValueStruct } from "@grootio/common";
+import { APIPath, BaseModel, ComponentInstance, PropBlock, PropGroup, PropItem, PropItemType, PropMetadataComponent, PropValue, PropValueType, StudioMode, ValueStruct } from "@grootio/common";
 import { stringifyPropItemValue } from "@grootio/core";
 import { getContext, grootCommandManager, grootStateManager } from "context";
 import { getComponentVersionId } from "share";
@@ -9,10 +9,9 @@ import PropHandleModel from "./PropHandleModel";
 /**
  * 负责属性编辑器涉及到的接口调用，以及相关UI状态
  */
-export default class PropPersistModel {
+export default class PropPersistModel extends BaseModel {
   static modelName = 'propPersist';
 
-  emitter: Function;
   /**
    * 正在配置的分组
    */

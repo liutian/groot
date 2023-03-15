@@ -1,9 +1,8 @@
-import { APIPath, Component, ComponentVersion, ModalStatus } from "@grootio/common";
+import { APIPath, BaseModel, Component, ComponentVersion, ModalStatus } from "@grootio/common";
 import { getContext, grootCommandManager, grootStateManager } from "context";
 
-export default class SolutionModel {
+export default class SolutionModel extends BaseModel {
   static modelName = 'SolutionModel';
-  emitter: Function;
 
   componentAddModalStatus: ModalStatus = ModalStatus.None
   componentVersionAddModalStatus: ModalStatus = ModalStatus.None

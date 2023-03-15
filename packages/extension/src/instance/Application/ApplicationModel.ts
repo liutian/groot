@@ -1,9 +1,8 @@
-import { APIPath, ComponentInstance, Deploy, EnvType, ModalStatus, Release } from "@grootio/common";
+import { APIPath, BaseModel, ComponentInstance, Deploy, EnvType, ModalStatus, Release } from "@grootio/common";
 import { getContext, grootCommandManager, grootStateManager } from "context";
 
-export default class ApplicationModel {
+export default class ApplicationModel extends BaseModel {
   static modelName = 'ApplicationModel';
-  emitter: Function;
 
   instanceAddModalStatus: ModalStatus = ModalStatus.None
   releaseAddModalStatus: ModalStatus = ModalStatus.None

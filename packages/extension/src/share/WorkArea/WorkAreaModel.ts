@@ -1,10 +1,9 @@
-import { ApplicationData, IframeDebuggerConfig, iframeNamePrefix, Metadata, PostMessageType } from "@grootio/common";
+import { ApplicationData, BaseModel, IframeDebuggerConfig, iframeNamePrefix, Metadata, PostMessageType } from "@grootio/common";
 
 import { commandBridge, getContext, grootCommandManager, grootHookManager, grootStateManager, isPrototypeMode } from "context";
 
-export default class WorkAreaModel {
+export default class WorkAreaModel extends BaseModel {
   static modelName = 'workArea';
-  emitter: Function;
 
   public iframeEle: HTMLIFrameElement;
   private iframeReady = false
