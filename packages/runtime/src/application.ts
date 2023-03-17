@@ -133,7 +133,7 @@ function initApplication(data: ApplicationData) {
     allViewMap.set(view.key, view);
   });
   if (controlMode) {
-    window.parent.postMessage({ type: PostMessageType.InnerApplicationnReady }, '*');
+    window.parent.postMessage({ type: PostMessageType.InnerApplicationReady }, '*');
   }
 }
 

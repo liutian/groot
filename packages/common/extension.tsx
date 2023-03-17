@@ -259,7 +259,7 @@ export enum PostMessageType {
   OuterSetConfig = 'outer_set_config',
   InnerFetchApplication = 'inner_fetch_application',
   OuterSetApplication = 'outer_set_application',
-  InnerApplicationnReady = 'inner_applicationn_ready',
+  InnerApplicationReady = 'inner_application_ready',
   InnerFetchView = 'inner_fetch_view',
   OuterUpdateState = 'outer_update_state',
   OuterUpdateComponent = 'outer_update_component',
