@@ -189,7 +189,7 @@ export type GrootHookDict = {
   [PostMessageType.OuterSetConfig]: [[IframeDebuggerConfig] | [], void],
   [PostMessageType.InnerFetchApplication]: [[], void],
   [PostMessageType.OuterSetApplication]: [[ApplicationData] | [], void],
-  [PostMessageType.InnerApplicationnReady]: [[], void],
+  [PostMessageType.InnerApplicationReady]: [[], void],
   [PostMessageType.InnerFetchView]: [[], void],
   [PostMessageType.OuterUpdateComponent]: [[Metadata | Metadata[]], void],
 

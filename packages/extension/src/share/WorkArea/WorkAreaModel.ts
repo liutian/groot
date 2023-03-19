@@ -35,7 +35,7 @@ export default class WorkAreaModel extends BaseModel {
     const eventTypeList = [
       PostMessageType.InnerReady,
       PostMessageType.InnerFetchApplication,
-      PostMessageType.InnerApplicationnReady,
+      PostMessageType.InnerApplicationReady,
       PostMessageType.InnerFetchView,
       PostMessageType.InnerDragHitSlot,
       PostMessageType.InnerUpdateDragAnchor,
