@@ -1,3 +1,6 @@
+import React from "react";
+import { ViewElement } from "./extension";
+
 // 从对象中抓取部分属性生成另一个对象
 export function pick<O extends Object, P extends string>(obj: O, props: AutoPath<O, P>[], target?: O): O {
   const newObj = target || {} as O;
@@ -51,3 +54,10 @@ export const isBaseType = (value: any) => {
 }
 
 
+export const viewRender = (view: ViewElement, id?: any) => {
+  if (typeof view !== 'function') {
+    return <React.Fragment key={id || undefined}> {view} </React.Fragment>;
+  }
+  const View = view as React.FC;
+  return <View key={id || undefined} />
+}

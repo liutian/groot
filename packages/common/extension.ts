@@ -220,15 +220,9 @@ export type ViewItem = {
   parent?: string
 } & ViewContainerItem;
 
-export const viewRender = (view: ViewElement, id?: any) => {
-  if (typeof view !== 'function') {
-    return <React.Fragment key={id || undefined}>{view}</React.Fragment>;
-  }
-  const View = view as React.FC;
-  return <View key={id || undefined} />
-}
 
-type ViewElement = string | ReactElement | React.FC;
+
+export type ViewElement = string | ReactElement | React.FC;
 
 
 
