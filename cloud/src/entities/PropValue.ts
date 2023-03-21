@@ -28,10 +28,10 @@ export class PropValue extends BaseEntity {
   @Property({ length: 1000 })
   value = '';
 
-  @Property({ length: 100 })
+  @Property({ length: 100, comment: '记录上层列表属性链上的每一个父级PropValue ID' })
   abstractValueIdChain = '';
 
-  @Property({ columnType: 'double' })
+  @Property({ columnType: 'double', comment: '列表属性链上每一个同级value的顺序，配合abstractValueIdChain使用' })
   order = 0;
 
   @Property({ type: 'tinyint' })

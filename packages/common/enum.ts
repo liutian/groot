@@ -69,6 +69,9 @@ export enum ComponentParserType {
 
 export enum ValueStruct {
   Common = 1,
+  /**
+   * 存放子组件实例ID
+   */
   ChildComponentList = 2
 }
 
