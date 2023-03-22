@@ -53,12 +53,12 @@ export type ExtensionRuntime = {
 }
 
 
-export type CommandManager = <CT extends Record<string, [any[], any]>>() => {
+export type CommandManager = <CT extends Record<string, [any[], any]> = GrootCommandDict>() => {
   registerCommand: GrootContextRegisterCommand<CT>,
   executeCommand: GrootContextExecuteCommand<CT>,
 }
 
-export type StateManager = <ST extends Record<string, [any, boolean]>>() => {
+export type StateManager = <ST extends Record<string, [any, boolean]> = GrootStateDict>() => {
   registerState: GrootContextRegisterState<ST>,
   getState: GrootContextGetState<ST>,
   setState: GrootContextSetState<ST>,
@@ -66,7 +66,7 @@ export type StateManager = <ST extends Record<string, [any, boolean]>>() => {
   watchState: GrootContextWatchState<ST>
 }
 
-export type HookManager = <HT extends Record<string, [any[], any]>>() => {
+export type HookManager = <HT extends Record<string, [any[], any]> = GrootHookDict>() => {
   registerHook: GrootContextRegisterHook<HT>,
   callHook: GrootContextCallHook<HT>
 }
