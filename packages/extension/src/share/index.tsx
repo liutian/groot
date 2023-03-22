@@ -1,4 +1,4 @@
-import { commandBridge, getContext, grootCommandManager, grootStateManager, isPrototypeMode } from "context";
+import { commandBridge, getContext, grootManager, isPrototypeMode } from "context";
 import ViewsContainer from "core/ViewsContainer";
 import { PropSetter } from "./PropSetter";
 import ToolBar from "./ToolBar";
@@ -7,7 +7,7 @@ import { WorkArea } from "./WorkArea";
 
 export const shareBootstrap = () => {
   const { groot } = getContext();
-  const { registerState } = grootStateManager();
+  const { registerState } = grootManager.state
 
 
   registerState('gs.ui.viewsContainers', [
@@ -58,21 +58,20 @@ export const shareBootstrap = () => {
   groot.layout.design('visible', 'panel', false);
   groot.layout.design('banner', 'center', null)
 
-  const { registerCommand } = grootCommandManager();
-  registerCommand('gc.stageRefresh', (_, callback) => {
+  grootManager.command.registerCommand('gc.stageRefresh', (_, callback) => {
     commandBridge.stageRefresh(callback)
   })
 }
 
 
 export const getComponentVersionId = () => {
-  const component = grootStateManager().getState('gs.component');
+  const component = grootManager.state.getState('gs.component');
 
   let componentVersionId;
   if (isPrototypeMode()) {
     componentVersionId = component.componentVersion.id;
   } else {
-    const componentInstance = grootStateManager().getState('gs.componentInstance');
+    const componentInstance = grootManager.state.getState('gs.componentInstance');
     componentVersionId = componentInstance.componentVersion.id;
   }
 

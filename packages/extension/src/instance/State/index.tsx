@@ -5,12 +5,12 @@ import { useRegisterModel } from "@grootio/common";
 import styles from './index.module.less';
 import StateModel from "./StateModel";
 import StateForm from "./StateForm";
-import { grootStateManager } from "context";
+import { grootManager } from "context";
 
 const StateList = () => {
   const stateModel = useRegisterModel(StateModel);
-  const [globalStateList] = grootStateManager().useStateByName('gs.globalStateList')
-  const [localSttateList] = grootStateManager().useStateByName('gs.localStateList')
+  const [globalStateList] = grootManager.state.useStateByName('gs.globalStateList')
+  const [localSttateList] = grootManager.state.useStateByName('gs.localStateList')
 
   return <div className={styles.container}>
     {

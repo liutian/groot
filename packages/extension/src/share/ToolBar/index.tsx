@@ -1,10 +1,10 @@
 import { Button, Radio, Space } from "antd"
-import { grootStateManager } from "context"
+import { grootManager } from "context"
 
 import styles from './index.module.less'
 
 const ToolBar = () => {
-  const [viewportMode, setViewportMode] = grootStateManager().useStateByName('gs.ui.stageViewport')
+  const [viewportMode, setViewportMode] = grootManager.state.useStateByName('gs.ui.stageViewport')
   return <div className={styles.container}>
 
     <Space>

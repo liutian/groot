@@ -1,7 +1,7 @@
-import { grootStateManager } from "context";
+import { grootManager } from "context";
 
 const StatusBar = () => {
-  const { useStateByName } = grootStateManager();
+  const { useStateByName } = grootManager.state
 
   return <>StatusBar</>
 }

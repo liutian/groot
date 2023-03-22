@@ -1,15 +1,15 @@
 import { AppstoreOutlined } from "@ant-design/icons";
 import { APIPath, PropBlockStructType, PropGroup } from "@grootio/common";
 import { metadataFactory, propTreeFactory } from "@grootio/core";
-import { getContext, grootCommandManager, grootHookManager, grootStateManager } from "context";
+import { getContext, grootManager } from "context";
 import ViewsContainer from "core/ViewsContainer";
 import { parseOptions } from "util/utils";
 import { Solution } from "./Solution";
 
 export const prototypeBootstrap = () => {
   const { groot } = getContext();
-  const { registerState, getState, setState } = grootStateManager();
-  const { registerCommand, executeCommand } = grootCommandManager();
+  const { registerState, getState, setState } = grootManager.state
+  const { registerCommand, executeCommand } = grootManager.command
 
   getState('gs.ui.viewsContainers').push(...[
     {
@@ -69,13 +69,13 @@ const fetchComponent = (componentId: number, versionId) => {
     })
 
 
-    grootStateManager().setState('gs.component', data)
-    grootCommandManager().executeCommand('gc.makeDataToStage', 'first')
+    grootManager.state.setState('gs.component', data)
+    grootManager.command.executeCommand('gc.makeDataToStage', 'first')
   })
 }
 
 const syncDataToStage = (first = false) => {
-  const component = grootStateManager().getState('gs.component');
+  const component = grootManager.state.getState('gs.component');
 
   if (!component.propTree) {
     const { groupList, blockList, itemList, valueList } = component;
@@ -89,5 +89,5 @@ const syncDataToStage = (first = false) => {
   }
 
   const metadata = metadataFactory(component.propTree, component, component.id, null);
-  grootHookManager().callHook('gh.component.propChange', metadata, first)
+  grootManager.hook.callHook('gh.component.propChange', metadata, first)
 }

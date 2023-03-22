@@ -1,10 +1,10 @@
 import { viewRender } from "@grootio/common";
-import { grootStateManager } from "context";
+import { grootManager } from "context";
 import styles from './index.module.less';
 
 
 const ActivityBar: React.FC = () => {
-  const { useStateByName } = grootStateManager();
+  const { useStateByName } = grootManager.state
   const [viewKeys] = useStateByName('gs.ui.activityBar.viewsContainers', []);
   const [viewsContainers] = useStateByName('gs.ui.viewsContainers', []);
   const [active, setActive] = useStateByName('gs.ui.activityBar.active', '');
@@ -15,7 +15,7 @@ const ActivityBar: React.FC = () => {
 
   const change = (key: string) => {
     setActive(key);
-    grootStateManager().setState('gs.ui.primarySidebar.active', key);
+    grootManager.state.setState('gs.ui.primarySidebar.active', key);
   }
 
   return <div className={styles.container}>

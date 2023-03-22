@@ -1,5 +1,5 @@
 import { APIPath, BaseModel, Component, ComponentVersion, ModalStatus } from "@grootio/common";
-import { getContext, grootCommandManager, grootStateManager } from "context";
+import { getContext, grootManager } from "context";
 
 export default class SolutionModel extends BaseModel {
   static modelName = 'SolutionModel';
@@ -17,7 +17,7 @@ export default class SolutionModel extends BaseModel {
     }).then(({ data }) => {
       this.componentAddModalStatus = ModalStatus.None;
       this.componentList.push(data)
-      grootCommandManager().executeCommand('gc.fetch.prototype', data.id, data.recentVersionId)
+      grootManager.command.executeCommand('gc.fetch.prototype', data.id, data.recentVersionId)
     });
   }
 
@@ -34,7 +34,7 @@ export default class SolutionModel extends BaseModel {
       this.component.versionList.push(data);
       this.component.componentVersion = data;
 
-      grootCommandManager().executeCommand('gc.fetch.prototype', this.component.id, data.id)
+      grootManager.command.executeCommand('gc.fetch.prototype', this.component.id, data.id)
     });
   }
 

@@ -1,7 +1,7 @@
 import { CaretDownOutlined, PlusOutlined, SendOutlined } from "@ant-design/icons"
 import { Component, ModalStatus, useModel } from "@grootio/common"
 import { Modal, Select, Space } from "antd"
-import { grootCommandManager, grootStateManager } from "context"
+import { grootManager } from "context"
 import { useEffect } from "react"
 import SolutionModel from "../SolutionModel"
 
@@ -9,7 +9,7 @@ import styles from './index.module.less'
 
 const ComponentItem: React.FC<{ component: Component }> = ({ component }) => {
   const solutionModel = useModel(SolutionModel)
-  const [currComponent] = grootStateManager().useStateByName('gs.component');
+  const [currComponent] = grootManager.state.useStateByName('gs.component');
 
   useEffect(() => {
     component.componentVersionId = component.recentVersionId
@@ -17,7 +17,7 @@ const ComponentItem: React.FC<{ component: Component }> = ({ component }) => {
 
   const onSwitchVersion = (value) => {
     component.componentVersionId = value
-    grootCommandManager().executeCommand('gc.fetch.prototype', component.id, value)
+    grootManager.command.executeCommand('gc.fetch.prototype', component.id, value)
   }
 
   return <div className={`${styles.componentItem} ${currComponent?.id === component.id ? styles.active : ''}`}>

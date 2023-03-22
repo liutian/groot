@@ -1,5 +1,5 @@
 import { ComponentInstance, PropMetadataComponentItem, PropMetadataComponent, DragAddComponentEventData, getOrigin, PostMessageType, PropBlock, PropGroup, PropItem, PropItemType, PropValueType, ValueStruct, wrapperState, BaseModel } from "@grootio/common";
-import { grootCommandManager, grootHookManager, grootStateManager, isPrototypeMode } from "context";
+import { grootManager, isPrototypeMode } from "context";
 
 import PropPersistModel from "./PropPersistModel";
 
@@ -23,7 +23,6 @@ export default class PropHandleModel extends BaseModel {
    * 根属性分组
    */
   public propTree: PropGroup[] = [];
-  private stateManager = grootStateManager();
   public propPathChainEle: HTMLElement;
 
   public inject(propPersist: PropPersistModel) {
@@ -259,17 +258,17 @@ export default class PropHandleModel extends BaseModel {
 
   private init() {
     if (isPrototypeMode()) {
-      grootStateManager().watchState('gs.component', this.propTreeListener.bind(this))
+      grootManager.state.watchState('gs.component', this.propTreeListener.bind(this))
     } else {
       // 实例模式会多次调用
-      grootStateManager().watchState('gs.componentInstance', this.propTreeListener.bind(this))
+      grootManager.state.watchState('gs.componentInstance', this.propTreeListener.bind(this))
     }
 
-    grootHookManager().registerHook(PostMessageType.InnerDragHitSlot, (detail) => {
+    grootManager.hook.registerHook(PostMessageType.InnerDragHitSlot, (detail) => {
       this.addChildComponent(detail);
     })
 
-    grootHookManager().registerHook('gh.component.removeChild', (instanceId, itemId, abstractValueIdChain) => {
+    grootManager.hook.registerHook('gh.component.removeChild', (instanceId, itemId, abstractValueIdChain) => {
       this.removeChild(instanceId, itemId, abstractValueIdChain)
     })
   }
@@ -298,7 +297,7 @@ export default class PropHandleModel extends BaseModel {
     } as ComponentInstance;
 
     this.propPersist.addChildComponentInstance(rawInstance).then((instanceData) => {
-      this.stateManager.getState('gs.allComponentInstance').push(instanceData)
+      grootManager.state.getState('gs.allComponentInstance').push(instanceData)
 
       const propItem = this.getItemById(data.propItemId, data.parentInstanceId);
       const propValue = propItem.valueList.filter(v => v.type === PropValueType.Instance).find(value => {
@@ -340,10 +339,10 @@ export default class PropHandleModel extends BaseModel {
         valueStruct: ValueStruct.ChildComponentList,
         hostComponentInstanceId: data.parentInstanceId
       }).then(() => {
-        grootCommandManager().executeCommand('gc.makeDataToStage', 'all');
+        grootManager.command.executeCommand('gc.makeDataToStage', 'all');
 
         setTimeout(() => {
-          grootHookManager().callHook(PostMessageType.OuterComponentSelect, instanceData.id)
+          grootManager.hook.callHook(PostMessageType.OuterComponentSelect, instanceData.id)
         }, 100)
       })
     })
@@ -351,8 +350,8 @@ export default class PropHandleModel extends BaseModel {
 
   public removeChild(instanceId: number, itemId: number, abstractValueIdChain?: string) {
     this.propPersist.removeChildInstance(instanceId, itemId, abstractValueIdChain).then(() => {
-      const allComponentInstance = this.stateManager.getState('gs.allComponentInstance');
-      const componentInstance = this.stateManager.getState('gs.componentInstance');
+      const allComponentInstance = grootManager.state.getState('gs.allComponentInstance');
+      const componentInstance = grootManager.state.getState('gs.componentInstance');
 
       const instanceIndex = allComponentInstance.findIndex(i => i.id === instanceId);
       const instance = allComponentInstance[instanceIndex];
@@ -360,13 +359,13 @@ export default class PropHandleModel extends BaseModel {
 
       if (instance.parentId && instance.parentId !== instance.rootId) {
         if (componentInstance.id === instanceId) {
-          grootHookManager().callHook(PostMessageType.OuterComponentSelect, instance.parentId)
+          grootManager.hook.callHook(PostMessageType.OuterComponentSelect, instance.parentId)
         }
-        grootCommandManager().executeCommand('gc.makeDataToStage', 'all');
+        grootManager.command.executeCommand('gc.makeDataToStage', 'all');
       } else {// 父级为根组件实例
-        grootCommandManager().executeCommand('gc.switchIstance', instance.parentId)
-        grootHookManager().callHook(PostMessageType.OuterOutlineReset)
-        grootCommandManager().executeCommand('gc.makeDataToStage', 'all');
+        grootManager.command.executeCommand('gc.switchIstance', instance.parentId)
+        grootManager.hook.callHook(PostMessageType.OuterOutlineReset)
+        grootManager.command.executeCommand('gc.makeDataToStage', 'all');
       }
 
       // this.forceUpdateFormKey++;
@@ -374,7 +373,7 @@ export default class PropHandleModel extends BaseModel {
   }
 
   private getItemById(propItemId: number, instanceId: number) {
-    const allComponentInstance = this.stateManager.getState('gs.allComponentInstance');
+    const allComponentInstance = grootManager.state.getState('gs.allComponentInstance');
     const instance = allComponentInstance.find(item => item.id === instanceId);
 
     if (!instance) {

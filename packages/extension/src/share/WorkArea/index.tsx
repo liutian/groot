@@ -2,14 +2,14 @@ import { useRegisterModel } from '@grootio/common';
 import { useEffect, useRef } from "react"
 
 import styles from './index.module.less'
-import { grootHookManager } from "context"
 import WorkAreaModel from './WorkAreaModel';
 import Viewport from './Viewport';
+import { grootManager } from 'context';
 
 export const WorkArea = () => {
   const maskEleRef = useRef<HTMLDivElement>();
   useRegisterModel(WorkAreaModel)
-  const { registerHook } = grootHookManager()
+  const { registerHook } = grootManager.hook
 
   useEffect(() => {
     registerHook('gh.sidebar.dragStart', () => {

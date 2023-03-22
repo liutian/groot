@@ -1,14 +1,14 @@
 import { HomeOutlined } from "@ant-design/icons";
 import { PostMessageType } from "@grootio/common";
 import { Breadcrumb } from "antd";
-import { grootCommandManager, grootHookManager, grootStateManager } from "context";
+import { grootManager } from "context";
 
 import styles from './index.module.less'
 
 export const Navigation = () => {
-  const { useStateByName } = grootStateManager()
-  const { callHook } = grootHookManager()
-  const { executeCommand } = grootCommandManager()
+  const { useStateByName } = grootManager.state
+  const { callHook } = grootManager.hook
+  const { executeCommand } = grootManager.command
 
   const [breadcrumbList] = useStateByName('gs.propSetting.breadcrumbList', []);
 

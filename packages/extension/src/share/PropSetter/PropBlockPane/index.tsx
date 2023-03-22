@@ -11,7 +11,7 @@ import styles from './index.module.less';
 import TextEditor from "./TextEditor";
 import PropPersistModel from "../PropPersistModel";
 import PropHandleModel from "../PropHandleModel";
-import { grootCommandManager, grootStateManager, isPrototypeMode } from "context";
+import { grootManager, isPrototypeMode } from "context";
 import { calcPropValueIdChain, RemotePluginKeySep } from "util/utils";
 import { PropBlockLayoutKeyMap } from "util/data-map";
 
@@ -24,8 +24,8 @@ type PropType = {
 function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
   const propPersistModel = useModel(PropPersistModel);
   const propHandleModel = useModel(PropHandleModel);
-  const [component] = grootStateManager().useStateByName('gs.component')
-  const [propSettingView] = grootStateManager().useStateByName('gs.ui.propSettingViews', []);
+  const [component] = grootManager.state.useStateByName('gs.component')
+  const [propSettingView] = grootManager.state.useStateByName('gs.ui.propSettingViews', []);
   const [form] = Form.useForm();
   const noSetting = !isPrototypeMode() || freezeSetting || block.group.parentItem?.noSetting;
 
@@ -179,9 +179,9 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
       valueStruct
     }).then(() => {
       if (!isPrototypeMode() && valueStruct === ValueStruct.ChildComponentList) {
-        grootCommandManager().executeCommand('gc.makeDataToStage', 'all');
+        grootManager.command.executeCommand('gc.makeDataToStage', 'all');
       } else {
-        grootCommandManager().executeCommand('gc.makeDataToStage', 'current');
+        grootManager.command.executeCommand('gc.makeDataToStage', 'current');
       }
     })
   }
@@ -192,8 +192,8 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
   if (isPrototypeMode()) {
     formKey = `componentId:${component.id}|versionId:${component.componentVersion.id}`
   } else {
-    const instance = grootStateManager().getState('gs.componentInstance')
-    formKey = `releaseId:${grootStateManager().getState('gs.release').id}|instanceId:${instance.id}`;
+    const instance = grootManager.state.getState('gs.componentInstance')
+    formKey = `releaseId:${grootManager.state.getState('gs.release').id}|instanceId:${instance.id}`;
   }
 
   return <div className={noWrapMode ? styles.container : ''}>

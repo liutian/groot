@@ -1,5 +1,5 @@
-import { APIPath, BaseModel, ComponentInstance, Deploy, EnvType, ModalStatus, Release } from "@grootio/common";
-import { getContext, grootCommandManager, grootStateManager } from "context";
+import { APIPath, BaseModel, ComponentInstance, Deploy, ModalStatus, Release } from "@grootio/common";
+import { getContext, grootManager, } from "context";
 
 export default class ApplicationModel extends BaseModel {
   static modelName = 'ApplicationModel';
@@ -46,7 +46,7 @@ export default class ApplicationModel extends BaseModel {
       rawComponentInstance.wrapper = 'groot/Container';
     }
 
-    const releaseId = grootStateManager().getState('gs.release').id
+    const releaseId = grootManager.state.getState('gs.release').id
     return getContext().request(APIPath.componentInstance_addRoot, {
       ...rawComponentInstance,
       entry: this.instanceAddEntry,
@@ -58,7 +58,7 @@ export default class ApplicationModel extends BaseModel {
         this.noEntryInstanceList.push(data)
       }
 
-      grootCommandManager().executeCommand('gc.fetch.instance', data.id)
+      grootManager.command.executeCommand('gc.fetch.instance', data.id)
     }).finally(() => {
       this.instanceAddModalStatus = ModalStatus.None;
     })
@@ -70,7 +70,7 @@ export default class ApplicationModel extends BaseModel {
     return getContext().request(APIPath.release_add, rawRelease).then(({ data }) => {
       this.releaseList.push(data);
 
-      const currInstance = grootStateManager().getState('gs.componentInstance')
+      const currInstance = grootManager.state.getState('gs.componentInstance')
       const rootInstanceId = currInstance.rootId || currInstance.id
 
       return this.switchRelease(data.id, rootInstanceId);
@@ -85,15 +85,15 @@ export default class ApplicationModel extends BaseModel {
       if (trackId) {
         getContext().request(APIPath.componentInstance_reverseDetectId, { releaseId, trackId }).then(({ data }) => {
           if (data) {
-            grootCommandManager().executeCommand('gc.fetch.instance', data)
+            grootManager.command.executeCommand('gc.fetch.instance', data)
           } else {
             const firstInstance = this.entryInstanceList[0]
-            grootCommandManager().executeCommand('gc.fetch.instance', firstInstance.id)
+            grootManager.command.executeCommand('gc.fetch.instance', firstInstance.id)
           }
         })
       } else {
         const firstInstance = this.entryInstanceList[0]
-        grootCommandManager().executeCommand('gc.fetch.instance', firstInstance.id)
+        grootManager.command.executeCommand('gc.fetch.instance', firstInstance.id)
       }
     })
   }
@@ -101,7 +101,7 @@ export default class ApplicationModel extends BaseModel {
 
   public assetBuild() {
     this.assetBuildStatus = 'building';
-    const releaseId = grootStateManager().getState('gs.release').id
+    const releaseId = grootManager.state.getState('gs.release').id
     getContext().request(APIPath.asset_build, { releaseId }).then(({ data }) => {
       this.assetBuildStatus = 'buildOver';
       this.deployBundleId = data;

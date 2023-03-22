@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useModel } from '@grootio/common';
 
 
-import { grootStateManager, isPrototypeMode } from 'context';
+import { grootManager, isPrototypeMode } from 'context';
 import ViewportDrag from './ViewportDrag';
 import ViewportOutlineMarker from './ViewportOutlineMarker';
 import WorkAreaModel from '../WorkAreaModel';
@@ -23,7 +23,7 @@ const viewportModeMap = {
 const Viewport: React.FC = () => {
   const iframeRef = useRef<HTMLIFrameElement>({} as any);
   const workAreaModel = useModel(WorkAreaModel)
-  const [viewportMode] = grootStateManager().useStateByName('gs.ui.stageViewport')
+  const [viewportMode] = grootManager.state.useStateByName('gs.ui.stageViewport')
 
   useEffect(() => {
     workAreaModel.initIframe(iframeRef.current);

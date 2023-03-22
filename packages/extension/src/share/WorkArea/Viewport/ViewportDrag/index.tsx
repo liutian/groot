@@ -1,15 +1,14 @@
 import { ComponentDragAnchor, PostMessageType } from "@grootio/common";
+import { grootManager } from "context";
 import { useEffect, useRef } from "react";
 
 import styles from './index.module.less';
-import { grootHookManager } from "context";
 
 const ViewportDrag: React.FC = () => {
   const dragAnchorRef = useRef<HTMLDivElement>();
   const dragSlotRef = useRef<HTMLDivElement>();
   const containerRef = useRef<HTMLDivElement>();
-  const { registerHook } = grootHookManager()
-  const { callHook } = grootHookManager()
+  const { registerHook, callHook } = grootManager.hook
 
   useEffect(() => {
     registerHook('gh.component.dragStart', () => {

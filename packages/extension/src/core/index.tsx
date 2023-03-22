@@ -1,4 +1,4 @@
-import { grootCommandManager, isPrototypeMode } from "context";
+import { grootManager, isPrototypeMode } from "context";
 import { instanceBootstrap } from "instance";
 import { prototypeBootstrap } from "prototype";
 import { shareBootstrap } from "share";
@@ -11,7 +11,7 @@ import Stage from "./Stage";
 import StatusBar from "./StatusBar";
 
 export const startup = () => {
-  const { registerCommand } = grootCommandManager();
+  const { registerCommand } = grootManager.command
 
   registerCommand('gc.ui.render.banner', () => {
     return <Banner />

@@ -3,14 +3,14 @@ import React, { useEffect, useState } from "react";
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import { PropItem, PropItemType, useModel } from "@grootio/common";
 import PropPersistModel from "../PropPersistModel";
-import { grootStateManager } from "context";
 import { propKeyRule, RemotePluginKeySep } from "util/utils";
 import { PropItemTypeNameMap } from "util/data-map";
+import { grootManager } from "context";
 
 
 const PropItemSetting: React.FC = () => {
   const propPersistModel = useModel(PropPersistModel);
-  const [propSettingView] = grootStateManager().useStateByName('gs.ui.propSettingViews', []);
+  const [propSettingView] = grootManager.state.useStateByName('gs.ui.propSettingViews', []);
   const [propItemTypeOptions] = useState(() => {
     if (propSettingView.length) {
       return [

@@ -1,7 +1,7 @@
 import { AppstoreOutlined } from "@ant-design/icons";
 import { APIPath, ComponentInstance, PropBlockStructType, PropGroup, State, StateCategory } from "@grootio/common";
 import { metadataFactory, propTreeFactory } from "@grootio/core";
-import { getContext, grootCommandManager, grootHookManager, grootStateManager } from "context";
+import { getContext, grootManager } from "context";
 import ViewsContainer from "core/ViewsContainer";
 import { parseOptions, uuid } from "util/utils";
 import { Application } from "./Application";
@@ -11,9 +11,9 @@ import StateList from "./State";
 
 export const instanceBootstrap = () => {
   const { groot } = getContext();
-  const { registerState, getState } = grootStateManager();
-  const { registerCommand, executeCommand } = grootCommandManager();
-  const { callHook } = grootHookManager();
+  const { registerState, getState } = grootManager.state;
+  const { registerCommand, executeCommand } = grootManager.command;
+  const { callHook } = grootManager.hook;
 
   getState('gs.ui.viewsContainers').push(...[
     {
@@ -153,10 +153,10 @@ const fetchRootInstance = (rootInstanceId: number) => {
     // }
 
     const application = getContext().groot.params.application
-    grootStateManager().setState('gs.stage.debugBaseUrl', release.debugBaseUrl || application.debugBaseUrl)
-    grootStateManager().setState('gs.stage.playgroundPath', release.playgroundPath || application.playgroundPath)
-    grootStateManager().setState('gs.release', release)
-    grootStateManager().setState('gs.allComponentInstance', list)
+    grootManager.state.setState('gs.stage.debugBaseUrl', release.debugBaseUrl || application.debugBaseUrl)
+    grootManager.state.setState('gs.stage.playgroundPath', release.playgroundPath || application.playgroundPath)
+    grootManager.state.setState('gs.release', release)
+    grootManager.state.setState('gs.allComponentInstance', list)
 
     const globalStateList = root.stateList.filter(item => !item.instanceId)
     const localStateList = root.stateList.filter(item => !!item.instanceId)
@@ -172,21 +172,21 @@ const fetchRootInstance = (rootInstanceId: number) => {
       instanceId: root.id
     })
 
-    grootStateManager().setState('gs.localStateList', [...(runtimeStateList as any), ...localStateList])
-    grootStateManager().setState('gs.globalStateList', globalStateList)
+    grootManager.state.setState('gs.localStateList', [...(runtimeStateList as any), ...localStateList])
+    grootManager.state.setState('gs.globalStateList', globalStateList)
 
-    grootCommandManager().executeCommand('gc.makeDataToStage', 'first');
+    grootManager.command.executeCommand('gc.makeDataToStage', 'first');
     switchComponentInstance(root.id);
   });
 }
 
 export const switchComponentInstance = (instanceId: number) => {
-  const list = grootStateManager().getState('gs.allComponentInstance');
+  const list = grootManager.state.getState('gs.allComponentInstance');
   const instance = list.find(item => item.id === instanceId);
-  grootStateManager().setState('gs.componentInstance', instance);
-  grootStateManager().setState('gs.component', instance.component);
+  grootManager.state.setState('gs.componentInstance', instance);
+  grootManager.state.setState('gs.component', instance.component);
 
-  const breadcrumbList = grootStateManager().getState('gs.propSetting.breadcrumbList')
+  const breadcrumbList = grootManager.state.getState('gs.propSetting.breadcrumbList')
   breadcrumbList.length = 0;
 
   let ctxInstance = instance;

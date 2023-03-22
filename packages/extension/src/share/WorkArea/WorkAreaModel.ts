@@ -1,6 +1,6 @@
 import { ApplicationData, BaseModel, IframeDebuggerConfig, iframeNamePrefix, Metadata, PostMessageType } from "@grootio/common";
 
-import { commandBridge, getContext, grootCommandManager, grootHookManager, grootStateManager, isPrototypeMode } from "context";
+import { commandBridge, getContext, grootManager, isPrototypeMode } from "context";
 
 export default class WorkAreaModel extends BaseModel {
   static modelName = 'workArea';
@@ -30,7 +30,7 @@ export default class WorkAreaModel extends BaseModel {
       throw new Error('iframe通讯数据无效');
     }
 
-    const { callHook } = grootHookManager()
+    const { callHook } = grootManager.hook
 
     const eventTypeList = [
       PostMessageType.InnerReady,
@@ -60,8 +60,8 @@ export default class WorkAreaModel extends BaseModel {
       }
     }
 
-    const { registerHook, callHook } = grootHookManager()
-    const { executeCommand } = grootCommandManager();
+    const { registerHook, callHook } = grootManager.hook
+    const { executeCommand } = grootManager.command
 
     registerHook(PostMessageType.InnerReady, () => {
       this.iframeReady = true;
@@ -81,7 +81,7 @@ export default class WorkAreaModel extends BaseModel {
 
     registerHook(PostMessageType.OuterSetApplication, (appData) => {
       guard();
-      const messageData = appData || this.buildApplicationData(grootStateManager().getState('gs.stage.playgroundPath'));
+      const messageData = appData || this.buildApplicationData(grootManager.state.getState('gs.stage.playgroundPath'));
       this.iframeEle.contentWindow.postMessage({ type: PostMessageType.OuterSetApplication, data: messageData }, '*');
     })
 
@@ -170,12 +170,12 @@ export default class WorkAreaModel extends BaseModel {
   private refresh = (callback?: Function) => {
     this.pageNavCallback = callback;
 
-    const iframeBasePath = grootStateManager().getState('gs.stage.debugBaseUrl')
-    const playgroundPath = grootStateManager().getState('gs.stage.playgroundPath')
+    const iframeBasePath = grootManager.state.getState('gs.stage.debugBaseUrl')
+    const playgroundPath = grootManager.state.getState('gs.stage.playgroundPath')
     const path = `${iframeBasePath}${playgroundPath}`;
     if (this.iframeEle.src) {
       if (this.iframeEle.src === path) {
-        grootHookManager().callHook(PostMessageType.OuterRefreshView, path)
+        grootManager.hook.callHook(PostMessageType.OuterRefreshView, path)
       } else {
         this.viewData = null;
         this.iframeDebuggerConfig.controlView = playgroundPath;

@@ -1,10 +1,10 @@
 import { ViewItem, viewRender } from "@grootio/common";
-import { getContext, grootStateManager } from "context";
+import { getContext, grootManager } from "context";
 
 import styles from './index.module.less'
 
 const Banner = () => {
-  const { useStateByName } = grootStateManager();
+  const { useStateByName } = grootManager.state
   const [viewList] = useStateByName('gs.ui.views', []);
   const [viewKeyList] = useStateByName('gs.ui.banner.views');
 

@@ -1,6 +1,6 @@
 import { APIPath, BaseModel, ComponentInstance, PropBlock, PropGroup, PropItem, PropItemType, PropMetadataComponent, PropValue, PropValueType, StudioMode, ValueStruct } from "@grootio/common";
 import { stringifyPropItemValue } from "@grootio/core";
-import { getContext, grootCommandManager, grootStateManager } from "context";
+import { getContext, grootManager } from "context";
 import { getComponentVersionId } from "share";
 
 import { assignBaseType, autoIncrementForName, calcPropValueIdChain, stringifyOptions } from "util/utils";
@@ -30,7 +30,6 @@ export default class PropPersistModel extends BaseModel {
   public settingModalSubmitting = false;
 
   private request = getContext().request;
-  private stateManager = grootStateManager();
 
   private propHandle: PropHandleModel
 
@@ -120,7 +119,7 @@ export default class PropPersistModel extends BaseModel {
   public updateOrAddPropGroup(group: PropGroup) {
     const groupData = Object.assign(this.currSettingPropGroup, group);
 
-    groupData.componentId = this.stateManager.getState('gs.component').id
+    groupData.componentId = grootManager.state.getState('gs.component').id
     groupData.componentVersionId = getComponentVersionId()
 
     this.settingModalSubmitting = true;
@@ -130,7 +129,7 @@ export default class PropPersistModel extends BaseModel {
         assignBaseType(this.propHandle.propTree[groupIndex], groupData);
 
         this.currSettingPropGroup = undefined;
-        grootCommandManager().executeCommand('gc.makeDataToStage', 'current');
+        grootManager.command.executeCommand('gc.makeDataToStage', 'current');
       }).finally(() => {
         this.settingModalSubmitting = false;
       })
@@ -149,7 +148,7 @@ export default class PropPersistModel extends BaseModel {
         }
 
         this.currSettingPropGroup = undefined;
-        grootCommandManager().executeCommand('gc.makeDataToStage', 'current');
+        grootManager.command.executeCommand('gc.makeDataToStage', 'current');
       }).finally(() => {
         this.settingModalSubmitting = false;
       })
@@ -166,7 +165,7 @@ export default class PropPersistModel extends BaseModel {
         let blockIndex = group.propBlockList.findIndex(b => b.id === blockData.id);
         assignBaseType(group.propBlockList[blockIndex], blockData);
         this.currSettingPropBlock = undefined;
-        grootCommandManager().executeCommand('gc.makeDataToStage', 'current');
+        grootManager.command.executeCommand('gc.makeDataToStage', 'current');
       }).finally(() => {
         this.settingModalSubmitting = false;
       })
@@ -190,7 +189,7 @@ export default class PropPersistModel extends BaseModel {
         }
 
         this.currSettingPropBlock = undefined;
-        grootCommandManager().executeCommand('gc.makeDataToStage', 'current');
+        grootManager.command.executeCommand('gc.makeDataToStage', 'current');
       }).finally(() => {
         this.settingModalSubmitting = false;
       })
@@ -214,7 +213,7 @@ export default class PropPersistModel extends BaseModel {
         originItem.optionList = itemData.optionList;
 
         this.currSettingPropItem = undefined;
-        grootCommandManager().executeCommand('gc.makeDataToStage', 'current');
+        grootManager.command.executeCommand('gc.makeDataToStage', 'current');
       }).finally(() => {
         this.settingModalSubmitting = false;
       })
@@ -242,7 +241,7 @@ export default class PropPersistModel extends BaseModel {
         }
 
         this.currSettingPropItem = undefined;
-        grootCommandManager().executeCommand('gc.makeDataToStage', 'current');
+        grootManager.command.executeCommand('gc.makeDataToStage', 'current');
       }).finally(() => {
         this.settingModalSubmitting = false;
       })
@@ -257,7 +256,7 @@ export default class PropPersistModel extends BaseModel {
       if (this.propHandle.activeGroupId === groupId) {
         this.propHandle.activeGroupId = this.propHandle.propTree[0]?.id
       }
-      grootCommandManager().executeCommand('gc.makeDataToStage', 'current');
+      grootManager.command.executeCommand('gc.makeDataToStage', 'current');
     })
   }
 
@@ -265,7 +264,7 @@ export default class PropPersistModel extends BaseModel {
     this.request(APIPath.block_remove_blockId, { blockId }).then(() => {
       let blockIndex = group.propBlockList.findIndex(b => b.id === blockId);
       group.propBlockList.splice(blockIndex, 1);
-      grootCommandManager().executeCommand('gc.makeDataToStage', 'current');
+      grootManager.command.executeCommand('gc.makeDataToStage', 'current');
     })
   }
 
@@ -273,7 +272,7 @@ export default class PropPersistModel extends BaseModel {
     this.request(APIPath.item_remove_itemId, { itemId }).then(() => {
       let itemIndex = block.propItemList.findIndex(item => item.id === itemId);
       block.propItemList.splice(itemIndex, 1);
-      grootCommandManager().executeCommand('gc.makeDataToStage', 'current');
+      grootManager.command.executeCommand('gc.makeDataToStage', 'current');
     })
   }
 
@@ -312,7 +311,7 @@ export default class PropPersistModel extends BaseModel {
 
   public addAbstractTypeValue(propItem: PropItem) {
     const abstractValueIdChain = calcPropValueIdChain(propItem);
-    const component = this.stateManager.getState('gs.component');
+    const component = grootManager.state.getState('gs.component');
 
     const paramsData = {
       propItemId: propItem.id,
@@ -324,22 +323,22 @@ export default class PropPersistModel extends BaseModel {
     if (getContext().groot.params.mode === StudioMode.Prototype) {
       paramsData.type = PropValueType.Prototype;
     } else {
-      const componentInstance = this.stateManager.getState('gs.componentInstance')
+      const componentInstance = grootManager.state.getState('gs.componentInstance')
       paramsData.type = PropValueType.Instance;
-      paramsData.releaseId = grootStateManager().getState('gs.release').id
+      paramsData.releaseId = grootManager.state.getState('gs.release').id
       paramsData.componentInstanceId = componentInstance.id;
     }
 
     this.request(APIPath.value_abstractType_add, paramsData).then(({ data }) => {
       propItem.valueList.push(data);
-      grootCommandManager().executeCommand('gc.makeDataToStage', 'current');
+      grootManager.command.executeCommand('gc.makeDataToStage', 'current');
     })
   }
 
   public removeBlockListStructChildItem(propValueId: number, propItem: PropItem) {
     this.request(APIPath.value_abstractType_remove_propValueId, { propValueId }).then(() => {
       propItem.valueList = propItem.valueList.filter(v => v.id !== propValueId);
-      grootCommandManager().executeCommand('gc.makeDataToStage', 'current');
+      grootManager.command.executeCommand('gc.makeDataToStage', 'current');
     })
   }
 
@@ -362,7 +361,7 @@ export default class PropPersistModel extends BaseModel {
       paramData.id = propValue.id;
       paramData.value = valueStr;
     } else {
-      const component = this.stateManager.getState('gs.component');
+      const component = grootManager.state.getState('gs.component');
       const isPrototypeMode = getContext().groot.params.mode === StudioMode.Prototype;
 
       paramData.abstractValueIdChain = abstractValueIdChain;
@@ -375,10 +374,10 @@ export default class PropPersistModel extends BaseModel {
       if (isPrototypeMode) {
         paramData.type = PropValueType.Prototype;
       } else {
-        const componentInstance = this.stateManager.getState('gs.componentInstance')
-        const allComponentInstance = this.stateManager.getState('gs.allComponentInstance')
+        const componentInstance = grootManager.state.getState('gs.componentInstance')
+        const allComponentInstance = grootManager.state.getState('gs.allComponentInstance')
         paramData.type = PropValueType.Instance;
-        paramData.releaseId = grootStateManager().getState('gs.release').id
+        paramData.releaseId = grootManager.state.getState('gs.release').id
         paramData.componentInstanceId = componentInstance.id;
 
         if (hostComponentInstanceId) {
@@ -408,7 +407,7 @@ export default class PropPersistModel extends BaseModel {
   }
 
   public removeChildInstance(instanceId: number, itemId: number, abstractValueIdChain?: string) {
-    const allComponentInstance = this.stateManager.getState('gs.allComponentInstance')
+    const allComponentInstance = grootManager.state.getState('gs.allComponentInstance')
 
     return this.request(APIPath.componentInstance_remove_instanceId, { instanceId }).then(() => {
       let propItem;

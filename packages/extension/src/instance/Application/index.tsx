@@ -1,7 +1,6 @@
 import { BranchesOutlined, CaretDownOutlined, PlusOutlined, SendOutlined } from "@ant-design/icons";
 import { ComponentInstance, ModalStatus, useRegisterModel } from "@grootio/common";
 import { Divider, Select, Space } from "antd";
-import { grootCommandManager, grootStateManager } from "context";
 import { useEffect } from "react";
 import ApplicationModel from "./ApplicationModel";
 import ComponentAddModal from "./InstanceAddModal";
@@ -11,11 +10,12 @@ import styles from './index.module.less'
 import InstanceItem from "./InstanceItem";
 import BuildModal from "./BuildModal";
 import DeployModal from "./DeployModal";
+import { grootManager } from "context";
 
 export const Application = () => {
-  const [currInstance] = grootStateManager().useStateByName('gs.componentInstance');
+  const [currInstance] = grootManager.state.useStateByName('gs.componentInstance');
   const applicationModel = useRegisterModel(ApplicationModel)
-  const [release] = grootStateManager().useStateByName('gs.release')
+  const [release] = grootManager.state.useStateByName('gs.release')
 
   useEffect(() => {
     if (currInstance) {
@@ -25,7 +25,7 @@ export const Application = () => {
   }, [currInstance])
 
   const switchInstance = (instance: ComponentInstance) => {
-    grootCommandManager().executeCommand('gc.fetch.instance', instance.id)
+    grootManager.command.executeCommand('gc.fetch.instance', instance.id)
   }
 
   if (!currInstance) {

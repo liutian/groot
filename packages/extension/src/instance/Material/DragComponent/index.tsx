@@ -1,12 +1,12 @@
 import { DropboxOutlined } from "@ant-design/icons";
 import { Component } from "@grootio/common";
 import { Button } from "antd";
-import { grootHookManager } from "context";
+import { grootManager } from "context";
 
 
 export const DragComponent: React.FC<{ component: Component }> = ({ component }) => {
 
-  const { callHook } = grootHookManager()
+  const { callHook } = grootManager.hook
   const dragstart = (e) => {
     callHook('gh.component.dragStart')
     e.dataTransfer.setData('componentId', component.id);

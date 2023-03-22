@@ -1,17 +1,17 @@
 import { DeleteOutlined, UpOutlined } from '@ant-design/icons';
 import { ComponentAnchor, PostMessageType } from '@grootio/common';
+import { grootManager } from 'context';
 import { useEffect, useRef } from 'react';
 
 import styles from './index.module.less';
-import { grootCommandManager, grootHookManager } from 'context';
 
 const ViewportOutlineMarker: React.FC = () => {
   const hoverRef = useRef<HTMLDivElement>();
   const selectedRef = useRef<HTMLDivElement>();
   const hoverCacheRef = useRef<ComponentAnchor>();
   const selectedCacheRef = useRef<ComponentAnchor>();
-  const { registerHook, callHook } = grootHookManager()
-  const { executeCommand } = grootCommandManager()
+  const { registerHook, callHook } = grootManager.hook
+  const { executeCommand } = grootManager.command
 
   useEffect(() => {
     registerHook(PostMessageType.InnerOutlineHover, onHover);

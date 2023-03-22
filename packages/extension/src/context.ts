@@ -10,16 +10,16 @@ export const setContext = (context: ExtensionContext) => {
   _context = context;
 }
 
-export const grootStateManager = () => {
-  return _context.groot.stateManager<GrootStateDict>();
-}
-
-export const grootCommandManager = () => {
-  return _context.groot.commandManager<GrootCommandDict>();
-}
-
-export const grootHookManager = () => {
-  return _context.groot.hookManager<GrootHookDict>();
+export const grootManager = {
+  get state() {
+    return _context.groot.stateManager();
+  },
+  get command() {
+    return _context.groot.commandManager();
+  },
+  get hook() {
+    return _context.groot.hookManager();
+  }
 }
 
 

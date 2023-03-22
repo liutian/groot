@@ -1,7 +1,7 @@
 import { PlusOutlined } from "@ant-design/icons";
 import { Component, ModalStatus, useRegisterModel } from "@grootio/common";
 import { Button } from "antd";
-import { grootCommandManager, grootStateManager } from "context";
+import { grootManager } from "context";
 import { useEffect } from "react";
 import ComponentAddModal from "./ComponentAddModal";
 import ComponentItem from "./ComponentItem";
@@ -11,7 +11,7 @@ import styles from './index.module.less'
 import SolutionModel from "./SolutionModel";
 
 export const Solution = () => {
-  const [currComponent] = grootStateManager().useStateByName('gs.component');
+  const [currComponent] = grootManager.state.useStateByName('gs.component');
   const solutionModel = useRegisterModel(SolutionModel)
 
   useEffect(() => {
@@ -20,11 +20,11 @@ export const Solution = () => {
 
 
   const switchComponent = (component: Component) => {
-    const currComponent = grootStateManager().getState('gs.component')
+    const currComponent = grootManager.state.getState('gs.component')
     if (currComponent.id === component.id) {
       return;
     }
-    grootCommandManager().executeCommand('gc.fetch.prototype', component.id, component.recentVersionId)
+    grootManager.command.executeCommand('gc.fetch.prototype', component.id, component.recentVersionId)
   }
 
   if (!currComponent) {

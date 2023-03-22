@@ -3,7 +3,7 @@ import { useEffect } from "react";
 
 import { StateCategory, useModel } from "@grootio/common";
 import StateModel from "../StateModel";
-import { grootStateManager } from "context";
+import { grootManager } from "context";
 
 const StateForm: React.FC = () => {
   const stateModel = useModel(StateModel);
@@ -14,14 +14,14 @@ const StateForm: React.FC = () => {
     if (stateModel.currState) {
       form.setFieldsValue({
         ...(stateModel.currState ? stateModel.currState : {}),
-        releaseId: grootStateManager().getState('gs.release').id
+        releaseId: grootManager.state.getState('gs.release').id
       });
     } else {
       form.resetFields();
     }
 
     if (!stateModel.isGlobalState) {
-      form.setFieldValue('instanceId', grootStateManager().getState('gs.componentInstance').id);
+      form.setFieldValue('instanceId', grootManager.state.getState('gs.componentInstance').id);
     }
   }, [stateModel.formVisible]);
 
