@@ -1,6 +1,6 @@
-import { DatePicker, Form, Input, InputNumber, Select, Space, Switch, Table, TimePicker, Tooltip, Typography } from "antd";
-import { DeleteOutlined, DragOutlined, QuestionCircleOutlined, SettingOutlined } from "@ant-design/icons";
-import { PropBlock, PropBlockStructType, PropItem, PropItemType, PropValue, PropValueType, useModel } from "@grootio/common";
+import { Form, Space, Table, Typography } from "antd";
+import { DeleteOutlined, DragOutlined, SettingOutlined } from "@ant-design/icons";
+import { PropBlock, PropItem, PropValue, PropValueType, useModel } from "@grootio/common";
 import { parsePropItemValue } from "@grootio/core";
 import { useState } from "react";
 
@@ -68,11 +68,13 @@ const PropBlockListStructPane: React.FC<PropsType> = ({ block: propBlock }) => {
       dataIndex: `propItemId_${propItem.id}`,
       width: '',
       render: (_, record) => {
-        return (
-          <Form.Item name={`propItemId_${propItem.id}_abstractValueId_${record.abstractValueId}`} initialValue={getInitValue(propItem, record.abstractValueId)} preserve={false}>
-            {renderFormItem(propItem)}
-          </Form.Item>
-        )
+
+        return propHandleModel.renderFormItem(propItem, {
+          name: `propItemId_${propItem.id}_abstractValueId_${record.abstractValueId}`,
+          preserve: false,
+          initialValue: getInitValue(propItem, record.abstractValueId)
+        }, true)
+
       }
     }
   });
@@ -128,29 +130,6 @@ const PropBlockListStructPane: React.FC<PropsType> = ({ block: propBlock }) => {
     childPropItem.extraUIData = {
       type: 'BlockListPrefs',
       data: propBlock
-    }
-  }
-
-  const renderFormItem = (item: PropItem) => {
-
-    if (item.type === PropItemType.Text) {
-      return <Input />;
-    } else if (item.type === PropItemType.Number) {
-      return <InputNumber keyboard />;
-    } else if (item.type === PropItemType.Switch) {
-      return <Switch />
-    } else if (item.type === PropItemType.Select) {
-      return <Select options={item.optionList} />
-    } else if (item.type === PropItemType.DatePicker) {
-      return <DatePicker />;
-    } else if (item.type === PropItemType.TimePicker) {
-      return <TimePicker style={{ width: '100%' }} />;
-    } else {
-      return <>
-        该类型不支持 <Tooltip title="仅支持文本，数字，开关，下拉框，日期，时间">
-          <QuestionCircleOutlined />
-        </Tooltip>
-      </>
     }
   }
 

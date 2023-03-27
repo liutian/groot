@@ -1,19 +1,15 @@
-import { Button, Checkbox, Col, DatePicker, Form, Input, InputNumber, Radio, Row, Select, Space, Switch, TimePicker, Tooltip, Typography } from "antd";
+import { Button, Col, Form, Row, Space, Typography } from "antd";
 import { VerticalAlignTopOutlined, DeleteOutlined, VerticalAlignBottomOutlined, EditOutlined } from '@ant-design/icons';
 import { useState } from "react";
 
-import { pick, PropBlock, PropBlockLayout, PropItem, PropItemType, PropValueType, useModel, ValueStruct, ViewLoader } from "@grootio/common";
+import { pick, PropBlock, PropBlockLayout, PropItem, PropItemStruct, PropValueType, useModel, ValueStruct, ViewElement, viewRender } from "@grootio/common";
 import { parsePropItemValue } from "@grootio/core";
 
-import ComponentChildren from "./ComponentChildren";
-import NumberSlider from "./NumberSlider";
 import styles from './index.module.less';
-import TextEditor from "./TextEditor";
 import PropPersistModel from "../PropPersistModel";
 import PropHandleModel from "../PropHandleModel";
 import { grootManager, isPrototypeMode } from "context";
-import { calcPropValueIdChain, RemotePluginKeySep } from "util/utils";
-import { PropBlockLayoutKeyMap } from "util/data-map";
+import { calcPropValueIdChain } from "util/utils";
 
 type PropType = {
   block: PropBlock,
@@ -25,7 +21,6 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
   const propPersistModel = useModel(PropPersistModel);
   const propHandleModel = useModel(PropHandleModel);
   const [component] = grootManager.state.useStateByName('gs.component')
-  const [propSettingView] = grootManager.state.useStateByName('gs.ui.propSettingViews', []);
   const [form] = Form.useForm();
   const noSetting = !isPrototypeMode() || freezeSetting || block.group.parentItem?.noSetting;
 
@@ -55,7 +50,7 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
   const renderItemSetting = (propItem: PropItem, itemIndex: number) => {
 
     const editPropItem = () => {
-      propPersistModel.currSettingPropItem = pick(propItem, ['id', 'type', 'propKey', 'rootPropKey', 'label', 'subType', 'span', 'optionList']);
+      propPersistModel.currSettingPropItem = pick(propItem, ['id', 'struct', 'viewType', 'propKey', 'rootPropKey', 'label', 'span', 'optionList']);
     }
 
     return (<Space size="small">
@@ -120,58 +115,11 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
 
   }
 
-  const renderFormItem = (item: PropItem) => {
-
-    if (item.type === PropItemType.Text) {
-      return <Input />;
-    } else if (item.type === PropItemType.Textarea) {
-      return <Input.TextArea />;
-    } else if (item.type === PropItemType.Number) {
-      return <InputNumber keyboard />;
-    } else if (item.type === PropItemType.Slider) {
-      return <NumberSlider min={1} max={100} />;
-    } else if (item.type === PropItemType.ButtonGroup) {
-      return <Radio.Group>
-        {item.optionList.map((option) => {
-          return <Tooltip title={option.title} key={option.value}>
-            <Radio.Button value={option.value}>{option.label}</Radio.Button>
-          </Tooltip>
-        })}
-      </Radio.Group>;
-    } else if (item.type === PropItemType.Switch) {
-      return <Switch />
-    } else if (item.type === PropItemType.Select) {
-      return <Select options={item.optionList} />
-    } else if (item.type === PropItemType.Radio) {
-      return <Radio.Group options={item.optionList} />
-    } else if (item.type === PropItemType.Checkbox) {
-      return <Checkbox.Group options={item.optionList} />
-    } else if (item.type === PropItemType.DatePicker) {
-      return <DatePicker />;
-    } else if (item.type === PropItemType.TimePicker) {
-      return <TimePicker style={{ width: '100%' }} />;
-    } else if (item.type === PropItemType.Flat) {
-      return <Button block onClick={() => { propHandleModel.pushPropItemToStack(item) }}>平铺</Button>
-    } else if (item.type === PropItemType.Hierarchy) {
-      return <Button block onClick={() => { propHandleModel.pushPropItemToStack(item) }}>层级</Button>
-    } else if (item.type === PropItemType.Json) {
-      return <TextEditor type="json" />
-    } else if (item.type === PropItemType.Function) {
-      return <TextEditor type="function" />
-    } else if (item.type === PropItemType.Component) {
-      return <ComponentChildren />
-    } else if (item.type === PropItemType.Extension) {
-      const config = propSettingView.find(configItem => `${configItem.remotePackage}${RemotePluginKeySep}${configItem.remoteModule}` === item.subType);
-      return <ViewLoader {...config} />
-    }
-
-    return <>not found item</>
-  }
 
   const updateValue = (changedValues: any) => {
     const updateKey = Object.keys(changedValues)[0];
     const propItem = block.propItemList.find(item => item.propKey === updateKey);
-    const valueStruct = propItem.type === PropItemType.Component ? ValueStruct.ChildComponentList : undefined;
+    const valueStruct = propItem.struct === PropItemStruct.Component ? ValueStruct.ChildComponentList : undefined;
 
     propPersistModel.updateValue({
       propItem,
@@ -213,18 +161,22 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
               {
                 block.layout === PropBlockLayout.Vertical ? (
                   <div className={`${styles.propItemContainer} ${styles.vertical} ${noSetting ? '' : styles.hasAction}`}>
-                    <Form.Item label={renderItemLabel(item, index, true)} name={item.propKey} preserve={false}
-                      valuePropName={item.type === PropItemType.Switch ? 'checked' : 'value'} initialValue={getInitValue(item)}>
-                      {renderFormItem(item)}
-                    </Form.Item>
+                    {propHandleModel.renderFormItem(item, {
+                      label: renderItemLabel(item, index, true),
+                      name: item.propKey,
+                      preserve: false,
+                      initialValue: getInitValue(item)
+                    }, false)}
                   </div>
                 ) : (
                   <div className={`${styles.propItemContainer} ${styles.horizontal} ${noSetting ? '' : styles.hasAction}`}>
                     <div className="content">
-                      <Form.Item label={renderItemLabel(item, index, false)} name={item.propKey} preserve={false}
-                        valuePropName={item.type === PropItemType.Switch ? 'checked' : 'value'} initialValue={getInitValue(item)}>
-                        {renderFormItem(item)}
-                      </Form.Item>
+                      {propHandleModel.renderFormItem(item, {
+                        label: renderItemLabel(item, index, false),
+                        name: item.propKey,
+                        preserve: false,
+                        initialValue: getInitValue(item)
+                      }, false)}
                     </div>
                     <div className="action">{renderItemSetting(item, index)}</div>
                   </div>
@@ -247,6 +199,11 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
       ) : null
     }
   </div>
+}
+
+const PropBlockLayoutKeyMap = {
+  [PropBlockLayout.Horizontal]: 'horizontal',
+  [PropBlockLayout.Vertical]: 'vertical',
 }
 
 export default PropBlockPane;
