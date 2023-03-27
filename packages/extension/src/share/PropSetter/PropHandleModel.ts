@@ -1,5 +1,6 @@
-import { ComponentInstance, PropMetadataComponentItem, PropMetadataComponent, DragAddComponentEventData, getOrigin, PostMessageType, PropBlock, PropGroup, PropItem, PropItemType, PropValueType, ValueStruct, wrapperState, BaseModel } from "@grootio/common";
-import { grootManager, isPrototypeMode } from "context";
+import { ComponentInstance, PropMetadataComponentItem, PropMetadataComponent, DragAddComponentEventData, getOrigin, PostMessageType, PropBlock, PropGroup, PropItem, PropValueType, ValueStruct, wrapperState, BaseModel, PropItemStruct, ViewElement, viewRender } from "@grootio/common";
+import { commandBridge, grootManager, isPrototypeMode } from "context";
+import React from "react";
 
 import PropPersistModel from "./PropPersistModel";
 
@@ -23,7 +24,12 @@ export default class PropHandleModel extends BaseModel {
    * 根属性分组
    */
   public propTree: PropGroup[] = [];
+  private propTreeCancel: Function;
   public propPathChainEle: HTMLElement;
+
+  public propItemViewTypeMap = new Map<string, string>();
+  public propFormItemMap = new Map<string, ViewElement>();
+
 
   public inject(propPersist: PropPersistModel) {
     this.propPersist = propPersist;
@@ -217,7 +223,7 @@ export default class PropHandleModel extends BaseModel {
           return item;
         }
 
-        if (item.type === PropItemType.Flat || item.type === PropItemType.Hierarchy) {
+        if (item.struct === PropItemStruct.Flat || item.struct === PropItemStruct.Hierarchy) {
           if (item.childGroup) {
             const result = this.getProp(id, type, item.childGroup, pathChain);
             if (result) {
@@ -271,6 +277,18 @@ export default class PropHandleModel extends BaseModel {
     grootManager.hook.registerHook('gh.component.removeChild', (instanceId, itemId, abstractValueIdChain) => {
       this.removeChild(instanceId, itemId, abstractValueIdChain)
     })
+
+
+    const formItemRenderList = grootManager.state.getState('gs.propItem.formRenderList')
+    formItemRenderList.forEach((item) => {
+      this.propFormItemMap.set(item.viewType, item.render)
+    })
+
+    grootManager.state.getState('gs.propItem.viewTypeList').forEach(item => {
+      this.propItemViewTypeMap.set(item.label, item.value)
+    })
+
+    commandBridge.pushPropItemToStack = this.pushPropItemToStack.bind(this)
   }
 
   private propTreeListener(newValue: { propTree: PropGroup[] }) {
@@ -279,9 +297,15 @@ export default class PropHandleModel extends BaseModel {
 
       // 擦除外部包裹的代理对象，取内部原生对象，避免外部代理对象不能监听对象属性变化
       if (originPropTree !== getOrigin(this.propTree)) {
-        this.propTree = wrapperState(originPropTree, () => {
+        if (this.propTreeCancel) {
+          this.propTreeCancel()
+        }
+
+        const [propTree, propTreeCancel] = wrapperState(originPropTree, () => {
           this.emitter();
-        });
+        })
+        this.propTree = propTree;
+        this.propTreeCancel = propTreeCancel;
 
         if (!this.propTree.map(item => item.id).includes(this.activeGroupId)) {
           this.activeGroupId = this.propTree[0].id;
@@ -370,6 +394,18 @@ export default class PropHandleModel extends BaseModel {
 
       // this.forceUpdateFormKey++;
     })
+  }
+
+  public renderFormItem(propItem: PropItem, formItemProps: any, simplify: boolean) {
+    if (this.propFormItemMap.has(propItem.viewType)) {
+      const view = this.propFormItemMap.get(propItem.viewType)
+      return viewRender(view, { propItem, simplify, formItemProps })
+    } else if (this.propFormItemMap.has('*')) {
+      const view = this.propFormItemMap.get('*')
+      return viewRender(view, { propItem, simplify, formItemProps })
+    } else {
+      return React.createElement(React.Fragment, null, '未识别的类型')
+    }
   }
 
   private getItemById(propItemId: number, instanceId: number) {

@@ -1,4 +1,4 @@
-import { ExtensionContext, GrootCommandDict, GrootHookDict, GrootStateDict, StudioMode } from "@grootio/common"
+import { ExtensionContext, GrootCommandDict, GrootHookDict, GrootStateDict, PropItem, StudioMode } from "@grootio/common"
 
 let _context: ExtensionContext;
 
@@ -29,6 +29,9 @@ export const isPrototypeMode = () => {
 
 export const commandBridge = {
   stageRefresh: (callback: Function): void => {
-    throw new Error('方法为实现')
+    throw new Error('方法未实现')
+  },
+  pushPropItemToStack: (propItem: PropItem): void => {
+    throw new Error('方法未实现')
   }
 }
