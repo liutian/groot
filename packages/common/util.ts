@@ -54,10 +54,12 @@ export const isBaseType = (value: any) => {
 }
 
 
-export const viewRender = (view: ViewElement, id?: any) => {
-  if (typeof view !== 'function') {
-    return <React.Fragment key={id || undefined}> {view} </React.Fragment>;
+export const viewRender = (view: ViewElement, props: any) => {
+  if (typeof view === 'string') {
+    return React.createElement(React.Fragment, props || {}, view)
+  } else if (typeof view === 'function') {
+    return React.createElement(view, props || {})
+  } else {
+    return view
   }
-  const View = view as React.FC;
-  return <View key={id || undefined} />
 }
