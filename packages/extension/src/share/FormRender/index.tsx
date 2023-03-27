@@ -15,15 +15,7 @@ type PropType = {
 const FormRender: React.FC<PropType> = ({ propItem, simplify, formItemProps, ...props }) => {
   let field = <>未知类型</>
 
-  if (propItem.struct === PropItemStruct.Flat) {
-    field = <Button block onClick={() => {
-      grootManager.command.executeCommand('gc.pushPropItemToStack', propItem)
-    }}>平铺</Button>
-  } else if (propItem.struct === PropItemStruct.Hierarchy) {
-    field = <Button block onClick={() => {
-      grootManager.command.executeCommand('gc.pushPropItemToStack', propItem)
-    }}>层级</Button>
-  } else if (propItem.viewType === PropItemViewType.Text) {
+  if (propItem.viewType === PropItemViewType.Text) {
     field = <Input {...props} />;
   } else if (propItem.viewType === PropItemViewType.Number) {
     field = <InputNumber keyboard {...props} />;
@@ -45,7 +37,17 @@ const FormRender: React.FC<PropType> = ({ propItem, simplify, formItemProps, ...
         </Tooltip>
       </>
     } else {
-      if (propItem.viewType === PropItemViewType.Textarea) {
+      if (propItem.struct === PropItemStruct.Flat) {
+        field = <Button block onClick={() => {
+          grootManager.command.executeCommand('gc.pushPropItemToStack', propItem)
+        }}>平铺</Button>
+      } else if (propItem.struct === PropItemStruct.Hierarchy) {
+        field = <Button block onClick={() => {
+          grootManager.command.executeCommand('gc.pushPropItemToStack', propItem)
+        }}>层级</Button>
+      } else if (propItem.struct === PropItemStruct.Component) {
+        field = <ComponentChildren {...props} />
+      } else if (propItem.viewType === PropItemViewType.Textarea) {
         field = <Input.TextArea {...props} />;
       } else if (propItem.viewType === PropItemViewType.Slider) {
         field = <NumberSlider min={1} max={100} {...props} />;
@@ -65,8 +67,6 @@ const FormRender: React.FC<PropType> = ({ propItem, simplify, formItemProps, ...
         field = <TextEditor type="json" {...props} />
       } else if (propItem.viewType === PropItemViewType.Function) {
         field = <TextEditor type="function" {...props} />
-      } else if (propItem.viewType === PropItemViewType.Component) {
-        field = <ComponentChildren {...props} />
       }
     }
   }

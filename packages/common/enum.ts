@@ -3,6 +3,7 @@ export enum PropItemStruct {
   Normal = 1,
   Hierarchy = 2,
   Flat = 3,
+  Component = 4
 }
 
 export enum PropItemViewType {
@@ -19,7 +20,6 @@ export enum PropItemViewType {
   TimePicker = 'timePicker',
   Json = 'json',
   Function = 'function',
-  Component = 'component',
 }
 
 export enum PropBlockLayout {
