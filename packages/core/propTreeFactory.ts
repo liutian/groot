@@ -1,4 +1,4 @@
-import { PropBlock, PropGroup, PropItem, PropValue, PropItemType } from "@grootio/common";
+import { PropBlock, PropGroup, PropItem, PropItemStruct, PropValue } from "@grootio/common";
 
 export function propTreeFactory(groupList: PropGroup[], blockList: PropBlock[], itemList: PropItem[], valueList: PropValue[]) {
   const rootGroupList: PropGroup[] = [];
@@ -69,11 +69,11 @@ function buildPropGroup(groupIdOrObj: number | PropGroup,
       if (!propItem.valueList?.length) {
         propItem.valueList = store.valueList.filter(v => v.propItemId === propItem.id);
       }
-      if (propItem.type === PropItemType.Flat) {
+      if (propItem.struct === PropItemStruct.Flat) {
         const childGroup = buildPropGroup(propItem.childGroupId, store);
         childGroup.parentItem = propItem;
         propItem.childGroup = childGroup;
-      } else if (propItem.type === PropItemType.Hierarchy) {
+      } else if (propItem.struct === PropItemStruct.Hierarchy) {
         const childGroup = buildPropGroup(propItem.childGroupId, store);
         childGroup.parentItem = propItem;
         propItem.childGroup = childGroup;

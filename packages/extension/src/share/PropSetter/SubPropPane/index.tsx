@@ -1,5 +1,5 @@
 import { LeftOutlined } from '@ant-design/icons';
-import { PropItem, PropItemType, useModel } from '@grootio/common';
+import { PropItem, PropItemStruct, useModel } from '@grootio/common';
 import { Button } from 'antd';
 import { useRef } from 'react';
 import BlockListStructPrefs from '../BlockListStructPrefs';
@@ -25,7 +25,7 @@ const SubPropPane: React.FC<PropsType> = ({ item: propItem }) => {
       return <BlockListStructPrefs block={propItem.extraUIData.data} />
     }
 
-    if (propItem.type === PropItemType.Flat) {
+    if (propItem.struct === PropItemStruct.Flat) {
       return <PropBlockPane noWrapMode block={propItem.childGroup.propBlockList[0]}
         key={`block-${propItem.childGroup.propBlockList[0].id}-${propHandleModel.forceUpdateFormKey}`} />;
     } else {
