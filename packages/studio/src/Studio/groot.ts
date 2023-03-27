@@ -8,7 +8,7 @@ const hookMap = new Map<string, { preArgs?: any[], list: HookObject[] }>();
 const contextEventTarget = new EventTarget();
 let extensionList: ExtensionRuntime[] = [];
 let registorReady = false;
-let tempProvider = ''
+let __provider: string;
 let extIdTick = 0;
 
 export const loadExtension = (remoteExtensionList: ExtensionRuntime[]) => {
@@ -37,7 +37,7 @@ export const launchExtension = (remoteExtensionList: ExtensionRuntime[], params:
       }
     });
 
-    tempProvider = packageName;
+    __provider = packageName;
     const configSchema = main({
       extName: name,
       extPackageName: packageName,
@@ -55,7 +55,7 @@ export const launchExtension = (remoteExtensionList: ExtensionRuntime[], params:
         }
       }
     });
-    tempProvider = undefined;
+    __provider = undefined;
 
     extensionList.push(Object.assign({
       name,
@@ -87,7 +87,7 @@ const registerCommand: GrootContextRegisterCommand<Record<string, [any[], any]>>
   }
   commandMap.set(command, {
     callback,
-    provider: tempProvider,
+    provider: __provider,
     origin: originCommand
   });
   return () => {
@@ -120,30 +120,57 @@ const registerState: GrootContextRegisterState<Record<string, [any, boolean]>> =
     throw new Error('状态系统已准备完成，不可再次注册状态');
   }
 
-  const eventTarget = new EventTarget();
-  eventTarget.addEventListener('change', () => {
-    const newValue = stateMap.get(name).value
-    onChange && onChange(newValue);
-  })
+  const originState = stateMap.get(name);
 
-  const stateValue = wrapperState(defaultValue, () => {
-    eventTarget.dispatchEvent(new Event('change'))
-  })
+  if (originState) {
+    if (onChange) {
+      originState.eventTarget.addEventListener('change', () => {
+        if (!registorReady) return;
 
-  const overwrite = stateMap.has(name);
+        onChange(originState.value);
+      })
+    }
 
-  stateMap.set(name, {
-    value: stateValue,
-    provider: tempProvider,
-    eventTarget,
-    multi
-  });
 
-  if (overwrite) {
-    console.warn(`状态:${name} 已被覆盖`);
+    if (multi) {
+      const arr = (defaultValue || []) as any[]
+      originState.value.push(...arr)
+    } else {
+      // 切断对原有对象监听
+      originState.cancel()
+
+      const [stateValue, cancel] = wrapperState(defaultValue, () => {
+        originState.eventTarget.dispatchEvent(new Event('change'))
+      })
+      originState.value = stateValue
+      originState.cancel = cancel
+
+      console.warn(`状态:${name} 已被覆盖`);
+    }
+  } else {
+    const eventTarget = new EventTarget();
+    if (onChange) {
+      eventTarget.addEventListener('change', () => {
+        if (!registorReady) return;
+
+        onChange(stateMap.get(name).value);
+      })
+    }
+
+    const [stateValue, cancel] = wrapperState(defaultValue, () => {
+      eventTarget.dispatchEvent(new Event('change'))
+    })
+
+    stateMap.set(name, {
+      value: stateValue,
+      provider: __provider,
+      eventTarget,
+      multi,
+      cancel
+    });
   }
 
-  return overwrite;
+  return !!originState;
 }
 
 const getState: GrootContextGetState<Record<string, [any, boolean]>> = (name) => {
@@ -180,21 +207,16 @@ const setState: GrootContextSetState<Record<string, [any, boolean]>> = (name, ne
   }
 
   const stateData = stateMap.get(name);
-  if (stateData.multi) {
-    stateData.value.length = 0;
-    if (Array.isArray(newValue)) {
-      newValue.forEach((item) => {
-        stateData.value.push(item);
-      })
-    }
-    stateData.eventTarget.dispatchEvent(new Event('change'))
-  } else if (newValue !== stateData.value) {
+  if (newValue !== stateData.value) {
     if (isBaseType(newValue)) {
       stateData.value = newValue;
     } else {
-      stateData.value = wrapperState(newValue, () => {
+      stateData.cancel()
+      const [proxyObj, cancel] = wrapperState(newValue, () => {
         stateData.eventTarget.dispatchEvent(new Event('change'))
       })
+      stateData.value = proxyObj
+      stateData.cancel = cancel
     }
     stateData.eventTarget.dispatchEvent(new Event('change'))
   }
@@ -242,7 +264,7 @@ export const registerHook: GrootContextRegisterHook<Record<string, [any[], any]>
 
   hook.list.push({
     callback,
-    provider: tempProvider
+    provider: __provider
   })
 
   if (emitPrevArgs && hook.preArgs) {
@@ -306,5 +328,5 @@ export const hookManager: HookManager = () => {
 
 
 type CommandObject = { callback: Function, provider: string, origin?: CommandObject }
-type StateObject = { value: any, provider: string, eventTarget: EventTarget, multi: boolean }
+type StateObject = { value: any, provider: string, eventTarget: EventTarget, multi: boolean, cancel: Function }
 type HookObject = { callback: Function, provider: string }
