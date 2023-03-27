@@ -37,7 +37,7 @@ export const registerModel = <T extends { emitter: () => void }>(modelClass: Mod
     launchDelay(modelClass.modelName)
   }
   store.set(modelClass.modelName, {
-    proxy: wrapperState(obj, obj.emitter),
+    proxy: wrapperState(obj, obj.emitter)[0],
   });
 
   return () => {
