@@ -163,7 +163,7 @@ export type GrootStateDict = {
   'gs.ui.panel.viewsContainers': [string, true],
   'gs.ui.stageViewport': ['desktop' | 'mobile', false],
   'gs.ui.banner.views': [{ id: string, placement: 'left' | 'center' | 'right' }, true],
-  'gs.ui.propSettingViews': [{ name: string, remotePackage: string, remoteUrl: string, remoteModule: string }, true],
+  // 'gs.ui.propSettingViews': [{ name: string, remotePackage: string, remoteUrl: string, remoteModule: string }, true],
 
   'gs.componentInstance': [ComponentInstance, false],
   'gs.allComponentInstance': [ComponentInstance, true],
@@ -175,6 +175,9 @@ export type GrootStateDict = {
   'gs.stage.debugBaseUrl': [string, false],
   'gs.globalStateList': [State, true],
   'gs.localStateList': [State, true],
+  'gs.propItem.viewTypeList': [{ label: string, value: string }, true],
+  'gs.propItem.formRenderList': [{ viewType: string, render: ViewElement }, true],
+  'gs.propItem.settingRenderList': [{ viewType: string, render: ViewElement }, true],
 }
 
 export type GrootHookDict = {
@@ -222,7 +225,7 @@ export type ViewItem = {
 
 
 
-export type ViewElement = string | ReactElement | React.FC;
+export type ViewElement = string | ReactElement | React.FC<any>;
 
 
 

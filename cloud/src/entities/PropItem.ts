@@ -1,5 +1,5 @@
-import { Entity, Enum, ManyToOne, OneToOne, Property } from "@mikro-orm/core";
-import { PropItemType } from '@grootio/common';
+import { PropItemStruct } from "@grootio/common";
+import { Entity, ManyToOne, Property } from "@mikro-orm/core";
 
 import { BaseEntity } from "./BaseEntity";
 import { Component } from "./Component";
@@ -14,7 +14,10 @@ export class PropItem extends BaseEntity {
   label: string;
 
   @Property({ type: 'tinyint' })
-  type: PropItemType;
+  struct: PropItemStruct;
+
+  @Property({ length: 50 })
+  viewType: string;
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'groupId' })
   group: PropGroup;

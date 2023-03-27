@@ -1,22 +1,25 @@
 
-export enum PropItemType {
-  Text = 1,
-  Textarea = 2,
-  Number = 3,
-  Slider = 4,
-  ButtonGroup = 5,
-  Switch = 6,
-  Select = 7,
-  Radio = 8,
-  Checkbox = 9,
-  DatePicker = 10,
-  TimePicker = 11,
-  Hierarchy = 12,
-  Flat = 13,
-  Json = 14,
-  Function = 15,
-  Component = 16,
-  Extension = 17
+export enum PropItemStruct {
+  Normal = 1,
+  Hierarchy = 2,
+  Flat = 3,
+}
+
+export enum PropItemViewType {
+  Text = 'text',
+  Textarea = 'textarea',
+  Number = 'number',
+  Slider = 'slider',
+  ButtonGroup = 'buttonGroup',
+  Switch = 'switch',
+  Select = 'select',
+  Radio = 'radio',
+  Checkbox = 'checkbox',
+  DatePicker = 'datePicker',
+  TimePicker = 'timePicker',
+  Json = 'json',
+  Function = 'function',
+  Component = 'component',
 }
 
 export enum PropBlockLayout {
