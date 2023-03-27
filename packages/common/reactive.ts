@@ -8,20 +8,29 @@ const ArrayPatchMethods = ['push', 'pop', 'shift', 'unshift', 'splice', 'sort', 
  * 检测对象属性变化
  */
 export function wrapperState(target: any, listener: Function) {
+  let terminate = false;
+
+  const cancel = () => {
+    terminate = true
+  }
 
   // 避免不必类型的包装
   if (isBaseType(target) || typeof target === 'function' || target.$$typeof) {
-    return target;
+    return [target, cancel];
   }
 
   // 防止重复多余的包装
   if (target.__groot_origin_listener === listener) {
-    return target;
+    return [target, cancel];
   }
 
   ++wrapCount
-  return new Proxy(target, {
+  const proxyObj = new Proxy(target, {
     get(oTarget, sKey, receiver) {
+      if (terminate) {
+        return Reflect.get(oTarget, sKey, receiver);
+      }
+
       // 原生内置方法调用或者react dom对象跳过
       if (typeof sKey === 'symbol' || sKey === '$$typeof' || sKey === 'constructor') {
         return Reflect.get(oTarget, sKey);
@@ -49,9 +58,11 @@ export function wrapperState(target: any, listener: Function) {
         // 拦截可以改变数组自身的方法
         if (Array.isArray(oTarget) && ArrayPatchMethods.includes(sKey)) {
           return (...args: any[]) => {
-            let newArgs = args;
+            if (terminate) {
+              return Reflect.apply(value, receiver, args);
+            }
 
-            const result = Reflect.apply(value, receiver, newArgs);
+            const result = Reflect.apply(value, receiver, args);
             listener();
             return result;
           }
@@ -65,22 +76,32 @@ export function wrapperState(target: any, listener: Function) {
           return value;
         }
         // 除函数之外引用应用类型需要递归包裹生成代理对象
-        return wrapperState(value, listener);
+        return wrapperState(value, listener)[0];
       }
     },
-    set(oTarget, sKey, vValue) {
+    set(oTarget, sKey, vValue, receiver) {
+      if (terminate) {
+        return Reflect.set(oTarget, sKey, vValue, receiver);
+      }
+
       ++setCount;
       const result = Reflect.set(oTarget, sKey, vValue);
       listener();
       return result;
     },
     deleteProperty(oTarget, sKey) {
+      if (terminate) {
+        return Reflect.deleteProperty(oTarget, sKey);
+      }
+
       ++setCount;
       const result = Reflect.deleteProperty(oTarget, sKey);
       listener();
       return result;
     },
   })
+
+  return [proxyObj, cancel]
 }
 
 
