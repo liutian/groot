@@ -1,4 +1,4 @@
-import { pick, PropGroupStructType, PropItemType, PropValueType } from '@grootio/common';
+import { pick, PropGroupStructType, PropItemStruct, PropValueType } from '@grootio/common';
 import { EntityManager, RequestContext } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 
@@ -25,7 +25,7 @@ export class PropItemService {
     const block = await em.findOne(PropBlock, rawItem.blockId);
     LogicException.assertNotFound(block, 'PropBlock', rawItem.blockId);
 
-    if (rawItem.type !== PropItemType.Flat && rawItem.type !== PropItemType.Hierarchy && !rawItem.propKey) {
+    if (rawItem.struct !== PropItemStruct.Flat && rawItem.struct !== PropItemStruct.Hierarchy && !rawItem.propKey) {
       throw new LogicException(`配置项propKey不能为空`, LogicExceptionCode.ParamError);
     }
 
@@ -49,7 +49,7 @@ export class PropItemService {
     const firstItem = await em.findOne(PropItem, { block }, { orderBy: { order: 'DESC' } });
 
     const newItem = em.create(PropItem, {
-      ...pick(rawItem, ['label', 'propKey', 'rootPropKey', 'type', 'subType', 'span', 'valueOptions', 'versionTraceId']),
+      ...pick(rawItem, ['label', 'propKey', 'rootPropKey', 'struct', 'viewType', 'span', 'valueOptions', 'versionTraceId']),
       block,
       group: block.group,
       component: block.component,
@@ -80,9 +80,9 @@ export class PropItemService {
 
       await em.flush();
 
-      if (newItem.type === PropItemType.Hierarchy || newItem.type === PropItemType.Flat) {
+      if (newItem.struct === PropItemStruct.Hierarchy || newItem.struct === PropItemStruct.Flat) {
         let groupStruct = PropGroupStructType.Default;
-        if (newItem.type === PropItemType.Flat) {
+        if (newItem.struct === PropItemStruct.Flat) {
           groupStruct = PropGroupStructType.Flat
         }
         const rawGroup = {
@@ -174,13 +174,10 @@ export class PropItemService {
     const propItem = await em.findOne(PropItem, rawItem.id);
     LogicException.assertNotFound(propItem, 'PropItem', rawItem.id);
 
-    if (rawItem.type !== propItem.type && (propItem.type === PropItemType.Flat || propItem.type === PropItemType.Hierarchy)) {
-      throw new LogicException(`部分配置项类型无法变更`, LogicExceptionCode.ParamError);
-    }
 
     await em.begin();
     try {
-      const typeChange = rawItem.type !== propItem.type
+      const typeChange = rawItem.viewType !== propItem.viewType
       if (typeChange) {
         propItem.versionTraceId = propItem.id;
         await em.nativeDelete(PropValue, {
@@ -188,7 +185,7 @@ export class PropItemService {
           type: PropValueType.Prototype
         });
       }
-      pick(rawItem, ['label', 'propKey', 'rootPropKey', 'type', 'subType', 'span', 'valueOptions'], propItem);
+      pick(rawItem, ['label', 'propKey', 'rootPropKey', 'viewType', 'span', 'valueOptions'], propItem);
       if (typeChange) {
         propItem.defaultValue = '';
       }
