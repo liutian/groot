@@ -71,7 +71,6 @@ export const shareBootstrap = () => {
     { label: '时间', value: 'timePicker' },
     { label: 'json', value: 'json' },
     { label: '函数', value: 'function' },
-    { label: '组件', value: 'component' },
   ], true)
 
 

@@ -1,4 +1,4 @@
-import { Metadata, PropMetadata, PropMetadataComponent, PropMetadataType, StudioMode } from "@grootio/common";
+import { Metadata, PropMetadata, PropMetadataType, StudioMode } from "@grootio/common";
 import { controlMode, globalConfig, groot } from "./config";
 import { launchWatch } from "./monitor";
 
