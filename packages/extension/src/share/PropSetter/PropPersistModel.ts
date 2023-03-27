@@ -1,4 +1,4 @@
-import { APIPath, BaseModel, ComponentInstance, PropBlock, PropGroup, PropItem, PropItemType, PropMetadataComponent, PropValue, PropValueType, StudioMode, ValueStruct } from "@grootio/common";
+import { APIPath, BaseModel, ComponentInstance, PropBlock, PropGroup, PropItem, PropItemStruct, PropMetadataComponent, PropValue, PropValueType, StudioMode, ValueStruct } from "@grootio/common";
 import { stringifyPropItemValue } from "@grootio/core";
 import { getContext, grootManager } from "context";
 import { getComponentVersionId } from "share";
@@ -290,7 +290,7 @@ export default class PropPersistModel extends BaseModel {
     const propSuffix = autoIncrementForName(block.propItemList.map(item => item.propKey));
 
     this.currSettingPropItem = {
-      type: PropItemType.Text,
+      struct: PropItemStruct.Normal,
       label: `配置项${nameSuffix}`,
       propKey: `prop${propSuffix}`,
       blockId: block.id,

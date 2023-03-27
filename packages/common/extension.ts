@@ -1,7 +1,7 @@
 import { ReactElement } from "react";
 import React from "react";
 import { APIStore } from "./api/API.store";
-import { Application, Component, ComponentInstance, Release, Solution, State } from "./entities";
+import { Application, Component, ComponentInstance, PropItem, Release, Solution, State } from "./entities";
 import { GridLayout } from "./GridLayout";
 import { ApplicationData, Metadata } from "./internal";
 import { StudioMode } from "./enum";
@@ -138,6 +138,8 @@ export type GrootCommandDict = {
   'gc.switchIstance': [[number], void],
   'gc.makeDataToStage': [[number | 'all' | 'current' | 'first'], void],
   'gc.stageRefresh': [[Function] | [], void],
+
+  'gc.pushPropItemToStack': [[PropItem], void]
 }
 
 export type GrootStateDict = {
