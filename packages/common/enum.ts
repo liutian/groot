@@ -105,5 +105,34 @@ export enum ViewportMode {
 export enum PropMetadataType {
   Component = 'component',
   Json = 'json',
-  Function = 'function'
+  Function = 'function',
+  DateTime = 'dateTime'
+}
+
+
+export enum ExtensionPipelineLevel {
+  Hight = 'hight',
+  Normal = 'normal',
+  Low = 'low',
+  Ignore = 'ignore'
+}
+
+export enum ExtensionLevel {
+  Entry = 'entry',
+  Application = 'application',
+  Solution = 'solution'
+}
+
+export enum ExtensionRelationType {
+  Release = 1,
+  Entry = 2,
+  SolutionVersion = 3,
+}
+
+export enum ExtensionStatus {
+  Active = 'active',
+  Conflict = 'conflict',
+  ConflictUrl = 'conflictUrl',
+  Destroy = 'destroy',
+  Uninstall = 'uninstall'
 }

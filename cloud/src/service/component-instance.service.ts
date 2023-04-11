@@ -1,15 +1,17 @@
-import { PropMetadataComponent, pick, PropValueType, ValueStruct } from '@grootio/common';
+import { PropMetadataComponent, pick, PropValueType, ValueStruct, ExtensionRelationType } from '@grootio/common';
 import { EntityManager, RequestContext } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 
 import { LogicException, LogicExceptionCode } from 'config/logic.exception';
 import { Component } from 'entities/Component';
 import { ComponentInstance } from 'entities/ComponentInstance';
+import { ExtensionInstance } from 'entities/ExtensionInstance';
 import { PropBlock } from 'entities/PropBlock';
 import { PropGroup } from 'entities/PropGroup';
 import { PropItem } from 'entities/PropItem';
 import { PropValue } from 'entities/PropValue';
 import { Release } from 'entities/Release';
+import { SolutionInstance } from 'entities/SolutionInstance';
 import { State } from 'entities/State';
 
 @Injectable()
@@ -162,11 +164,27 @@ export class ComponentInstanceService {
 
     LogicException.assertParamEmpty(instanceId, 'instanceId');
     const rootInstance = await em.findOne(ComponentInstance, instanceId, {
-      populate: ['componentVersion', 'component']
+      populate: ['componentVersion', 'component',]
     });
     LogicException.assertNotFound(rootInstance, 'Instance', instanceId);
     if (rootInstance.root) {
       throw new LogicException(`当前组件不是入口组件`, LogicExceptionCode.UnExpect);
+    }
+
+    const entryExtensionInstanceList = await em.find(ExtensionInstance, {
+      relationId: rootInstance.id,
+      relationType: ExtensionRelationType.Entry
+    }, { populate: ['extension', 'extensionVersion'] })
+
+    const solutionInstanceList = await em.find(SolutionInstance, {
+      entry: rootInstance
+    }, { orderBy: { primary: true } })
+
+    for (const solutionInstance of solutionInstanceList) {
+      solutionInstance.extensionInstanceList = await em.find(ExtensionInstance, {
+        relationId: solutionInstance.solutionVersion.id,
+        relationType: ExtensionRelationType.SolutionVersion
+      }, { populate: ['extension', 'extensionVersion'] })
     }
 
     rootInstance.groupList = await em.find(PropGroup, { component: rootInstance.component, componentVersion: rootInstance.componentVersion });
@@ -188,10 +206,9 @@ export class ComponentInstanceService {
       instance.valueList = await em.find(PropValue, { componentInstance: instance });
     }
 
-
     const release = await em.findOne(Release, rootInstance.release.id)
 
-    return { root: rootInstance, children: instanceList, release };
+    return { root: rootInstance, children: instanceList, release, entryExtensionInstanceList, solutionInstanceList };
   }
 
   async reverseDetectId(trackId: number, releaseId: number) {

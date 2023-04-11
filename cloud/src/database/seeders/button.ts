@@ -1,5 +1,8 @@
-import { PropBlockLayout, PropBlockStructType, PropItemType } from "@grootio/common";
+import { ExtensionRelationType, PropBlockLayout, PropBlockStructType, PropItemViewType } from "@grootio/common";
 import { EntityManager } from "@mikro-orm/core";
+import { ExtensionInstance } from "../../entities/ExtensionInstance";
+import { ExtensionVersion } from "../../entities/ExtensionVersion";
+import { SolutionInstance } from "../../entities/SolutionInstance";
 
 import { Component } from "../../entities/Component";
 import { ComponentInstance } from "../../entities/ComponentInstance";
@@ -10,13 +13,12 @@ import { PropItem } from "../../entities/PropItem";
 import { Release } from "../../entities/Release";
 import { Solution } from "../../entities/Solution";
 
-export const create = async (em: EntityManager, solution: Solution, release: Release) => {
+export const create = async (em: EntityManager, solution: Solution, release: Release, extensionVersion: ExtensionVersion) => {
   // 创建组件
   const btnComponent = em.create(Component, {
     name: '按钮',
     packageName: 'antd',
     componentName: 'Button',
-    solution
   });
   await em.persistAndFlush(btnComponent);
 
@@ -27,7 +29,12 @@ export const create = async (em: EntityManager, solution: Solution, release: Rel
     publish: true
   });
   btnComponent.recentVersion = btnComponentVersion;
+  solution.recentVersion.componentVersionList.add(btnComponentVersion)
   await em.persistAndFlush(btnComponentVersion);
+
+  // 将组件和解决方案进行关联
+  solution.recentVersion.componentVersionList.add(btnComponentVersion)
+  await em.persistAndFlush(solution.recentVersion);
 
   // 创建组件配置项
   const btnGroup = em.create(PropGroup, {
@@ -52,10 +59,10 @@ export const create = async (em: EntityManager, solution: Solution, release: Rel
   const btnItem1 = em.create(PropItem, {
     label: '按钮文本',
     propKey: 'children',
-    type: PropItemType.Text,
+    viewType: PropItemViewType.Text,
     defaultValue: '"hello"',
     block: btnBlock,
-    group: btnGroup,
+    // group: btnGroup,
     componentVersion: btnComponentVersion,
     order: 1000,
     component: btnComponent
@@ -64,11 +71,11 @@ export const create = async (em: EntityManager, solution: Solution, release: Rel
   const btnItem2 = em.create(PropItem, {
     label: '按钮类型',
     propKey: 'type',
-    type: PropItemType.ButtonGroup,
+    viewType: PropItemViewType.ButtonGroup,
     defaultValue: '"primary"',
     valueOptions: '[{"label": "主要","value": "primary"},{"label": "默认","value": "default"},{"label": "幽灵","value": "dashed"},{"label": "链接","value": "link"}]',
     block: btnBlock,
-    group: btnGroup,
+    // group: btnGroup,
     componentVersion: btnComponentVersion,
     order: 2000,
     component: btnComponent
@@ -77,10 +84,10 @@ export const create = async (em: EntityManager, solution: Solution, release: Rel
   const btnItem3 = em.create(PropItem, {
     label: '点击事件',
     propKey: 'onClick',
-    type: PropItemType.Function,
+    viewType: PropItemViewType.Function,
     defaultValue: '_exportFn = () => alert(_props.children)',
     block: btnBlock,
-    group: btnGroup,
+    // group: btnGroup,
     componentVersion: btnComponentVersion,
     order: 3000,
     component: btnComponent
@@ -96,10 +103,33 @@ export const create = async (em: EntityManager, solution: Solution, release: Rel
     component: btnComponent,
     componentVersion: btnComponentVersion,
     release,
-    trackId: 0
+    trackId: 0,
   });
   await em.persistAndFlush(btnComponentInstance);
 
   btnComponentInstance.trackId = btnComponentInstance.id;
+  await em.persistAndFlush(btnComponentInstance);
+
+  // 创建组件级别扩展实例
+  const entryExtensionInstance = em.create(ExtensionInstance, {
+    extension: extensionVersion.extension,
+    extensionVersion,
+    config: '',
+    relationType: ExtensionRelationType.Entry,
+    relationId: btnComponentInstance.id,
+  });
+  await em.persistAndFlush(entryExtensionInstance);
+
+  // 创建入口解决方案实例
+  const solutionInstance = em.create(SolutionInstance, {
+    solution,
+    solutionVersion: solution.recentVersion,
+    entry: btnComponentInstance,
+    primary: true
+  })
+  await em.persistAndFlush(solutionInstance);
+
+  // 更新组件实例关联解决方案实例
+  btnComponentInstance.solutionInstance = solutionInstance
   await em.persistAndFlush(btnComponentInstance);
 }

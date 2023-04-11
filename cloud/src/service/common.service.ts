@@ -1,4 +1,4 @@
-import { PropItemType } from '@grootio/common';
+import { PropItemStruct } from '@grootio/common';
 import { EntityManager } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { LogicException, LogicExceptionCode } from 'config/logic.exception';
@@ -144,7 +144,7 @@ export class CommonService {
 
     for (let index = 0; index < propItemList.length; index++) {
       const propItem = propItemList[index];
-      if (propItem.type !== PropItemType.Hierarchy && propItem.type !== PropItemType.Flat) {
+      if (propItem.struct !== PropItemStruct.Hierarchy && propItem.struct !== PropItemStruct.Flat) {
         const chain = await this.calcPropKeyChain('item', propItem.id, em, { propItemMap, propBlockMap, propGroupMap });
         chainList.push(chain);
       }

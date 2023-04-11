@@ -1,6 +1,6 @@
-import { PropBlockLayout, PropBlockStructType, PropItemType } from "@grootio/common";
+import { PropBlockLayout, PropBlockStructType, PropItemStruct, PropItemViewType } from "@grootio/common";
 import { EntityManager } from "@mikro-orm/core";
-
+import { SolutionEntry } from "../../entities/SolutionEntry";
 import { Component } from "../../entities/Component";
 import { ComponentVersion } from "../../entities/ComponentVersion";
 import { PropBlock } from "../../entities/PropBlock";
@@ -14,7 +14,6 @@ export const create = async (em: EntityManager, solution: Solution) => {
     name: '页面',
     packageName: 'groot',
     componentName: 'PageContainer',
-    solution
   });
   await em.persistAndFlush(pageComponent);
 
@@ -25,6 +24,18 @@ export const create = async (em: EntityManager, solution: Solution) => {
   });
   pageComponent.recentVersion = pageComponentVersion;
   await em.persistAndFlush(pageComponentVersion);
+
+  // 将组件和解决方案进行关联
+  solution.recentVersion.componentVersionList.add(pageComponentVersion)
+  await em.persistAndFlush(solution.recentVersion);
+
+  // 创建解决方案首选入口
+  const solutionEntry = em.create(SolutionEntry, {
+    name: pageComponent.name,
+    solutionVersion: solution.recentVersion,
+    componentVersion: pageComponentVersion
+  })
+  await em.persistAndFlush(solutionEntry);
 
   // 创建组件配置项
   const pageGroup = em.create(PropGroup, {
@@ -49,10 +60,10 @@ export const create = async (em: EntityManager, solution: Solution) => {
   const titleItem = em.create(PropItem, {
     label: '标题',
     propKey: 'title',
-    type: PropItemType.Text,
+    viewType: PropItemViewType.Text,
     defaultValue: '"空白页"',
     block: pageBlock,
-    group: pageGroup,
+    // group: pageGroup,
     componentVersion: pageComponentVersion,
     order: 1000,
     component: pageComponent
@@ -62,9 +73,9 @@ export const create = async (em: EntityManager, solution: Solution) => {
   const contentItem = em.create(PropItem, {
     label: '内容',
     propKey: 'content',
-    type: PropItemType.Component,
+    struct: PropItemStruct.Component,
     block: pageBlock,
-    group: pageGroup,
+    // group: pageGroup,
     componentVersion: pageComponentVersion,
     order: 2000,
     component: pageComponent

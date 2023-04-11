@@ -6,9 +6,9 @@ export const monacoLoader = (path?: string) => {
 
   let vsPath = path;
   if (!vsPath) {
-    const packageUrl = getContext().extPackageUrl
-    const url = new URL(packageUrl)
-    vsPath = `${packageUrl.replace(url.pathname, '')}/monaco-editor/vs`
+    const assetUrl = getContext().extension.assetUrl
+    const url = new URL(assetUrl)
+    vsPath = `${assetUrl.replace(url.pathname, '')}/monaco-editor/vs`
   }
 
   return loaderPromise || (loaderPromise = new Promise((resolve) => {

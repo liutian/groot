@@ -24,7 +24,7 @@ const bootstrap = () => {
 const router = createBrowserRouter(Object.keys(panguConfig.appConfig).map((appName) => {
   const appConfig = panguConfig.appConfig[appName];
   const Component = React.lazy(() => {
-    return loadRemoteModule(appConfig.packageName, 'Main', appConfig.packageUrl)
+    return loadRemoteModule(appConfig.packageName, appConfig.moduleName, appConfig.assetUrl)
   });
 
   const element = <React.Suspense  >

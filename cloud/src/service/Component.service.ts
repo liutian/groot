@@ -10,6 +10,7 @@ import { PropGroup } from 'entities/PropGroup';
 import { PropItem } from 'entities/PropItem';
 import { PropValue } from 'entities/PropValue';
 import { Solution } from 'entities/Solution';
+import { SolutionVersion } from 'entities/SolutionVersion';
 
 
 @Injectable()
@@ -52,8 +53,11 @@ export class ComponentService {
     const solution = await em.findOne(Solution, rawComponent.solutionId);
     LogicException.assertNotFound(solution, 'Solution', rawComponent.solutionId);
 
+    LogicException.assertParamEmpty(rawComponent.solutionVersionId, 'solutionVersionId');
+    const solutionVersion = await em.findOne(SolutionVersion, rawComponent.solutionVersionId)
+    LogicException.assertNotFound(solutionVersion, 'SolutionVersion', rawComponent.solutionVersionId);
+
     const newComponent = em.create(Component, pick(rawComponent, ['name', 'componentName', 'packageName']));
-    newComponent.solution = solution;
 
     await em.begin();
     try {
@@ -63,7 +67,7 @@ export class ComponentService {
       // 创建组件版本
       const newVersion = em.create(ComponentVersion, {
         name: 'v0.0.1',
-        component: newComponent
+        component: newComponent,
       });
       await em.flush();
 

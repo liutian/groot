@@ -53,7 +53,8 @@ const config = (): PanguConfig => {
       studio: {
         bootstrap: true,
         packageName: 'groot_studio',
-        packageUrl: 'http://groot-local.com:13000/groot-studio/index.js'
+        moduleName: 'Main',
+        assetUrl: 'http://groot-local.com:13000/groot-studio/index.js'
       }
     }
   }
@@ -105,7 +106,8 @@ export type PanguConfig = {
 export type PanguAppConfig = {
   bootstrap?: boolean,
   packageName?: string,
-  packageUrl: string
+  moduleName?: string,
+  assetUrl: string
 }
 
 export default config;

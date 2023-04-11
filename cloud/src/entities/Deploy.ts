@@ -1,4 +1,4 @@
-import { Entity, Enum, ManyToOne, Property } from "@mikro-orm/core";
+import { Entity, ManyToOne, OneToOne, Property } from "@mikro-orm/core";
 import { DeployStatusType, EnvType } from "@grootio/common";
 
 import { Application } from "./Application";
@@ -10,14 +10,14 @@ import { DeployManifest } from "./DeployManifest";
 @Entity()
 export class Deploy extends BaseEntity {
 
-  @ManyToOne()
+  @ManyToOne({ serializer: value => value?.id, serializedName: 'releaseId' })
   release: Release;
 
-  @ManyToOne()
+  @ManyToOne({ serializer: value => value?.id, serializedName: 'applicationId' })
   application: Application;
 
-  @ManyToOne()
-  manifest: DeployManifest;
+  @OneToOne()
+  manifest?: DeployManifest;
 
   @Property({ type: 'tinyint' })
   env: EnvType;
@@ -25,7 +25,7 @@ export class Deploy extends BaseEntity {
   @Property({ type: 'tinyint' })
   status: DeployStatusType;
 
-  @ManyToOne()
+  @ManyToOne({ serializer: value => value?.id, serializedName: 'bundleId' })
   bundle: Bundle;
 
   //************************已下是接口入参或者查询返回需要定义的属性************************

@@ -1,3 +1,5 @@
+import { ExtensionStatus } from "./enum";
+import { ExtScriptModule } from "./extension";
 
 /**
  * 属性配置组
@@ -70,6 +72,8 @@ export type ComponentInstance = {
 
   // ************************** 分割线已下是界面属性 **************************
   propTree: PropGroup[],
+  extensionList: ExtensionInstance[],
+  entryExtensionList: ExtensionInstance[],
 } & Omit<import("../../cloud/src/entities/ComponentInstance").ComponentInstance, 'component' | 'componentVersion' | 'groupList' | 'blockList' | 'itemList' | 'valueList' | 'stateList'>;
 
 export type Release = {
@@ -101,7 +105,9 @@ export type Component = {
 } & Omit<import("../../cloud/src/entities/Component").Component, 'componentVersion' | 'groupList' | 'blockList' | 'itemList' | 'valueList' | 'versionList'>;
 
 export type Application = {
+  extensionInstanceList: ExtensionInstance[]
 
+  // ************************** 分割线已下是界面属性 **************************
 } & Omit<import("../../cloud/src/entities/Application").Application, ''>;
 
 export type Organization = {
@@ -116,6 +122,33 @@ export type Extension = {
 
 } & Omit<import("../../cloud/src/entities/Extension").Extension, ''>;
 
-export type Solution = {
 
+export type ExtensionVersion = {
+
+} & Omit<import("../../cloud/src/entities/ExtensionVersion").ExtensionVersion, ''>;
+
+export type ExtensionInstance = {
+  extension: Extension,
+  extensionVersion: ExtensionVersion,
+
+  // ************************** 分割线已下是界面属性 **************************
+  status: ExtensionStatus,
+  propItemPipeline: ExtScriptModule
+} & Omit<import("../../cloud/src/entities/ExtensionInstance").ExtensionInstance, ''>;
+
+export type Solution = {
+  extensionInstanceList: ExtensionInstance[]
+
+  // ************************** 分割线已下是界面属性 **************************
 } & Omit<import("../../cloud/src/entities/Solution").Solution, ''>;
+
+export type SolutionVersion = {
+
+} & Omit<import("../../cloud/src/entities/SolutionVersion").SolutionVersion, ''>;
+
+export type SolutionInstance = {
+
+  extensionInstanceList: ExtensionInstance[]
+} & Omit<import("../../cloud/src/entities/SolutionInstance").SolutionInstance, ''>;
+
+

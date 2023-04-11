@@ -24,6 +24,8 @@ export type Metadata = {
   propsObj: {
     [key: string]: any
   },
+  // postPropTasks的key和advancedProps的type关联对应
+  postPropTasks: Record<string, string>,
 
   $$runtime?: {
     propItemId: number,
@@ -33,12 +35,9 @@ export type Metadata = {
 
 export type PropMetadata = {
   keyChain: string,
-} & ({
-  type: PropMetadataType.Component,
-  data: PropMetadataComponent
-} | {
-  type: PropMetadataType.Function | PropMetadataType.Json
-})
+  type: string,
+  data?: any
+}
 
 
 export type PropMetadataComponent = {

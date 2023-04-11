@@ -1,28 +1,38 @@
-import { ApplicationData, DeployStatusType, EnvType, Metadata, PropGroup as IPropGroup, PropBlock as IPropBlock, PropItem as IPropItem, PropValue as IPropValue, Component as IComponent, EnvTypeStr } from '@grootio/common';
+import {
+  ApplicationData, DeployStatusType, EnvType, Metadata,
+  PropGroup as IPropGroup, PropBlock as IPropBlock, PropItem as IPropItem, PropValue as IPropValue, EnvTypeStr,
+  ExtScriptModule, ExtensionRelationType, createExtensionHandler, ExtensionLevel, ExtensionInstance as IExtensionInstance
+} from '@grootio/common';
 import { EntityManager, RequestContext, wrap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
-import { propTreeFactory, metadataFactory } from '@grootio/core';
+import { propTreeFactory, metadataFactory, propItemPipeline } from '@grootio/core';
+
 
 import { LogicException } from 'config/logic.exception';
 import { Application } from 'entities/Application';
 import { ComponentInstance } from 'entities/ComponentInstance';
 import { Release } from 'entities/Release';
 import { Bundle } from 'entities/Bundle';
-import { InstanceAsset } from 'entities/InstanceAsset';
+import { BundleAsset } from 'entities/BundleAsset';
 import { DeployManifest } from 'entities/DeployManifest';
 import { Deploy } from 'entities/Deploy';
 import { PropValue } from 'entities/PropValue';
 import { PropGroup } from 'entities/PropGroup';
 import { PropBlock } from 'entities/PropBlock';
 import { PropItem } from 'entities/PropItem';
+import { NodeVM } from 'vm2';
+import { ExtensionInstance } from 'entities/ExtensionInstance';
+import { SolutionInstance } from 'entities/SolutionInstance';
 
+
+const vm2 = new NodeVM()
 @Injectable()
 export class AssetService {
 
   async instanceDetail(assetId: number) {
     const em = RequestContext.getEntityManager();
 
-    const asset = await em.findOne(InstanceAsset, assetId, { populate: ['content'] });
+    const asset = await em.findOne(BundleAsset, assetId, { populate: ['content'] });
 
     LogicException.assertNotFound(asset, 'InstanceAsset', assetId);
 
@@ -57,29 +67,71 @@ export class AssetService {
     const release = await em.findOne(Release, releaseId);
     LogicException.assertNotFound(release, 'Release', releaseId);
 
-    const rootInstanceList = await em.find(ComponentInstance, { release, root: null },
-      { populate: ['component'] }
-    );
+    const application = await em.findOne(Application, release.application.id);
+
+    const extHandler = createExtensionHandler();
+
+    const releaseExtensionInstanceList = await em.find(ExtensionInstance, {
+      relationId: releaseId,
+      relationType: ExtensionRelationType.Release,
+    }, { populate: ['extensionVersion'] })
+
+    this.installPropItemPipelineModule(releaseExtensionInstanceList, ExtensionLevel.Application, extHandler)
+    const releaseExtScriptModuleList = [...extHandler.application.values()].filter(item => !!item.propItemPipeline).map(item => item.propItemPipeline)
+
+    const rootInstanceList = await em.find(ComponentInstance, { release, root: null });
     const instanceMetadataMap = new Map<ComponentInstance, Metadata[]>();
     // 生成metadata
-    for (let index = 0; index < rootInstanceList.length; index++) {
-      const rootInstance = rootInstanceList[index];
+    for (let rootInstance of rootInstanceList) {
       const metadataList = [];
 
-      const rootMetadata = await this.createMetadata(rootInstance, em);
+      const solutionInstanceList = await em.find(SolutionInstance, {
+        entry: rootInstance
+      }, { orderBy: { primary: true } })
+
+      for (const solutionInstance of solutionInstanceList) {
+        const solutionExtensionInstanceList = await em.find(ExtensionInstance, {
+          relationId: solutionInstance.solutionVersion.id,
+          relationType: ExtensionRelationType.SolutionVersion
+        }, { populate: ['extensionVersion'] })
+
+        this.installPropItemPipelineModule(solutionExtensionInstanceList, ExtensionLevel.Solution, extHandler, solutionInstance.solutionVersion.id)
+      }
+
+      const entryExtensionInstanceList = await em.find(ExtensionInstance, {
+        relationId: rootInstance.id,
+        relationType: ExtensionRelationType.Entry
+      }, { populate: ['extensionVersion'] })
+
+      this.installPropItemPipelineModule(entryExtensionInstanceList, ExtensionLevel.Entry, extHandler)
+      const entryExtScriptModuleList = [...extHandler.entry.values()].filter(item => !!item.propItemPipeline).map(item => item.propItemPipeline)
+
+      const solutionExtScriptModuleList = [...(extHandler.solution.get(rootInstance.solutionInstance.solutionVersion.id)?.values() || [])].filter(item => !!item.propItemPipeline).map(item => item.propItemPipeline)
+      const rootMetadata = await this.createMetadata(rootInstance, em, releaseExtScriptModuleList, solutionExtScriptModuleList, entryExtScriptModuleList);
       metadataList.push(rootMetadata);
       const childInstanceList = await em.find(ComponentInstance, { root: rootInstance }, { populate: ['component', 'componentVersion'] });
 
-      for (let childIndex = 0; childIndex < childInstanceList.length; childIndex++) {
-        const childInstance = childInstanceList[childIndex];
-        const childMetadata = await this.createMetadata(childInstance, em);
+      for (let childInstance of childInstanceList) {
+        const solutionExtScriptModuleList = [...(extHandler.solution.get(childInstance.solutionInstance.solutionVersion.id)?.values() || [])].filter(item => !!item.propItemPipeline).map(item => item.propItemPipeline)
+
+        const childMetadata = await this.createMetadata(childInstance, em, releaseExtScriptModuleList, solutionExtScriptModuleList, entryExtScriptModuleList);
         metadataList.push(childMetadata);
       }
 
       instanceMetadataMap.set(rootInstance, metadataList);
+
+      for (const extInstance of extHandler.entry.values()) {
+        extHandler.uninstall(extInstance.id, ExtensionLevel.Entry)
+      }
+
+      for (const [solutionVersionId, map] of extHandler.solution) {
+        for (const extInstance of map.values()) {
+          extHandler.uninstall(extInstance.id, ExtensionLevel.Solution, solutionVersionId)
+        }
+      }
     }
 
-    const application = await em.findOne(Application, release.application.id);
+
     const bundle = await em.create(Bundle, {
       release,
       application,
@@ -94,9 +146,9 @@ export class AssetService {
       const newAssetList = [];
       rootInstanceList.forEach((instance) => {
         const metadataList = instanceMetadataMap.get(instance);
-        const asset = em.create(InstanceAsset, {
+        const asset = em.create(BundleAsset, {
           content: JSON.stringify(metadataList),
-          componetInstace: instance,
+          entry: instance,
           bundle,
           key: instance.key
         });
@@ -178,7 +230,12 @@ export class AssetService {
     return manifest.id;
   }
 
-  private async createMetadata(instance: ComponentInstance, em: EntityManager) {
+  private async createMetadata(
+    instance: ComponentInstance, em: EntityManager,
+    releaseExtScriptModuleList: ExtScriptModule[],
+    solutionExtScriptModuleList: ExtScriptModule[],
+    entryExtScriptModuleList: ExtScriptModule[],
+  ) {
 
     const groupList = await em.find(PropGroup, { component: instance.component, componentVersion: instance.componentVersion });
     const blockList = await em.find(PropBlock, { component: instance.component, componentVersion: instance.componentVersion });
@@ -192,9 +249,35 @@ export class AssetService {
       valueList.map(v => wrap(v).toObject()) as any as IPropValue[]
     );
 
-    const metadata = metadataFactory(rootGroupList, instance.component as any as IComponent, instance.id, instance.rootId, instance.parentId);
+    const metadata = metadataFactory(rootGroupList, {
+      packageName: instance.component.packageName,
+      componentName: instance.component.componentName,
+      metadataId: instance.id,
+      rootMetadataId: instance.rootId,
+      parentMetadataId: instance.parentId,
+    }, (params) => {
+      propItemPipeline(entryExtScriptModuleList, solutionExtScriptModuleList, releaseExtScriptModuleList, params)
+    });
 
     return metadata;
+  }
+
+  private installPropItemPipelineModule(
+    extensionInstanceList: ExtensionInstance[],
+    level: ExtensionLevel,
+    extHandler: { install: (extInstance: IExtensionInstance, level: ExtensionLevel, solutionVersionId?: number) => boolean },
+    solutionVersionId?: number
+  ) {
+    for (const extensionInstance of extensionInstanceList) {
+      const extInstance = wrap(extensionInstance).toObject() as IExtensionInstance
+
+      const success = extHandler.install(extInstance, level, solutionVersionId)
+      if (success && extensionInstance.extensionVersion.propItemPipelineRaw.trim().length > 0) {
+        const module = vm2.run(extInstance.extensionVersion.propItemPipelineRaw) as ExtScriptModule
+        module.id = extInstance.id;
+        extInstance.propItemPipeline = module
+      }
+    }
   }
 }
 

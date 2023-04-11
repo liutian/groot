@@ -7,9 +7,8 @@ import FormRender from './FormRender'
 
 
 export const shareBootstrap = () => {
-  const { groot } = getContext();
+  const { layout } = getContext();
   const { registerState } = grootManager.state
-
 
   registerState('gs.ui.viewsContainers', [
     {
@@ -73,11 +72,9 @@ export const shareBootstrap = () => {
     { label: '函数', value: 'function' },
   ], true)
 
-
-
-  groot.layout.design('visible', 'secondarySidebar', true);
-  groot.layout.design('visible', 'panel', false);
-  groot.layout.design('banner', 'center', null)
+  layout.design('visible', 'secondarySidebar', true);
+  layout.design('visible', 'panel', false);
+  layout.design('banner', 'center', null)
 
   grootManager.command.registerCommand('gc.stageRefresh', (_, callback) => {
     commandBridge.stageRefresh(callback)

@@ -15,4 +15,4 @@ export * from './reactive';
 export * from './ViewLoader';
 export * from './robot';
 export * from './MouseFollow';
-
+export * from './extension-handler'

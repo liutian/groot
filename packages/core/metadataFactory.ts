@@ -1,17 +1,39 @@
-import { Component, Metadata, PropBlockStructType, PropGroup, PropItem, PropItemType, PropMetadataComponent, PropMetadataType, PropValue } from '@grootio/common';
+import { Metadata, PropBlockStructType, PropGroup, PropItem, PropItemStruct, PropItemViewType, PropMetadataComponent, PropMetadataType, PropValue } from '@grootio/common';
 
-import { fillPropChainGreed, fillPropChain, parsePropItemValue } from './utils';
+import { fillPropChainGreed, fillPropChain } from './utils';
 
-export function metadataFactory(rootGroupList: PropGroup[], component: Component, metadataId: number, rootMetadataId: number, parentMetadataId?: number) {
+type PipelineType = (params: {
+  ctx: Record<string, any>,
+  propKey: string,
+  value: any,
+  propItem: PropItem,
+  metadata: Metadata,
+  propKeyChain: string,
+  defaultFn: () => void
+}) => void
+
+let _pipeline: PipelineType
+
+export function metadataFactory(
+  rootGroupList: PropGroup[],
+  metadataInfo: {
+    packageName: string,
+    componentName: string,
+    metadataId: number,
+    rootMetadataId?: number,
+    parentMetadataId?: number,
+  }, pipeline?: PipelineType) {
   const metadata = {
-    id: metadataId,
-    packageName: component.packageName,
-    componentName: component.componentName,
+    id: metadataInfo.metadataId,
+    packageName: metadataInfo.packageName,
+    componentName: metadataInfo.componentName,
     propsObj: {},
     advancedProps: [],
-    parentId: parentMetadataId,
-    rootId: rootMetadataId
+    postPropTasks: {},
+    parentId: metadataInfo.parentMetadataId,
+    rootId: metadataInfo.rootMetadataId
   } as Metadata;
+  _pipeline = pipeline
 
   rootGroupList.forEach((group) => {
     if (group.propKey) {
@@ -113,10 +135,10 @@ function buildPropObjectForItem(item: PropItem, ctx: Object, ctxKeyChain: string
 }
 
 
-function buildPropObjectForLeafItem(propItem: PropItem, ctx: Object, ctxKeyChain: string, metadata: Metadata, parentValueList?: PropValue[]) {
+function buildPropObjectForLeafItem(propItem: PropItem, ctx: Object, propKeyChain: string, metadata: Metadata, parentValueList?: PropValue[]) {
   const [newCTX, propEnd] = fillPropChain(propItem.rootPropKey ? metadata.propsObj : ctx, propItem.propKey);
-  ctxKeyChain = propItem.rootPropKey ? propItem.propKey : `${ctxKeyChain}.${propItem.propKey}`;
-  ctxKeyChain = ctxKeyChain.replace(/^\.|\.$/g, '');
+  propKeyChain = propItem.rootPropKey ? propItem.propKey : `${propKeyChain}.${propItem.propKey}`;
+  propKeyChain = propKeyChain.replace(/^\.|\.$/g, '');
 
   let propValue = propItem.valueList[0];
   const abstractValueIdChain = parentValueList?.map(v => v.id).join(',');
@@ -125,31 +147,47 @@ function buildPropObjectForLeafItem(propItem: PropItem, ctx: Object, ctxKeyChain
     propValue = propItem.valueList.find((value) => value.abstractValueIdChain === abstractValueIdChain);
   }
 
-  newCTX[propEnd] = parsePropItemValue(propItem, propValue?.value);
+  const value = propValue.value || propItem.defaultValue
 
-  if (propItem.type === PropItemType.Json) {
-    metadata.advancedProps.push({
-      keyChain: ctxKeyChain,
-      type: PropMetadataType.Json,
-    })
-  } else if (propItem.type === PropItemType.Function) {
-    metadata.advancedProps.push({
-      keyChain: ctxKeyChain,
-      type: PropMetadataType.Function,
-    })
-  } else if (propItem.type === PropItemType.Component) {
-    if (!newCTX[propEnd]) {
-      throw new Error(`类型为: ${PropItemType.Component}，值未正常初始化`);
+  if (propItem.struct === PropItemStruct.Normal) {
+    if (propItem.viewType === PropItemViewType.Json) {
+      metadata.advancedProps.push({
+        keyChain: propKeyChain,
+        type: PropMetadataType.Json,
+      })
+    } else if (propItem.viewType === PropItemViewType.Function) {
+      metadata.advancedProps.push({
+        keyChain: propKeyChain,
+        type: PropMetadataType.Function,
+      })
+    } else {
+      const defaultFn = () => {
+        if (typeof value === 'string' && value.length) {
+          newCTX[propEnd] = JSON.parse(value);
+        } else {
+          newCTX[propEnd] = value
+        }
+      }
+
+      if (_pipeline) {
+        _pipeline({ ctx: newCTX, propKey: propEnd, value, propItem, metadata, propKeyChain, defaultFn })
+      } else {
+        defaultFn()
+      }
     }
-    const data = newCTX[propEnd] as PropMetadataComponent;
+  } else if (propItem.struct === PropItemStruct.Component) {
+    const data = (!value ? { list: [] } : JSON.parse(value)) as PropMetadataComponent
+
+    // todo studio模式下才有$$runtime
     data.$$runtime = {
       propItemId: propItem.id,
-      propKeyChain: ctxKeyChain,
+      propKeyChain: propKeyChain,
       abstractValueIdChain: abstractValueIdChain,
       parentId: metadata.id
     }
+
     metadata.advancedProps.push({
-      keyChain: ctxKeyChain,
+      keyChain: propKeyChain,
       type: PropMetadataType.Component,
       data
     });

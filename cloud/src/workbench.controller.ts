@@ -23,6 +23,8 @@ import { StateService } from 'service/state.service';
 import { EnvType } from '@grootio/common';
 import { State } from 'entities/State';
 import { SolutionService } from 'service/solution.service';
+import { Application } from 'entities/Application';
+import { Solution } from 'entities/Solution';
 
 @UseInterceptors(StandardResultInterceptor)
 @Controller('/workbench')
@@ -142,8 +144,11 @@ export class WorkbenchController {
   }
 
   @Get('/application/detail/:applicationId')
-  async applicationDetail(@Param('applicationId') applicationId: number) {
-    return this.applicationService.getDetail(applicationId);
+  async applicationDetail(@Param('applicationId') applicationId: number, @Query('releaseId') releaseId: number) {
+    return this.applicationService.getDetail({
+      id: applicationId,
+      releaseId
+    } as Application);
   }
 
   @Get('/component-instance/root-detail/:instanceId')
@@ -229,8 +234,11 @@ export class WorkbenchController {
   }
 
   @Get('/solution/detail/:solutionId')
-  async solutionDetail(@Param('solutionId') solutionId: number) {
-    return await this.solutionService.getDetail(solutionId)
+  async solutionDetail(@Param('solutionId') solutionId: number, @Query('solutionVersionId') solutionVersionId: number) {
+    return await this.solutionService.getDetail({
+      id: solutionId,
+      solutionVersionId
+    } as Solution)
   }
 
   // todo 添加解决方案实现

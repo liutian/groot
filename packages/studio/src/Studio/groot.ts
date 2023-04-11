@@ -1,78 +1,80 @@
-import { CommandManager, ExtensionRuntime, GridLayout, GrootContextCallHook, GrootContextExecuteCommand, GrootContextGetState, GrootContextParams, GrootContextRegisterCommand, GrootContextRegisterHook, GrootContextRegisterState, GrootContextSetState, GrootContextUseStateByName, GrootContextWatchState, HookManager, isBaseType, loadRemoteModule, MainFunction, StateManager, wrapperState } from "@grootio/common"
+import { CommandManager, createExtensionHandler, ExtensionLevel, ExtensionRuntime, ExtensionStatus, ExtScriptModule, GridLayout, GrootContextCallHook, GrootContextExecuteCommand, GrootContextGetState, GrootContextParams, GrootContextRegisterCommand, GrootContextRegisterHook, GrootContextRegisterState, GrootContextSetState, GrootContextUseStateByName, GrootContextWatchState, HookManager, isBaseType, loadRemoteModule, MainFunction, StateManager, wrapperState } from "@grootio/common"
 import { useEffect, useReducer } from "react";
 import request from "util/request";
 
 const commandMap = new Map<string, CommandObject>();
 const stateMap = new Map<string, StateObject>();
 const hookMap = new Map<string, { preArgs?: any[], list: HookObject[] }>();
-const contextEventTarget = new EventTarget();
-let extensionList: ExtensionRuntime[] = [];
 let registorReady = false;
 let __provider: string;
-let extIdTick = 0;
 
-export const loadExtension = (remoteExtensionList: ExtensionRuntime[]) => {
-  return Promise.all(remoteExtensionList.map(item => {
-    return loadRemoteModule(item.packageName, 'Main', item.packageUrl);
-  }))
-    .then(
-      moduleList => moduleList.map(m => m.default),
-      (error) => {
-        console.error('加载插件失败');
-        return Promise.reject(error);
-      })
-    .then((mainList: MainFunction<any>[]) => {
-      return remoteExtensionList.map(({ packageName, packageUrl, name, config }, index) => {
-        return { packageName, packageUrl, main: mainList[index], config, name }
-      })
+const extHandler = createExtensionHandler()
+
+
+export const loadExtension = (remoteExtensionList: ExtensionRuntime[], extLevel: ExtensionLevel, solutionVersionId?: number) => {
+  remoteExtensionList.forEach(extInstance => {
+    extHandler.install(extInstance, extLevel, solutionVersionId)
+  })
+  return Promise.all(remoteExtensionList.map(extInstance => {
+    if (extInstance.status === ExtensionStatus.Active) {
+      const { assetUrl, packageName, moduleName } = extInstance.extensionVersion
+      return loadRemoteModule(packageName, moduleName, assetUrl)
+    } else {
+      return Promise.resolve()
+    }
+  })).then(extModuleList => {
+    remoteExtensionList.forEach((extInstance, index) => {
+      if (extInstance.status === ExtensionStatus.Active) {
+        remoteExtensionList[index].main = extModuleList[index].default
+      }
     })
+  })
 }
 
-export const launchExtension = (remoteExtensionList: ExtensionRuntime[], params: GrootContextParams, layout: GridLayout) => {
-  const configSchemaList = [];
-  remoteExtensionList.forEach(({ name, main, packageName, packageUrl, config }, index) => {
+export const launchExtension = (remoteExtensionList: ExtensionRuntime[], params: GrootContextParams, layout: GridLayout, level: ExtensionLevel) => {
+  registorReady = false;
+
+  const readyCallbackList: Function[] = []
+
+  remoteExtensionList.filter(item => item.status === ExtensionStatus.Active).forEach((extInstance) => {
+    extInstance.level = level;
+
     const requestClone = request.clone((type) => {
       if (type === 'request') {
-        console.log(`[${extensionList[index].packageName} request]`);
+        const { name, packageName, moduleName } = extInstance.extensionVersion
+        console.log(`[ext: ${name} ${packageName}/${moduleName} request]`);
       }
     });
 
-    __provider = packageName;
-    const configSchema = main({
-      extName: name,
-      extPackageName: packageName,
-      extPackageUrl: packageUrl,
-      extConfig: config,
+    extInstance.propItemPipeline = createExtScriptModule(extInstance.extensionVersion.propItemPipelineRaw)
+
+    __provider = `ext:${extInstance.id}`;
+    const configSchema = extInstance.main({
+      extension: extInstance,
+      params,
+      layout,
       request: requestClone,
       groot: {
-        params,
-        layout,
+        extHandler,
+        loadExtension,
+        launchExtension,
         stateManager,
         commandManager,
         hookManager,
-        onReady: function (listener) {
-          contextEventTarget.addEventListener('ready', listener);
+        onReady: function (callback) {
+          readyCallbackList.push(callback)
         }
       }
     });
     __provider = undefined;
 
-    extensionList.push(Object.assign({
-      name,
-      packageName,
-      packageUrl,
-      main,
-      config
-    }, { id: ++extIdTick }))
-
-    configSchemaList.push({ ...configSchema, id: ++extIdTick });
+    extInstance.configSchema = configSchema;
   });
 
-  registerState('gs.extension.configSchemaList', Object.freeze(configSchemaList) as any, true);
-  registerState('gs.extension.dataList', Object.freeze(extensionList) as any, true);
   registorReady = true;
-  layout.refresh()
-  contextEventTarget.dispatchEvent(new Event('ready'));
+  readyCallbackList.forEach(callback => {
+    callback()
+  })
 }
 
 
@@ -327,6 +329,18 @@ export const hookManager: HookManager = () => {
 }
 
 
+export const createExtScriptModule = (code: string) => {
+  const newFunction = new window.Function('module', code);
+  const module = { exports: {} }
+  newFunction(module);
+
+  return module.exports as ExtScriptModule
+}
+
 type CommandObject = { callback: Function, provider: string, origin?: CommandObject }
 type StateObject = { value: any, provider: string, eventTarget: EventTarget, multi: boolean, cancel: Function }
 type HookObject = { callback: Function, provider: string }
+
+
+// 默认state
+registerState('gs.exensionHandle', extHandler, false);

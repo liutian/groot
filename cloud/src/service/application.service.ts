@@ -1,19 +1,30 @@
-import { RequestContext, wrap } from '@mikro-orm/core';
+import { ExtensionRelationType } from '@grootio/common';
+import { RequestContext } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { LogicException } from 'config/logic.exception';
 import { Application } from 'entities/Application';
+import { ExtensionInstance } from 'entities/ExtensionInstance';
+import { Release } from 'entities/Release';
 
 
 @Injectable()
 export class ApplicationService {
 
-
-  async getDetail(applicationId: number) {
+  async getDetail(rawApplication: Application) {
     const em = RequestContext.getEntityManager();
 
-    LogicException.assertParamEmpty(applicationId, 'applicationId');
-    const application = await em.findOne(Application, applicationId, { populate: ['extensionList'] });
-    LogicException.assertNotFound(application, 'application', applicationId);
+    LogicException.assertParamEmpty(rawApplication.id, 'applicationId');
+    const application = await em.findOne(Application, rawApplication.id);
+    LogicException.assertNotFound(application, 'application', rawApplication.id);
+
+    const releaseId = rawApplication.releaseId || application.devRelease.id
+    const release = await em.findOne(Release, releaseId)
+    LogicException.assertNotFound(release, 'Release', releaseId);
+
+    application.extensionInstanceList = await em.find(ExtensionInstance, {
+      relationId: releaseId,
+      relationType: ExtensionRelationType.Release
+    }, { populate: ['extension', 'extensionVersion'] })
 
     return application;
   }

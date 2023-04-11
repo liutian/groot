@@ -1,22 +1,23 @@
 import { ReactElement } from "react";
 import React from "react";
 import { APIStore } from "./api/API.store";
-import { Application, Component, ComponentInstance, PropItem, Release, Solution, State } from "./entities";
+import { Application, Component, ComponentInstance, ExtensionInstance, PropItem, Release, Solution, State } from "./entities";
 import { GridLayout } from "./GridLayout";
 import { ApplicationData, Metadata } from "./internal";
-import { StudioMode } from "./enum";
+import { ExtensionLevel, ExtensionPipelineLevel, StudioMode } from "./enum";
 import { RequestFnType } from "./request-factory";
 import { UIManagerConfig } from "./runtime";
 
 
 
 export type GrootContext = {
-  params: GrootContextParams,
   commandManager: CommandManager,
   stateManager: StateManager,
   hookManager: HookManager,
-  layout: GridLayout,
-  onReady: (listener: EventListener) => void;
+  extHandler: ExtensionHandler,
+  loadExtension: (remoteExtensionList: ExtensionRuntime[], extLevel: ExtensionLevel, solutionVersionId?: number) => void,
+  launchExtension: (remoteExtensionList: ExtensionRuntime[], params: GrootContextParams, layout: GridLayout, level: ExtensionLevel) => void,
+  onReady: (callback: Function) => void;
 }
 
 export type GrootContextParams = {
@@ -36,21 +37,19 @@ export type ExtensionConfigSchema = {
 }
 
 export type ExtensionContext = {
-  extName: string,
-  extPackageName: string,
-  extPackageUrl: string,
-  extConfig: any,
+  params: GrootContextParams,
+  layout: GridLayout,
+  extension: ExtensionRuntime,
   request: RequestFnType<APIStore>,
   groot: GrootContext,
 }
 
 export type ExtensionRuntime = {
-  name: string,
-  packageName: string,
-  packageUrl: string,
   main: MainFunction<any>,
-  config: any
-}
+  config?: any,
+  level: ExtensionLevel,
+  configSchema?: any,
+} & ExtensionInstance
 
 
 export type CommandManager = <CT extends Record<string, [any[], any]> = GrootCommandDict>() => {
@@ -143,8 +142,7 @@ export type GrootCommandDict = {
 }
 
 export type GrootStateDict = {
-  'gs.extension.configSchemaList': [ExtensionConfigSchema, true],
-  'gs.extension.dataList': [any, true],
+  'gs.extensionHandle': [ExtensionHandler, false],
   'gs.ui.views': [ViewItem, true],
   'gs.ui.viewsContainers': [ViewContainerItem, true],
 
@@ -325,3 +323,22 @@ export type ComponentDragAnchor = {
 
 
 
+
+export type ExtScriptModule = {
+  id: number,
+  check: (params: any) => ExtensionPipelineLevel,
+  task: (params: any) => boolean
+}
+
+
+export type ExtensionHandler = {
+  application: Map<number, ExtensionInstance>,
+  solution: Map<number, Map<number, ExtensionInstance>>,
+  entry: Map<number, ExtensionInstance>,
+  runtime: {
+    byAssetUrlMap: Map<string, ExtensionInstance>,
+    byExtIdMap: Map<number, ExtensionInstance>
+  },
+  install: (extensionInstance: ExtensionInstance, level: ExtensionLevel, solutionVersionId?: number) => boolean,
+  uninstall: (extensionInstanceId: number, level: ExtensionLevel, solutionVersionId?: number) => boolean
+}

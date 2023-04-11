@@ -55,6 +55,8 @@ const processAdvancedProp = (metadata: Metadata, store: Metadata[]) => {
         console.error(`高级属性解析失败  ${keys}:${ctx[endPropKey]}`)
         ctx[endPropKey] = undefined;
       }
+    } else if (metadata.postPropTasks[propMetadata.type]) {
+      ctx[endPropKey] = taskCreate(metadata.postPropTasks[propMetadata.type], ctx[endPropKey], ctx)
     }
   })
 
@@ -71,6 +73,7 @@ const createComponentByValue = (propMetadata: PropMetadata, store: Metadata[]) =
     if (!metadata) {
       throw new Error('数据异常');
     }
+    // todo studio模式下才有$$runtime
     metadata.$$runtime = {
       propItemId: rootData.$$runtime?.propItemId,
       abstractValueIdChain: rootData.$$runtime?.abstractValueIdChain
@@ -83,15 +86,28 @@ const createComponentByValue = (propMetadata: PropMetadata, store: Metadata[]) =
   return nodes;
 }
 
-function functionCreate(functionBody: string, $props: Object) {
+function functionCreate(functionCode: string, props: Object) {
   const newFunction = new window.Function('_props', '_groot', '_shared', `
     'use strict';
     return function __grootFn(_groot,_props,_shared){
       let _exportFn;
-      ${functionBody}
+      ${functionCode}
       return _exportFn;
     }(_groot,_props,_shared);
   `);
 
-  return newFunction($props, groot, globalConfig.shared);
+  return newFunction(props, groot, globalConfig.shared);
+}
+
+function taskCreate(taskCode: string, rawValue: string, props: Object) {
+  const newFunction = new window.Function('_rawValue', '_props', '_groot', '_shared', `
+    'use strict';
+    return function __grootTask(_rawValue,_groot,_props,_shared){
+      let _value;
+      ${taskCode}
+      return _value;
+    }(_rawValue,_groot,_props,_shared);
+  `);
+
+  return newFunction(rawValue, props, groot, globalConfig.shared);
 }

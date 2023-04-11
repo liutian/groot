@@ -1,12 +1,12 @@
-import { APIPath, ExtensionRuntime, GridLayout, StudioMode } from '@grootio/common';
+import { APIPath, Application, ExtensionLevel, ExtensionRuntime, ExtensionStatus, GridLayout, Solution, StudioMode } from '@grootio/common';
 import { message } from 'antd';
-import { localExtension } from 'config';
 import { StudioParams } from 'index';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import request from 'util/request';
 import { launchExtension, loadExtension } from './groot';
 import Workbench from './Workbench';
+
 
 /**
  * 1.加载解决方案或者应用信息 
@@ -19,7 +19,9 @@ const Studio: React.FC<StudioParams & { account: any }> & { Wrapper: React.FC<{ 
   const [layout, setLayout] = useState<GridLayout>();
 
   useEffect(() => {
-    let fetchCoreDataPromise, prototypeMode = params.mode === StudioMode.Prototype;
+    let fetchCoreDataPromise: Promise<Application | Solution>
+    let prototypeMode = params.mode === StudioMode.Prototype;
+    let extLevel = prototypeMode ? ExtensionLevel.Solution : ExtensionLevel.Application
 
     if (prototypeMode) {
       fetchCoreDataPromise = fetchSolution(params.solutionId)
@@ -29,21 +31,25 @@ const Studio: React.FC<StudioParams & { account: any }> & { Wrapper: React.FC<{ 
 
     fetchCoreDataPromise.then((data) => {
       setLoadStatus('fetch-extension');
+
+      const solutionVersionId = prototypeMode ? (data as Solution).solutionVersion.id : 0
       // todo 研究promise自动刷新视图
-      fetchExtension(data.extensionList).then((remoteExtensionList) => {
+      loadExtension(data.extensionInstanceList as ExtensionRuntime[], extLevel, solutionVersionId).then(() => {
         setLoadStatus('ok');
         const layout = new GridLayout();
         setLayout(layout);
 
-        launchExtension(remoteExtensionList, {
+        launchExtension(data.extensionInstanceList as ExtensionRuntime[], {
           mode: params.mode,
-          application: !prototypeMode ? data : null,
-          solution: prototypeMode ? data : null,
+          application: !prototypeMode ? data as Application : null,
+          solution: prototypeMode ? data as Solution : null,
           account: params.account,
           instanceId: params.instanceId,
           componentId: params.componentId,
           versionId: params.versionId
-        }, layout)
+        }, layout, prototypeMode ? ExtensionLevel.Solution : ExtensionLevel.Application)
+
+        layout.refresh()
       })
     })
   }, []);
@@ -66,20 +72,6 @@ const Studio: React.FC<StudioParams & { account: any }> & { Wrapper: React.FC<{ 
     })
   }
 
-  const fetchExtension = (extensionList: ExtensionRuntime[]) => {
-    const localCustomExtension = localStorage.getItem(localExtension);
-
-    if (localCustomExtension) {
-      let remoteExtensionList = localCustomExtension.split(',').map(str => {
-        const [prefix, packageUrl] = str.split('@');
-        const [name, packageName = name] = prefix.split('#');
-        return { packageName, packageUrl, main: null, config: null, name }
-      });
-      return loadExtension(remoteExtensionList)
-    } else {
-      return loadExtension(extensionList)
-    }
-  }
 
   if (loadStatus === 'doing') {
     return <>load data ...</>

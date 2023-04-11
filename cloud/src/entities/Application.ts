@@ -1,7 +1,7 @@
-import { Collection, Entity, ManyToMany, ManyToOne, Property } from "@mikro-orm/core";
+import { Entity, ManyToOne, OneToOne, Property } from "@mikro-orm/core";
 
 import { BaseEntity } from "./BaseEntity";
-import { Extension } from "./Extension";
+import { ExtensionInstance } from "./ExtensionInstance";
 import { Project } from "./Project";
 import { Release } from "./Release";
 
@@ -21,28 +21,31 @@ export class Application extends BaseEntity {
   playgroundPath: string;
 
   // 此处必须为可选，否则创建application会引发devRelease非空校验
-  @ManyToOne({ serializer: value => value?.id, serializedName: 'devReleaseId' })
+  @OneToOne({ serializer: value => value?.id, serializedName: 'devReleaseId' })
   devRelease: Release = { id: 0 } as any;
 
   // 此处必须为可选，否则创建application会引发qaRelease非空校验
-  @ManyToOne({ serializer: value => value?.id, serializedName: 'qaeleaseId' })
+  @OneToOne({ serializer: value => value?.id, serializedName: 'qaeleaseId' })
   qaRelease: Release = { id: 0 } as any;
 
   // 此处必须为可选，否则创建application会引发plRelease非空校验
-  @ManyToOne({ serializer: value => value?.id, serializedName: 'plReleaseId' })
+  @OneToOne({ serializer: value => value?.id, serializedName: 'plReleaseId' })
   plRelease: Release = { id: 0 } as any;
 
   // 此处必须为可选，否则创建application会引发onlineRelease非空校验
-  @ManyToOne({ serializer: value => value?.id, serializedName: 'onlineReleaseId' })
+  @OneToOne({ serializer: value => value?.id, serializedName: 'onlineReleaseId' })
   onlineRelease: Release = { id: 0 } as any;
-
-  @ManyToMany()
-  extensionList = new Collection<Extension>(this);
 
   @Property({ length: 100, comment: '应用对应前端页面开发调试地址' })
   debugBaseUrl: string;
 
   //************************已下是接口入参或者查询返回需要定义的属性************************
+
+  @Property({ persist: false })
+  extensionInstanceList: ExtensionInstance[]
+
+  @Property({ persist: false })
+  releaseId: number
 
   // @Property({ persist: false })
   // release: Release;

@@ -1,25 +1,24 @@
-import { Collection, Entity, ManyToOne, OneToMany, Property } from "@mikro-orm/core";
+import { Collection, Entity, ManyToMany, ManyToOne, OneToMany, Property } from "@mikro-orm/core";
 
-import { Application } from "./Application";
-import { InstanceAsset } from "./InstanceAsset";
+import { BundleAsset } from "./BundleAsset";
 import { BaseEntity } from "./BaseEntity";
 import { Release } from "./Release";
+import { Application } from "./Application";
 
 @Entity()
 export class Bundle extends BaseEntity {
 
-
-  @ManyToOne()
+  @ManyToOne({ serializer: value => value?.id, serializedName: 'applicationId' })
   application: Application;
 
-  @ManyToOne()
+  @ManyToOne({ serializer: value => value?.id, serializedName: 'releaseId' })
   release: Release;
 
-  @OneToMany(() => InstanceAsset, asset => asset.bundle)
-  newAssetList = new Collection<InstanceAsset>(this);
+  @ManyToMany()
+  newAssetList = new Collection<BundleAsset>(this);
 
-  @OneToMany(() => InstanceAsset, asset => asset.bundle)
-  oldAssetList = new Collection<InstanceAsset>(this);
+  @ManyToMany()
+  oldAssetList = new Collection<BundleAsset>(this);
 
   @Property({ length: 100 })
   remark = '';

@@ -10,10 +10,10 @@ export class DeployManifest extends BaseEntity {
   @Property({ type: 'text', lazy: true })
   content: string;
 
-  @ManyToOne()
+  @ManyToOne({ serializer: value => value?.id, serializedName: 'releaseId' })
   release: Release;
 
-  @ManyToOne()
+  @ManyToOne({ serializer: value => value?.id, serializedName: 'bundleId' })
   bundle: Bundle;
 
 }

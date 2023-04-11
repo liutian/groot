@@ -1,5 +1,9 @@
-import { PropBlockLayout, PropBlockStructType, PropItemType, PropValueType } from "@grootio/common";
+import { ExtensionRelationType, PropBlockLayout, PropBlockStructType, PropItemStruct, PropItemViewType, PropValueType } from "@grootio/common";
 import { EntityManager } from "@mikro-orm/core";
+import { ExtensionInstance } from "../../entities/ExtensionInstance";
+import { ExtensionVersion } from "../../entities/ExtensionVersion";
+import { SolutionEntry } from "../../entities/SolutionEntry";
+import { SolutionInstance } from "../../entities/SolutionInstance";
 
 import { Component } from "../../entities/Component";
 import { ComponentInstance } from "../../entities/ComponentInstance";
@@ -11,13 +15,12 @@ import { PropValue } from "../../entities/PropValue";
 import { Release } from "../../entities/Release";
 import { Solution } from "../../entities/Solution";
 
-export const create = async (em: EntityManager, solution: Solution, release: Release) => {
+export const create = async (em: EntityManager, solution: Solution, release: Release, extensionVersion: ExtensionVersion) => {
   // 创建组件
   const tableComponent = em.create(Component, {
     name: '列表查询',
     packageName: '@ant-design/pro-table',
     componentName: 'ProTable',
-    solution
   });
   await em.persistAndFlush(tableComponent);
 
@@ -27,8 +30,21 @@ export const create = async (em: EntityManager, solution: Solution, release: Rel
     component: tableComponent,
     publish: true
   });
-  tableComponent.recentVersion = tableComponentVersion;
   await em.persistAndFlush(tableComponentVersion);
+  tableComponent.recentVersion = tableComponentVersion;
+  await em.persistAndFlush(tableComponent);
+
+  // 将组件和解决方案进行关联
+  solution.recentVersion.componentVersionList.add(tableComponentVersion)
+  await em.persistAndFlush(solution.recentVersion);
+
+  // 创建解决方案首选入口
+  const solutionEntry = em.create(SolutionEntry, {
+    name: tableComponent.name,
+    solutionVersion: solution.recentVersion,
+    componentVersion: tableComponentVersion
+  })
+  await em.persistAndFlush(solutionEntry);
 
   // 创建组件配置项
   const commonGroup = em.create(PropGroup, {
@@ -53,9 +69,9 @@ export const create = async (em: EntityManager, solution: Solution, release: Rel
 
   const columnInnerItem = em.create(PropItem, {
     label: '子项模版配置',
-    type: PropItemType.Hierarchy,
+    struct: PropItemStruct.Hierarchy,
     block: columnBlock,
-    group: commonGroup,
+    // group: commonGroup,
     componentVersion: tableComponentVersion,
     component: tableComponent,
     order: 1000
@@ -89,9 +105,9 @@ export const create = async (em: EntityManager, solution: Solution, release: Rel
   const columnItem1 = em.create(PropItem, {
     label: '索引',
     propKey: 'dataIndex',
-    type: PropItemType.Text,
+    viewType: PropItemViewType.Text,
     block: columnInnerBlock,
-    group: columnInnerGroup,
+    // group: columnInnerGroup,
     componentVersion: tableComponentVersion,
     component: tableComponent,
     order: 1000
@@ -101,9 +117,9 @@ export const create = async (em: EntityManager, solution: Solution, release: Rel
   const columnItem2 = em.create(PropItem, {
     label: '标题',
     propKey: 'title',
-    type: PropItemType.Text,
+    viewType: PropItemViewType.Text,
     block: columnInnerBlock,
-    group: columnInnerGroup,
+    // group: columnInnerGroup,
     componentVersion: tableComponentVersion,
     component: tableComponent,
     order: 2000
@@ -113,10 +129,10 @@ export const create = async (em: EntityManager, solution: Solution, release: Rel
   const columnItem3 = em.create(PropItem, {
     label: '类型',
     propKey: 'valueType',
-    type: PropItemType.Select,
+    viewType: PropItemViewType.Select,
     valueOptions: '[{"label": "文本","value": "text"},{"label": "日期","value": "date"},{"label": "下拉框","value": "select"}]',
     block: columnInnerBlock,
-    group: columnInnerGroup,
+    // group: columnInnerGroup,
     componentVersion: tableComponentVersion,
     component: tableComponent,
     order: 2000
@@ -146,9 +162,9 @@ export const create = async (em: EntityManager, solution: Solution, release: Rel
   const rowKeyItem = em.create(PropItem, {
     label: '唯一键',
     propKey: 'rowKey',
-    type: PropItemType.Text,
+    viewType: PropItemViewType.Text,
     block: requestBlock,
-    group: commonGroup,
+    // group: commonGroup,
     componentVersion: tableComponentVersion,
     component: tableComponent,
     defaultValue: '"id"',
@@ -159,9 +175,9 @@ export const create = async (em: EntityManager, solution: Solution, release: Rel
   const requestItem = em.create(PropItem, {
     label: '接口',
     propKey: 'request',
-    type: PropItemType.Function,
+    viewType: PropItemViewType.Function,
     block: requestBlock,
-    group: commonGroup,
+    // group: commonGroup,
     componentVersion: tableComponentVersion,
     component: tableComponent,
     order: 2000,
@@ -184,11 +200,36 @@ export const create = async (em: EntityManager, solution: Solution, release: Rel
     component: tableComponent,
     componentVersion: tableComponentVersion,
     release,
-    trackId: 0
+    trackId: 0,
   });
   await em.persistAndFlush(tableComponentInstance);
 
+
   tableComponentInstance.trackId = tableComponentInstance.id;
+  await em.persistAndFlush(tableComponentInstance);
+
+
+  // 创建组件级别扩展实例
+  const entryExtensionInstance = em.create(ExtensionInstance, {
+    extension: extensionVersion.extension,
+    extensionVersion,
+    config: '',
+    relationType: ExtensionRelationType.Entry,
+    relationId: tableComponentInstance.id,
+  });
+  await em.persistAndFlush(entryExtensionInstance);
+
+  // 创建入口解决方案实例
+  const solutionInstance = em.create(SolutionInstance, {
+    solution,
+    solutionVersion: solution.recentVersion,
+    entry: tableComponentInstance,
+    primary: true
+  })
+  await em.persistAndFlush(solutionInstance);
+
+  // 更新组件实例关联解决方案实例
+  tableComponentInstance.solutionInstance = solutionInstance
   await em.persistAndFlush(tableComponentInstance);
 
   await createValue(em, columnInnerItem, tableComponent, tableComponentVersion, [columnItem1, columnItem2, columnItem3], tableComponentInstance);

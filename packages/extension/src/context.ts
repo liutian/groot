@@ -1,4 +1,4 @@
-import { ExtensionContext, GrootCommandDict, GrootHookDict, GrootStateDict, PropItem, StudioMode } from "@grootio/common"
+import { ExtensionContext, PropItem, StudioMode } from "@grootio/common"
 
 let _context: ExtensionContext;
 
@@ -24,7 +24,7 @@ export const grootManager = {
 
 
 export const isPrototypeMode = () => {
-  return _context.groot.params.mode === StudioMode.Prototype;
+  return _context.params.mode === StudioMode.Prototype;
 }
 
 export const commandBridge = {

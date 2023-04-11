@@ -10,7 +10,7 @@ const appName = window.location.pathname.split('/')[1] || '';
 const appConfig = panguConfig.appConfig[appName];
 
 if (appConfig.bootstrap === false) {
-  loadRemoteModule(appConfig.packageName, 'Main', appConfig.packageUrl).then((module) => {
+  loadRemoteModule(appConfig.packageName, appConfig.moduleName, appConfig.assetUrl).then((module) => {
     module.default({
       appEnv: process.env.APP_ENV
     });

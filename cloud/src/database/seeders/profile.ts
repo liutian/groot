@@ -1,4 +1,4 @@
-import { PropMetadataComponent, PropBlockLayout, PropBlockStructType, PropItemType, PropValueType } from "@grootio/common";
+import { PropMetadataComponent, PropBlockLayout, PropBlockStructType, PropValueType, PropItemViewType, PropItemStruct, ExtensionRelationType } from "@grootio/common";
 import { EntityManager } from "@mikro-orm/core";
 
 import { PropValue } from "../../entities/PropValue";
@@ -10,14 +10,17 @@ import { PropGroup } from "../../entities/PropGroup";
 import { PropItem } from "../../entities/PropItem";
 import { Release } from "../../entities/Release";
 import { Solution } from "../../entities/Solution";
+import { ExtensionInstance } from "../../entities/ExtensionInstance";
+import { ExtensionVersion } from "../../entities/ExtensionVersion";
+import { SolutionInstance } from "../../entities/SolutionInstance";
+import { SolutionEntry } from "../../entities/SolutionEntry";
 
-export const create = async (em: EntityManager, solution: Solution, release: Release) => {
+export const create = async (em: EntityManager, solution: Solution, release: Release, extensionVersion: ExtensionVersion) => {
   // 创建组件
   const avatarComponent = em.create(Component, {
     name: '头像',
     packageName: 'antd',
     componentName: 'Avatar',
-    solution
   });
   await em.persistAndFlush(avatarComponent);
 
@@ -28,7 +31,12 @@ export const create = async (em: EntityManager, solution: Solution, release: Rel
     publish: true
   });
   avatarComponent.recentVersion = avatarComponentVersion;
+  solution.recentVersion.componentVersionList.add(avatarComponentVersion)
   await em.persistAndFlush(avatarComponentVersion);
+
+  // 将组件和解决方案进行关联
+  solution.recentVersion.componentVersionList.add(avatarComponentVersion)
+  await em.persistAndFlush(solution.recentVersion);
 
   // 创建组件配置项
   const avatarGroup = em.create(PropGroup, {
@@ -53,10 +61,10 @@ export const create = async (em: EntityManager, solution: Solution, release: Rel
   const avatarItem1 = em.create(PropItem, {
     label: '资源地址',
     propKey: 'src',
-    type: PropItemType.Text,
+    viewType: PropItemViewType.Text,
     defaultValue: '"https://joeschmoe.io/api/v1/random"',
     block: avatarBlock,
-    group: avatarGroup,
+    // group: avatarGroup,
     componentVersion: avatarComponentVersion,
     order: 1000,
     component: avatarComponent
@@ -65,11 +73,11 @@ export const create = async (em: EntityManager, solution: Solution, release: Rel
   const avatarItem2 = em.create(PropItem, {
     label: '形状',
     propKey: 'shape',
-    type: PropItemType.ButtonGroup,
+    viewType: PropItemViewType.ButtonGroup,
     defaultValue: '"circle"',
     valueOptions: '[{"label": "圆形","value": "circle"},{"label": "方形","value": "square"}]',
     block: avatarBlock,
-    group: avatarGroup,
+    // group: avatarGroup,
     componentVersion: avatarComponentVersion,
     order: 2000,
     component: avatarComponent
@@ -101,7 +109,6 @@ export const create = async (em: EntityManager, solution: Solution, release: Rel
     name: '个人资料',
     packageName: 'app',
     componentName: 'Profile',
-    solution
   });
   await em.persistAndFlush(profileComponent);
 
@@ -112,7 +119,20 @@ export const create = async (em: EntityManager, solution: Solution, release: Rel
     publish: true
   });
   profileComponent.recentVersion = profileComponentVersion;
+  solution.recentVersion.componentVersionList.add(profileComponentVersion)
   await em.persistAndFlush(profileComponentVersion);
+
+  // 将组件和解决方案进行关联
+  solution.recentVersion.componentVersionList.add(profileComponentVersion)
+  await em.persistAndFlush(solution.recentVersion);
+
+  // 创建解决方案首选入口
+  const solutionEntry = em.create(SolutionEntry, {
+    name: profileComponent.name,
+    solutionVersion: solution.recentVersion,
+    componentVersion: profileComponentVersion
+  })
+  await em.persistAndFlush(solutionEntry);
 
   // 创建组件配置项
   const profileGroup = em.create(PropGroup, {
@@ -137,10 +157,10 @@ export const create = async (em: EntityManager, solution: Solution, release: Rel
   const profileItem1 = em.create(PropItem, {
     label: '姓名',
     propKey: 'name',
-    type: PropItemType.Text,
+    viewType: PropItemViewType.Text,
     defaultValue: '"张三"',
     block: profileBlock,
-    group: profileGroup,
+    // group: profileGroup,
     componentVersion: profileComponentVersion,
     order: 1000,
     component: profileComponent
@@ -149,10 +169,10 @@ export const create = async (em: EntityManager, solution: Solution, release: Rel
   const profileItem2 = em.create(PropItem, {
     label: '地址',
     propKey: 'address',
-    type: PropItemType.Text,
+    viewType: PropItemViewType.Text,
     defaultValue: '"上海"',
     block: profileBlock,
-    group: profileGroup,
+    // group: profileGroup,
     componentVersion: profileComponentVersion,
     order: 2000,
     component: profileComponent
@@ -161,10 +181,10 @@ export const create = async (em: EntityManager, solution: Solution, release: Rel
   const profileItem3 = em.create(PropItem, {
     label: '邮箱',
     propKey: 'email',
-    type: PropItemType.Text,
+    viewType: PropItemViewType.Text,
     defaultValue: '"zhangsan@email.com"',
     block: profileBlock,
-    group: profileGroup,
+    // group: profileGroup,
     componentVersion: profileComponentVersion,
     order: 3000,
     component: profileComponent
@@ -173,9 +193,9 @@ export const create = async (em: EntityManager, solution: Solution, release: Rel
   const profileItem4 = em.create(PropItem, {
     label: '头像',
     propKey: 'avatar',
-    type: PropItemType.Component,
+    struct: PropItemStruct.Component,
     block: profileBlock,
-    group: profileGroup,
+    // group: profileGroup,
     componentVersion: profileComponentVersion,
     order: 4000,
     component: profileComponent
@@ -190,12 +210,39 @@ export const create = async (em: EntityManager, solution: Solution, release: Rel
     component: profileComponent,
     componentVersion: profileComponentVersion,
     release,
-    trackId: 0
+    trackId: 0,
   });
   await em.persistAndFlush(profileComponentInstance);
 
   profileComponentInstance.trackId = profileComponentInstance.id;
   await em.persistAndFlush(profileComponentInstance);
+
+  // 创建组件级别扩展实例
+  const entryExtensionInstance = em.create(ExtensionInstance, {
+    extension: extensionVersion.extension,
+    extensionVersion,
+    config: '',
+    relationType: ExtensionRelationType.Entry,
+    relationId: profileComponentInstance.id,
+  });
+  await em.persistAndFlush(entryExtensionInstance);
+
+  // 创建入口解决方案实例
+  const solutionInstance = em.create(SolutionInstance, {
+    solution,
+    solutionVersion: solution.recentVersion,
+    entry: profileComponentInstance,
+    primary: true
+  })
+  await em.persistAndFlush(solutionInstance);
+
+  // 更新组件实例关联解决方案实例
+  profileComponentInstance.solutionInstance = solutionInstance
+  await em.persistAndFlush(profileComponentInstance);
+
+  // 更新组件实例关联解决方案实例
+  avatarComponentInstance.solutionInstance = solutionInstance
+  await em.persistAndFlush(avatarComponentInstance);
 
   avatarComponentInstance.parent = profileComponentInstance;
   avatarComponentInstance.root = profileComponentInstance;

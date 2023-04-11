@@ -14,13 +14,13 @@ export class PropItem extends BaseEntity {
   label: string;
 
   @Property({ type: 'tinyint' })
-  struct: PropItemStruct;
+  struct: PropItemStruct = PropItemStruct.Normal;
 
   @Property({ length: 50 })
-  viewType: string;
+  viewType = '';
 
-  @ManyToOne({ serializer: value => value?.id, serializedName: 'groupId' })
-  group: PropGroup;
+  // @ManyToOne({ serializer: value => value?.id, serializedName: 'groupId' })
+  // group: PropGroup;
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'blockId' })
   block: PropBlock;

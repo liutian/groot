@@ -1,4 +1,4 @@
-import { pick, PropBlockStructType, PropItemType } from '@grootio/common';
+import { pick, PropBlockStructType, PropItemStruct } from '@grootio/common';
 import { EntityManager, RequestContext } from '@mikro-orm/core';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 
@@ -62,7 +62,7 @@ export class PropBlockService {
       if (rawBlock.struct === PropBlockStructType.List) {
         const rawItem = {
           label: '内嵌配置项',
-          type: PropItemType.Hierarchy,
+          struct: PropItemStruct.Hierarchy,
           blockId: newBlock.id
         } as PropItem;
         result.extra = await this.propItemService.add(rawItem, em);
