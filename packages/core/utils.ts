@@ -1,5 +1,3 @@
-import { PropItem, PropItemType } from "@grootio/common";
-import dayjs from "dayjs";
 
 /**
  * 自动填充属性链，每个属性都为对象
@@ -55,34 +53,3 @@ export const fillPropChain = (ctx: Object, propStr: string): [Object, string] =>
   return [result, propList.at(-1)];
 }
 
-
-
-export const parsePropItemValue = (propItem: PropItem, value?: any) => {
-  value = value || propItem.defaultValue
-  if (propItem.type === PropItemType.DatePicker || propItem.type === PropItemType.TimePicker) {
-    // todo ... 包含moment类型的值 postMessage会有问题
-    value = dayjs(JSON.parse(value));
-  } else if (propItem.type === PropItemType.Function) {
-    // ... 不做任何处理
-  } else if (propItem.type === PropItemType.Component && !value) {
-    value = { list: [] };
-  } else if (typeof value === 'string' && value.length) {
-    value = JSON.parse(value);
-  }
-
-  return value;
-}
-
-
-export const stringifyPropItemValue = (propItem: PropItem, value?: any) => {
-  if (propItem.type === PropItemType.Function) {
-    // ... 不做任何处理
-  } else if (propItem.type === PropItemType.Switch) {
-    // 防止react报错 Warning: Received `true` for a non-boolean attribute
-    value = value ? '1' : '0';
-  } else if (value !== undefined) {
-    value = JSON.stringify(value);
-  }
-
-  return value;
-}

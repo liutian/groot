@@ -1,7 +1,6 @@
 import { Form, Space, Table, Typography } from "antd";
 import { DeleteOutlined, DragOutlined, SettingOutlined } from "@ant-design/icons";
 import { PropBlock, PropItem, PropValue, PropValueType, useModel } from "@grootio/common";
-import { parsePropItemValue } from "@grootio/core";
 import { useState } from "react";
 
 
@@ -40,7 +39,7 @@ const PropBlockListStructPane: React.FC<PropsType> = ({ block: propBlock }) => {
       }).find(value => {
         return value.abstractValueIdChain.endsWith(`${abstractValueId}`);
       })
-      const value = parsePropItemValue(propItem, propValue?.value);
+      const value = propValue?.value || propItem.defaultValue
       let valuesMap = cacheMap.get(propItem);
       if (!valuesMap) {
         valuesMap = new Map();

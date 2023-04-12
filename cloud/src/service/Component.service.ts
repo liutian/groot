@@ -75,6 +75,8 @@ export class ComponentService {
       newComponent.recentVersion = newVersion;
       await em.flush();
 
+      solutionVersion.componentVersionList.add(newVersion)
+
       // 创建默认配置组
       const newGroup = em.create(PropGroup, {
         name: '常用配置',

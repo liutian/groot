@@ -79,7 +79,7 @@ export class AssetService {
     this.installPropItemPipelineModule(releaseExtensionInstanceList, ExtensionLevel.Application, extHandler)
     const releaseExtScriptModuleList = [...extHandler.application.values()].filter(item => !!item.propItemPipeline).map(item => item.propItemPipeline)
 
-    const rootInstanceList = await em.find(ComponentInstance, { release, root: null });
+    const rootInstanceList = await em.find(ComponentInstance, { release, root: null }, { populate: ['solutionInstance'] });
     const instanceMetadataMap = new Map<ComponentInstance, Metadata[]>();
     // 生成metadata
     for (let rootInstance of rootInstanceList) {
@@ -109,7 +109,7 @@ export class AssetService {
       const solutionExtScriptModuleList = [...(extHandler.solution.get(rootInstance.solutionInstance.solutionVersion.id)?.values() || [])].filter(item => !!item.propItemPipeline).map(item => item.propItemPipeline)
       const rootMetadata = await this.createMetadata(rootInstance, em, releaseExtScriptModuleList, solutionExtScriptModuleList, entryExtScriptModuleList);
       metadataList.push(rootMetadata);
-      const childInstanceList = await em.find(ComponentInstance, { root: rootInstance }, { populate: ['component', 'componentVersion'] });
+      const childInstanceList = await em.find(ComponentInstance, { root: rootInstance }, { populate: ['component', 'componentVersion', 'solutionInstance'] });
 
       for (let childInstance of childInstanceList) {
         const solutionExtScriptModuleList = [...(extHandler.solution.get(childInstance.solutionInstance.solutionVersion.id)?.values() || [])].filter(item => !!item.propItemPipeline).map(item => item.propItemPipeline)

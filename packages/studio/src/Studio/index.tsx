@@ -47,7 +47,7 @@ const Studio: React.FC<StudioParams & { account: any }> & { Wrapper: React.FC<{ 
           instanceId: params.instanceId,
           componentId: params.componentId,
           versionId: params.versionId
-        }, layout, prototypeMode ? ExtensionLevel.Solution : ExtensionLevel.Application)
+        }, layout, extLevel)
 
         layout.refresh()
       })

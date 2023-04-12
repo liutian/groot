@@ -13,6 +13,7 @@ type PipelineType = (params: {
 }) => void
 
 let _pipeline: PipelineType
+let _studioMode: boolean
 
 export function metadataFactory(
   rootGroupList: PropGroup[],
@@ -22,7 +23,8 @@ export function metadataFactory(
     metadataId: number,
     rootMetadataId?: number,
     parentMetadataId?: number,
-  }, pipeline?: PipelineType) {
+  }, pipeline?: PipelineType, studioMode = false) {
+
   const metadata = {
     id: metadataInfo.metadataId,
     packageName: metadataInfo.packageName,
@@ -34,6 +36,7 @@ export function metadataFactory(
     rootId: metadataInfo.rootMetadataId
   } as Metadata;
   _pipeline = pipeline
+  _studioMode = studioMode
 
   rootGroupList.forEach((group) => {
     if (group.propKey) {
@@ -178,12 +181,13 @@ function buildPropObjectForLeafItem(propItem: PropItem, ctx: Object, propKeyChai
   } else if (propItem.struct === PropItemStruct.Component) {
     const data = (!value ? { list: [] } : JSON.parse(value)) as PropMetadataComponent
 
-    // todo studio模式下才有$$runtime
-    data.$$runtime = {
-      propItemId: propItem.id,
-      propKeyChain: propKeyChain,
-      abstractValueIdChain: abstractValueIdChain,
-      parentId: metadata.id
+    if (_studioMode) {
+      data.$$runtime = {
+        propItemId: propItem.id,
+        propKeyChain: propKeyChain,
+        abstractValueIdChain: abstractValueIdChain,
+        parentId: metadata.id
+      }
     }
 
     metadata.advancedProps.push({

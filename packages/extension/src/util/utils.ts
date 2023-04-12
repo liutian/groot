@@ -1,4 +1,4 @@
-import { PropItem, PropItemType } from "@grootio/common";
+import { PropItem, PropItemViewType } from "@grootio/common";
 
 export const uuid = (() => {
   let id = 0xaaaaaaaa;
@@ -26,13 +26,13 @@ export const propKeyRule = /^[_a-zA-Z][\w\.]*$/i;
 
 
 export const stringifyOptions = (propItem: PropItem) => {
-  if (([PropItemType.Checkbox, PropItemType.Radio, PropItemType.Select, PropItemType.ButtonGroup] as number[]).includes(propItem.type)) {
+  if (([PropItemViewType.Checkbox, PropItemViewType.Radio, PropItemViewType.Select, PropItemViewType.ButtonGroup] as string[]).includes(propItem.viewType)) {
     propItem.valueOptions = JSON.stringify(propItem.optionList || []);
   }
 }
 
 export const parseOptions = (propItem: PropItem) => {
-  if (([PropItemType.Checkbox, PropItemType.Radio, PropItemType.Select, PropItemType.ButtonGroup] as number[]).includes(propItem.type)) {
+  if (([PropItemViewType.Checkbox, PropItemViewType.Radio, PropItemViewType.Select, PropItemViewType.ButtonGroup] as string[]).includes(propItem.viewType)) {
     propItem.optionList = JSON.parse(propItem.valueOptions || '[]');
   } else {
     propItem.optionList = []

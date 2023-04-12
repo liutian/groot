@@ -1,5 +1,4 @@
 import { APIPath, BaseModel, ComponentInstance, PropBlock, PropGroup, PropItem, PropItemStruct, PropMetadataComponent, PropValue, PropValueType, StudioMode, ValueStruct } from "@grootio/common";
-import { stringifyPropItemValue } from "@grootio/core";
 import { getContext, grootManager } from "context";
 import { getComponentVersionId } from "share";
 
@@ -320,7 +319,7 @@ export default class PropPersistModel extends BaseModel {
       componentId: component.id,
     } as PropValue;
 
-    if (getContext().groot.params.mode === StudioMode.Prototype) {
+    if (getContext().params.mode === StudioMode.Prototype) {
       paramsData.type = PropValueType.Prototype;
     } else {
       const componentInstance = grootManager.state.getState('gs.componentInstance')
@@ -347,7 +346,7 @@ export default class PropPersistModel extends BaseModel {
       abstractValueIdChain = calcPropValueIdChain(propItem, abstractValueId);
     }
     const propValue = propItem.valueList.filter(value => {
-      const isPrototypeMode = getContext().groot.params.mode === StudioMode.Prototype;
+      const isPrototypeMode = getContext().params.mode === StudioMode.Prototype;
       return value.type === (isPrototypeMode ? PropValueType.Prototype : PropValueType.Instance)
     }).find(value => {
       return value.abstractValueIdChain === abstractValueIdChain || (!value.abstractValueIdChain && !abstractValueIdChain)
@@ -355,14 +354,14 @@ export default class PropPersistModel extends BaseModel {
 
     let paramData = {} as PropValue;
 
-    const valueStr = stringifyPropItemValue(propItem, value);
+    const valueStr = value !== undefined ? JSON.stringify(value) : ''
 
     if (propValue) {
       paramData.id = propValue.id;
       paramData.value = valueStr;
     } else {
       const component = grootManager.state.getState('gs.component');
-      const isPrototypeMode = getContext().groot.params.mode === StudioMode.Prototype;
+      const isPrototypeMode = getContext().params.mode === StudioMode.Prototype;
 
       paramData.abstractValueIdChain = abstractValueIdChain;
       paramData.propItemId = propItem.id;

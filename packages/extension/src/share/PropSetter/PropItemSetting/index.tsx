@@ -1,28 +1,20 @@
 import { Form, Input, Modal, Radio, Select, Space, Switch, Typography } from "antd";
 import React, { useEffect, useState } from "react";
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
-import { PropItem, PropItemType, useModel } from "@grootio/common";
+import { PropItem, PropItemViewType, useModel } from "@grootio/common";
 import PropPersistModel from "../PropPersistModel";
-import { propKeyRule, RemotePluginKeySep } from "util/utils";
-import { PropItemTypeNameMap } from "util/data-map";
-import { grootManager } from "context";
+import { propKeyRule } from "util/utils";
+import PropHandleModel from "../PropHandleModel";
 
 
 const PropItemSetting: React.FC = () => {
   const propPersistModel = useModel(PropPersistModel);
-  const [propSettingView] = grootManager.state.useStateByName('gs.ui.propSettingViews', []);
-  const [propItemTypeOptions] = useState(() => {
-    if (propSettingView.length) {
-      return [
-        ...PropItemTypeNameMap,
-        { name: '自定义', key: PropItemType.Extension },
-      ]
-    }
-
-    return [...PropItemTypeNameMap];
-  })
+  const propHandleModel = useModel(PropHandleModel);
 
   const [form] = Form.useForm<PropItem>();
+  const [propTypeOptions] = useState(() => {
+    return [...propHandleModel.propItemViewTypeMap].map(([label, value]) => ({ label, value }))
+  })
 
   const handleOk = async () => {
     const itemFormData = await form.validateFields();
@@ -58,16 +50,16 @@ const PropItemSetting: React.FC = () => {
                   <Form.Item noStyle dependencies={['type']}>
                     {() => {
                       const type = form.getFieldValue('type');
-                      return type === PropItemType.ButtonGroup ? <Form.Item name={[name, 'title']} {...restField} >
+                      return type === PropItemViewType.ButtonGroup ? <Form.Item name={[name, 'title']} {...restField} >
                         <Input placeholder="请输入描述" />
                       </Form.Item> : null;
                     }}
                   </Form.Item>
 
-                  <Form.Item noStyle dependencies={['type']}>
+                  <Form.Item noStyle dependencies={['viewType']}>
                     {() => {
-                      const type = form.getFieldValue('type');
-                      return type === PropItemType.ButtonGroup ? <Form.Item name={[name, 'icon']} {...restField} >
+                      const viewType = form.getFieldValue('viewType');
+                      return viewType === PropItemViewType.ButtonGroup ? <Form.Item name={[name, 'icon']} {...restField} >
                         <Input placeholder="请输入图标" />
                       </Form.Item> : null;
                     }}
@@ -96,25 +88,8 @@ const PropItemSetting: React.FC = () => {
       <Form.Item name="label" label="名称" rules={[{ required: true }]}>
         <Input />
       </Form.Item>
-      <Form.Item label="类型" name="type" rules={[{ required: true }]} >
-        <Select options={propItemTypeOptions} fieldNames={{ label: 'name', value: 'key' }} />
-      </Form.Item>
-      <Form.Item noStyle dependencies={['type']}>
-        {({ getFieldValue }) => {
-          const type = getFieldValue('type');
-
-          if (type === PropItemType.Extension) {
-            const options = propSettingView.map((item) => {
-              return { name: item.name, key: `${item.remotePackage}${RemotePluginKeySep}${item.remoteModule}` }
-            })
-
-            return (<Form.Item label="子类型" name="subType" rules={[{ required: true }]} >
-              <Select options={options} fieldNames={{ label: 'name', value: 'key' }} />
-            </Form.Item>)
-          } else {
-            return null;
-          }
-        }}
+      <Form.Item label="类型" name="viewType" rules={[{ required: true }]} >
+        <Select options={propTypeOptions} fieldNames={{ label: 'name', value: 'key' }} />
       </Form.Item>
 
       <Form.Item label="属性名" rules={[{ required: true }, { pattern: propKeyRule, message: '格式错误，必须是标准js标识符' }]} name="propKey">
@@ -135,10 +110,10 @@ const PropItemSetting: React.FC = () => {
       }
 
 
-      <Form.Item dependencies={['type']} noStyle >
+      <Form.Item dependencies={['viewType']} noStyle >
         {({ getFieldValue }) => {
-          const type = getFieldValue('type');
-          const hasOption = ([PropItemType.Select, PropItemType.Radio, PropItemType.Checkbox, PropItemType.ButtonGroup]).includes(type);
+          const viewType = getFieldValue('viewType');
+          const hasOption = ([PropItemViewType.Select, PropItemViewType.Radio, PropItemViewType.Checkbox, PropItemViewType.ButtonGroup] as string[]).includes(viewType);
 
           return hasOption ? renderSelectFormItem() : null
         }}

@@ -72,8 +72,6 @@ export type ComponentInstance = {
 
   // ************************** 分割线已下是界面属性 **************************
   propTree: PropGroup[],
-  extensionList: ExtensionInstance[],
-  entryExtensionList: ExtensionInstance[],
 } & Omit<import("../../cloud/src/entities/ComponentInstance").ComponentInstance, 'component' | 'componentVersion' | 'groupList' | 'blockList' | 'itemList' | 'valueList' | 'stateList'>;
 
 export type Release = {

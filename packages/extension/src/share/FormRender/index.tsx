@@ -1,7 +1,8 @@
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import { PropItem, PropItemStruct, PropItemViewType } from "@grootio/common";
-import { Button, Checkbox, DatePicker, Form, Input, InputNumber, Radio, Select, Switch, TimePicker, Tooltip } from "antd";
+import { Button, Checkbox, DatePicker, Form, Input, InputNumber, Radio, Select, Switch, SwitchProps, TimePicker, Tooltip } from "antd";
 import { grootManager } from "context";
+import dayjs from "dayjs";
 import ComponentChildren from "./ComponentChildren";
 import NumberSlider from "./NumberSlider";
 import TextEditor from "./TextEditor";
@@ -14,6 +15,7 @@ type PropType = {
 
 const FormRender: React.FC<PropType> = ({ propItem, simplify, formItemProps, ...props }) => {
   let field = <>未知类型</>
+  let initialValue = formItemProps.initialValue ? JSON.parse(formItemProps.initialValue) : undefined;
 
   if (propItem.viewType === PropItemViewType.Text) {
     field = <Input {...props} />;
@@ -21,13 +23,15 @@ const FormRender: React.FC<PropType> = ({ propItem, simplify, formItemProps, ...
     field = <InputNumber keyboard {...props} />;
   } else if (propItem.viewType === PropItemViewType.Switch) {
     formItemProps.valuePropName = 'checked'
-    field = <Switch {...props} />
+    field = <SwitchPatch {...props} />
   } else if (propItem.viewType === PropItemViewType.Select) {
     field = <Select options={propItem.optionList} {...props} />
   } else if (propItem.viewType === PropItemViewType.DatePicker) {
     field = <DatePicker {...props} />;
+    initialValue = dayjs(JSON.parse(formItemProps.initialValue));
   } else if (propItem.viewType === PropItemViewType.TimePicker) {
     field = <TimePicker style={{ width: '100%' }} {...props} />;
+    initialValue = dayjs(JSON.parse(formItemProps.initialValue));
   } else {
 
     if (simplify) {
@@ -71,8 +75,14 @@ const FormRender: React.FC<PropType> = ({ propItem, simplify, formItemProps, ...
     }
   }
 
-  return <Form.Item {...formItemProps}>{field}</Form.Item>
+  return <Form.Item {...formItemProps} initialValue={initialValue}>{field}</Form.Item>
 
+}
+
+const SwitchPatch: React.FC<SwitchProps & React.RefAttributes<HTMLElement> | { onChange: any }> = ({ onChange, ...params }) => {
+  return <Switch onChange={(checked, event) => {
+    onChange(checked ? 1 : 0, event)
+  }} {...params} />
 }
 
 export default FormRender

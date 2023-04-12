@@ -31,7 +31,6 @@ export const create = async (em: EntityManager, solution: Solution, release: Rel
     publish: true
   });
   avatarComponent.recentVersion = avatarComponentVersion;
-  solution.recentVersion.componentVersionList.add(avatarComponentVersion)
   await em.persistAndFlush(avatarComponentVersion);
 
   // 将组件和解决方案进行关联
@@ -119,7 +118,6 @@ export const create = async (em: EntityManager, solution: Solution, release: Rel
     publish: true
   });
   profileComponent.recentVersion = profileComponentVersion;
-  solution.recentVersion.componentVersionList.add(profileComponentVersion)
   await em.persistAndFlush(profileComponentVersion);
 
   // 将组件和解决方案进行关联

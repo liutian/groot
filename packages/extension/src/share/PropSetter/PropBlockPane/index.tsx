@@ -3,7 +3,6 @@ import { VerticalAlignTopOutlined, DeleteOutlined, VerticalAlignBottomOutlined, 
 import { useState } from "react";
 
 import { pick, PropBlock, PropBlockLayout, PropItem, PropItemStruct, PropValueType, useModel, ValueStruct, ViewElement, viewRender } from "@grootio/common";
-import { parsePropItemValue } from "@grootio/core";
 
 import styles from './index.module.less';
 import PropPersistModel from "../PropPersistModel";
@@ -41,7 +40,7 @@ function PropBlockPane({ block, freezeSetting, noWrapMode }: PropType) {
         return value.abstractValueIdChain === valueIdChain || (!value.abstractValueIdChain && !valueIdChain)
       })
 
-      const value = parsePropItemValue(propItem, propValue?.value);
+      const value = propValue?.value || propItem.defaultValue
       // cacheMap.set(propItem, value);
       return value;
     }

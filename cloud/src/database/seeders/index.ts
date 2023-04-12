@@ -106,14 +106,14 @@ export class DatabaseSeeder extends Seeder {
     await em.persistAndFlush(release);
 
     // 创建应用迭代级别扩展实例
-    const appExtensionInstance = em.create(ExtensionInstance, {
+    const releaseExtensionInstance = em.create(ExtensionInstance, {
       extension,
       extensionVersion,
       config: '',
       relationType: ExtensionRelationType.Release,
       relationId: release.id,
     });
-    await em.persistAndFlush(appExtensionInstance);
+    await em.persistAndFlush(releaseExtensionInstance);
 
 
     await proTableCreate(em, solution, release, extensionVersion);

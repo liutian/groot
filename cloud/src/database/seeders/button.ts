@@ -29,7 +29,6 @@ export const create = async (em: EntityManager, solution: Solution, release: Rel
     publish: true
   });
   btnComponent.recentVersion = btnComponentVersion;
-  solution.recentVersion.componentVersionList.add(btnComponentVersion)
   await em.persistAndFlush(btnComponentVersion);
 
   // 将组件和解决方案进行关联

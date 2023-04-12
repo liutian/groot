@@ -73,7 +73,6 @@ const createComponentByValue = (propMetadata: PropMetadata, store: Metadata[]) =
     if (!metadata) {
       throw new Error('数据异常');
     }
-    // todo studio模式下才有$$runtime
     metadata.$$runtime = {
       propItemId: rootData.$$runtime?.propItemId,
       abstractValueIdChain: rootData.$$runtime?.abstractValueIdChain

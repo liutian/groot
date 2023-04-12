@@ -97,6 +97,6 @@ const syncDataToStage = (first = false) => {
     metadataId: component.id,
   }, (params) => {
     propItemPipeline([], [], propItemPipelineModuleList, params)
-  });
+  }, true);
   grootManager.hook.callHook('gh.component.propChange', metadata, first)
 }

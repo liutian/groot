@@ -19,7 +19,6 @@
     "dist"
   ],
   "dependencies": {
-    "dayjs": "1.11.7",
     "@grootio/common": "0.0.1"
   }
 }

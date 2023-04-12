@@ -136,8 +136,8 @@ const instanceToMetadata = (instanceList: ComponentInstance[]) => {
     }
 
     const entryPropItemPipelineModuleList = [...extHandler.entry.values()].filter(ext => !!ext.propItemPipeline).map(ext => ext.propItemPipeline)
-    const appPropItemPipelineModuleList = [...extHandler.application.values()].filter(ext => !!ext.propItemPipeline).map(ext => ext.propItemPipeline)
-    const nodePropItemPipelineModuleList = [...(extHandler.solution.get(instance.solutionInstanceId).values() || [])].filter(ext => !!ext.propItemPipeline).map(ext => ext.propItemPipeline)
+    const releasePropItemPipelineModuleList = [...extHandler.application.values()].filter(ext => !!ext.propItemPipeline).map(ext => ext.propItemPipeline)
+    const solutionPropItemPipelineModuleList = [...(extHandler.solution.get(instance.solutionInstanceId).values() || [])].filter(ext => !!ext.propItemPipeline).map(ext => ext.propItemPipeline)
 
     const metadata = metadataFactory(instance.propTree, {
       packageName: instance.component.packageName,
@@ -146,8 +146,8 @@ const instanceToMetadata = (instanceList: ComponentInstance[]) => {
       rootMetadataId: instance.rootId,
       parentMetadataId: instance.parentId,
     }, (params) => {
-      propItemPipeline(entryPropItemPipelineModuleList, appPropItemPipelineModuleList, nodePropItemPipelineModuleList, params)
-    });
+      propItemPipeline(entryPropItemPipelineModuleList, releasePropItemPipelineModuleList, solutionPropItemPipelineModuleList, params)
+    }, true);
     return metadata;
   })
 }
