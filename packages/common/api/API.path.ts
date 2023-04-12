@@ -21,7 +21,10 @@ export enum APIPath {
   componentInstance_reverseDetectId = 'component-instance/reverse-detect-id',
   release_add = 'POST release/add',
   asset_build = 'POST asset/build',
-  asset_deploy = 'POST asset/deploy',
+  asset_publish = 'POST asset/publish',
+
+  asset_create_deploy = 'POST asset/create-deploy',
+
   item_update = 'POST item/update',
   item_add = 'POST item/add',
   item_remove_itemId = 'item/remove/:itemId',

@@ -2,7 +2,7 @@ import { Body, Controller, Get, Param, Post, Query, UseInterceptors } from '@nes
 import { PropBlock } from 'entities/PropBlock';
 import { PropGroup } from 'entities/PropGroup';
 import { PropItem } from 'entities/PropItem';
-import { ComponentService } from 'service/component.service';
+import { ComponentService } from 'service/Component.service';
 import { ApplicationService } from 'service/application.service';
 import { PropBlockService } from 'service/prop-block.service';
 import { PropGroupService } from 'service/prop-group.service';
@@ -185,9 +185,14 @@ export class WorkbenchController {
   }
 
 
-  @Post('/asset/deploy')
-  async assetDeploy(@Body('bundleId') bundleId: number, @Body('env') env: EnvType) {
-    return this.assetService.deploy(bundleId, env);
+  @Post('/asset/publish')
+  async assetPublish(@Body('deployId') deployId: number) {
+    return this.assetService.publish(deployId);
+  }
+
+  @Post('/asset/create-deploy')
+  async assetCreateDeploy(@Body('bundleId') bundleId: number, @Body('env') env: EnvType) {
+    return this.assetService.createDeploy(bundleId, env);
   }
 
   @Post('/component-instance/add-child')

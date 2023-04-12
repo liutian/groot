@@ -1,8 +1,9 @@
-import { Entity, ManyToOne, Property } from "@mikro-orm/core";
+import { Entity, ManyToOne, OneToOne, Property } from "@mikro-orm/core";
 
 import { BaseEntity } from "./BaseEntity";
 import { Bundle } from "./Bundle";
 import { Release } from "./Release";
+import { Deploy } from "./Deploy";
 
 @Entity()
 export class DeployManifest extends BaseEntity {
@@ -16,4 +17,6 @@ export class DeployManifest extends BaseEntity {
   @ManyToOne({ serializer: value => value?.id, serializedName: 'bundleId' })
   bundle: Bundle;
 
+  @OneToOne({ serializer: value => value?.id, serializedName: 'deployId' })
+  deploy: Deploy;
 }

@@ -16,9 +16,6 @@ export class Deploy extends BaseEntity {
   @ManyToOne({ serializer: value => value?.id, serializedName: 'applicationId' })
   application: Application;
 
-  @OneToOne()
-  manifest?: DeployManifest;
-
   @Property({ type: 'tinyint' })
   env: EnvType;
 

@@ -58,8 +58,8 @@ export enum EnvTypeStr {
 
 export enum DeployStatusType {
   Approval = 1,
-  Online = 2,
-  Archive = 3
+  Ready = 2,
+  Archive = 4
 }
 
 

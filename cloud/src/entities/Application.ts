@@ -39,6 +39,9 @@ export class Application extends BaseEntity {
   @Property({ length: 100, comment: '应用对应前端页面开发调试地址' })
   debugBaseUrl: string;
 
+  @Property()
+  deployApprove = false;
+
   //************************已下是接口入参或者查询返回需要定义的属性************************
 
   @Property({ persist: false })

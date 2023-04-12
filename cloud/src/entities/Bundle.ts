@@ -21,5 +21,8 @@ export class Bundle extends BaseEntity {
   oldAssetList = new Collection<BundleAsset>(this);
 
   @Property({ length: 100 })
-  remark = '';
+  remark: string;
+
+  @Property({ type: 'text', lazy: true })
+  manifest: string
 }

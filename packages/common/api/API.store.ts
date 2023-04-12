@@ -1,4 +1,5 @@
 import { SolutionInstance, State, Application, Component, ComponentInstance, ComponentVersion, Deploy, Organization, PropBlock, PropGroup, PropItem, PropValue, Release, Solution, ExtensionInstance } from '../entities';
+import { EnvType } from '../enum';
 import { API } from './API.common';
 import type { APIPath } from './API.path';
 
@@ -31,7 +32,8 @@ export type APIStore = {
   [APIPath.release_add]: [Release, API.Response<Release>],
   [APIPath.componentInstance_reverseDetectId]: [Partial<ComponentInstance>, API.Response<number>],
   [APIPath.asset_build]: [{ releaseId: number }, API.Response<number>],
-  [APIPath.asset_deploy]: [Deploy, API.Response<number>],
+  [APIPath.asset_publish]: [{ deployId: number }, API.Response<number>],
+  [APIPath.asset_create_deploy]: [{ bundleId: number, env: EnvType }, API.Response<Deploy>],
   [APIPath.group_update]: [PropGroup],
   [APIPath.group_add]: [PropGroup, API.Response<{
     newGroup: PropGroup,

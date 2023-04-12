@@ -8,7 +8,7 @@ import { Injectable } from '@nestjs/common';
 import { propTreeFactory, metadataFactory, propItemPipeline } from '@grootio/core';
 
 
-import { LogicException } from 'config/logic.exception';
+import { LogicException, LogicExceptionCode } from 'config/logic.exception';
 import { Application } from 'entities/Application';
 import { ComponentInstance } from 'entities/ComponentInstance';
 import { Release } from 'entities/Release';
@@ -132,7 +132,7 @@ export class AssetService {
     }
 
 
-    const bundle = await em.create(Bundle, {
+    const bundle = em.create(Bundle, {
       release,
       application,
     });
@@ -144,16 +144,24 @@ export class AssetService {
 
       // 创建InstanceAsset
       const newAssetList = [];
+      const manifest = []
       rootInstanceList.forEach((instance) => {
         const metadataList = instanceMetadataMap.get(instance);
         const asset = em.create(BundleAsset, {
           content: JSON.stringify(metadataList),
           entry: instance,
           bundle,
-          key: instance.key
+          manifestKey: instance.key
         });
+
+        manifest.push({
+          key: asset.manifestKey,
+          metadataUrl: `http://groot-local.com:10000/asset/instance/${asset.id}`
+        })
         newAssetList.push(asset);
       });
+
+      bundle.manifest = JSON.stringify(manifest)
       await em.flush();
 
       // 更新newAssetList
@@ -169,61 +177,87 @@ export class AssetService {
     return bundle.id;
   }
 
-  async deploy(bundleId: number, env: EnvType) {
+  async createDeploy(bundleId: number, env: EnvType) {
     const em = RequestContext.getEntityManager();
 
     LogicException.assertParamEmpty(bundleId, 'bundleId');
     const bundle = await em.findOne(Bundle, bundleId, {
       populate: [
-        'application.onlineRelease',
+        'application',
         'release',
-        'newAssetList'
       ]
     });
     LogicException.assertNotFound(bundle, 'Bundle', bundleId);
 
-    if (env === EnvType.Dev) {
-      bundle.application.devRelease = bundle.release;
-    } else if (env === EnvType.Qa) {
-      bundle.application.qaRelease = bundle.release;
-    } else if (env === EnvType.Pl) {
-      bundle.application.plRelease = bundle.release;
-    } else if (env === EnvType.Ol) {
-      bundle.application.onlineRelease.archive = true;
-      bundle.application.onlineRelease = bundle.release;
+    let status = DeployStatusType.Ready
+
+    if (bundle.application.deployApprove) {
+      // 发送审批通知
+      status = DeployStatusType.Approval
     }
 
-    const newAssetList = bundle.newAssetList.getItems();
-    const views = newAssetList.map((asset) => {
-      return {
-        key: asset.key,
-        metadataUrl: `http://groot-local.com:10000/asset/instance/${asset.id}`
-      }
-    })
-
-    const appData: ApplicationData = {
-      name: bundle.application.name,
-      key: bundle.application.key,
-      views,
-      envData: {}
-    }
-
-    const manifest = em.create(DeployManifest, {
-      content: JSON.stringify(appData),
+    const newDeploy = em.create(Deploy, {
       release: bundle.release,
+      application: bundle.application,
+      env,
+      status,
       bundle
     });
 
     await em.flush();
 
-    em.create(Deploy, {
-      release: bundle.release,
-      application: bundle.application,
-      manifest,
-      env,
-      status: DeployStatusType.Online,
-      bundle
+    return newDeploy
+  }
+
+  async publish(deployId: number) {
+    const em = RequestContext.getEntityManager();
+
+    LogicException.assertParamEmpty(deployId, 'deployId');
+    const deploy = await em.findOne(Deploy, deployId, {
+      populate: [
+        'application.devRelease',
+        'application.qaRelease',
+        'application.plRelease',
+        'application.onlineRelease',
+        'release',
+        'bundle'
+      ]
     });
+    LogicException.assertNotFound(deploy, 'Deploy', deployId);
+
+    if (deploy.status !== DeployStatusType.Ready) {
+      throw new LogicException(`状态错误${deploy.status}`, LogicExceptionCode.UnExpect);
+    }
+
+    if (deploy.env === EnvType.Dev) {
+      deploy.application.devRelease.archive = true
+      deploy.application.devRelease = deploy.release
+    } else if (deploy.env === EnvType.Qa) {
+      deploy.application.qaRelease.archive = true
+      deploy.application.qaRelease = deploy.release
+    } else if (deploy.env === EnvType.Pl) {
+      deploy.application.plRelease.archive = true
+      deploy.application.plRelease = deploy.release
+    } else if (deploy.env === EnvType.Ol) {
+      deploy.application.onlineRelease.archive = true
+      deploy.application.onlineRelease = deploy.release
+    }
+
+    const appData: ApplicationData = {
+      name: deploy.application.name,
+      key: deploy.application.key,
+      views: '$manifest$' as any,
+      envData: {}
+    }
+
+    const manifest = em.create(DeployManifest, {
+      content: JSON.stringify(appData).replace(/"$manifest$"/, deploy.bundle.manifest),
+      release: deploy.release,
+      bundle: deploy.bundle,
+      deploy
+    });
+
+    deploy.status = DeployStatusType.Archive
 
     await em.flush();
 

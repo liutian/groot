@@ -1,4 +1,5 @@
-import { APIPath, BaseModel, ComponentInstance, Deploy, ModalStatus, Release } from "@grootio/common";
+import { APIPath, BaseModel, ComponentInstance, Deploy, DeployStatusType, ModalStatus, Release } from "@grootio/common";
+import { message } from "antd";
 import { getContext, grootManager, } from "context";
 
 export default class ApplicationModel extends BaseModel {
@@ -17,7 +18,7 @@ export default class ApplicationModel extends BaseModel {
   instanceAddEntry = true
 
   public loadReleaseList() {
-    const applicationId = getContext().groot.params.application.id
+    const applicationId = getContext().params.application.id
     getContext().request(APIPath.application_releaseList_applicationId, { applicationId }).then(({ data }) => {
       this.releaseList = data;
     })
@@ -108,10 +109,18 @@ export default class ApplicationModel extends BaseModel {
     })
   }
 
-  public assetDeploy(formData: Deploy) {
+  public createDeploy(formData: Deploy) {
     this.assetDeployModalStatus = ModalStatus.Submit;
-    getContext().request(APIPath.asset_deploy, { bundleId: this.deployBundleId, ...formData }).then(() => {
-      this.assetDeployModalStatus = ModalStatus.None;
+    getContext().request(APIPath.asset_create_deploy, { bundleId: this.deployBundleId, ...formData }).then(({ data: deploy }) => {
+      if (deploy.status === DeployStatusType.Approval) {
+        this.assetDeployModalStatus = ModalStatus.None;
+        message.success('流程审批中')
+      } else if (deploy.status === DeployStatusType.Ready) {
+        getContext().request(APIPath.asset_publish, { deployId: deploy.id }).then(() => {
+          message.success('发布成功')
+          this.assetDeployModalStatus = ModalStatus.None;
+        })
+      }
     })
   }
 }
