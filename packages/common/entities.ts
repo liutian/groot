@@ -122,6 +122,10 @@ export type Extension = {
 
 
 export type ExtensionVersion = {
+  propItemPipeline: string;
+  propItemPipelineRaw: string;
+
+
 
 } & Omit<import("../../cloud/src/entities/ExtensionVersion").ExtensionVersion, ''>;
 

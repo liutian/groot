@@ -1,15 +1,16 @@
-import { Entity, ManyToOne, OneToOne, Property } from "@mikro-orm/core";
+import { Entity, ManyToOne, OneToOne } from "@mikro-orm/core";
 
 import { BaseEntity } from "./BaseEntity";
 import { Bundle } from "./Bundle";
 import { Release } from "./Release";
 import { Deploy } from "./Deploy";
+import { LargeText } from "./LargeText";
 
 @Entity()
 export class DeployManifest extends BaseEntity {
 
-  @Property({ type: 'text', lazy: true })
-  content: string;
+  @OneToOne({ serializer: value => value.text })
+  content: LargeText;
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'releaseId' })
   release: Release;

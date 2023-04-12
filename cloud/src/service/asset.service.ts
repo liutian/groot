@@ -23,6 +23,7 @@ import { PropItem } from 'entities/PropItem';
 import { NodeVM } from 'vm2';
 import { ExtensionInstance } from 'entities/ExtensionInstance';
 import { SolutionInstance } from 'entities/SolutionInstance';
+import { LargeText } from 'entities/LargeText';
 
 
 const vm2 = new NodeVM()
@@ -74,7 +75,7 @@ export class AssetService {
     const releaseExtensionInstanceList = await em.find(ExtensionInstance, {
       relationId: releaseId,
       relationType: ExtensionRelationType.Release,
-    }, { populate: ['extensionVersion'] })
+    }, { populate: ['extensionVersion', 'extensionVersion.propItemPipelineRaw'] })
 
     this.installPropItemPipelineModule(releaseExtensionInstanceList, ExtensionLevel.Application, extHandler)
     const releaseExtScriptModuleList = [...extHandler.application.values()].filter(item => !!item.propItemPipeline).map(item => item.propItemPipeline)
@@ -93,7 +94,7 @@ export class AssetService {
         const solutionExtensionInstanceList = await em.find(ExtensionInstance, {
           relationId: solutionInstance.solutionVersion.id,
           relationType: ExtensionRelationType.SolutionVersion
-        }, { populate: ['extensionVersion'] })
+        }, { populate: ['extensionVersion.propItemPipelineRaw'] })
 
         this.installPropItemPipelineModule(solutionExtensionInstanceList, ExtensionLevel.Solution, extHandler, solutionInstance.solutionVersion.id)
       }
@@ -101,7 +102,7 @@ export class AssetService {
       const entryExtensionInstanceList = await em.find(ExtensionInstance, {
         relationId: rootInstance.id,
         relationType: ExtensionRelationType.Entry
-      }, { populate: ['extensionVersion'] })
+      }, { populate: ['extensionVersion.propItemPipelineRaw'] })
 
       this.installPropItemPipelineModule(entryExtensionInstanceList, ExtensionLevel.Entry, extHandler)
       const entryExtScriptModuleList = [...extHandler.entry.values()].filter(item => !!item.propItemPipeline).map(item => item.propItemPipeline)
@@ -145,10 +146,17 @@ export class AssetService {
       // 创建InstanceAsset
       const newAssetList = [];
       const manifest = []
-      rootInstanceList.forEach((instance) => {
+      for (const instance of rootInstanceList) {
         const metadataList = instanceMetadataMap.get(instance);
+
+        const content = em.create(LargeText, {
+          text: JSON.stringify(metadataList)
+        })
+
+        await em.flush()
+
         const asset = em.create(BundleAsset, {
-          content: JSON.stringify(metadataList),
+          content,
           entry: instance,
           bundle,
           manifestKey: instance.key
@@ -159,9 +167,14 @@ export class AssetService {
           metadataUrl: `http://groot-local.com:10000/asset/instance/${asset.id}`
         })
         newAssetList.push(asset);
-      });
+      }
 
-      bundle.manifest = JSON.stringify(manifest)
+      const manifestLargeText = em.create(LargeText, {
+        text: JSON.stringify(manifest)
+      })
+      await em.flush()
+
+      bundle.manifest = manifestLargeText
       await em.flush();
 
       // 更新newAssetList
@@ -220,7 +233,7 @@ export class AssetService {
         'application.plRelease',
         'application.onlineRelease',
         'release',
-        'bundle'
+        'bundle.manifest'
       ]
     });
     LogicException.assertNotFound(deploy, 'Deploy', deployId);
@@ -250,8 +263,12 @@ export class AssetService {
       envData: {}
     }
 
+    const content = em.create(LargeText, {
+      text: JSON.stringify(appData).replace(/"$manifest$"/, deploy.bundle.manifest.text)
+    })
+
     const manifest = em.create(DeployManifest, {
-      content: JSON.stringify(appData).replace(/"$manifest$"/, deploy.bundle.manifest),
+      content,
       release: deploy.release,
       bundle: deploy.bundle,
       deploy
@@ -306,8 +323,9 @@ export class AssetService {
       const extInstance = wrap(extensionInstance).toObject() as IExtensionInstance
 
       const success = extHandler.install(extInstance, level, solutionVersionId)
-      if (success && extensionInstance.extensionVersion.propItemPipelineRaw.trim().length > 0) {
-        const module = vm2.run(extInstance.extensionVersion.propItemPipelineRaw) as ExtScriptModule
+      if (success && extensionInstance.extensionVersion.propItemPipelineRaw?.text) {
+        const code = extensionInstance.extensionVersion.propItemPipelineRaw.text
+        const module = vm2.run(code) as ExtScriptModule
         module.id = extInstance.id;
         extInstance.propItemPipeline = module
       }

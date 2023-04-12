@@ -9,9 +9,6 @@ export class SolutionEntry extends BaseEntity {
   @Property({ length: 20 })
   name: string;
 
-  @Property({ type: 'text', lazy: true })
-  config: string;
-
   @ManyToOne({ serializer: value => value?.id, serializedName: 'solutionVersionId' })
   solutionVersion: SolutionVersion;
 

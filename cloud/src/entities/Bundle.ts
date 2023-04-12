@@ -1,9 +1,10 @@
-import { Collection, Entity, ManyToMany, ManyToOne, OneToMany, Property } from "@mikro-orm/core";
+import { Collection, Entity, ManyToMany, ManyToOne, OneToOne, Property } from "@mikro-orm/core";
 
 import { BundleAsset } from "./BundleAsset";
 import { BaseEntity } from "./BaseEntity";
 import { Release } from "./Release";
 import { Application } from "./Application";
+import { LargeText } from "./LargeText";
 
 @Entity()
 export class Bundle extends BaseEntity {
@@ -23,6 +24,6 @@ export class Bundle extends BaseEntity {
   @Property({ length: 100 })
   remark: string;
 
-  @Property({ type: 'text', lazy: true })
-  manifest: string
+  @OneToOne({ serializer: value => value.text })
+  manifest: LargeText
 }

@@ -1,7 +1,8 @@
-import { Entity, ManyToOne, Property } from "@mikro-orm/core";
+import { Entity, ManyToOne, OneToOne, Property } from "@mikro-orm/core";
 
 import { BaseEntity } from "./BaseEntity";
 import { Extension } from "./Extension";
+import { LargeText } from "./LargeText";
 
 @Entity()
 export class ExtensionVersion extends BaseEntity {
@@ -23,11 +24,11 @@ export class ExtensionVersion extends BaseEntity {
   @Property({ length: 100, comment: 'webpack模块联邦暴露出来可访问js地址' })
   assetUrl: string;
 
-  @Property({ type: 'text', lazy: true })
-  propItemPipeline = '';
+  @OneToOne({ serializer: value => value.text })
+  propItemPipeline: LargeText;
 
-  @Property({ type: 'text', lazy: true })
-  propItemPipelineRaw = '';
+  @OneToOne({ serializer: value => value.text })
+  propItemPipelineRaw: LargeText
 
   @ManyToOne({ serializer: value => value?.id, serializedName: 'extensionId' })
   extension: Extension;

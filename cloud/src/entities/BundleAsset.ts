@@ -1,14 +1,15 @@
-import { Entity, ManyToOne, Property } from "@mikro-orm/core";
+import { Entity, ManyToOne, OneToOne, Property } from "@mikro-orm/core";
 
 import { BaseEntity } from "./BaseEntity";
 import { Bundle } from "./Bundle";
 import { ComponentInstance } from "./ComponentInstance";
+import { LargeText } from "./LargeText";
 
 @Entity()
 export class BundleAsset extends BaseEntity {
 
-  @Property({ type: 'text', lazy: true })
-  content: string;
+  @OneToOne({ serializer: value => value.text })
+  content: LargeText;
 
   @Property({ length: 100, comment: '应用级别唯一标识，保证多次部署可以共用部分构建资源' })
   manifestKey: string;

@@ -24,7 +24,7 @@ export class ApplicationService {
     application.extensionInstanceList = await em.find(ExtensionInstance, {
       relationId: releaseId,
       relationType: ExtensionRelationType.Release
-    }, { populate: ['extension', 'extensionVersion'] })
+    }, { populate: ['extension', 'extensionVersion.propItemPipelineRaw'] })
 
     return application;
   }

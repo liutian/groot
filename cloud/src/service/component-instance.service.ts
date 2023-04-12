@@ -174,7 +174,7 @@ export class ComponentInstanceService {
     const entryExtensionInstanceList = await em.find(ExtensionInstance, {
       relationId: rootInstance.id,
       relationType: ExtensionRelationType.Entry
-    }, { populate: ['extension', 'extensionVersion'] })
+    }, { populate: ['extension', 'extensionVersion.propItemPipelineRaw'] })
 
     const solutionInstanceList = await em.find(SolutionInstance, {
       entry: rootInstance
@@ -184,7 +184,7 @@ export class ComponentInstanceService {
       solutionInstance.extensionInstanceList = await em.find(ExtensionInstance, {
         relationId: solutionInstance.solutionVersion.id,
         relationType: ExtensionRelationType.SolutionVersion
-      }, { populate: ['extension', 'extensionVersion'] })
+      }, { populate: ['extension', 'extensionVersion.propItemPipelineRaw'] })
     }
 
     rootInstance.groupList = await em.find(PropGroup, { component: rootInstance.component, componentVersion: rootInstance.componentVersion });
